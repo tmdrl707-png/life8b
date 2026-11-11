@@ -210,6 +210,19 @@ h3{font-size:1rem;margin:0} p{margin:0}
 #s-end input{border:1px solid #4A5C6B;border-radius:10px;padding:.7rem .8rem;background:#1F2D3A;color:#fff;width:100%}
 #s-end .btn{background:transparent;color:#fff;border-color:#6B7E8D}
 #s-end .btn.primary{background:var(--fox);border-color:var(--fox)}
+
+/* ----- 엔딩 슬라이드쇼 ----- */
+#s-end .slideshow{position:relative;z-index:2;display:flex;flex-direction:column;gap:14px;min-height:calc(100dvh - 3rem)}
+#s-end .sbar{height:4px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden}
+#s-end .sbar i{display:block;height:100%;background:#FFC9A8;transition:width .35s ease}
+#s-end .shead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:.8rem;color:#AFC0CD}
+#s-end .shead .kick{color:#FFC9A8;font-weight:700;letter-spacing:.03em}
+#s-end .slide{flex:1;animation:slideIn .45s ease both}
+@keyframes slideIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+#s-end .snav{display:flex;justify-content:space-between;gap:10px;position:sticky;bottom:0;padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(13,21,32,0),#0D1520 45%)}
+#s-end .snav .btn{min-width:7.5rem}
+#s-end blockquote.bigq{font-size:1.25rem;line-height:1.65;margin:1.2rem 0}
+@media (prefers-reduced-motion: reduce){#s-end .slide{animation:none}}
 #s-end .cardnews{display:flex;flex-direction:column;gap:1.4rem}
 #s-end .ncard{background:#F6F2EA;color:#2A2622;border-radius:16px;overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,.5);animation:slow 1.2s ease both}
 #s-end .nimg{position:relative;background:#3A4450}
@@ -255,6 +268,245 @@ h3{font-size:1rem;margin:0} p{margin:0}
 #s-end .rp{color:#8FA3B3;font-size:.85em}
 canvas#card{width:100%;max-width:22rem;height:auto;border-radius:var(--r);display:block;margin:0 auto}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<style id="design-v2">
+/* ===== 디자인 개선 레이어: 위의 기본 스타일 위에 덧씌우는 따뜻한 레트로 픽셀 + 밤하늘 엔딩 ===== */
+:root{
+  --sky:#E6F0F5; --paper:#FFFDF8; --ink:#1C2630; --sub:#546575; --line:#CFDCE6;
+  --fox:#E56B38; --fox-deep:#B84A1C; --fox-soft:#FDECE3;
+  --leaf:#298A73; --sun:#D49216; --sea:#3577B8; --rose:#C84B71; --night:#0D1520;
+}
+body{
+  background-color:#CFE0C8;
+  background-image:
+    radial-gradient(circle at 50% 0%,rgba(255,255,255,.55),transparent 70%),
+    repeating-linear-gradient(0deg,transparent 0 15px,rgba(30,43,55,.045) 15px 16px),
+    repeating-linear-gradient(90deg,transparent 0 15px,rgba(30,43,55,.045) 15px 16px);
+  line-height:1.6;
+}
+button{transition:transform .1s ease,box-shadow .1s ease,background-color .15s ease}
+:focus-visible{outline:3px solid var(--fox);outline-offset:2px}
+
+/* ----- 시작·출생·교사용 화면 ----- */
+.wrap{max-width:35rem;padding-top:1.2rem;padding-bottom:3.5rem}
+#pages h1{font-size:2.1rem;line-height:1.25;text-shadow:0 2px 0 rgba(255,255,255,.8)}
+h2{font-size:1.28rem} h3{font-size:1.02rem}
+.stack{gap:1.05rem} .stack-s{gap:.55rem} .row{gap:.55rem}
+.panel{
+  background:linear-gradient(180deg,#FDFCF7 0%,#F4F2E8 100%);
+  border-radius:10px;padding:1.25rem;border:3px solid #222B34;
+  box-shadow:inset 0 0 0 2px #FFFDF8,inset 0 0 0 4px #7C95AE,0 6px 0 rgba(34,43,52,.18),0 12px 24px rgba(20,30,40,.12);
+}
+.btn{
+  border:2.5px solid #222B34;background:linear-gradient(180deg,#FFFFFF 0%,#F3F5F7 100%);
+  border-radius:6px;padding:.58rem 1.05rem;font-weight:600;
+  box-shadow:inset 0 1px 0 #FFF,0 3px 0 #222B34;
+}
+.btn:hover{border-color:#222B34;background:linear-gradient(180deg,#FFFFFF 0%,#FFF3E8 100%)}
+.btn:active{transform:translateY(3px);box-shadow:none}
+.btn.primary{
+  background:linear-gradient(180deg,#E85252 0%,#CE3838 100%);color:#fff;
+  text-shadow:0 1px 1px rgba(0,0,0,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 4px 0 #222B34;
+}
+.btn.primary:hover{background:linear-gradient(180deg,#EE6060 0%,#D64242 100%)}
+.btn.ghost{background:transparent;box-shadow:none;border-color:transparent}
+.btn.ghost:hover{background:rgba(255,255,255,.5);border-color:transparent}
+.btn.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.pixcv{max-width:420px;border:3px solid #222B34;border-radius:8px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.3),0 4px 12px rgba(0,0,0,.15)}
+.field input,.field select{border:2.5px solid #222B34;border-radius:6px;padding:.65rem .85rem;background:var(--paper);box-shadow:inset 0 2px 4px rgba(0,0,0,.05)}
+.field input:focus,.field select:focus{border-color:var(--fox-deep);outline:none;box-shadow:inset 0 2px 4px rgba(0,0,0,.05),0 0 0 3px rgba(229,107,56,.25)}
+.hero svg{filter:drop-shadow(0 6px 12px rgba(30,43,55,.15))}
+.fox-bob{animation:bob 3.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.seg{border:2.5px solid #222B34;border-radius:6px;box-shadow:0 2px 0 rgba(34,43,52,.18)}
+.seg button{transition:background-color .15s}
+.seg button:hover{background:var(--fox-soft)}
+.seg button.on,.seg button.on:hover{background:var(--ink);color:#fff}
+.kpi div{background:linear-gradient(180deg,#FFFFFF 0%,#F7F9FA 100%);border:2px solid #222B34;border-radius:6px;box-shadow:0 2px 0 rgba(34,43,52,.12)}
+.lives li{padding:.65rem 0;border-top:1px dashed var(--line)}
+.lives li:first-child{border-top:0}
+.cmp thead th{border-bottom:2px solid #222B34}
+.cmp td.me{color:var(--fox-deep)}
+.cmp tbody tr:nth-child(even){background:rgba(124,149,174,.07)}
+#pages .notice{background:var(--fox-soft);border-left:4px solid var(--fox);border-radius:0 8px 8px 0;padding:.6rem .8rem;color:#5A4030}
+
+/* ----- 게임 화면: 가독성과 조작감 ----- */
+#s-game{background:#0E1318;--gb-ink:#222A32;--gb-paper:#FAF8F0;--gb-line:#7B94AD;--gb-red:#DE4343;--gb-blue:#326BC9}
+.gbox{
+  background:linear-gradient(180deg,#FCFBF5 0%,#F3F0E4 100%);color:var(--gb-ink);
+  border:3px solid var(--gb-ink);border-radius:8px;
+  box-shadow:inset 0 0 0 2px #FCFBF5,inset 0 0 0 4px var(--gb-line),0 4px 14px rgba(0,0,0,.28);
+}
+.hud{max-width:580px;gap:6px;z-index:10;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+#miniWrap{transition:transform .15s ease}
+@media(hover:hover){#miniWrap:hover{transform:scale(1.02)}}
+#miniWrap span{background:rgba(24,32,40,.82);border-radius:3px}
+.hbtn{background:linear-gradient(180deg,#FFFFFF 0%,#EFF2F5 100%);border-radius:5px}
+.hbtn.me{background:linear-gradient(180deg,#FFE694 0%,#F6CE55 100%);font-weight:700}
+.hmoney span:first-child{color:#20509E;font-weight:600}
+.hmoney .neg{color:#C23B56!important;font-weight:700}
+@keyframes mup{0%,50%{background:#D8F3DF;border-radius:3px}}
+@keyframes mdn{0%,50%{background:#FAD8DE;border-radius:3px}}
+#hSick{background:#C84B62;animation:pulseSick 1.6s infinite}
+@keyframes pulseSick{50%{filter:brightness(1.15)}}
+.timer{height:7px;background:#CBD4DC;border-radius:4px}
+.timer i{background:linear-gradient(90deg,#F59E0B 0%,#EC4899 100%);transition:width .25s linear}
+#toasts{z-index:9;gap:5px;width:min(92%,26.5rem);top:var(--hudH,152px)}
+.toast{
+  background:rgba(250,248,240,.96);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  border-radius:7px;box-shadow:inset 0 0 0 2px var(--gb-paper),inset 0 0 0 3px var(--gb-line),0 6px 14px rgba(0,0,0,.22);
+  padding:6px 10px;animation:fade .28s cubic-bezier(.22,1,.36,1);
+}
+.toast.news::before{content:"📌 그해의 일 ";font-weight:700}
+.toast.year{background:linear-gradient(180deg,#28323C 0%,#1A222A 100%);color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+#flash{background:rgba(250,248,240,.96);border-radius:7px;z-index:12;animation:popin .28s}
+@keyframes popin{from{opacity:0;transform:translate(-50%,-50%) scale(.86)}}
+.abtn{border-radius:999px;box-shadow:inset 0 2px 0 rgba(255,255,255,.35),0 4px 0 var(--gb-ink),0 6px 14px rgba(0,0,0,.3);z-index:11}
+.abtn:active{transform:translateY(3px);box-shadow:none}
+#btnAct{background:linear-gradient(180deg,#EF5353 0%,#D23636 100%);font-weight:700}
+#btnAct::before{font-weight:800}
+#btnCar{background:linear-gradient(180deg,#4BB354 0%,#358F3D 100%);font-weight:700}
+#sheet{background:rgba(10,15,22,.58);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:20}
+#sheet .box{border-radius:12px 12px 0 0;animation:rise .25s cubic-bezier(.22,1,.36,1)}
+@media(min-width:40rem){#sheet .box{border-radius:12px}}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}}
+.scene{box-shadow:0 4px 12px rgba(0,0,0,.16)}
+.opts button{
+  background:linear-gradient(180deg,#FFFFFF 0%,#F7F8FA 100%);border-radius:6px;
+  padding:10px 12px 10px 24px;box-shadow:0 2.5px 0 var(--gb-ink);transition:transform .12s,background-color .15s;
+}
+.opts button::before{left:8px;color:var(--fox);transition:opacity .15s,transform .15s}
+.opts button:hover::before,.opts button:focus-visible::before{transform:translateX(2px)}
+.opts button:hover{background:#FFF8E5;border-color:#B4501E}
+.opts button:active{transform:translateY(2px);box-shadow:none}
+.opts button span{background:#FDECE3;border:1px solid rgba(180,80,30,.3);padding:2px 6px;border-radius:4px;font-weight:700}
+
+/* ----- 마지막 장면: 밤하늘 성찰 ----- */
+#s-end{
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(56,112,208,.22) 0%,transparent 65%),
+    radial-gradient(ellipse at 85% 90%,rgba(226,112,58,.14) 0%,transparent 55%),
+    linear-gradient(180deg,#0B131E 0%,#131F2E 55%,#192738 100%);
+  color:#F0F4F8;
+}
+#s-end .in{position:relative;z-index:2;padding-top:2.8rem;padding-bottom:4rem;gap:1.4rem}
+#s-end .step{animation:slowReveal 1.3s cubic-bezier(.22,1,.36,1)}
+@keyframes slowReveal{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+#s-end .big{font-size:1.6rem;text-shadow:0 2px 14px rgba(255,201,168,.22)}
+#s-end .mem{border-left:2.5px solid #FFC9A8}
+#s-end .mem b{background:rgba(255,201,168,.12);border-radius:4px;padding:1px 6px}
+#s-end .tbar i{background:linear-gradient(90deg,#E2703A 0%,#FFC9A8 100%);box-shadow:0 0 10px rgba(255,201,168,.35)}
+#s-end blockquote{
+  background:rgba(255,255,255,.065);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid rgba(255,201,168,.22);border-left:4px solid #FFC9A8;
+  border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+#s-end input,#s-end textarea{border:1.5px solid #4A5F73;border-radius:10px;background:rgba(22,34,47,.85);color:#fff;transition:border-color .2s,box-shadow .2s}
+#s-end input:focus,#s-end textarea:focus{border-color:#FFC9A8;box-shadow:0 0 0 3px rgba(255,201,168,.2);outline:none}
+#s-end .btn.primary{background:linear-gradient(135deg,#E87A46 0%,#C85520 100%);box-shadow:0 6px 20px rgba(226,112,58,.4);border-color:#FFAE85;text-shadow:none}
+#s-end .btn:hover{border-color:#FFC9A8}
+#s-end details{border:1px solid rgba(255,201,168,.15)}
+#s-end .pf{
+  background:linear-gradient(180deg,#FDFBF6 0%,#F2ECE1 100%);
+  padding:8px 8px 2px;border-radius:4px;box-shadow:0 10px 24px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.3);
+  transition:transform .25s;position:relative;
+}
+#s-end .pf:hover,#s-end .photos li:nth-child(even) .pf:hover{transform:rotate(0deg) scale(1.03)}
+#s-end .pf canvas{border:1px solid rgba(0,0,0,.12)}
+#s-end .pf figcaption{font-size:1.15rem}
+canvas#card{box-shadow:0 14px 36px rgba(0,0,0,.55),0 0 0 1px rgba(255,201,168,.3)}
+#star-bg-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+</style>
+<style id="design-v3">
+/* ===== 읽기 쉬운 화면: 사건 글씨·창을 키우고, 노트북에서는 더 넓고 크게 ===== */
+#s-game{font-size:16px}
+.hud{max-width:640px;gap:6px}
+#mini{width:160px;height:67px}
+#miniWrap span{font-size:.7rem;padding:2px 5px;left:9px;bottom:8px}
+#miniWrap::after{content:"누르면 크게";position:absolute;right:9px;top:8px;font-size:.62rem;line-height:1;color:#fff;background:rgba(226,112,58,.92);padding:2px 4px;border-radius:3px}
+.hl b{font-size:1.15rem} #hName{font-size:.8rem} .hbtn{font-size:.82rem;padding:4px 8px} .hmon{font-size:.8rem} .hmoney{font-size:.8rem}
+#hQuest{font-size:.75rem} #hMission,#hSick{font-size:.8rem}
+#toasts{width:min(94%,34rem);gap:6px}
+.toast{font-size:.95rem;line-height:1.55;padding:8px 12px}
+.toast.year{font-size:1.05rem}
+.toast .nt{font-size:.8rem} .chip{font-size:.75rem;padding:1px 5px}
+#flash{width:min(92%,30rem);padding:14px 16px;gap:6px}
+#flash p{font-size:1.08rem;line-height:1.6} #flash .place{font-size:.8rem}
+#hint{font-size:.78rem} #hWait{font-size:.82rem}
+#btnAct{font-size:.95rem;padding:12px 16px 12px 12px} #btnCar{font-size:.95rem} #btnNext{font-size:.9rem;padding:10px 16px} #btnImp{font-size:.88rem}
+#sheet .box{width:min(100%,38rem);max-height:90%;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));gap:12px}
+#sheet h2{font-size:1.15rem;line-height:1.6}
+#sheet .box.big h2{font-size:1.22rem}
+#sheet .box.event .evt,#sheet .box.year .evt{font-size:1.12rem;line-height:1.65}
+.place{font-size:.82rem}
+.opts{gap:8px}
+.opts button{font-size:1rem;min-height:52px;padding:11px 12px 11px 26px;line-height:1.45}
+.opts button span{font-size:.8rem}
+.opts button small{font-size:.8rem}
+#sheet .sub,#sheet .small{font-size:.82rem}
+#sheet .mq{font-size:.88rem}
+#sheet p.nt{font-size:.85rem} #sheet p.nt.fact{font-size:.9rem}
+#sheet .btn{font-size:.95rem;min-height:46px}
+#sheet .field input,#sheet textarea{font-size:1rem}
+.info{font-size:.9rem;grid-template-columns:6.5rem minmax(0,1fr);gap:0}
+.info dt,.info dd{padding:7px 6px;border-top:1px solid #DCE2E8}
+.info dt{background:#F1F4F7;color:#46566A;font-weight:600}
+.famtbl{font-size:.85rem}
+.scene-cap{font-size:.75rem}
+@media (min-width:900px) and (min-height:560px){
+  #s-game{font-size:18px}
+  .hud{max-width:820px;padding-left:14px;padding-right:14px}
+  #mini{width:260px;height:109px}
+  #toasts{width:min(60%,44rem)}
+  #flash{width:min(60%,38rem)}
+  #sheet{align-items:center}
+  #sheet .box{width:min(92%,52rem);border-radius:14px;padding:26px 30px}
+  #sheet .box.event,#sheet .box.year,#sheet .box.ask{width:min(92%,46rem)}
+  .scene{max-width:480px}
+  .opts button{min-height:58px}
+}
+
+/* ----- 지도: 동네 · 나라 주변 · 세계 ----- */
+.mtabs{display:flex;gap:6px;flex-wrap:wrap}
+.mtabs button{font:inherit;font-size:.9rem;border:2px solid var(--gb-ink);background:#fff;border-radius:6px;padding:7px 12px;box-shadow:0 2px 0 var(--gb-ink);cursor:pointer}
+.mtabs button.on{background:var(--gb-ink);color:#fff}
+.wmap{width:100%;height:auto;display:block;border:3px solid var(--gb-ink);border-radius:6px;background:#9CC9EC}
+.wmap text{font-family:inherit;paint-order:stroke;stroke:#fff;stroke-linejoin:round}
+@keyframes ping{0%{r:2;opacity:.9}100%{r:9;opacity:0}}
+.wmap .ping{animation:ping 1.8s ease-out infinite}
+.mfacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:8px}
+.mfacts div{border:2px solid var(--gb-ink);border-radius:6px;background:#fff;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.mfacts b{font-size:1.05rem} .mfacts span{font-size:.78rem;color:#5A6878}
+
+/* ----- 내 정보·기억·기록: 그래프와 표 ----- */
+.chart{border:2px solid var(--gb-ink);border-radius:8px;background:#fff;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.chart h3{font-size:.95rem;margin:0}
+.sbar{display:grid;grid-template-columns:3.4rem minmax(0,1fr) 4.6rem;gap:8px;align-items:center;font-size:.88rem}
+.sbar .tr{height:14px;background:#E6EBF0;border-radius:7px;overflow:hidden;position:relative}
+.sbar .tr i{position:absolute;left:0;top:0;bottom:0;border-radius:7px}
+.sbar .tr em{position:absolute;top:-2px;bottom:-2px;width:2px;background:#283038;opacity:.35}
+.sbar .v{text-align:right;font-variant-numeric:tabular-nums}
+.sbar .up{color:#2F7F4A} .sbar .dn{color:#C2405A}
+.lchart{width:100%;height:auto;display:block}
+.lchart text{font-size:12px;fill:#5A6878}
+.lchart{max-width:720px}
+.lgd{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.8rem}
+.lgd i{display:inline-block;width:12px;height:4px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.dtbl{width:100%;border-collapse:collapse;font-size:.86rem;text-align:left}
+.dtbl th{background:#283038;color:#fff;font-weight:600;padding:7px 8px;position:sticky;top:0;z-index:1}
+.dtbl td{padding:7px 8px;border-top:1px solid #DCE2E8;vertical-align:top;line-height:1.5}
+.dtbl tbody tr:nth-child(even) td{background:#F6F8FA}
+.dtbl td.a{white-space:nowrap;color:#5A6878;font-variant-numeric:tabular-nums}
+.dtbl td.q{color:#46566A}
+.dtbl tr.sc{cursor:pointer} .dtbl tr.sc:hover td{background:#FFF6DC}
+.dtbl tr.big td:first-child{box-shadow:inset 3px 0 0 #E2703A}
+.dtbl .tag{display:inline-block;font-size:.7rem;border-radius:3px;padding:0 4px;margin-left:4px;background:#FCEBDC;color:#B4501E}
+.dtbl .rp{color:#B4501E;font-size:.8em}
+.tscroll{max-height:55vh;overflow:auto;border:2px solid var(--gb-ink);border-radius:8px;background:#fff}
+#pages .dtbl th{position:static}
+#pages .dtbl{font-size:.9rem}
+#pages .tscroll{max-height:none}
 </style>
 </head>
 <body>
@@ -1280,7 +1532,7 @@ M(13,15,'*',null,'좋아하는 사람이 생겼다.',[['용기 내어 고백한�
 M(13,18,'*',null,'성적이 갑자기 떨어졌다.',[['공부 방법을 바꿔 본다','k D','새 방법이 맞아 성적이 올랐다.','k6 j4','쉽게 오르지 않았다. 그래도 포기하지 않았다.','k2 j-2'],['선생님께 상담을 청한다','r B','선생님이 내게 맞는 길을 함께 찾아 주셨다.','k4 r3','용기 내 찾아갔지만 뾰족한 수는 없었다.','j-2']]);
 M(13,18,'*',null,'집안 형편이 갑자기 어려워졌다.',[['일을 도와 집에 보탠다','h D','힘들었지만 집에 보탬이 되었다.','r5 j2 h-2','무리하다 몸살이 났다.','h-5 k-2'],['장학금에 도전한다','k D','장학금을 받았다. 부모님이 눈물을 보이셨다.','k4 j6 r3','아깝게 떨어졌다.','j-4']]);
 M(14,18,'*',null,'큰 대회에 나갈 기회가 왔다.',[['도전한다','k B','본선에 올랐다. 세상이 넓다는 걸 알았다.','j7 k4','예선에서 떨어졌다. 그래도 그 무대는 잊히지 않았다.','j-2 k2'],['실력을 더 쌓고 다음을 노린다','k D','조용히 쌓은 실력이 자신감이 되었다.','k5','망설이는 사이 기회가 지나갔다.','j-3']]);
-M(15,18,'*',null,'친구들이 수업을 빠지고 놀러 가자고 한다.',[['거절하고 수업에 들어간다','k D','친구들은 투덜댔지만 다음 날 아무 일 없었다.','k3','거절한 뒤 한동안 어색했다.','r-3 k2'],['다 같이 선생님께 솔직히 말한다','r B','선생님이 현장 학습으로 바꿔 주셨다.','r5 j4','혼이 났다. 그래도 속은 시원했다.','j-2 r2']]);
+M(15,18,'*',null,'친구들이 수업을 빠지고 놀러 가자고 한다.',[['거절하고 수업에 들어간다','k D','친구들은 투덜댔지만 다음 날 아무 일 없었다.','k3','거절한 뒤 한동안 어색했다.','r-3 k2'],['다 같이 선생님께 솔직히 말한다','r B','선생님이 현장 학습으로 바꿔 주셨다.','r5 j4','혼이 났다. 그래도 속은 시원했다.','j-2 r2'],['같이 수업을 빠지고 놀러 간다','j C','아무도 모르게 실컷 놀았다. 그런데 그날 배운 부분이 시험에 나왔다.','j5 r3 k-3','선생님께 들켜 반성문을 썼다. 집에도 연락이 갔다.','j-4 k-2 r-1']]);
 M(19,28,'*',null,'처음으로 혼자 살아 보게 되었다.',[['꼼꼼히 살림을 꾸린다','k D','작지만 내 손으로 꾸린 집이 생겼다.','j6 k2','생활비가 빠듯해 라면으로 버텼다.','h-3 j-2'],['친구와 함께 산다','r K','티격태격하면서도 든든했다.','r6 j3','생활 습관이 달라 자주 다퉜다.','r-4']]);
 M(21,33,'*','job','중요한 면접이 잡혔다.',[['철저히 준비한다','k D','준비한 만큼 보여 주었다. 합격이었다.','j8 k3','긴장해서 준비한 말을 다 하지 못했다.','j-5'],['있는 그대로 솔직하게 말한다','r B','솔직함이 좋은 인상을 남겼다.','j6 r3','너무 솔직했던 걸까. 연락이 오지 않았다.','j-4']]);
 M(23,40,'*',null,'아는 사람이 큰돈을 벌 수 있다며 투자를 권한다.',[['꼼꼼히 알아보고 거절한다','k D','알아보니 위험한 제안이었다. 큰 손해를 피했다.','k3 j2','거절했더니 사이가 서먹해졌다.','r-3'],['믿고 조금 넣어 본다','w B','운 좋게 조금 불어났다.','j4','돈을 잃었다. 비싼 수업료였다.','j-7']]);
@@ -1483,7 +1735,7 @@ Q(8,18,'*','mom','"{food} 만들 재료가 떨어졌구나. 가게에 좀 다녀
 M(5,12,'*',null,'집에 동생이 태어났다. 모두가 아기만 바라본다.',[['동생을 돌보는 일을 돕는다','r K','아기가 내 손가락을 꼭 쥐었다. 형편없던 질투가 사라졌다.','r6 j4','돕겠다고 나섰다가 아기를 울렸다.','j-2 r2'],['나도 봐 달라고 솔직히 말한다','j B','부모님이 꼭 안아 주며 미안하다고 했다.','j5 r3','다들 바빠 내 말을 듣지 못했다.','j-4']]);
 M(6,14,'*',null,'길에서 다친 강아지를 발견했다.',[['집에 데려와 돌본다','r K','강아지가 기운을 차리고 가족이 되었다.','j7 r3','며칠 뒤 주인이 찾아와 데려갔다. 허전했다.','j-2 r2'],['어른에게 알린다','k D','어른들이 돌봐 줄 곳을 찾아 주었다.','j3 r2','도와줄 사람을 찾지 못했다.','j-3']]);
 M(10,18,'*',null,'가장 친한 친구가 멀리 이사를 간다.',[['계속 연락하자고 약속한다','r D','멀리서도 소식을 주고받는 친구가 되었다.','r5 j2','연락은 점점 뜸해졌다.','r-3 j-2'],['웃으며 보내 준다','j G','함께한 날들이 있어 고맙다고 말했다.','j4 r3','웃으며 보냈지만 집에 와서 울었다.','j-3']]);
-M(12,18,'*',null,'모두가 보는 앞에서 크게 실수를 했다.',[['웃으며 털어 낸다','j G','웃어넘기자 친구들도 함께 웃었다.','j4 r3','얼굴이 화끈거려 며칠을 숨고 싶었다.','j-4'],['다시 해 보겠다고 한다','k B','두 번째에는 해냈다.','j5 k2','또 실수했다. 그래도 도망치지는 않았다.','j-2 k1']],{rep:1});
+M(12,18,'*',null,'모두가 보는 앞에서 크게 실수를 했다.',[['웃으며 털어 낸다','j G','웃어넘기자 친구들도 함께 웃었다.','j4 r3','얼굴이 화끈거려 며칠을 숨고 싶었다.','j-4'],['다시 해 보겠다고 한다','k B','두 번째에는 해냈다.','j5 k2','또 실수했다. 그래도 도망치지는 않았다.','j-2 k1']]);
 M(8,70,'*',null,'온 동네에 돌림병이 돌았다.',[['손을 잘 씻고 집에 머문다','h D','가족 모두 무사히 넘겼다.','h2','조심했지만 크게 앓았다.','h-7 j-2'],['아픈 이웃에게 음식을 가져다준다','r K','이웃이 오래도록 고마워했다.','r6 j2','나도 옮아 한동안 앓았다.','h-6 r3']],{rep:1});
 M(19,40,'*',null,'오래 만난 사람과 헤어졌다.',[['함께한 시간에 고마워하며 보낸다','j G','시간이 지나자 좋은 기억으로 남았다.','j3','한동안 마음이 텅 빈 것 같았다.','j-5'],['친구들에게 마음을 털어놓는다','r K','친구들이 밤새 곁에 있어 주었다.','r5 j2','털어놓아도 마음은 무거웠다.','j-4']]);
 M(19,65,'*',null,'일해도 살림이 좀처럼 나아지지 않는다.',[['지금 가진 것에서 기쁨을 찾는다','r G','작은 저녁상에도 웃음이 있었다.','j6','마음을 다잡아도 걱정은 남았다.','j-2'],['새 기술을 배운다','k D','배운 기술로 벌이가 나아졌다.','j4 k4','배울 시간이 좀처럼 나지 않았다.','j-3']],{rep:1});
@@ -1497,7 +1749,7 @@ M(62,95,'*',null,'혼자 하기 어려운 일이 하나둘 늘어난다.',[['도
 M(13,60,'*',null,'{fest} 행사의 큰 역할을 맡게 되었다.',[['맡아서 정성껏 준비한다','r D','{fest} 날, 모두가 수고했다며 손을 잡아 주었다.','r6 j5','준비가 모자라 진땀을 뺐다.','j-3 r2'],['여럿이 나눠 맡자고 한다','r K','함께 준비하니 일도 정도 깊어졌다.','r5 j3','서로 미루다 일이 꼬였다.','r-3']],{rep:1});
 M(10,40,'*',null,'{sport} 대회에 우리 동네 대표로 나가게 되었다.',[['죽을힘을 다해 뛴다','h B','동네 사람들이 내 이름을 외쳤다.','j8 h2 r3','졌지만 박수를 받았다.','j-1 r2'],['즐기는 마음으로 나간다','j G','이기든 지든 즐거웠다.','j5 r2','실력 차이를 크게 느꼈다.','j-2']],{rep:1});
 // ── 자연재해와 어려움 (hz: 그 일이 실제로 잦은 나라에서만 일어난다)
-M(5,90,'*',null,'큰비로 강물이 넘쳐 동네가 물에 잠겼다.',[['이웃과 함께 짐을 옮긴다','r h K','이웃과 힘을 모아 살림을 건졌다.','r6 j2','살림이 물에 젖어 한동안 고생했다.','j-5 h-2'],['높은 곳으로 먼저 피한다','k D','일찍 피한 덕에 모두 무사했다.','h2 j1','피하는 길에 넘어져 다쳤다.','h-4']],{rep:1,hz:'flood'});
+M(5,90,'*',null,'큰비로 강물이 넘쳐 동네가 물에 잠겼다.',[['이웃과 함께 짐을 옮긴다','r h K','이웃과 힘을 모아 살림을 건졌다.','r6 j2','살림이 물에 젖어 한동안 고생했다.','j-5 h-2'],['높은 곳으로 먼저 피한다','k D','일찍 피한 덕에 모두 무사했다.','h2 j1','피하는 길에 넘어져 다쳤다.','h-4']],{rep:1,repY:15,hz:'flood'});
 M(5,90,'*',null,'땅이 크게 흔들렸다. 지진이다.',[['침착하게 몸을 숨기고 대피한다','k D','모두 무사히 넓은 곳에 모였다.','r3 j1','집이 크게 부서졌다.','j-6'],['이웃을 먼저 챙긴다','r K','이웃을 부축해 함께 피했다.','r7 j3','늦게 피하다 다쳤다.','h-5 r4']],{rep:1,hz:'quake'});
 M(5,90,'*',null,'큰 폭풍이 다가온다는 소식이 왔다.',[['집을 단단히 대비한다','k D','지붕도 창도 무사했다.','j2','지붕이 날아가 고쳐야 했다.','j-5'],['이웃과 함께 대피소로 간다','r K','모두 한곳에 모여 밤을 넘겼다.','r5 j1','돌아와 보니 집이 엉망이었다.','j-5 r3']],{rep:1,hz:'storm'});
 M(5,90,'*',null,'비가 오지 않아 물이 귀해졌다.',[['물을 아껴 이웃과 나눠 쓴다','r K','나눠 쓰니 모두가 버틸 수 있었다.','r6 j1','모두가 목마른 날들이 길었다.','h-3 j-3'],['먼 곳에서 물을 길어 온다','h D','무거운 물통을 날라 가족을 지켰다.','r4 h-1','먼 길에 몸이 상했다.','h-5']],{rep:1,hz:'drought'});
@@ -1667,21 +1919,42 @@ function jobInfo(L,id){
   const j=JOBS[id]; return j?Object.assign({id},j,{n:L.tx(j.n)}):null;
 }
 function eduLevel(L){ const f=L.f; return f.univDone?3:f.sec?2:f.elem?1:0; }
-function jobOK(L,j){ return j && eduLevel(L)>=j.edu && (j.set==='*'||j.set===L.set) && (!j.maxTier||L.C.tier<=j.maxTier); }
+function jobOK(L,j){ if(!j) return false; const mj=L.f.major||'';
+  // 의사·간호사·엔지니어는 그 공부를 한 사람만
+  if(j.id==='doctor'&&mj!=='의예과') return false; if(j.id==='nurse'&&mj!=='간호학과') return false; if(j.id==='engineer'&&!/공학|건축|물리|생명|화학|컴퓨터/.test(mj)) return false;
+  return eduLevel(L)>=j.edu && (j.set==='*'||j.set===L.set) && (!j.maxTier||L.C.tier<=j.maxTier); }
 function jobP(L,j){ return clamp(j.diff+(L.s[j.stat]-50)/100*.5+(L.w-.5)*.15+Math.min(L.tr[j.tr]||0,40)*.005+(eduLevel(L)-j.edu)*.05,.04,.96); }
 const EDU_PAY=[.65,.8,1,1.3];
 function jobPayMid(L,j){ return L.C.med*j.mul*EDU_PAY[eduLevel(L)]*(L.set==='R'&&j.kind!=='tour'?.8:1); }
 function gauss(){ let u=0,v=0; while(!u) u=R(); while(!v) v=R(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
 // 일자리 고르기 창: 그 나라의 대표 일 · 얻기 쉬운 일 · 꿈꿔 볼 만한 일
+// 대학에서 배운 것과 이어지는 일
+const MAJOR_JOB={'의예과':'doctor','간호학과':'nurse','수학교육과':'teacher','국어국문학과':'teacher','컴퓨터공학과':'engineer','기계공학과':'engineer','화학공학과':'engineer','건축학과':'engineer','물리학과':'engineer','생명과학과':'engineer','경영학과':'office','경제학과':'office','심리학과':'office','법학과':'civil','사회복지학과':'civil','디자인학과':'artist'};
+// 일의 갈래: 일을 바꿀 때는 보통 비슷한 갈래 안에서 옮긴다
+const JOB_FAM={day:'hand',farm:'hand',builder:'hand',driver:'hand',factory:'hand',abroad:'hand',vendor:'shop',cook:'shop',hair:'shop',shopown:'shop',office:'desk',police:'desk',civil:'desk',engineer:'desk',teacher:'care',nurse:'care',doctor:'care',artist:'dream',athlete:'dream',creator:'dream'};
+function famOfJob(L,id){ if(id==='sig'){ const k=sigKind(L.C.work); return k==='office'?'desk':k==='hosp'?'care':k==='shop'?'shop':k==='dream'?'dream':'hand'; } return JOB_FAM[id]||'hand'; }
+// 선수·예술가·창작자는 그 길을 걸어온 사람에게만 열린다
+function dreamOK(L,id){ const ch=L.f.ch||{}, hob=(L.f.hob||[]).map(h=>h.n).join(' ');
+  if(id==='athlete') return L.age<=30&&(ch.athlete!=null||ch.sportKid!=null);
+  if(id==='artist') return ch.musicKid!=null||ch.stage!=null||L.f.major==='디자인학과'||/그림|노래|악기|기타|피아노|춤|사진|도예|공예|연극|작곡|글쓰기|뜨개/.test(hob);
+  if(id==='creator') return ch.stage!=null||/영상|사진|그림|노래|춤|요리|게임|코딩|글쓰기/.test(hob);
+  return true; }
 function jobMenu(L,q,keep){
-  const cur=L.f.job, all=['sig'].concat(Object.keys(JOBS)).filter(id=>id!==cur).map(id=>jobInfo(L,id)).filter(j=>jobOK(L,j));
+  const cur=L.f.job, all=['sig'].concat(Object.keys(JOBS)).filter(id=>id!==cur).map(id=>jobInfo(L,id)).filter(j=>jobOK(L,j)&&(j.sig||j.kind!=='dream'||dreamOK(L,j.id)));
   const pick=[], take=j=>{ if(j&&!pick.includes(j)) pick.push(j); };
-  take(all.find(j=>j.sig));
-  const easy=all.filter(j=>j.diff>=.7&&!j.sig); take(easy.sort((a,b)=>b.mul-a.mul+(R()-.5)*.6)[0]);
-  const hard=all.filter(j=>j.diff<.7&&!j.sig).map(j=>({j,s:jobP(L,j)*Math.min(j.mul,2)*(j.id==='abroad'?.45:1)*(1+R()*1.4)})).sort((a,b)=>b.s-a.s); hard.slice(0,2).forEach(x=>{ if(pick.length<3) take(x.j); });
-  while(pick.length<3){ const r=pickOne(all); if(!r) break; take(r); if(all.length<=pick.length) break; }
-  const opts=pick.slice(0,3).map(j=>({label:j.n,sub:'한 달에 약 '+fmtPay(jobPayMid(L,j)),p:clamp(jobP(L,j),.03,.97),job:j.id}));
-  if(keep&&cur) opts.push({label:'지금 하는 일을 계속한다',sub:jobInfo(L,cur).n+' · 한 달에 약 '+fmtPay(L.inc),p:null,keep:1});
+  const mid=L.f.univDone&&MAJOR_JOB[L.f.major], mj=mid&&mid!==cur?all.find(j=>j.id===mid):null;
+  if(mj) take(mj);
+  // 일을 바꿀 때: 지금 하는 일과 비슷한 갈래의 일 (그 나라의 대표 일은 언제나 후보)
+  const base=L.f.lostJob||cur, fam=base?famOfJob(L,base):null, near=keep&&base?all.filter(j=>j.sig||famOfJob(L,j.id)===fam):null, grad=!keep&&L.f.univDone?all.filter(j=>j.edu>=2):null;
+  const pool=near&&near.length>=2?near:grad&&grad.length>=3?grad:all; delete L.f.lostJob;
+  const want=keep?2:3;
+  if(pool.some(j=>j.sig)) take(pool.find(j=>j.sig));
+  const easy=pool.filter(j=>j.diff>=.7&&!j.sig); if(pick.length<want) take(easy.sort((a,b)=>b.mul-a.mul+(R()-.5)*.6)[0]);
+  const hard=pool.filter(j=>j.diff<.7&&!j.sig).map(j=>({j,s:jobP(L,j)*Math.min(j.mul,2)*(j.id==='abroad'?.45:1)*(1+R()*1.4)})).sort((a,b)=>b.s-a.s); hard.forEach(x=>{ if(pick.length<want) take(x.j); });
+  while(pick.length<want){ const r=pickOne(pool); if(!r) break; take(r); if(pool.length<=pick.length) break; }
+  const opts=pick.slice(0,want).map(j=>j===mj?{label:`${j.n} (전공: ${L.f.major})`,sub:'배운 것을 살리는 일 · 한 달에 약 '+fmtPay(jobPayMid(L,j)),p:clamp(jobP(L,j)+.32,.05,.95),job:j.id}
+    :{label:j.n,sub:(near&&famOfJob(L,j.id)===fam?'지금 일과 비슷한 일 · ':'')+'한 달에 약 '+fmtPay(jobPayMid(L,j)),p:clamp(jobP(L,j),.03,.97),job:j.id});
+  if(keep&&cur) opts.unshift({label:'지금 하는 일을 계속한다',sub:jobInfo(L,cur).n+' · 한 달에 약 '+fmtPay(L.inc),p:null,keep:1});
   return {q,opts,job:1};
 }
 // 일자리 얻기
@@ -1690,9 +1963,71 @@ function setJob(L,id){
   L.inc=clamp(jobPayMid(L,j)*Math.exp(gauss()*j.sd*.6),L.C.med*.12,L.C.med*Math.max(4,j.mul*(j.kind==='dream'?5:2.6))); L.maxInc=Math.max(L.maxInc||0,L.inc);
   L.f.co=L.ppl?companyOf(L,j):''; L.jobs=L.jobs||[]; const last=L.jobs[L.jobs.length-1]; if(!last||last.n!==j.n) L.jobs.push(Object.assign({n:j.n,a:L.age,co:L.f.co,k:j.kind},L._why?{why:String(L._why).slice(0,60)}:{})); return j;
 }
-function loseJob(L){ const old=jobInfo(L,L.f.job); setJob(L,L.set==='R'?'farm':'day'); return old; }
+function loseJob(L){ const id=L.f.job, old=jobInfo(L,id); setJob(L,L.set==='R'?'farm':'day'); if(famOfJob(L,id)!=='hand'||eduLevel(L)>=3){ L.f.lostJob=id; L.f.needJob=2; } return old; }
 // 그 나라의 연금·가족의 도움
 function pension(L){ return L.C.med*(L.C.tier>=4?.5:L.C.tier===3?.3:.15); }
+
+
+/* ---------- 세계 지도: 대륙 윤곽(대략, 경도·위도)과 나라별 위치(수도 기준) ---------- */
+const LAND=[
+ [[-168,66],[-162,70],[-156,71.5],[-141,69.5],[-128,70],[-115,68.5],[-105,68],[-95,72],[-85,69.5],[-81,66],[-87,64],[-93,61],[-94,58.5],[-88,56],[-82,52.5],[-79,55],[-77,60],[-78,62.5],[-73,62],[-70,59],[-64,60],[-61,56],[-56,52],[-60,49.5],[-65,49.5],[-64,47],[-60,46],[-64,44.5],[-66,44.5],[-70,43],[-70.5,41.5],[-74,40.5],[-76,38],[-75.5,35.5],[-78,33.8],[-81,31.5],[-80,27],[-80.5,25.2],[-82,26.5],[-83,29.5],[-85,30],[-89,30.3],[-90.5,29],[-94,29.6],[-97.3,27.5],[-97.5,24],[-97.2,21],[-96,19],[-94.5,18.2],[-91,18.8],[-90.5,21],[-87,21.5],[-87.6,18],[-88.3,16],[-84,15.8],[-83.3,14],[-83.7,11],[-81.5,9],[-79.5,9.6],[-77.5,8.5],[-78,7.3],[-80,7.4],[-81,8],[-83,8.3],[-85.7,10.5],[-87.5,13],[-91,13.8],[-94,16],[-96.5,15.7],[-101,17.2],[-105.5,20],[-105.5,23],[-109,26.5],[-112.5,31],[-114.7,31.5],[-112.5,29],[-110,24],[-109.5,23],[-112,25],[-114,28],[-115.5,30],[-117,32.5],[-120.5,34.5],[-122.5,37.5],[-124,40.5],[-124.5,43],[-124,47],[-124.7,48.4],[-123,49],[-127,50.5],[-130,54],[-133,57.5],[-137,59],[-140,59.8],[-146,60.5],[-152,59],[-154,57.5],[-158,56.5],[-163,54.8],[-158,58.5],[-162,60],[-165,61],[-166,63.5],[-161,64.5],[-166,65.5]],
+ [[-80,73.5],[-72,72],[-66,68.5],[-62,66.5],[-65.5,63],[-72,64],[-78,64.5],[-74,67],[-82,69.5],[-89,71],[-85,73.5]],
+ [[-120,73],[-100,73],[-95,75],[-80,76],[-75,79],[-62,82],[-90,82],[-110,78],[-125,75]],
+ [[-73,78],[-60,82],[-30,83.5],[-18,81],[-20,75],[-22,70.5],[-27,68],[-35,65.5],[-41,63],[-44,60],[-48,61],[-51,64],[-54,67],[-55,71],[-58,75],[-66,76.5]],
+ [[-24,65.5],[-22,66.4],[-16,66.5],[-13.5,65],[-18,63.4],[-22.5,63.8]],
+ [[-85,21.9],[-81,23.1],[-77,22.3],[-74.2,20.2],[-77.5,19.9],[-80,21.7],[-83,21.6]],
+ [[-74.4,19.8],[-72,19.9],[-68.4,18.6],[-71,17.6],[-74.4,18.4]],
+ [[-78.3,18.4],[-76.3,18.2],[-76.8,17.8],[-78.2,18.2]],
+ [[-77,8.3],[-75.5,10.5],[-72,11.8],[-71,12.4],[-68,10.5],[-64,10.7],[-61,10.5],[-59.5,8.4],[-57,6],[-53,5.5],[-51,4],[-50,1.8],[-48.5,-1],[-44.5,-2.5],[-40,-2.8],[-35.5,-5.3],[-34.8,-7.5],[-37,-11],[-39,-14],[-39,-18],[-40.5,-21.5],[-44,-23],[-48,-25.5],[-48.6,-28.5],[-51,-31],[-53,-34],[-55,-35],[-58,-34.5],[-57,-36.5],[-57.5,-38.3],[-62,-39],[-65,-41],[-63.5,-42.7],[-65.5,-45],[-67.5,-46.5],[-66,-48],[-69,-51],[-68.5,-52.5],[-70,-54.8],[-73.5,-53],[-75.5,-48.5],[-74,-45],[-73.7,-41],[-73.5,-37],[-71.5,-32.5],[-71.4,-28],[-70.5,-23],[-70.2,-18.5],[-72,-17],[-76,-14],[-77.5,-11],[-79.5,-7.5],[-81.2,-5.5],[-80.3,-3.4],[-80.5,-1],[-80,1],[-78.8,1.8],[-77.5,4],[-77.4,6.6]],
+ [[-8.9,37],[-9.5,39],[-8.8,42],[-9.2,43.2],[-6,43.6],[-1.5,43.4],[-1.2,46],[-2.7,47.3],[-4.7,48],[-1.6,48.7],[1.5,50],[4,51.3],[5,53.2],[8.5,53.6],[8.6,55.5],[8.2,57],[10.5,57.7],[10.8,56.2],[11,54],[14,54],[18.5,54.6],[21,55.5],[21,57],[23.5,57.5],[24.5,59.4],[28,59.6],[30,60],[26,60.4],[22.5,60.3],[21.5,61.5],[21.4,63.5],[25,65],[24,65.8],[22,65.6],[19.5,63.5],[17.5,62.3],[17,61],[18.7,60],[18,59.3],[16.5,57],[16,56.2],[14.2,55.4],[13,55.4],[12.8,56.6],[11.8,58],[11,58.9],[10,59],[8,58],[5.6,58.5],[5,61],[5.5,62.5],[8,63.5],[11,64.5],[13,66],[15,68],[18,69.6],[22,70.3],[26,71],[31,70],[33,69.3],[36,69],[41,67.5],[41,66.5],[44,66],[44,68.5],[53,68.8],[59,68.5],[61,69.8],[68,68.5],[67,71.5],[69,72.8],[73,72.5],[73,68],[75,67],[75,72],[80,73.5],[87,74],[87,75.3],[95,76],[101,77],[106,77.5],[113,76],[113,73.6],[120,73],[127,73.5],[129,71],[133,71.5],[140,72.4],[150,71],[160,70],[167,69.5],[176,69.8],[180,69],[180,65.5],[178,64.5],[174,61.8],[170,60],[164,59.8],[163,58],[162,56],[163,55],[160,53],[156.5,51],[156,57],[158,58],[163,61],[160,61.5],[155,59.3],[151,59.2],[143,59.3],[138,56],[141,53],[140.5,48.5],[138,46],[135,43.5],[131.5,42.8],[130,42.3],[129.5,40.5],[128,38.6],[129.4,36],[129,35.1],[126.5,34.5],[126.3,36.8],[126.6,37.7],[125,37.8],[124.8,39.6],[121.5,39],[121.5,40.8],[119,39.3],[117.7,38.5],[119,37.2],[122.5,37.3],[120.5,36],[119.2,34.8],[120.8,32.5],[121.9,30.8],[121.6,28.5],[119.6,25.6],[117,23.5],[113.5,22.2],[110.5,21.2],[110.2,20.2],[109.5,21.5],[108,21.5],[106.6,20.2],[105.7,18.8],[106.7,17],[108.8,15.4],[109.3,13],[109,11.5],[107,10.4],[105,8.7],[104.8,10.4],[103,10.6],[102.3,12.3],[100.9,13.4],[100,13.3],[99.2,10.5],[99.9,9],[100.4,7.2],[101.3,6.8],[102.3,6.1],[103.4,4.8],[103.5,2.6],[104.2,1.4],[103.3,1.3],[101.3,2.8],[100.4,4.8],[100.2,6.4],[99,7.9],[98.3,9],[98.6,10.8],[98.6,13],[97.7,16.4],[97,16.6],[95.4,15.8],[94.4,16.2],[94.5,18.5],[93.7,19.8],[92.3,20.7],[91.8,22.4],[90.5,22],[89,21.8],[86.9,21],[86.5,20],[85,19.3],[83,17.8],[82.3,16.5],[80.2,15.4],[80.3,13],[79.8,11],[79.3,10.3],[78,8.6],[77.5,8.1],[76.5,8.9],[75.8,11.5],[74.8,12.9],[74,15],[73.4,16.3],[72.8,19],[72.8,21],[72.5,21.8],[70.5,20.8],[69,22.4],[70.2,22.8],[68.5,23.6],[67.4,24],[66.6,25.4],[64,25.3],[61.5,25.1],[57.4,25.7],[56.4,27.1],[54.7,26.5],[52,27.9],[50.2,30],[48.5,30],[48,29.7],[48.5,28],[50,26.5],[50.8,25],[51.6,24.3],[51.6,25.8],[51.2,26.1],[52.5,24.2],[54.5,24.2],[56,25.6],[56.4,26.3],[56.8,24.5],[58.6,23.6],[59.8,22.4],[58.5,20.4],[57.7,19],[55.4,17.8],[52.2,16],[49.5,14.6],[45,12.8],[43.4,12.7],[42.8,15.3],[42.6,16.8],[41.2,19.2],[39,21.7],[38.5,23.6],[36.5,26],[35,28],[34.9,29.5],[34.3,28],[33.7,27.8],[32.6,29.8],[33,27],[35.6,23.5],[37.3,21],[38.6,18],[39.7,15.5],[41.7,13.8],[43.3,12.4],[44,10.4],[47,11.2],[51.2,11.8],[51,10.4],[49.5,6.5],[48,4.5],[46,2],[43,-0.5],[41,-2],[40,-3.5],[39.3,-5],[39.4,-8],[40.4,-10.5],[40.6,-14.5],[39.5,-16.7],[36.8,-18.5],[35.4,-21],[35.5,-23.8],[33,-25.6],[32.6,-28],[31,-29.8],[29,-32],[26.5,-33.8],[23,-34],[20,-34.8],[18.4,-34.2],[17.9,-31.5],[16.5,-28.6],[15.2,-26.7],[14.4,-22.9],[13.2,-20],[11.8,-17],[12,-14],[13.6,-12],[13.2,-9],[12.3,-6],[11.8,-4],[9.6,-2.2],[9.3,0.5],[9.8,3],[8.6,4.7],[6,4.3],[4.3,6.4],[1.5,6.2],[-2,4.8],[-4.5,5.2],[-7.5,4.4],[-9.5,5.5],[-11.5,6.9],[-13.2,8.5],[-14.6,10.5],[-16.7,12.5],[-17.2,14.7],[-16.5,16.2],[-16,19],[-17,21],[-16,23.8],[-14.5,26],[-13,27.8],[-10,29],[-9.7,31],[-8.5,33.3],[-6.8,34.2],[-5.9,35.8],[-2,35.1],[1,36.5],[3.5,36.8],[8.6,36.9],[10.3,37.3],[11,35.8],[10.2,34.2],[11.3,33.2],[15.2,32.3],[19,30.3],[20.1,32],[22,32.8],[25,31.8],[29,30.9],[32.3,31.3],[34.2,31.3],[35,33],[35.8,35],[36.2,36.6],[34.6,36.8],[32.5,36.1],[30.5,36.4],[28.3,36.7],[27.2,37.4],[26.3,38.5],[26.2,40],[26,40.8],[24,40.8],[23,40],[22.8,37.5],[21.6,36.8],[21.1,38.3],[20,39.6],[19.4,41.8],[18.4,42.5],[15.8,43.7],[13.6,45.1],[12.4,45.4],[12.3,44.3],[13.6,43.5],[16,41.4],[18.5,40.2],[17,39],[16.5,38],[15.6,38],[16,39.5],[15.7,40],[14,40.8],[12,41.8],[10.5,42.9],[10,44],[8.5,44.3],[7,43.6],[4.5,43.4],[3.2,42.9],[3.3,41.9],[0.8,41],[0,39.4],[-0.6,38],[-2,36.7],[-4.4,36.7],[-5.6,36],[-6.3,36.8],[-7.4,37.2]],
+ [[-5.7,50],[-3,50.6],[1.4,51.2],[1.7,52.7],[0.2,53.5],[-1.5,55],[-2,56],[-3.3,56.2],[-1.8,57.6],[-3.4,58.6],[-5,58.6],[-6.2,57.5],[-5.6,56.3],[-5,55],[-3,54.5],[-3.2,53.4],[-4.6,53.3],[-4.4,52.2],[-5.3,51.7],[-3.2,51.4],[-5.5,50.2]],
+ [[-6,52.2],[-6,53.9],[-5.6,54.6],[-7.3,55.3],[-8.4,54.5],[-10,54],[-9.9,52],[-8,51.6]],
+ [[23.5,35.3],[26.3,35.2],[25.5,35],[24,35.1]],[[32.3,34.7],[34.6,35.6],[33.9,35],[33,34.6]],[[12.4,38],[15.6,38.3],[15.1,36.7]],[[8.4,41],[9.8,41],[9.6,39.1],[8.4,39]],[[8.6,43],[9.5,42.9],[9.4,41.4],[8.8,41.7]],
+ [[11,78.5],[18,80.5],[27,80],[21,77.5],[15,77]],[[52,71.5],[56,73.5],[60,76.5],[68,77],[58,74],[55,71]],
+ [[130,31.3],[131.5,31.5],[132,33.8],[135,33.5],[136.8,34.3],[139,34.8],[140.9,35.7],[141,38],[142,39.5],[141.4,41.4],[140,40.7],[139.8,39],[138.5,37.8],[137,37],[136,35.7],[133,35.5],[131,34.4],[129.7,33.2]],
+ [[140,41.5],[141.3,41.4],[143.2,42],[145.5,43.3],[144.5,44],[141.7,45.4],[141.4,43.3],[139.9,42.6]],
+ [[142,46],[143.5,46.5],[143,49.5],[144.5,49],[143,53],[142.5,54.3],[141.8,52],[142,48]],
+ [[120.1,23],[120.8,21.9],[121.8,24.5],[121.5,25.3],[120.6,24.6]],[[108.6,19.2],[110.2,20.1],[111,19.6],[109.6,18.2]],
+ [[120,18.5],[122.3,18.4],[122,16],[124,13.5],[121.8,13.9],[120.6,14.4],[119.8,16.4]],[[122,7],[124,7.5],[125.5,9.7],[126.5,7.3],[125.3,5.6],[124,6.4]],[[122,10],[124.5,11.5],[125.5,11],[124.5,9.7],[122.6,9.3]],
+ [[109,1.5],[109.6,-1],[110.2,-2.9],[114.5,-3.5],[116.3,-3.6],[116.6,-1.3],[117.6,0.8],[119,1.1],[117.8,4],[119.2,5.3],[117.2,7],[115.5,5.1],[113,3],[111,1.6]],
+ [[95.3,5.6],[97.5,5.2],[100.4,2.2],[103.8,-1],[106,-3.2],[105.8,-5.8],[104.5,-5.9],[102.3,-4],[100.3,-1],[98.6,1.7]],
+ [[105.2,-6.8],[106.2,-6],[108.3,-6.3],[110.4,-6.9],[112.6,-6.9],[114.6,-7.7],[114.4,-8.7],[111,-8.2],[108,-7.8],[105.5,-6.9]],
+ [[119,-5.5],[119.5,-3],[118.8,-1],[120,0.7],[121,1.3],[124.8,1.5],[121.5,0.5],[120.2,0.4],[121.5,-1],[123.3,-0.9],[121.5,-2],[122.5,-4.6],[121,-3],[120.4,-5.6]],
+ [[124,-8.5],[127,-8.3],[125,-9.5],[123.6,-10.3]],
+ [[131,-1.4],[134,-0.8],[136,-1.7],[138,-1.6],[141,-2.6],[145,-4.5],[146,-6],[147.6,-6.2],[147.5,-8],[150,-10.4],[147,-10],[146,-8],[144,-7.6],[142.6,-9.3],[141,-9.2],[139,-8],[137.8,-5.4],[135,-4.4],[132.8,-4],[132,-2.8]],
+ [[114,-21.8],[113.5,-25],[115,-29.5],[115,-33.6],[116.5,-35],[118,-35],[121,-33.8],[124,-33],[126,-32.3],[129,-31.6],[131.5,-31.5],[134,-32.7],[135.6,-34.8],[137.5,-33.8],[137.8,-35.7],[139.5,-35.7],[140.6,-38],[143.5,-38.8],[146.3,-39.1],[148,-37.8],[150,-37.5],[150.8,-34.5],[152.5,-32],[153.6,-28.5],[153,-25],[150.8,-22.6],[149.3,-21],[146.3,-19],[145.4,-16],[145.3,-14.8],[143.6,-14],[142.5,-10.7],[141.6,-12.6],[141.5,-15.3],[140.5,-17.6],[139,-17.3],[136.8,-15.9],[135.6,-14.9],[136.8,-12.2],[133,-11.3],[130.3,-12.3],[129.5,-14.9],[127,-13.8],[125,-15],[123.5,-17],[122.2,-18.2],[121,-19.6],[117,-20.6]],
+ [[144.6,-40.7],[148.3,-40.9],[148,-43.2],[146.8,-43.6],[145.2,-42.2]],
+ [[172.7,-34.5],[174.5,-36],[175.9,-37.5],[178.5,-37.7],[177,-39.3],[175.3,-41.6],[174.6,-41.2],[175,-39.8],[173.8,-39.2],[174.7,-38],[174.3,-36.9]],
+ [[172.7,-40.5],[174.3,-41.3],[173.6,-42.9],[172.7,-43.8],[171.2,-44.5],[170.6,-45.9],[169,-46.6],[166.5,-46],[167,-45],[168.3,-44],[170.8,-42.5],[172,-41]],
+ [[49.3,-12],[50.5,-15.5],[49.5,-17.5],[48,-22],[47,-25],[45,-25.5],[43.6,-23.5],[43.3,-21.6],[44.4,-19.8],[44,-17],[46,-15.7],[48,-13.5]],
+ [[79.8,6.2],[79.9,8.5],[80.2,9.8],[81.2,8.5],[81.8,7],[81,6.1]],
+ [[-180,-90],[180,-90],[180,-78],[160,-71],[140,-66.5],[110,-66],[90,-66],[70,-68],[50,-66.5],[30,-69.5],[10,-70],[-10,-71],[-30,-75],[-50,-78],[-60,-73],[-57,-63.5],[-65,-66],[-75,-71],[-100,-73],[-120,-74],[-140,-76],[-160,-78],[-180,-78]]];
+const SEAS=[[[28,41.3],[29,41.2],[31.3,41.2],[35,42],[38,41],[41.5,41.6],[41.6,42.6],[40,43.5],[38,44.5],[37.4,45.3],[38.5,46.8],[35.5,45.3],[33.5,44.5],[32.5,45.4],[30.5,46.5],[29.7,45.2],[28.6,44],[27.8,42.5]],
+ [[47,44.5],[49,46.5],[51,47],[53,46.5],[53,45],[51,44.5],[51,42.5],[53,42],[53.8,40],[53,38.5],[54,37.3],[51,36.8],[49,37.5],[49.5,40.2],[48,42]]];
+const GEO={KR:[127,37.5],JP:[139.7,35.7],CN:[116.4,39.9],MN:[106.9,47.9],KP:[125.7,39],ID:[106.8,-6.2],PH:[121,14.6],VN:[105.8,21],TH:[100.5,13.75],MM:[96.1,19.75],MY:[101.7,3.1],KH:[104.9,11.55],LA:[102.6,17.97],SG:[103.8,1.35],BN:[114.9,4.9],TL:[125.6,-8.55],IN:[77.2,28.6],PK:[73,33.7],BD:[90.4,23.8],NP:[85.3,27.7],LK:[79.9,6.9],AF:[69.2,34.5],BT:[89.6,27.5],MV:[73.5,4.2],KZ:[71.4,51.2],UZ:[69.3,41.3],TM:[58.4,37.9],KG:[74.6,42.9],TJ:[68.8,38.6],TR:[32.9,39.9],IR:[51.4,35.7],IQ:[44.4,33.3],SA:[46.7,24.7],YE:[44.2,15.4],SY:[36.3,33.5],JO:[35.9,31.95],IL:[35.2,31.8],LB:[35.5,33.9],AE:[54.4,24.45],KW:[48,29.4],QA:[51.5,25.3],BH:[50.6,26.2],OM:[58.4,23.6],EG:[31.2,30],DZ:[3.06,36.75],MA:[-6.85,34],TN:[10.2,36.8],LY:[13.2,32.9],AZ:[49.9,40.4],GE:[44.8,41.7],AM:[44.5,40.2],CY:[33.4,35.2],NG:[7.5,9.06],ET:[38.75,9],CD:[15.3,-4.3],TZ:[35.7,-6.2],KE:[36.8,-1.3],UG:[32.6,0.35],SD:[32.5,15.6],ZA:[28.2,-25.75],AO:[13.2,-8.8],MZ:[32.6,-25.95],GH:[-0.2,5.6],MG:[47.5,-18.9],CM:[11.5,3.85],CI:[-5.3,6.8],NE:[2.1,13.5],ML:[-8,12.65],BF:[-1.5,12.4],MW:[33.8,-13.97],ZM:[28.3,-15.4],SN:[-17.45,14.7],TD:[15.05,12.1],SO:[45.3,2.05],ZW:[31.05,-17.8],GN:[-13.7,9.5],RW:[30.06,-1.95],BJ:[2.4,6.4],BI:[29.4,-3.4],SS:[31.6,4.85],TG:[1.2,6.13],SL:[-13.2,8.48],LR:[-10.8,6.3],CF:[18.55,4.4],CG:[15.28,-4.27],MR:[-15.95,18.1],ER:[38.93,15.33],NA:[17.08,-22.56],GM:[-16.58,13.45],BW:[25.9,-24.65],GA:[9.45,0.4],LS:[27.5,-29.3],GW:[-15.6,11.86],GQ:[8.78,3.75],SZ:[31.13,-26.3],DJ:[43.15,11.6],KM:[43.25,-11.7],CV:[-23.5,14.9],ST:[6.73,0.34],MU:[57.5,-20.16],SC:[55.45,-4.62],DE:[13.4,52.5],FR:[2.35,48.85],GB:[-0.13,51.5],IT:[12.5,41.9],ES:[-3.7,40.4],NL:[4.9,52.37],BE:[4.35,50.85],PT:[-9.14,38.72],GR:[23.73,37.98],SE:[18.07,59.33],NO:[10.75,59.91],DK:[12.57,55.68],FI:[24.94,60.17],IE:[-6.26,53.35],CH:[7.45,46.95],AT:[16.37,48.21],IS:[-21.9,64.15],LU:[6.13,49.61],MT:[14.51,35.9],AD:[1.52,42.5],MC:[7.42,43.73],SM:[12.45,43.94],LI:[9.52,47.14],RU:[37.6,55.75],UA:[30.52,50.45],PL:[21.01,52.23],RO:[26.1,44.43],CZ:[14.42,50.08],HU:[19.04,47.5],BY:[27.56,53.9],BG:[23.32,42.7],RS:[20.46,44.8],SK:[17.1,48.15],HR:[15.98,45.81],BA:[18.41,43.86],LT:[25.28,54.69],LV:[24.1,56.95],EE:[24.75,59.44],SI:[14.5,46.05],AL:[19.82,41.33],MK:[21.43,42],MD:[28.86,47.01],ME:[19.26,42.44],US:[-77.04,38.9],CA:[-75.7,45.42],BR:[-47.9,-15.8],MX:[-99.13,19.43],CO:[-74.07,4.71],AR:[-58.38,-34.6],PE:[-77.04,-12.05],VE:[-66.9,10.5],CL:[-70.65,-33.45],EC:[-78.5,-0.22],GT:[-90.5,14.63],BO:[-68.15,-16.5],HT:[-72.34,18.54],CU:[-82.37,23.11],DO:[-69.9,18.47],HN:[-87.2,14.07],PY:[-57.6,-25.3],NI:[-86.25,12.13],SV:[-89.2,13.7],CR:[-84.08,9.93],PA:[-79.52,8.98],UY:[-56.16,-34.9],JM:[-76.8,18],TT:[-61.5,10.65],GY:[-58.15,6.8],SR:[-55.2,5.85],BZ:[-88.77,17.25],BS:[-77.35,25.05],BB:[-59.6,13.1],LC:[-61,14],GD:[-61.75,12.05],VC:[-61.2,13.15],AG:[-61.85,17.12],DM:[-61.39,15.3],KN:[-62.72,17.3],AU:[149.13,-35.28],NZ:[174.78,-41.29],PG:[147.18,-9.44],FJ:[178.44,-18.14],SB:[159.95,-9.43],VU:[168.32,-17.73],WS:[-171.76,-13.83],KI:[173,1.33],TO:[-175.2,-21.14],FM:[158.16,6.92],MH:[171.38,7.1],PW:[134.48,7.5],NR:[166.92,-0.53],TV:[179.2,-8.52]};
+// 큰 나라는 나라 한가운데를 보고, 더 넓게 본다
+const GEO_MID={US:[-98,39,46],CA:[-100,58,58],RU:[90,62,80],CN:[104,35,46],BR:[-53,-12,42],AU:[134,-26,42],KZ:[67,48,32],IN:[79,22,32],ID:[118,-2,40],AR:[-64,-36,34],MX:[-102,23,30],DZ:[2,28,28],SA:[45,24,26],CD:[23,-3,26],LY:[17,27,26],SD:[30,15,26],MN:[103,47,28],IR:[54,32,24],CL:[-71,-35,40],NO:[14,65,26],SE:[16,62,22],FI:[26,64,20],JP:[137,37,22],PH:[122,12,20],GL:[-40,72,40],NZ:[173,-41,18],PG:[146,-6,18]};
+const RGN_N={EA:'동아시아',SE:'동남아시아',SA:'남아시아',CA:'중앙아시아',ME:'중동·북아프리카',AF:'아프리카',EU:'서유럽',EE:'동유럽',NA:'북아메리카',LA:'중남미',OC:'오세아니아'};
+function geoKm(a,b){ const r=Math.PI/180, d=Math.sin((b[1]-a[1])*r/2)**2+Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin((b[0]-a[0])*r/2)**2; return Math.round(6371*2*Math.asin(Math.sqrt(d))); }
+const LANDP=LAND.map(p=>'M'+p.map(q=>(q[0]+180).toFixed(1)+','+(90-q[1]).toFixed(1)).join('L')+'Z').join(''), SEAP=SEAS.map(p=>'M'+p.map(q=>(q[0]+180).toFixed(1)+','+(90-q[1]).toFixed(1)).join('L')+'Z').join('');
+// mode 'world': 세계 전체와 같은 1초에 태어난 사람들 · 'near': 우리 나라 주변을 크게
+function worldSVG(L,mode){ const g=GEO[L.c]||[0,0], X=lon=>lon+180, Y=lat=>90-lat, mid=GEO_MID[L.c]||[g[0],g[1],16];
+  let vx,vy,vw,vh; if(mode==='world'){ vx=0; vy=4; vw=360; vh=150; } else { vh=mid[2]; vw=vh*1.9; vx=Math.max(0,Math.min(360-vw,X(mid[0])-vw/2)); vy=Math.max(0,Math.min(180-vh,Y(mid[1])-vh/2)); }
+  const u=vh/150, sw=(mode==='world'?.3:.25)*u*5;
+  let h=`<svg class="wmap" viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}" role="img" aria-label="${esc(L.C.n)}의 위치">`;
+  for(let lo=-150;lo<=150;lo+=30) h+=`<line x1="${X(lo)}" x2="${X(lo)}" y1="0" y2="180" stroke="#B9DCF4" stroke-width="${sw*.6}"/>`;
+  for(let la=-60;la<=60;la+=30) h+=`<line x1="0" x2="360" y1="${Y(la)}" y2="${Y(la)}" stroke="${la===0?'#7FB6E0':'#B9DCF4'}" stroke-width="${sw*(la===0?1.2:.6)}"/>`;
+  h+=`<path d="${LANDP}" fill="#C9E2A6" stroke="#6E9A58" stroke-width="${sw}" stroke-linejoin="round"/><path d="${SEAP}" fill="#9CC9EC" stroke="#6E9A58" stroke-width="${sw}"/>`;
+  const fs=mode==='world'?5.6:vh/19;
+  if(mode==='near'){ CKEYS.forEach(k=>{ const p=GEO[k]; if(!p||k===L.c) return; const x=X(p[0]), y=Y(p[1]); if(x<vx||x>vx+vw||y<vy||y>vy+vh) return;
+      h+=`<circle cx="${x}" cy="${y}" r="${fs*.22}" fill="#5A6878"/><text x="${x}" y="${y-fs*.45}" font-size="${fs*.62}" text-anchor="middle" fill="#46566A" stroke-width="${fs*.12}">${esc(COUNTRIES[k].n)}</text>`; }); }
+  if(mode==='world'&&L.comps) L.comps.forEach(p=>{ const q=GEO[p.c]; if(!q) return; h+=`<circle cx="${X(q[0])}" cy="${Y(q[1])}" r="2.2" fill="#3870D0" stroke="#fff" stroke-width=".6"/>`; });
+  if(mode==='world'&&L.c!=='KR'){ const k=GEO.KR; h+=`<circle cx="${X(k[0])}" cy="${Y(k[1])}" r="1.8" fill="#283038"/><text x="${X(k[0])+2.8}" y="${Y(k[1])+1.6}" font-size="${fs*.75}" fill="#283038" stroke-width=".8">대한민국</text>`; }
+  const x=X(g[0]), y=Y(g[1]), r=mode==='world'?3.2:fs*.45;
+  h+=`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#E2703A" stroke-width="${r*.35}"><animate attributeName="r" from="${r}" to="${r*3.2}" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" from=".9" to="0" dur="1.8s" repeatCount="indefinite"/></circle><circle cx="${x}" cy="${y}" r="${r}" fill="#E2703A" stroke="#fff" stroke-width="${r*.3}"/>`;
+  const lab=mode==='world'?`${L.C.n} · 내가 태어난 곳`:`${L.C.n} (내가 태어난 나라)`, right=x<vx+vw*.7;
+  h+=`<text x="${x+(right?r*1.8:-r*1.8)}" y="${y+fs*.35}" font-size="${fs}" font-weight="700" text-anchor="${right?'start':'end'}" fill="#B4501E" stroke-width="${fs*.18}">${esc(lab)}</text></svg>`;
+  return h; }
 
 /* ---------- [데이터] 일에 따라 생기는 큰 사건 ----------
    req 'job' 일하는 사람 · 'jk:farm|fish' 그런 일을 하는 사람 · 'sig' 그 나라 대표 일을 하는 사람 · 결과의 $숫자는 월급 변화(%) · x1 일자리를 잃음 */
@@ -1731,7 +2066,7 @@ E(6,70,'*',.05,'가족과 함께 {animal}을(를) 보러 나들이를 갔다.',{
 E(10,70,'*',.05,'{fest} 날, 광장에 {music} 무대가 열려 온 가족이 구경했다.',{j:4,r:3});
 E(19,60,'*',.06,'{lwork} 일을 하는 이웃들과 함께 일손을 나눴다.',{r:4,j:2});
 M(10,60,'*',null,'{landmark}에 큰 행사가 열려 사람들이 몰려온다.',[['안내하는 일을 돕는다','r K','먼 곳에서 온 사람들에게 길을 알려 주었다.','r5 j3','사람이 너무 많아 진땀을 뺐다.','j-2 h-1'],['행사를 실컷 즐긴다','j C','평생 잊지 못할 하루를 보냈다.','j7','사람에 치여 제대로 보지 못했다.','j-2']],{sc:'fest'});
-M(8,60,'*',null,'{sport} 동네 대회에서 결승에 올랐다.',[['끝까지 뛴다','h B','우승했다! 온 동네가 축하해 주었다.','j8 r3 h2','아깝게 졌다. 그래도 박수를 받았다.','j-1 r2'],['같은 편 친구에게 기회를 양보한다','r K','같은 편 친구가 마지막 점수를 내고 나를 안아 주었다.','r7 j4','같은 편 친구가 놓쳤다. 함께 웃었다.','r3']],{rep:1,sc:'sport'});
+M(8,60,'*','sporty','{sport} 동네 대회에서 결승에 올랐다.',[['끝까지 뛴다','h B','우승했다! 온 동네가 축하해 주었다.','j8 r3 h2','아깝게 졌다. 그래도 박수를 받았다.','j-1 r2'],['같은 편 친구에게 기회를 양보한다','r K','같은 편 친구가 마지막 점수를 내고 나를 안아 주었다.','r7 j4','같은 편 친구가 놓쳤다. 함께 웃었다.','r3']],{rep:1,repY:12,sc:'sport'});
 Q(19,60,'*','work','"{work} 일에 쓸 물건을 시장에서 받아 와 주세요."','market','부탁받은 물건을 찾아 값을 치른다.','물건을 제때 받아 왔다. 일이 술술 풀렸다.','물건이 다 팔려 빈손으로 돌아왔다.','k2 r2 $2','D','k');
 Q(6,14,'*','gran','"{food} 끓일 재료를 이웃집에서 빌려 오렴."','friend','이웃 아주머니께 공손히 부탁한다.','재료를 빌려 왔다. 할머니가 {food}을(를) 한 그릇 더 퍼 주셨다.','이웃이 집에 없었다. 할머니가 있는 것으로 만들어 주셨다.','r3 j2','K','r');
 
@@ -1921,13 +2256,13 @@ class Life{
   inC(x){ if(!x.c) return true; const rg=this.C.rg; return x.c.split(',').some(t=>t[0]==='@'?t.slice(1)===rg:t===this.c); }
   get C(){ return COUNTRIES[this.c]; }
   // 문장 속 {food} {fest} … {friend} {spouse} {kid} {elem} {univ} {co} 자리를 그 나라·그 사람의 것으로 채우고 조사도 맞춘다
-  tx(s){ if(!s) return s; s=String(s); if(s.indexOf('{')<0) return s; const C=this.C, P=this.ppl||{}, sch=this.sch||{}, k=this.kids&&this.kids.length?this.kids[this.kids.length-1]:null;
+  tx(s){ if(!s) return s; s=specText(this,String(s)); if(s.indexOf('{')<0) return this.relTag(s); const C=this.C, P=this.ppl||{}, sch=this.sch||{}, k=this.kids&&this.kids.length?this.kids[this.kids.length-1]:null;
     const job=s.includes('{job')&&this.f.job?jobInfo(this,this.f.job):null;
     const map={food:C.food,fest:C.fest,sport:C.sport,city:C.city,landmark:C.landmark,work:C.work,animal:C.animal,music:C.music,country:C.n,job:job?job.n:'일',
       me:this.name, mom:P.mom?P.mom.n:'엄마', dad:P.dad?P.dad.n:'아빠', gran:P.gran?P.gran.n:'할머니', sib:P.sib?P.sib.n:'동생', friend:P.friend?P.friend.n:'친구', teacher:P.teacher?P.teacher.n:'선생님',
       spouse:P.spouse?P.spouse.n:'배우자', kid:k?k.n:'아이', town:this.town||C.city, elem:sch.elem||'초등학교', mid:sch.mid||'중학교', high:(this.f.hs==='voc'?sch.voc:sch.high)||'고등학교', univ:sch.univ||'대학교', co:this.f.co||'일터', veh:C.veh.n, sea:this.spotName('sea'), lwork:this.set==='R'&&!/농|어부|고기|양식|목동|양치기|가축|목장|가우초|재배|낙타|순록/.test(C.work)?'농사':C.work};
-    return String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|과\(와\)|를\(을\)|가\(이\)|는\(은\))?/g,(m,k,p)=>{ const w=map[k]; if(w==null) return m; if(!p) return w;
-      const pair={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로'],'과(와)':['과','와'],'를(을)':['을','를'],'가(이)':['이','가'],'는(은)':['은','는']}[p]; return josa(w,pair[0],pair[1]); }).split(C.fest+' 날').join(/(날|일)$/.test(C.fest)?C.fest:C.fest+' 날'); }
+    return this.relTag(String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|과\(와\)|를\(을\)|가\(이\)|는\(은\))?/g,(m,k,p)=>{ const w=map[k]; if(w==null) return m; if(!p) return w;
+      const pair={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로'],'과(와)':['과','와'],'를(을)':['을','를'],'가(이)':['이','가'],'는(은)':['은','는']}[p]; return josa(w,pair[0],pair[1]); }).split(C.fest+' 날').join(/(날|일)$/.test(C.fest)?C.fest:C.fest+' 날')); }
   static load(o){ const L=Object.assign(Object.create(Life.prototype),o); L.pending=null;
     if(!L.c){ L.c='KR'; L.f.elem=L.age>=7?1:0; L.f.sec=L.age>=13?1:0; }
     if(!COUNTRIES[L.c]) L.c='KR';
@@ -1960,6 +2295,7 @@ class Life{
     return true;
   }
   reqOK(req){ if(!req) return true; const f=this.f, C=this.C, inc=(this.inc||0)+(f.family?f.spInc||0:0);
+    if(req==='sporty'){ const ch=f.ch||{}; return ch.sportKid!=null||ch.athlete!=null||(f.hob||[]).some(h=>/축구|농구|야구|배구|달리기|수영|태권도|크리켓|운동|체조|테니스|배드민턴|탁구|자전거|씨름|레슬링|권투|럭비|하키|스키|골프|무술|등산/.test(h.n)); }
     if(req==='parents') return !f.pgone; if(req==='lmM') return !/^(wt|cs)$/.test(C.lt); if(req==='lmS') return /^(wt|cs)$/.test(C.lt);
     if(req==='sig') return f.job==='sig'; if(req==='nojob') return this.age>=19&&!f.job&&!f.school&&!f.retired;
     if(req.startsWith('jk:')){ const j=this.job; return !!j&&req.slice(3).split('|').includes(j.kind); }
@@ -1986,7 +2322,7 @@ class Life{
   // 함께 살 사람: 그 나라의 이름, 하는 일, 버는 돈
   makeSpouse(){ const sx=1-this.sex, sur=pickSur(this,this.sur), given=pickGiven(this,sx,'now'), works=this.sex===1?R()<.95:R()<this.C.flfp;
     return {given,sur,n:joinName(this.c,sur,given,sx===1),sex:sx,works,inc:works?this.C.med*(.55+R()*.6):0}; }
-  marry(sp){ const f=this.f, C=this.C; if(f.family) return; f.family=1; this.ppl.spouse=sp; f.spInc=sp.inc; f.marA=this.age; (f.ch||(f.ch={})).married=this.age;
+  marry(sp){ const f=this.f, C=this.C; if(f.family) return; f.family=1; this.ppl.spouse=sp; delete this.ppl.pre; f.spInc=sp.inc; f.marA=this.age; (f.ch||(f.ch={})).married=this.age;
     f.kWant=Math.min(7,poisson(C.tfr/C.marShare)); const wed=C.med*({KR:4,IN:8,PK:6,BD:5,NG:4,CN:4,JP:3}[this.c]||2.5); this.cash-=wed; this.mEv-=wed; }
   // 큰 갈림길: 작은 선택으로 쌓인 수치와 성향이 '이루어질 확률'을 만든다
   choiceAt(a){
@@ -2018,11 +2354,11 @@ class Life{
       if(!f.sec) opts.shift();
       return {q:again?'다시 본 시험의 결과가 나왔다. 대학에 지원할 차례다.':f.uOffer?`${f.uOffer}에 합격해 두었다. 어른이 되는 문턱에 섰다.`:'어른이 되는 문턱에 섰다.',opts}; }
     if(a===25&&f.job) return jobMenu(L,'스물다섯, 지금 하는 일을 계속할까, 다른 일에 도전할까?',1);
-    if(a===marAgeOf(this)&&!f.family){ const sp=this.makeSpouse(), nm=sp.n;
-      return {q:`${josa(nm,'과','와')} 만난 지 몇 해가 지났다. 곁에 누구와 함께할까?`,opts:[
-      o(`${josa(nm,'과','와')} 가정을 꾸린다`,C.marP+s.r/100*.3+cap(t.K,60)*.004+(L.w-.5)*.1,[`${josa(nm,'과','와')} 결혼했다. 고마운 사람들이 모두 모여 축하해 주었다.`,{j:10,r:8},()=>{this.marry(sp)}],[`${josa(nm,'과','와')}는 끝내 헤어졌다. 아직 인연이 아니었다.`,{j:-5}]),
-      o('일과 꿈에 집중한다',null,['일과 꿈에 더 많은 시간을 썼다.',{k:5,j:2,r:-3,$:8}]),
-      o('친구·이웃과 가깝게 지낸다',null,['친구와 이웃이 가족 같아졌다.',{r:8,j:3}]) ]}; }
+    if(a===marAgeOf(this)&&!f.family){ const sp=this.ppl.pre||this.makeSpouse(), nm=sp.n, dated=!!(f.ch&&f.ch.dating!=null), drop=()=>{ delete this.ppl.pre; };
+      return {q:dated?`${josa(nm,'과','와')} 사귄 지 몇 해가 지났다. 앞으로를 어떻게 할까?`:`${josa(nm,'과','와')} 만난 지 몇 해가 지났다. 곁에 누구와 함께할까?`,opts:[
+      o(`${josa(nm,'과','와')} 가정을 꾸린다`,C.marP+s.r/100*.3+cap(t.K,60)*.004+(L.w-.5)*.1,[`${josa(nm,'과','와')} 결혼했다. 고마운 사람들이 모두 모여 축하해 주었다.`,{j:10,r:8},()=>{this.marry(sp)}],[`${josa(nm,'과','와')}는 끝내 헤어졌다. 아직 인연이 아니었다.`,{j:-5},drop]),
+      o('일과 꿈에 집중한다',null,['일과 꿈에 더 많은 시간을 썼다.',{k:5,j:2,r:-3,$:8},drop]),
+      o('친구·이웃과 가깝게 지낸다',null,['친구와 이웃이 가족 같아졌다.',{r:8,j:3},drop]) ]}; }
     if(a===45) return {q:'인생의 한가운데에 섰다.',opts:[
       o('일을 바꿔 새로 도전한다',null,['새로운 일을 찾아보기로 했다.',{k:2},()=>{f.needJob=2}]),
       o('건강을 챙긴다',null,['몸을 돌보는 일을 가장 먼저 두기로 했다.',{h:10}]),
@@ -2054,7 +2390,7 @@ class Life{
     if(k==='H'){ if(v>0&&!this.house){ const p=this.housePrice()*v/100; this.house=p; this.cash-=p; this.mHouse-=p; this.f.houseA=this.age; this.f.houseN=(this.f.houseN||0)+1; }
       else if(v<0&&this.house){ this.cash+=this.house; this.mHouse+=this.house; this.house=0; } continue; }
     if(k==='V'){ if(this.house) this.house*=1+v/100; continue; }
-    if(k==='M'){ if(!this.f.family) this.marry(this.makeSpouse()); continue; }
+    if(k==='M'){ if(!this.f.family) this.marry(this.ppl.pre||this.makeSpouse()); continue; }
     if(!(k in this.s)) continue;
     let d=v; if(v>0) d=v*Math.min(1,(104-this.s[k])/60); else if(k==='j') d=v*(1-Math.min(this.tr.G,40)*.01);
     this.s[k]=clamp(this.s[k]+d,0,100); } }
@@ -2073,7 +2409,7 @@ class Life{
     const fx={h:-3,j:-2}; this.apply(fx); const cost=this.C.tier<=2?.3:0; if(this.age>=19&&cost){ const d=-cost*this.C.med; this.cash+=d; this.mEv+=d; }
     const t=`${josa(n,'으로','로')} 며칠 동안 집에서 앓아누웠다.`; this.remember({a:this.age,t,ev:1,sc:'sick'}); return {n,t,fx}; }
   getWell(){ this.sick=0; }
-  jobChoice(){ const second=this.f.needJob===2; return jobMenu(this,second?'어떤 일에 새로 도전해 볼까?':this.f.univDone?`${josa(this.sch.univ,'을','를')} 마쳤다. 어떤 일을 할까?`:'어떤 일을 하며 살까?',second); }
+  jobChoice(){ const second=this.f.needJob===2, lost=this.f.lostJob&&jobInfo(this,this.f.lostJob); return jobMenu(this,lost?`${lost.n} 일을 잃은 뒤 ${this.job?this.job.n+' 일로':'임시로'} 버티고 있다. 하던 일과 비슷한 일자리를 다시 알아볼까?`:second?'어떤 일에 새로 도전해 볼까?':this.f.univDone?`${josa(this.sch.univ,'을','를')} 마쳤다. 어떤 일을 할까?`:'어떤 일을 하며 살까?',second); }
   // 대학에 떨어졌을 때: 한 해 더 준비할까, 일을 시작할까
   retryChoice(){ const sy=sysOf(this), f=this.f, re=(sy.x2&&sy.x2.re)||this.c==='KR';
     const opts=[{label:'일자리를 알아본다',p:null,ok:['일자리를 알아보기로 했다.',{j:1},()=>{ f.needJob=1; f.school=0; }]}];
@@ -2087,7 +2423,8 @@ class Life{
       if(o.keep) { const t=`지금 하는 일(${this.job.n})을 계속하기로 했다.`; this.remember(Object.assign({a:this.age,t,big:1,sc:'job'},mq)); return {t,fx:{j:2},p:null,ok:true,label:o.label,sc:'job'}; }
       if(ok){ const j=setJob(this,o.job), fx={j:6,k:2}; this.apply(fx); const t=`${this.f.co}에서 ${j.n} 일을 시작했다. 첫 달 월급은 약 ${josa(fmtPay(this.inc),'이었다','였다')}.`; this.remember(Object.assign({a:this.age,t,big:1,sc:'job'},mq)); return {t,fx,p:o.p,ok,label:o.label,sc:'job'}; }
       const want=jobInfo(this,o.job), fx={j:-5};
-      if(!this.f.job){ const j=setJob(this,this.set==='R'?'farm':'day'); this.apply(fx); const t=`${want.n}의 꿈은 이루지 못했다. 우선 ${this.f.co}에서 ${j.n} 일을 시작했다. 한 달에 약 ${josa(fmtPay(this.inc),'을','를')} 번다.`; this.remember(Object.assign({a:this.age,t,big:1,sc:'jobloss'},mq)); return {t,fx,p:o.p,ok,label:o.label,sc:'jobloss'}; }
+      if(!this.f.job){ const fb=['sig'].concat(Object.keys(JOBS)).filter(id=>id!==o.job&&famOfJob(this,id)===famOfJob(this,o.job)&&famOfJob(this,id)!=='dream').map(id=>jobInfo(this,id)).filter(x=>jobOK(this,x)&&jobP(this,x)>=.5).sort((p,q)=>jobP(this,q)-jobP(this,p))[0];
+        const j=setJob(this,fb?fb.id:this.set==='R'?'farm':'day'); this.apply(fx); const t=`${want.n}의 꿈은 이루지 못했다. 우선 ${this.f.co}에서 ${j.n} 일을 시작했다. 한 달에 약 ${josa(fmtPay(this.inc),'을','를')} 번다.`; this.remember(Object.assign({a:this.age,t,big:1,sc:'jobloss'},mq)); return {t,fx,p:o.p,ok,label:o.label,sc:'jobloss'}; }
       this.apply(fx); const t=`${want.n}에 도전했지만 뜻을 이루지 못했다. 하던 일(${this.job.n})을 계속했다.`; this.remember(Object.assign({a:this.age,t,big:1,sc:'jobloss'},mq)); return {t,fx,p:o.p,ok,label:o.label,sc:'jobloss'};
     }
     const r=ok?o.ok:o.fail; if(r[2]) r[2](); this.apply(r[1]);
@@ -2428,8 +2765,32 @@ const CALRUN={
   intern:{post:(L,ok)=>ok&&R()<.6?{t:`${L.c==='KR'?pickOne(['한빛전자','미래금융','다온소프트','세움건설','푸른제약']):L.C.city+' '+pickOne(['무역','은행','통신','방송국'])}에서 인턴으로 일하게 되었다.`,fx:{k:3,j:2}}:{t:'모두 떨어졌다. 다음 기회를 노린다.',fx:{j:-2}}}
 };
 
+/* ---------- 비슷한 일이 연달아 되풀이되지 않게 ----------
+   같은 갈래(무대·홍수·유행병·대회 결승·이사·큰 실수·성적)의 일은 정해 둔 햇수만큼 띄운다.
+   해마다 하나씩 고르는 묶음(봄·가을 행사, 유행병)은 최근 몇 해 안에 나온 것을 피한다. */
+const THEMES=[['stage',/발표회|학예회|재롱잔치|음악회|합창|무대에 서/,3],['flood',/물에 잠|홍수|강물이 넘|넘칠 거라|물이 불어나/,10],['epi',/유행|돌림병|말라리아|뎅기|콜레라|홍역|독감|감염병/,5],
+  ['sportF',/대회에서 결승|결승에 올/,5],['move',/이사를 (간|가)|멀리 이사/,8],['oops',/크게 실수|큰 실수/,8],['grade',/성적이 (갑자기|떨어)|성적 걱정/,4]];
+function themeOf(t){ t=String(t||''); for(const th of THEMES) if(th[1].test(t)) return th; return null; }
+const SOFTK={spring:3,autumn:3,sem2:2,ex1:2,ep_out:12,ep_flu:6,chore:2};
 /* ---------- 달력: 고르기 · 일어나기 ---------- */
 Object.assign(Life.prototype,{
+  // 결혼 갈림길 전에 먼저 만나 사귀는 사람 (결혼할 때 같은 사람이 나온다)
+  preSpouse(){ const P=this.ppl||(this.ppl={}); if(!P.pre) P.pre=this.makeSpouse(); return P.pre; },
+  // 문장에 이름만 나오면 누군지 모른다: 처음 나오는 이름 앞에 관계를 붙인다 (이미 '아내 ○○'처럼 써 있으면 그대로)
+  relTag(s){ if(!s||typeof s!=='string') return s; const P=this.ppl||{}, yr=this.cur&&this.cur.yr||{}, me=this.sex, list=[];
+    const add=(p,rel)=>{ const n=p&&(p.n||p); if(n&&typeof n==='string'&&n.length>=2&&n!==this.name) list.push([n,rel]); };
+    add(P.spouse,me===0?'아내':'남편'); add(P.pre,'사귀는 사람'); add(P.mom,'엄마'); add(P.dad,'아빠'); add(P.gran,'할머니');
+    add(P.sib,'동생'); add(P.friend,'친구'); add(P.teacher,'선생님'); add(P.coll,'동료'); add(P.coll2,'후배'); add(P.boss,'윗사람');
+    (this.kids||[]).forEach(k=>add(k,k.sex===1?'딸':'아들'));
+    ((this.fam&&this.fam.sibs)||[]).forEach(b=>{ if(b&&b.n) add(b,b.d>0?'동생':b.sex===1?(me===0?'누나':'언니'):(me===0?'형':'오빠')); });
+    add(yr.hr,'담임 선생님'); add(yr.mate,'짝꿍'); add(yr.mate2,'반 친구'); add(yr.crush,'좋아하는 친구');
+    if(s.trim().length<=12) return s;
+    const rels={}; list.forEach(([n,r])=>{ (rels[n]=rels[n]||new Set()).add(r); }); const seen={}; list.sort((x,y)=>y[0].length-x[0].length);
+    for(const [n,rel] of list){ if(seen[n]||rels[n].size>1) continue; seen[n]=1; const i=s.indexOf(n); if(i<0) continue;
+      const before=s.slice(Math.max(0,i-9),i); if(/(아내|남편|엄마|아빠|어머니|아버지|할머니|할아버지|동생|형|누나|언니|오빠|친구|선생님|담임|동료|후배|상사|윗사람|부장|과장|팀장|사장|아들|딸|손주|손자|손녀|짝꿍|연인|배우자|사람|이웃|아이|첫째|둘째|셋째|넷째|막내)\s*$/.test(before)) continue;
+      if(i>0&&/[가-힣A-Za-z]/.test(s[i-1])) continue;
+      s=s.slice(0,i)+rel+' '+s.slice(i); }
+    return s; },
   // 지금 어느 학교에 다니는가
   stageOf(){ const f=this.f, a=this.age; if(f.retry) return 'rt'; if(f.univ&&f.school) return 'u';
     if(a>=7&&a<=12) return f.elem&&f.school!==0?'e':'ns'; if(a>=13&&a<=15) return f.sec?'m':'ns'; if(a>=16&&a<=18) return f.sec&&f.hs?'h':'ns'; return a<7?'pre':'adult'; },
@@ -2478,7 +2839,7 @@ Object.assign(Life.prototype,{
       else if(tk==='oop+') ok=instOf(this).oop>=45; else if(tk==='oop-') ok=instOf(this).oop<25; else if(tk==='hi') ok=!!instOf(this).hi;
       else if(tk==='sp'){ const sp=instOf(this).sp; ok=!!sp&&a>=sp[0]; } else if(tk==='ros') ok=!!instOf(this).ros; else if(tk==='mm') ok=!!instOf(this).mm;
       else if(tk==='kid') ok=(this.kids||[]).length>0; else if(tk==='nokid') ok=!(this.kids||[]).length; else if(tk==='univD') ok=!!f.univDone; else if(tk==='abrS') ok=!!f.abrS;
-      else if(tk==='kidOld') ok=(this.kids||[]).length>0; else if(tk==='mar') ok=!!f.family||!!f.widow;
+      else if(tk==='kidOld') ok=(this.kids||[]).length>0; else if(tk==='mar') ok=!!f.family||!!f.widow; else if(tk==='crt'){ const m=marAgeOf(this); ok=!f.family&&!f.widow&&a>=Math.max(18,m-6)&&a<m; }
       else if(/^g[=<>]\d+$/.test(tk)){ if(g==null) g=this.gradeOf(st); const n=+tk.slice(2), op=tk[1]; ok=op==='='?g===n:op==='>'?g>n:g<n; }
       else if(/^![A-Z]{2}(\|[A-Z]{2})*$/.test(tk)) ok=!tk.slice(1).split('|').includes(this.c);
       else if(/^[A-Z]{2}(\|[A-Z]{2})*$/.test(tk)) ok=tk.split('|').includes(this.c);
@@ -2498,11 +2859,13 @@ Object.assign(Life.prototype,{
     const st=this.stageOf(), sy=sysOf(this), used=this.calUsed||(this.calUsed={}), two=this.step>1;
     this._army=(this.c==='KR'&&this.sex===0&&a>=19&&a<=20&&!f.army&&!f.retry&&!f.univ)||!!(f.svc&&a>=f.svc[0]&&a<f.svc[1]);   // 군 복무 중에는 일터의 일이 없다
     const N0=a<1?3:a<3?2:a<7?4:a<13?10:a<19?11:a>=80?5:a>=70?7:10, N=this.pace==='short'?Math.max(2,Math.round(N0*.5)):N0;
-    const byK={}, pool=[];
+    const byK={}, pool=[], thA=this.thA||(this.thA={});
     const pool0=CAL_C[this.c]?CAL_G.concat(CAL_C[this.c]):CAL_G;
     pool0.forEach(ev=>{ if(a<ev.a[0]||a>ev.a[1]) return; const u=used[ev.id]; if(u!=null&&(ev.once||(ev.cd&&a-u<ev.cd))) return;
+      const th=ev.th===undefined?(ev.th=themeOf(ev.txt)):ev.th; if(th&&thA[th[0]]!=null&&a-thA[th[0]]<th[2]&&!(ev.k&&/^ep_pan/.test(ev.k))&&!ev.c.some(t=>t.startsWith('yr:'))) return;
       const ctx=this.calCtx(ev,st,sy); if(!ctx) return; const x={ev,ctx}; if(ev.k) (byK[ev.k]=byK[ev.k]||[]).push(x); else pool.push(x); });
     const wpick=arr=>{ let r=R()*arr.reduce((t,x)=>t+(x.ev.w||1),0); for(const x of arr){ r-=x.ev.w||1; if(r<0) return x; } return arr[arr.length-1]; };
+    for(const k in byK){ const g=SOFTK[k]; if(!g) continue; const fresh=byK[k].filter(x=>used[x.ev.id]==null||a-used[x.ev.id]>=g); if(fresh.length) byK[k]=fresh; else if(/^ep_/.test(k)) delete byK[k]; else byK[k]=[byK[k].reduce((b,x)=>(used[x.ev.id]||0)<(used[b.ev.id]||0)?x:b)]; }
     let sel=Object.keys(byK).map(k=>wpick(byK[k]));
     if(sel.length>N){ sel.sort((p,q)=>(q.ev.ex||q.ev.big?1:0)-(p.ev.ex||p.ev.big?1:0)); sel=sel.slice(0,N); }
     // 해마다 그 나라만의 일(어린이 1 · 학생 2 · 어른 3가지)과 하는 일에 딸린 일(1가지)을 먼저 자리 잡게 한다
@@ -2510,6 +2873,7 @@ Object.assign(Life.prototype,{
     take(ev=>ev.cc===this.c,a<7?1:a<13?2:3); if(f.job&&!f.school) take(ev=>ev.c.some(t=>t.startsWith('jk:')),1);
     while(sel.length<N&&pool.length){ const w=pool.map(x=>(x.ev.w||1)*(x.ev.once?1.4:1)*(x.ev.c.length>1?1.2:1)*(x.ev.c.some(t=>/^(e|m|h|u|rt|ns|w)$/.test(t))?1.6:1)); let r=R()*w.reduce((s,y)=>s+y,0), i=0; for(;i<pool.length-1;i++){ r-=w[i]; if(r<0) break; } sel.push(pool.splice(i,1)[0]); }
     // 달 정하기: 정해진 달이 있으면 그 달, 없으면 덜 붐비는 달에
+    sel.forEach(x=>{ const th=x.ev.th; if(th) thA[th[0]]=a; });
     const cnt={}, span=two?24:12, out=[];
     const fm=festMonth(this,this.by+a);
     sel.forEach(x=>{ if(x.ctx.yo!=null){ x.m=(this.calMonth(x.ev.mon,sy)||1+Math.floor(R()*12))+12*x.ctx.yo; if(x.m!=null) cnt[x.m]=(cnt[x.m]||0)+1; return; } let m=/\{fest\}/.test(x.ev.txt+(x.ev.opts?x.ev.opts.map(o=>o.res).join(''):''))&&fm&&(x.ev.mon==='*'||x.ev.mon==='wv')?fm:this.calMonth(x.ev.mon,sy); if(m!=null&&two&&(x.ev.y2||(x.ev.k&&x.ev.k.startsWith('army')&&f.univ))) m+=12; else if(m!=null&&two&&!x.ev.fix&&!(x.ev.k&&x.ev.k.startsWith('army'))&&R()<.5) m+=12; x.m=m; if(m!=null) cnt[m]=(cnt[m]||0)+1; });
@@ -2535,10 +2899,11 @@ Object.assign(Life.prototype,{
       kTrip2:pickOne(['제주도','경주','부산','강릉','전주','일본 오사카','베트남 다낭']),comment:pickOne(['친구들과 사이좋게 지내며 맡은 일을 책임감 있게 해냄','수업 시간에 질문이 많고 탐구심이 뛰어남','발표할 때 자신감이 넘치고 목소리가 또렷함','어려운 문제도 끝까지 해결하려는 끈기가 있음','어려움을 겪는 친구를 먼저 돕는 따뜻한 마음을 지님','독서를 즐기며 생각을 글로 잘 표현함']),
       chore:/농부/.test(this.C.work)?this.C.work.replace(/농부$/,'농사'):/어부|양식/.test(this.C.work)?'고기잡이':/목동|양치기|가우초|목장/.test(this.C.work)?'가축 돌보기':this.set==='R'?'밭일':'집안일',jobT:pickOne(['소방관','바리스타','방송 PD','간호사','로봇 공학자','요리사','기자','수의사','웹툰 작가']),crushRes:''};
     v.commentQ=`“${v.comment}”${josa(v.comment,'1','0').slice(-1)==='1'?'이라고':'라고'}`;
+    if(/\{lover\}/.test(ev.txt+(ev.txts||[]).join('')+JSON.stringify(ev.opts||[]))) v.lover=this.preSpouse().n;
     Object.assign(v,instVars(this)); v.__t=ev.txts?pickOne(ev.txts):ev.txt;
     const run=ev.run&&CALRUN[ev.run]; if(run&&run.pre) run.pre(this,v); it.v=v; return v; },
   calOptP(o){ let pos=0; for(const k in o.fx) if(o.fx[k]>0&&k in this.s) pos+=o.fx[k]; return pos>3?this.optP(o):null; },
-  fillV(s,v){ if(!s) return s; return this.tx(String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|과\(와\)|를\(을\)|가\(이\)|는\(은\))?/g,(m,k,p)=>{ const w=v[k]; if(w==null) return m; if(!p) return w; const pr={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로'],'과(와)':['과','와'],'를(을)':['을','를'],'가(이)':['이','가'],'는(은)':['은','는']}[p]; return josa(w,pr[0],pr[1]); })); },
+  fillV(s,v){ if(!s) return s; s=specText(this,String(s)); return this.tx(String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|과\(와\)|를\(을\)|가\(이\)|는\(은\))?/g,(m,k,p)=>{ const w=v[k]; if(w==null) return m; if(!p) return w; const pr={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로'],'과(와)':['과','와'],'를(을)':['을','를'],'가(이)':['이','가'],'는(은)':['은','는']}[p]; return josa(w,pr[0],pr[1]); })); },
   // 시험 결과: 실력(ac) + 준비(bonus) + 그날의 운
   exam(kind,bonus,v){ const f=this.f, sy=sysOf(this), KR=this.c==='KR'; this.acInit();
     const perf=this.ac+bonus+gauss()*7, p=clamp(Phi((perf-50)/17),.003,.997);
@@ -2568,7 +2933,7 @@ Object.assign(Life.prototype,{
     if(ev.ex){ const r=this.exam(ev.ex,bonus,v); if(r.t) t+=' '+r.t; }
     let xr={}; this._calM=it.m;
     if(run&&run.post){ const r=run.post(this,ok,oi==null?0:oi,v); if(r){ if(r.t) t+=(t?' ':'')+this.fillV(r.t,v); if(r.fx) for(const key in r.fx) fx[key]=(fx[key]||0)+r.fx[key]; if(r.big) big=true; if(r.sick) xr.sick=r.sick; if(r.die) xr.die=1; } }
-    const chA=this.age+(it.m>12?1:0), setF=nm=>{ if(nm) (f0.ch||(f0.ch={}))[nm]=chA; }, f0=this.f, oi0=oi==null?0:oi;
+    const chA=this.age+(it.m>12?1:0), setF=nm=>{ if(!nm) return; (f0.ch||(f0.ch={}))[nm]=chA; if(nm==='move'||nm==='moveC2'){ f0.vSet='U'; f0.placeN=(f0.placeN||0)+1; } else if(nm==='backHome'){ f0.vSet=this.set; f0.placeN=(f0.placeN||0)+1; } }, f0=this.f, oi0=oi==null?0:oi;
     if(ev.set) setF(typeof ev.set==='string'?ev.set:ev.set[oi0]); if(ev.setOK&&ok) setF(typeof ev.setOK==='string'?ev.setOK:ev.setOK[oi0]);
     if(ev.clr&&f0.ch) ev.clr.split(' ').forEach(n=>delete f0.ch[n]);
     this.apply(fx); if(it.dyn) this.famAct(ev.act); else this.calUsed[ev.id]=this.age; it.done=1; it.t=t; it.ok=ok; it.q=ev.opts?q:null; it.fx=fx; delete it.v;
@@ -2583,13 +2948,14 @@ Object.assign(Life.prototype,{
     return out; },
   ensureCal(){ if(this.cur&&!this.cur.cal&&!this.pending) this.cur.cal=this.planCal(); return this.cur&&this.cur.cal; },
   // 올해의 큰 사건을 미리 정해 둔다 (교사용 '중요 사건' 수가 정확하도록)
-  planMajors(n){ const a=this.age, C=this.C, el=[], w=[];
+  planMajors(n){ const a=this.age, C=this.C, el=[], w=[], thA=this.thA||(this.thA={});
     MAJORS.forEach((m,i)=>{ const u=this.usedM[i]; if(!this.inC(m)||a<m.a[0]||a>m.a[1]||(m.set!=='*'&&m.set!==this.set)||!this.reqOK(m.req)) return;
-      if(m.hz&&!C.hz.includes(m.hz)) return; if(m.maxTier&&C.tier>m.maxTier) return; if(m.minTier&&C.tier<m.minTier) return; if(u!=null&&(!m.rep||a-u<(m.repY||6))) return;
-      el.push(i); w.push((m.c?2.2:1)*(m.hz?1.6:1)*(m.req&&/^(jk:|sig)/.test(m.req)?1.5:1)*(m.money||1)); });
+      if(m.hz&&!C.hz.includes(m.hz)) return; const th=m.th===undefined?(m.th=themeOf(m.txt)):m.th; if(th&&thA[th[0]]!=null&&a-thA[th[0]]<th[2]) return; if(m.maxTier&&C.tier>m.maxTier) return; if(m.minTier&&C.tier<m.minTier) return; if(u!=null&&(!m.rep||a-u<(m.repY||9))) return;
+      el.push(i); w.push((th&&th[0]==='grade'&&C.tier<=2?.35:1)*(m.c?2.2:1)*(m.hz?1.6:1)*(m.req&&/^(jk:|sig)/.test(m.req)?1.5:1)*(m.money||1)); });
     const out=[]; while(out.length<n&&el.length){ let r=R()*w.reduce((s,y)=>s+y,0), i=0; for(;i<el.length-1;i++){ r-=w[i]; if(r<0) break; } out.push(el.splice(i,1)[0]); w.splice(i,1); }
+    out.forEach(i=>{ const th=MAJORS[i].th; if(th) thA[th[0]]=a; });
     return out; },
-  majorOK(i){ const m=MAJORS[i], a=this.age, u=this.usedM[i]; return !!m&&a>=m.a[0]&&a<=m.a[1]&&this.reqOK(m.req)&&!(u!=null&&(!m.rep||a-u<(m.repY||6))); }
+  majorOK(i){ const m=MAJORS[i], a=this.age, u=this.usedM[i]; return !!m&&a>=m.a[0]&&a<=m.a[1]&&this.reqOK(m.req)&&!(u!=null&&(!m.rep||a-u<(m.repY||9))); }
 });
 // 대학 고르기: 시험 성적(q, 0~1)이 높을수록 이름난 대학
 function pickUnivQ(L,q){ const UN=UNIV[L.c]; if(!UN) return `${L.C.city} 대학교`; const top=q>=.93||(q>=.8&&R()<(q-.75)*2.5); return pickOne(top?UN[0]:UN[1]); }
@@ -3201,6 +3567,20 @@ Y(19,70,'kh','*','{kn}이(가) 원하는 진로가 내 생각과 다르다.',[['
 Y(19,70,'ku','*','{kn}이(가) 첫 월급으로 부모님 선물을 사 왔다.','j5 r3',{once:1});
 Y(40,90,'ka','*','{kn}이(가) 손주를 데리고 왔다. 집 안이 오랜만에 시끌벅적했다.','j5 r3',{cd:3,sc:'baby'});
 Y(45,90,'ka','*','{kn}이(가) 일하는 도시로 이사를 가게 되었다. 공항(터미널)까지 배웅했다.','j-2 r1',{once:1,sc:'travel'});
+/* 결혼 갈림길 몇 해 전부터: 처음 만나고, 사귀고, 다투고, 가족에게 인사하기 (결혼할 때 같은 사람) */
+Y(18,60,'crt !fl:met','*','친구의 소개로 {lover}을(를) 처음 만났다. 이야기가 끊이지 않아 시간 가는 줄 몰랐다.',[['다음에 또 보자고 먼저 연락한다','B r2','{lover}와(과) 주말마다 만나게 되었다.'],['천천히 알아 가기로 한다','K r1','몇 달 동안 천천히 서로를 알아 갔다.']],{once:1,k:'court',set:['met','met'],sc:'friend'});
+Y(18,60,'crt fl:met !fl:dating','*','{lover}와(과) 처음으로 둘이서 하루를 보냈다. 헤어지기가 아쉬웠다.',[['마음을 털어놓는다','B j2','{lover}도 같은 마음이었다. 우리는 사귀기 시작했다.'],['좋은 친구로 지내자고 한다','K','한동안 친구처럼 지냈지만, 결국 서로의 마음을 알게 되었다.']],{once:1,k:'court',set:['dating','dating'],sc:'friend'});
+Y(18,60,'crt fl:dating','*','{lover}와(과) 사소한 일로 크게 다퉜다. 며칠째 연락이 없다.',[['먼저 연락해 사과한다','K r2','먼저 사과했다. 다투고 나서 오히려 더 가까워졌다.'],['상대가 먼저 연락하길 기다린다','j-1','일주일 뒤에야 겨우 화해했다.']],{once:1,k:'court',sc:'friend'});
+Y(18,60,'crt fl:dating','*','{lover}이(가) 가족에게 나를 소개하고 싶다고 한다.',[['떨리지만 인사드리러 간다','r3 B','{lover}의 가족과 저녁을 먹었다. 생각보다 따뜻한 사람들이었다.'],['조금 더 시간을 갖자고 한다','D','아직은 이르다며 다음으로 미뤘다.']],{once:1,k:'court',sc:'friend'});
+/* 노년: 가족과 함께 보내는 시간 */
+Y(60,95,'ka','*','{kn}이(가) 주말에 혼자 집에 들렀다. 오랜만에 둘이 마주 앉았다.',[['젊은 날 이야기를 들려준다','r2 j2','처음 듣는 이야기라며 {kn}이(가) 눈을 반짝였다.'],['요즘 사는 이야기를 묻는다','K r2','{kn}의 고민을 끝까지 들어 주었다. 돌아가는 뒷모습이 한결 가벼워 보였다.']],{cd:4,w:2,sc:'friend'});
+Y(62,95,'gk','*','손주가 놀러 와서 같이 동네를 걷자고 조른다.',[['손을 잡고 천천히 걷는다','r3 j2','손주와 동네 가게에서 아이스크림을 하나씩 사 먹었다.'],['집에서 옛날 놀이를 가르쳐 준다','r2 C','처음 해 보는 놀이에 손주가 깔깔 웃었다.']],{cd:3,w:2,sc:'friend'});
+Y(62,95,'gk','*','손주에게 {food} 만드는 법을 가르쳐 주었다. 온 부엌이 엉망이 됐지만 둘 다 웃었다.','r3 j3',{cd:5,w:2,sc:'life'});
+Y(60,95,'kid','*','생일에 흩어져 살던 가족이 모두 모였다. 다 같이 케이크의 촛불을 불었다.','r3 j4',{cd:4,w:2,sc:'fest'});
+Y(60,92,'kid','*','자녀들이 다 같이 가족 여행을 가자고 한다.',[['무릎이 아파도 따라나선다','r3 j3 h-1','오랜만에 온 가족이 한 지붕 아래에서 잤다. 사진을 백 장도 넘게 찍었다.'],['집에서 맛있는 것을 해 놓고 기다린다','r2 j1','여행에서 돌아온 가족에게 따뜻한 밥을 차려 주었다.']],{cd:6,w:2,sc:'travel'});
+Y(60,90,'fam','*','{spouse}와(과) 젊을 때 자주 가던 곳에 다시 가 보았다.',[['그때 이야기를 하며 걷는다','r3 j3','걸음은 느려졌지만 이야기는 끝이 없었다.'],['조용히 손을 잡고 앉아 있는다','r2 G','말없이 앉아 있어도 마음이 편했다.']],{cd:5,w:2,sc:'travel'});
+Y(60,95,'kid','*','온 가족이 사진관에 가서 가족사진을 찍었다. 의자 한가운데에 앉으니 쑥스러웠다.','r2 j3',{cd:8,sc:'life'});
+Y(65,95,'ka','*','상자를 정리하다 {kn}이(가) 어릴 때 그린 그림을 찾았다. 한참을 들여다보았다.','j2 r1',{cd:8,sc:'life'});
 // ── 나이 들어 감
 Y(27,45,'','*','거울 속에서 첫 흰머리를 발견했다.','j-1',{once:1});
 Y(40,60,'','*','계단을 오르다 숨이 차 잠깐 쉬었다. 예전 같지 않다는 생각이 들었다.','h-1',{once:1});
@@ -5043,7 +5423,9 @@ FACT_ROWS.trim().split('\n').forEach(r=>{ const [code,food2,drink,snack,crop,wat
       [[`맡아서 해 본다`,'$2 r2 k1',`두 사람의 말을 이어 주며 보람을 느꼈다.`],[`실수할까 봐 거절한다`,'',`다른 사람을 소개해 주었다.`]]);
     E(19,40,'fl:langStudy','*',`외국어를 할 줄 아는 사람을 찾는 회사가 있다.`,
       [[`지원한다`,'$4 k2 j2 B',`외국어로 면접을 보았다. 합격이었다.`,`떨어졌다. 말은 통했지만 경력이 모자랐다.`],[`지금 일에 만족한다`,'j1',`지원서를 접었다.`]]);
-    E(19,35,'fl:athlete','*',`프로 팀 입단 시험이 열린다.`,
+    E(15,19,'fl:athlete','*',`${sport} 지역 대회에 나갔다. 프로 팀 사람들이 관중석에 앉아 있다는 소문이 돌았다.`,
+      [[`평소처럼 내 경기를 한다`,'B j2',`끝까지 뛰었다. 경기가 끝나고 코치가 어깨를 두드려 주었다.`],[`눈에 띄려고 무리한다`,'h-1 j1',`몸이 먼저 지쳤다. 그래도 이름 석 자는 알렸다.`]]);
+    E(19,35,'fl:athlete','*',`고등학생 때부터 새벽마다 훈련해 온 ${sport}. 드디어 프로 팀 입단 시험이 열린다.`,
       [[`모든 걸 걸고 도전한다`,'j5 B h-1',`합격! ${sport} 선수로 첫 경기에 나섰다.`,`떨어졌다. 그동안의 시간이 헛된 것 같아 한참 울었다.`],[`꿈을 접고 다른 일을 찾는다`,'k2 j-2',`운동화를 벗고 일자리를 찾았다.`]],{setOK:['proAthlete',null]});
     E(24,40,'fl:proAthlete','*',`경기 중에 무릎을 크게 다쳤다.`,
       [[`재활에 매달린다`,'h2 D',`1년 가까운 재활 끝에 다시 경기장에 섰다.`,`다시 뛰지는 못했다. 코치 일을 알아보기 시작했다.`],[`은퇴하고 새 일을 찾는다`,'k2 j-2',`유니폼을 벗었다.`]]);
@@ -5087,7 +5469,7 @@ FACT_ROWS.trim().split('\n').forEach(r=>{ const [code,food2,drink,snack,crop,wat
     E(61,90,'','*',`살면서 ${J(lm,'을','를')} 제대로 보지 못했다. 지금이라도 가 볼까?`,
       [[`큰마음 먹고 떠난다`,'j4 @-1 h-1',`${lm} 앞에서 오래 서 있었다. 와 보길 잘했다.`],[`무리하지 않기로 한다`,'h1',`사진으로 보며 마음을 달랬다.`]]);
     E(61,90,'fl:moveC2','*',`평생을 보낸 ${c2}를 떠나 고향으로 돌아갈까.`.replace(`${c2}를`,J(c2,'을','를')),
-      [[`고향으로 돌아간다`,'r2 j2 h1',`고향 언덕에서 해 지는 것을 보았다.`],[`손주들 곁, ${c2}에 머문다`,'r2',`손주들 학교 가는 길을 배웅하는 게 낙이 되었다.`]]);
+      [[`고향으로 돌아간다`,'r2 j2 h1',`고향 언덕에서 해 지는 것을 보았다.`],[`손주들 곁, ${c2}에 머문다`,'r2',`손주들 학교 가는 길을 배웅하는 게 낙이 되었다.`]],{set:['backHome',null]});
     E(61,95,'fl:musicKid','*',`오래 손을 놓았던 ${J(mus,'을','를')} 다시 시작해 볼까.`,
       [[`다시 연습을 시작한다`,'j3 h1',`손가락은 굳었지만 마음은 그대로였다.`],[`추억으로만 남겨 둔다`,'',`옛 사진을 꺼내 보았다.`]]);
     /* ---------- 자연재해·어려움 (그 나라에 있는 것만) ---------- */
@@ -5259,6 +5641,303 @@ var OPP_N=0;
   OPP.forEach(([pre,l,fx,res])=>{ CAL.forEach(ev=>{ if(!ev.opts||ev.cf||ev.ex||(ev.run&&ev.run!=='hobPick')||!String(ev.txt).startsWith(pre)) return; if(new Set(ev.opts.map(sg)).size>1) return;
     const p=parseFx(fx); ev.opts.push({l,res,fail:null,...p}); n++; }); });
   OPP_N=n; })();
+/* ===== 누구에게나 오는 일을 그 사람의 일과 처지에 맞게 =====
+   '친구가 돈을 빌려 달라고 한다', '큰 실수를 했다'처럼 모든 삶에 똑같이 오던 사건을,
+   지금 하는 일(농부·공장·가게·회사·병원·학교…)과 처지(학생·은퇴·일자리 없음)에 맞는 구체적인 장면으로 바꿔 보여 준다.
+   같은 해에는 같은 문장이 나오도록 삶마다 정해진 순서로 고른다. */
+const SPEC_JG={farm:'farm',day:'labor',builder:'labor',abroad:'labor',vendor:'shop',shopown:'shop',cook:'cook',hair:'hair',driver:'driver',factory:'factory',office:'office',engineer:'office',civil:'civil',police:'police',nurse:'hosp',doctor:'hosp',teacher:'teacher',artist:'art',creator:'art',athlete:'athlete'};
+const SPEC={
+ '가까운 친구가 돈을 빌려 달라고 한다.':{
+  farm:'이웃 밭을 부치는 친구가 비료와 씨앗 살 돈이 모자란다며, 수확하면 갚겠다고 돈을 빌려 달라고 한다.',
+  labor:'같은 현장에서 일하는 친구가 밀린 일당을 못 받아 방세를 낼 수 없다며 돈을 빌려 달라고 한다.',
+  shop:'시장에서 옆자리에 좌판을 펴는 친구가 물건 들일 돈이 모자란다며 돈을 빌려 달라고 한다.',
+  cook:'같은 주방에서 일하던 친구가 작은 식당을 차리는데 보증금이 모자란다며 돈을 빌려 달라고 한다.',
+  hair:'미용 학원 동기가 가게에 놓을 의자와 거울 살 돈이 모자란다며 돈을 빌려 달라고 한다.',
+  driver:'같이 운전하는 친구가 차 수리비가 급하다며, 고치지 못하면 일을 못 나간다고 돈을 빌려 달라고 한다.',
+  factory:'같은 라인에서 일하는 친구가 아이 병원비가 급하다며 월급날까지만 돈을 빌려 달라고 한다.',
+  office:'입사 동기가 전세 보증금이 모자란다며 돈을 빌려 달라고 한다.',
+  civil:'같은 부서 동기가 이사 날짜는 다가오는데 보증금이 모자란다며 돈을 빌려 달라고 한다.',
+  police:'같은 지구대 동료가 부모님 수술비가 급하다며 돈을 빌려 달라고 한다.',
+  hosp:'같은 병동에서 일하는 친구가 학자금 대출 이자가 밀렸다며 돈을 빌려 달라고 한다.',
+  teacher:'같은 학교 동료 교사가 집 계약금이 모자란다며 돈을 빌려 달라고 한다.',
+  art:'함께 작업하는 친구가 전시(공연) 준비 비용이 모자란다며 돈을 빌려 달라고 한다.',
+  athlete:'같은 팀 친구가 부상 치료비가 밀렸다며 돈을 빌려 달라고 한다.',
+  none:'함께 일자리를 찾던 친구가 당장 방세가 없다며 돈을 빌려 달라고 한다.'},
+ '오랜 친구 {friend}이(가) 돈을 빌려 달라고 한다.':{
+  farm:'오랜 친구 {friend}이(가) 소가 병들어 새로 들일 돈이 없다며 돈을 빌려 달라고 한다.',
+  labor:'오랜 친구 {friend}이(가) 일하다 다쳐 몇 달째 벌이가 없다며 돈을 빌려 달라고 한다.',
+  shop:'오랜 친구 {friend}이(가) 장사를 시작하려는데 자릿값이 모자란다며 돈을 빌려 달라고 한다.',
+  cook:'오랜 친구 {friend}이(가) 작은 포장마차를 열고 싶다며 돈을 빌려 달라고 한다.',
+  hair:'오랜 친구 {friend}이(가) 가게 월세가 석 달째 밀렸다며 돈을 빌려 달라고 한다.',
+  driver:'오랜 친구 {friend}이(가) 할부로 산 차 값을 못 내 차를 뺏기게 생겼다며 돈을 빌려 달라고 한다.',
+  factory:'오랜 친구 {friend}이(가) 다니던 공장이 문을 닫아 석 달째 월급을 못 받았다며 돈을 빌려 달라고 한다.',
+  office:'오랜 친구 {friend}이(가) 주식으로 큰 손해를 봤다며 돈을 빌려 달라고 한다.',
+  civil:'오랜 친구 {friend}이(가) "너는 월급이 꼬박꼬박 나오잖아" 하며 돈을 빌려 달라고 한다.',
+  police:'오랜 친구 {friend}이(가) "너는 월급이 꼬박꼬박 나오잖아" 하며 돈을 빌려 달라고 한다.',
+  teacher:'오랜 친구 {friend}이(가) "너는 월급이 꼬박꼬박 나오잖아" 하며 돈을 빌려 달라고 한다.',
+  hosp:'오랜 친구 {friend}이(가) 가족 병원비가 많이 나왔다며, 병원에서 일하니 사정을 알지 않느냐고 돈을 빌려 달라고 한다.',
+  art:'오랜 친구 {friend}이(가) 요즘 이름이 좀 알려졌으니 여유가 있지 않느냐며 돈을 빌려 달라고 한다.',
+  athlete:'오랜 친구 {friend}이(가) 요즘 경기에 자주 나오니 여유가 있지 않느냐며 돈을 빌려 달라고 한다.',
+  stu:'같은 과 친구 {friend}이(가) 등록금이 조금 모자란다며 돈을 빌려 달라고 한다.',
+  ret:'오랜 친구 {friend}이(가) 자식 사업이 어려워져 집을 내놓게 생겼다며 돈을 빌려 달라고 한다.',
+  none:'오랜 친구 {friend}이(가) 사정이 급하다며 돈을 빌려 달라고 한다. 나도 지금은 일이 없는데.'},
+ '오랜만에 연락 온 친구가 돈을 빌려 달라고 한다.':{
+  farm:'도시로 떠났던 고향 친구가 오랜만에 연락해 왔다. 일이 잘 안 풀린다며 돈을 빌려 달라고 한다.',
+  labor:'예전 공사장에서 같이 일하던 친구가 오랜만에 연락해 와 돈을 빌려 달라고 한다.',
+  shop:'예전에 자주 오던 친구가 오랜만에 가게에 들렀다. 물건은 안 사고 돈을 빌려 달라고 한다.',
+  cook:'예전에 자주 오던 친구가 오랜만에 식당에 들렀다. 밥을 다 먹고 나서 돈을 빌려 달라고 한다.',
+  hair:'예전 단골이던 친구가 오랜만에 가게에 들렀다. 머리를 하고 나서 돈을 빌려 달라고 한다.',
+  driver:'예전에 같이 운전하던 친구가 오랜만에 연락해 와, 벌금을 내야 한다며 돈을 빌려 달라고 한다.',
+  factory:'예전 공장 동료가 오랜만에 연락해 와, 일자리를 옮기는 사이 생활비가 없다며 돈을 빌려 달라고 한다.',
+  office:'대학 동기가 오랜만에 연락해 왔다. 안부를 묻나 했더니 돈을 빌려 달라고 한다.',
+  civil:'대학 동기가 오랜만에 연락해 왔다. 안부를 묻나 했더니 돈을 빌려 달라고 한다.',
+  teacher:'대학 동기가 오랜만에 연락해 왔다. 안부를 묻나 했더니 돈을 빌려 달라고 한다.',
+  police:'고등학교 동창이 오랜만에 연락해 와 돈을 빌려 달라고 한다. 들어 보니 빚 독촉에 시달리고 있었다.',
+  hosp:'오랜만에 연락 온 친구가 가족이 입원했다며 병원비를 빌려 달라고 한다.',
+  art:'예전에 함께 작업하던 친구가 오랜만에 연락해 와 작업실 월세를 빌려 달라고 한다.',
+  athlete:'먼저 은퇴한 팀 선배가 오랜만에 연락해 와 돈을 빌려 달라고 한다.',
+  ret:'수십 년 만에 연락 온 옛 친구가 돈을 빌려 달라고 한다. 반가움이 금세 식었다.',
+  none:'오랜만에 연락 온 친구가 돈을 빌려 달라고 한다. 나도 일을 찾는 중이라 마음이 복잡하다.'},
+ '오랜만에 연락한 친척이 사업 자금을 빌려 달라고 한다.':{
+  farm:'도시에 사는 친척이 오랜만에 연락해 와, 내 땅을 담보로 사업 자금을 빌려 달라고 한다.',
+  shop:'내 가게가 잘된다는 소문을 들은 친척이 오랜만에 연락해 와 사업 자금을 빌려 달라고 한다.',
+  cook:'내 식당이 잘된다는 소문을 들은 친척이 오랜만에 연락해 와 사업 자금을 빌려 달라고 한다.',
+  hair:'내 가게가 잘된다는 소문을 들은 친척이 오랜만에 연락해 와 사업 자금을 빌려 달라고 한다.',
+  office:'오랜만에 연락한 친척이, 좋은 회사에 다니니 대출도 쉽지 않느냐며 사업 자금을 빌려 달라고 한다.',
+  civil:'오랜만에 연락한 친척이, 공무원이니 대출이 잘 나오지 않느냐며 사업 자금을 빌려 달라고 한다.',
+  police:'오랜만에 연락한 친척이, 공무원이니 대출이 잘 나오지 않느냐며 사업 자금을 빌려 달라고 한다.',
+  teacher:'오랜만에 연락한 친척이, 선생님이니 대출이 잘 나오지 않느냐며 사업 자금을 빌려 달라고 한다.',
+  hosp:'오랜만에 연락한 친척이, 병원에서 일하니 여유가 있지 않느냐며 사업 자금을 빌려 달라고 한다.',
+  art:'오랜만에 연락한 친척이, 이름이 알려졌으니 투자 좀 하라며 사업 자금을 빌려 달라고 한다.',
+  athlete:'오랜만에 연락한 친척이, 이름이 알려졌으니 투자 좀 하라며 사업 자금을 빌려 달라고 한다.',
+  ret:'오랜만에 연락한 친척이, 퇴직금을 받지 않았느냐며 사업 자금을 빌려 달라고 한다.'},
+ '오랜 친구가 사업을 시작한다며 큰돈을 빌려 달라고 한다.':{
+  farm:'오랜 친구가 {city}에 농산물 가게를 연다며, 내 수확물도 받아 주겠다고 큰돈을 빌려 달라고 한다.',
+  labor:'오랜 친구가 작은 건설 하청을 맡게 됐다며, 나에게도 일감을 주겠다고 큰돈을 빌려 달라고 한다.',
+  shop:'오랜 친구가 내 가게 바로 옆에서 같은 장사를 시작하겠다며 큰돈을 빌려 달라고 한다.',
+  cook:'오랜 친구가 함께 식당을 하자며, 주방은 나에게 맡기겠다고 큰돈을 빌려 달라고 한다.',
+  hair:'오랜 친구가 미용실을 하나 더 내자며 큰돈을 빌려 달라고 한다.',
+  driver:'오랜 친구가 배달 업체를 차린다며, 차를 대 주겠다고 큰돈을 빌려 달라고 한다.',
+  factory:'공장을 그만둔 오랜 친구가 부품 납품 일을 시작한다며 큰돈을 빌려 달라고 한다.',
+  office:'회사를 나간 오랜 친구가 앱 회사를 차린다며, 투자라고 생각하라고 큰돈을 빌려 달라고 한다.',
+  civil:'오랜 친구가 카페를 차린다며, 월급이 꼬박꼬박 나오는 사람이 대출이 잘 나온다고 큰돈을 빌려 달라고 한다.',
+  police:'오랜 친구가 카페를 차린다며, 월급이 꼬박꼬박 나오는 사람이 대출이 잘 나온다고 큰돈을 빌려 달라고 한다.',
+  teacher:'오랜 친구가 학원을 차린다며, 교재는 나에게 맡기겠다고 큰돈을 빌려 달라고 한다.',
+  hosp:'오랜 친구가 건강식품 사업을 시작한다며, 병원 사람들도 소개해 달라고 하고 큰돈도 빌려 달라고 한다.',
+  art:'오랜 친구가 작업실 겸 공연장을 같이 차리자며 큰돈을 빌려 달라고 한다.',
+  athlete:'오랜 친구가 {sport} 교실을 차린다며, 내 이름을 걸면 잘될 거라고 큰돈을 빌려 달라고 한다.',
+  none:'오랜 친구가 사업을 시작한다며 큰돈을 빌려 달라고 한다. 일이 없는 지금, 같이 하자는 말이 솔깃하다.'},
+ '동료가 실수를 했다.':{
+  farm:'함께 일하는 일꾼이 농약을 잘못 섞어 밭 한쪽 작물이 누렇게 시들었다.',
+  labor:'같은 현장 동료가 치수를 잘못 재서 하루치 작업을 다시 해야 한다.',
+  shop:'같이 일하는 직원이 손님에게 거스름돈을 잘못 내주어 장부가 맞지 않는다.',
+  cook:'주방 동료가 소금과 설탕을 바꿔 넣어 국 한 솥을 버리게 생겼다.',
+  hair:'함께 일하는 미용사가 손님 머리를 너무 짧게 잘라 손님이 화를 내고 있다.',
+  driver:'같은 회사 기사가 배차를 잘못 받아 손님을 엉뚱한 곳에서 기다리게 했다.',
+  factory:'옆 라인 동료가 기계 설정을 잘못 해 불량품이 한 상자 가득 나왔다.',
+  office:'동료가 거래처에 보낼 견적서 숫자를 잘못 적어 보냈다.',
+  civil:'옆자리 동료가 민원 서류를 다른 사람 이름으로 잘못 발급했다.',
+  police:'함께 순찰하던 동료가 사건 기록을 잘못 적어 처음부터 다시 써야 한다.',
+  hosp:'같은 병동 동료가 환자 약 시간을 헷갈렸다. 다행히 바로 알아챘다.',
+  teacher:'동료 교사가 정답이 두 개인 시험 문제를 냈다. 학생들의 항의가 이어진다.',
+  art:'함께 작업하는 동료가 마감 파일을 엉뚱한 곳에 보내 버렸다.',
+  athlete:'팀 동료가 경기 중 실수로 자책골을 넣었다.'},
+ '후배가 큰 실수를 해 일이 어긋났다.':{
+  farm:'일을 배우던 젊은 일꾼이 물꼬를 잘못 열어 논 한 배미가 물에 잠겼다.',
+  labor:'데려온 후배가 안전줄을 걸지 않고 일하다 걸려 현장 전체가 하루 멈췄다.',
+  shop:'가게를 봐 주던 후배가 외상 장부를 잃어버렸다. 누가 얼마를 갚아야 하는지 알 수 없게 되었다.',
+  cook:'주방 후배가 냉장고 문을 밤새 열어 두어 다음 날 쓸 재료가 모두 상했다.',
+  hair:'후배 미용사가 약을 너무 오래 두어 단골손님 머리카락이 상했다.',
+  driver:'후배 기사가 접촉 사고를 내고 회사에 알리지 않았다가 들통났다.',
+  factory:'후배가 안전 점검을 건너뛰어 라인이 멈췄다. 하루 생산량을 다 놓쳤다.',
+  office:'후배가 중요한 계약서를 잘못 보내 거래처가 크게 화를 냈다.',
+  civil:'후배가 예산 서류에 숫자를 잘못 옮겨 적어 감사에서 지적을 받게 생겼다.',
+  police:'후배가 증거물 기록을 빠뜨려 사건 수사가 꼬였다.',
+  hosp:'후배가 환자 기록을 잘못 옮겨 적어 수술이 하루 미뤄졌다.',
+  teacher:'후배 교사가 생활기록부를 잘못 입력해 학부모 항의가 들어왔다.',
+  art:'함께 작업하던 후배가 원본 파일을 지워 버렸다. 마감이 사흘 남았다.',
+  athlete:'팀 후배가 경기 전날 밤늦게까지 놀다 걸려 팀 전체가 징계를 받게 생겼다.'},
+ '모두가 보는 앞에서 크게 실수를 했다.':{
+  stu:['영어 발표 시간에 외워 둔 문장을 통째로 잊어버렸다. 반 전체가 나를 쳐다봤다.','합창 대회에서 혼자 한 박자 먼저 노래를 시작했다. 강당이 웃음바다가 되었다.','체육 시간 피구 경기에서 던진 공이 우리 편 친구 얼굴에 맞았다. 모두가 보는 앞이었다.','전교생이 모인 조회 시간에 상을 받으러 나가다 계단에서 넘어졌다.','수업 시간에 졸다가 선생님의 질문에 엉뚱한 대답을 했다. 반 전체가 웃었다.'],
+  farm:'장날 시장 한가운데에서 짐을 지고 가다 넘어져 곡식 자루를 쏟았다. 모두가 쳐다봤다.',
+  shop:'손님들이 줄 선 앞에서 진열대를 넘어뜨렸다. 물건이 바닥에 와르르 쏟아졌다.',
+  labor:'현장 반장과 모두가 보는 앞에서 자재를 엉뚱한 곳에 내려 크게 꾸중을 들었다.'},
+ '새로 온 후배 {coll2}에게 일을 가르쳐 주게 되었다.':{
+  farm:'새로 온 일꾼 {coll2}에게 씨 뿌리는 법부터 가르쳐 주게 되었다.',
+  labor:'현장에 처음 온 {coll2}에게 연장 쓰는 법과 안전줄 거는 법을 가르쳐 주게 되었다.',
+  shop:'새로 온 {coll2}에게 물건 진열과 계산하는 법을 가르쳐 주게 되었다.',
+  cook:'주방에 새로 온 {coll2}에게 칼 쓰는 법부터 가르쳐 주게 되었다.',
+  hair:'새로 온 보조 {coll2}에게 머리 감기는 법부터 가르쳐 주게 되었다.',
+  driver:'새로 온 기사 {coll2}에게 동네 지름길과 단골손님을 알려 주게 되었다.',
+  factory:'새로 온 {coll2}에게 기계 다루는 법과 조심해야 할 곳을 가르쳐 주게 되었다.',
+  office:'새로 온 후배 {coll2}에게 보고서 쓰는 법을 가르쳐 주게 되었다.',
+  civil:'새로 발령받은 {coll2}에게 민원 처리하는 법을 가르쳐 주게 되었다.',
+  police:'새로 배치된 {coll2}와(과) 한 조가 되어 순찰하는 법을 가르쳐 주게 되었다.',
+  hosp:'새로 온 {coll2}에게 병동 일을 가르쳐 주게 되었다. 첫 야간 근무를 함께한다.',
+  teacher:'새로 온 {coll2} 선생님의 멘토 교사가 되었다.',
+  art:'작업실에 새로 들어온 {coll2}에게 일을 가르쳐 주게 되었다.',
+  athlete:'팀에 새로 들어온 {coll2}에게 훈련 요령을 가르쳐 주게 되었다.'},
+ '장부를 펼쳐 지난 한 해의 벌이를 따져 보았다.':{
+  farm:'수확을 마치고, 올해 판 곡식 값과 비료 값을 공책에 적어 셈해 보았다.',
+  labor:'올해 일한 날을 달력에 표시해 세어 보았다. 비 온 날이 많았다.',
+  shop:'장부를 펼쳐 지난 한 해 장사를 따져 보았다. 받지 못한 외상값이 꽤 남아 있었다.',
+  cook:'재료값 영수증을 모아 지난 한 해 벌이를 따져 보았다.',
+  hair:'예약 공책을 넘기며 지난 한 해 손님 수와 벌이를 따져 보았다.',
+  driver:'기름값과 차 수리비를 빼고 지난 한 해 벌이를 따져 보았다.',
+  art:'지난 한 해 들어온 일감과 작품값을 하나하나 따져 보았다.'},
+ '일하는 틈틈이 부업을 해 볼까?':{
+  farm:'농한기에 부업을 해 볼까? 이웃은 겨울마다 도시 공사장에 나간다.',
+  labor:'비 오는 날마다 일이 공친다. 그런 날만이라도 다른 부업을 해 볼까?',
+  shop:'가게 문을 닫은 저녁에 배달 부업을 해 볼까?',
+  cook:'쉬는 날 행사 음식을 만드는 부업을 해 볼까?',
+  driver:'쉬는 날 짐 나르는 부업을 해 볼까?',
+  factory:'교대 근무가 끝난 뒤 부업을 해 볼까?',
+  office:'퇴근 뒤 저녁마다 부업을 해 볼까? 동료는 주말에 온라인 강의를 판다.',
+  hosp:'쉬는 날 다른 병원에서 당직을 서는 부업을 해 볼까?',
+  teacher:'방학 동안 부업을 해 볼까? 겸직 허가를 먼저 받아야 한다.',
+  art:'작업만으로는 생활비가 모자라다. 학원 강사 부업을 해 볼까?'},
+ '일을 더 잘하고 싶어 공부를 시작할까?':{
+  farm:'새 농사법을 배우러 농업 기술 교육에 다녀 볼까?',
+  labor:'용접이나 전기 자격증을 따면 일당이 오른다. 공부를 시작할까?',
+  shop:'장부 정리와 온라인 판매를 배워 볼까?',
+  cook:'조리 자격증 공부를 시작할까?',
+  hair:'새 기술을 배우러 {city}의 미용 학원에 다녀 볼까?',
+  driver:'대형 면허를 따 볼까? 따면 버스나 화물차를 몰 수 있다.',
+  factory:'기계 정비 자격증 공부를 시작할까? 따면 반장이 될 수 있다.',
+  office:'퇴근 뒤 야간 대학원에 다녀 볼까?',
+  civil:'승진 시험 공부를 시작할까?',
+  police:'수사 전문 교육을 받아 볼까?',
+  hosp:'전문 자격 공부를 시작할까? 야간 근무와 함께 하기는 쉽지 않다.',
+  teacher:'퇴근 뒤 대학원에 다녀 볼까?',
+  art:'새 기법을 배우러 저녁 강좌에 다녀 볼까?',
+  athlete:'선수 생활 뒤를 생각해 지도자 자격증 공부를 시작할까?'},
+ '동료가 부당한 대우를 받는 것을 보았다.':{
+  farm:'함께 일하는 품팔이 일꾼이 약속한 품삯을 다 못 받는 것을 보았다.',
+  labor:'현장 동료가 일하다 다쳤는데, 반장이 산재 신청을 하지 말라고 하는 것을 보았다.',
+  shop:'옆 가게 직원이 주인에게 욕을 들으며 일하는 것을 보았다.',
+  cook:'주방 막내가 끼니도 거른 채 셰프에게 고함을 듣는 것을 보았다.',
+  hair:'보조 미용사가 몇 달째 최저 임금도 못 받고 있다는 것을 알게 되었다.',
+  driver:'동료 기사가 사고 책임을 혼자 다 떠안는 것을 보았다.',
+  factory:'다른 나라에서 온 동료가 같은 일을 하고도 월급을 덜 받는다는 것을 알게 되었다.',
+  office:'동료가 회의 때마다 팀장에게 모욕적인 말을 듣는 것을 보았다.',
+  civil:'계약직 동료가 같은 일을 하고도 휴가를 못 쓰는 것을 보았다.',
+  police:'동료가 이유 없이 승진에서 밀리는 것을 보았다.',
+  hosp:'신입 동료가 선배들에게 괴롭힘을 당하는 것을 보았다.',
+  teacher:'기간제 선생님이 궂은일을 도맡는 것을 보았다.',
+  art:'함께 작업한 동료의 이름이 작품 소개에서 빠진 것을 보았다.',
+  athlete:'팀 동료가 감독에게 폭언을 듣는 것을 보았다.'},
+ '퇴근길에 {coll}와(과) 한잔하며 속 이야기를 나눴다.':{
+  farm:'일을 마치고 이웃 {coll}와(과) 논둑에 앉아 한잔하며 속 이야기를 나눴다.',
+  labor:'일을 마치고 현장 앞 포장마차에서 {coll}와(과) 한잔하며 속 이야기를 나눴다.',
+  shop:'가게 문을 닫고 옆 가게 {coll}와(과) 한잔하며 속 이야기를 나눴다.',
+  cook:'마감 청소를 끝내고 주방에서 {coll}와(과) 남은 음식에 한잔하며 이야기를 나눴다.',
+  driver:'마지막 운행을 마치고 차고지에서 {coll}와(과) 컵라면을 먹으며 이야기를 나눴다.',
+  factory:'야간 근무를 마치고 공장 앞 식당에서 {coll}와(과) 해장국을 먹으며 이야기를 나눴다.',
+  hosp:'밤 근무를 마친 아침, {coll}와(과) 국밥을 먹으며 이야기를 나눴다.',
+  teacher:'시험 채점을 마치고 {coll} 선생님과 늦은 저녁을 먹으며 이야기를 나눴다.',
+  police:'야간 근무를 마치고 {coll}와(과) 지구대 앞에서 커피를 마시며 이야기를 나눴다.',
+  art:'작업을 마치고 {coll}와(과) 작업실 옥상에서 한잔하며 이야기를 나눴다.',
+  athlete:'훈련을 마치고 {coll}와(과) 숙소 앞 벤치에서 이야기를 나눴다.'},
+ '인공지능 도우미에게 일을 맡겨 보았다.':{
+  farm:'휴대폰 인공지능에게 작물 잎 사진을 보여 주고 무슨 병인지 물어보았다.',
+  labor:'휴대폰 인공지능에게 일자리 공고를 찾아 달라고 해 보았다.',
+  shop:'인공지능 도우미에게 가게 홍보 문구를 써 달라고 해 보았다.',
+  cook:'인공지능 도우미에게 새 메뉴 조리법을 물어보았다.',
+  hair:'인공지능에게 손님 얼굴에 어울리는 머리 모양을 그려 보게 했다.',
+  driver:'인공지능 길 안내가 막히는 길을 피해 손님을 빨리 모셔다 드렸다.',
+  factory:'공장에 인공지능 검사 기계가 들어왔다. 불량품을 사람보다 빨리 골라낸다.',
+  office:'인공지능 도우미에게 보고서 초안을 맡겨 보았다.',
+  civil:'인공지능 도우미에게 민원 답변 초안을 맡겨 보았다.',
+  police:'인공지능이 정리해 준 사건 기록을 하나하나 확인해 보았다.',
+  hosp:'인공지능이 짚어 낸 검사 사진 판독 결과를 다시 확인해 보았다.',
+  teacher:'인공지능 도우미에게 수업 자료 초안을 맡겨 보았다.',
+  art:'인공지능에게 작품 초안을 맡겨 보았다. 묘한 기분이 들었다.',
+  stu:'인공지능 도우미에게 모르는 숙제를 물어보았다. 풀이를 베낄지, 이해할지 잠깐 고민했다.',
+  ret:'손주가 깔아 준 인공지능 도우미에게 말을 걸어 보았다.'},
+ '스트레스 때문인지 속이 자주 쓰리다.':{
+  farm:'비가 오지 않아 애가 타서인지 속이 자주 쓰리다.',
+  labor:'일감 걱정 때문인지 속이 자주 쓰리다.',
+  shop:'장사가 안 되는 날이 이어지자 속이 자주 쓰리다.',
+  cook:'끼니를 거르며 일하다 보니 속이 자주 쓰리다.',
+  hair:'점심을 서서 대충 먹다 보니 속이 자주 쓰리다.',
+  driver:'하루 종일 운전하며 끼니를 대충 때우다 보니 속이 자주 쓰리다.',
+  factory:'밤낮이 바뀌는 교대 근무 때문인지 속이 자주 쓰리다.',
+  office:'마감과 회의가 이어지는 요즘, 속이 자주 쓰리다.',
+  civil:'민원 전화가 이어지는 요즘, 속이 자주 쓰리다.',
+  hosp:'밤 근무에 끼니를 거르다 보니 속이 자주 쓰리다.',
+  teacher:'학부모 민원 전화가 이어지자 속이 자주 쓰리다.',
+  police:'야간 출동이 이어지자 속이 자주 쓰리다.',
+  art:'마감을 앞두고 속이 자주 쓰리다.',
+  athlete:'큰 경기를 앞두고 속이 자주 쓰리다.',
+  stu:'시험이 다가오자 속이 자주 쓰리다.',
+  none:'일자리 걱정 때문인지 속이 자주 쓰리다.'},
+ '허리가 자주 아프다.':{
+  farm:'허리를 굽혀 김을 매다 보니 허리가 자주 아프다.',
+  labor:'무거운 자재를 나르다 보니 허리가 자주 아프다.',
+  shop:'종일 좁은 자리에 쪼그려 앉아 물건을 팔다 보니 허리가 자주 아프다.',
+  cook:'종일 서서 무거운 냄비를 들다 보니 허리가 자주 아프다.',
+  hair:'종일 서서 손님 머리를 숙여 보다 보니 허리가 자주 아프다.',
+  driver:'종일 운전석에 앉아 있다 보니 허리가 자주 아프다.',
+  factory:'같은 자세로 부품을 조립하다 보니 허리가 자주 아프다.',
+  office:'종일 모니터 앞에 앉아 있다 보니 허리가 자주 아프다.',
+  civil:'종일 민원 창구에 앉아 있다 보니 허리가 자주 아프다.',
+  hosp:'환자를 일으키고 옮기다 보니 허리가 자주 아프다.',
+  teacher:'종일 서서 수업하다 보니 허리가 자주 아프다.'},
+ '교통사고를 당했다.':{
+  driver:'운행 중에 뒤차가 들이받았다. 손님은 무사했지만 차가 크게 망가졌다.',
+  labor:'새벽 일터로 가던 트럭 짐칸에서 사고가 났다.',
+  farm:'경운기를 몰고 큰길에 나갔다가 차에 받혔다.',
+  stu:'학교 앞 횡단보도를 건너다 차에 부딪혔다.',
+  ret:'시장에 가려고 길을 건너다 차에 부딪혔다.'},
+ '일감이 끊긴 날이 이어졌다.':{
+  labor:'공사가 멈춰 일감이 끊긴 날이 이어졌다. 새벽 인력 시장에서 빈손으로 돌아왔다.',
+  driver:'손님이 뚝 끊긴 날이 이어졌다. 빈 차로 시내를 돌았다.'},
+ '모아 둔 돈을 어떻게 굴릴까?':{
+  farm:'모아 둔 돈으로 논밭을 더 살까, 은행에 넣어 둘까?',
+  shop:'모아 둔 돈으로 가게를 넓힐까, 따로 모아 둘까?',
+  cook:'모아 둔 돈으로 식당을 넓힐까, 따로 모아 둘까?',
+  hair:'모아 둔 돈으로 의자를 하나 더 들일까, 따로 모아 둘까?',
+  driver:'모아 둔 돈으로 내 차를 마련할까, 따로 모아 둘까?'},
+ '세계 경기가 크게 가라앉았다. 뉴스마다 일자리가 줄어든다는 소식이었다.':{
+  farm:'세계 경기가 크게 가라앉았다. 곡식 값이 떨어져 올해 수확으로 손에 쥐는 돈이 줄었다.',
+  labor:'세계 경기가 크게 가라앉았다. 공사가 줄줄이 멈춰 일감이 반으로 줄었다.',
+  shop:'세계 경기가 크게 가라앉았다. 손님 발길이 뚝 끊겼다.',
+  cook:'세계 경기가 크게 가라앉았다. 저녁 손님이 절반으로 줄었다.',
+  hair:'세계 경기가 크게 가라앉았다. 손님들이 머리 하러 오는 날을 미뤘다.',
+  driver:'세계 경기가 크게 가라앉았다. 손님이 줄어 빈 차로 다니는 시간이 늘었다.',
+  factory:'세계 경기가 크게 가라앉았다. 공장 주문이 줄어 잔업이 사라졌고, 사람을 줄인다는 이야기가 돈다.',
+  office:'세계 경기가 크게 가라앉았다. 회사가 채용을 멈추고 구조 조정 이야기가 나온다.',
+  civil:'세계 경기가 크게 가라앉았다. 월급은 그대로지만, 일자리를 잃은 사람들이 민원 창구에 줄을 섰다.',
+  police:'세계 경기가 크게 가라앉았다. 생활고로 인한 신고가 부쩍 늘었다.',
+  hosp:'세계 경기가 크게 가라앉았다. 병원비가 없어 치료를 미루는 환자가 늘었다.',
+  teacher:'세계 경기가 크게 가라앉았다. 급식비를 내지 못하는 학생이 늘었다.',
+  art:'세계 경기가 크게 가라앉았다. 공연과 전시가 줄줄이 취소되었다.',
+  athlete:'세계 경기가 크게 가라앉았다. 팀 후원사가 후원을 끊었다.',
+  stu:'세계 경기가 크게 가라앉았다. 졸업한 선배들이 일자리를 구하지 못한다는 이야기가 들렸다.',
+  ret:'세계 경기가 크게 가라앉았다. 저금 이자가 줄고 물건 값이 올랐다.'},
+ '젊은이들에게 내가 아는 것을 가르쳐 줄 기회가 생겼다.':{
+  ret_farm:'마을 청년들에게 평생 지어 온 농사 비결을 가르쳐 줄 기회가 생겼다.',
+  ret_labor:'직업 학교에서 젊은이들에게 연장 다루는 법을 가르쳐 줄 기회가 생겼다.',
+  ret_shop:'시장의 청년 상인들에게 장사 비결을 들려줄 기회가 생겼다.',
+  ret_cook:'동네 청년 식당에서 오래 써 온 조리법을 전해 줄 기회가 생겼다.',
+  ret_hair:'미용 학원에서 젊은이들에게 가위 쓰는 법을 가르쳐 줄 기회가 생겼다.',
+  ret_driver:'운전 학원에서 젊은이들에게 안전 운전을 가르쳐 줄 기회가 생겼다.',
+  ret_factory:'기술 학교에서 젊은이들에게 기계 다루는 법을 가르쳐 줄 기회가 생겼다.',
+  ret_office:'창업하는 젊은이들에게 조언해 줄 기회가 생겼다.',
+  ret_civil:'주민 센터에서 젊은 직원들에게 경험을 나눌 기회가 생겼다.',
+  ret_police:'학교에서 아이들에게 안전 교육을 할 기회가 생겼다.',
+  ret_hosp:'보건소 교육에서 젊은 의료진에게 경험을 나눌 기회가 생겼다.',
+  ret_teacher:'마을 공부방에서 아이들을 다시 가르칠 기회가 생겼다.',
+  ret_art:'동네 문화 센터에서 젊은이들에게 작품 만드는 법을 가르쳐 줄 기회가 생겼다.',
+  ret_athlete:'동네 아이들에게 {sport}을(를) 가르쳐 줄 기회가 생겼다.'}
+};
+function specGroup(L){ const f=L.f||{}; if(f.job&&!f.school) return SPEC_JG[f.job]||null; if(f.school||L.age<19) return 'stu';
+  if(L.age>=60){ const lj=(L.jobs||[]).slice(-1)[0]; let id=null; if(lj) for(const k in JOBS){ if(JOBS[k].n===lj.n||(k==='athlete'&&/선수$/.test(lj.n))){ id=k; break; } } L._retG=id?'ret_'+SPEC_JG[id]:null; return 'ret'; }
+  return 'none'; }
+function specText(L,s){ const E=SPEC[s]; if(!E) return s; const g=specGroup(L); let v=E[g]; if(!v&&g==='ret'&&L._retG) v=E[L._retG]; if(!v) return s;
+  if(Array.isArray(v)){ let h=(L.ws|0)^(L.age*2654435761); for(let i=0;i<s.length;i++) h=Math.imul(h^s.charCodeAt(i),16777619); v=v[Math.abs(h)%v.length]; }
+  return v; }
+
 </script>
 
 <!-- =====================================================================
@@ -5292,7 +5971,7 @@ var OPP_N=0;
   <section id="s-hub" class="stack" hidden>
     <div class="panel stack" id="hubNow"></div>
     <div class="panel stack-s" id="hubRoom"></div>
-    <div class="panel stack-s"><h3>지나온 삶들</h3><ul class="lives" id="hubLives"></ul></div>
+    <div class="panel stack-s"><h3>지나온 삶들</h3><div id="hubLives"></div></div>
     <div class="row"><button class="btn ghost" id="btnLogout">로그아웃</button><button class="btn ghost" id="btnTeacher2">교사용 모드</button></div>
   </section>
 
@@ -5521,7 +6200,7 @@ function openHub(){
   G.teacher=false; G.troom=null;
   if(sv) $('btnResume').onclick=()=>{ G.life=Life.load(sv); G.sec=secOf(G.life); startGame(); }; else $('btnNew').onclick=birth;
   const lv=G.data.lives||[];
-  $('hubLives').innerHTML=lv.length?lv.slice().reverse().map(l=>`<li>${l.title?`<b>${esc(l.title)}</b><br>`:''}<b>${esc(l.name)}</b> · ${l.age}세 · ${COUNTRIES[l.c||'KR'].n} ${SETN[l.set]} · ${TRAIT[l.top]||''}<q>${esc(l.epi||'남긴 말 없음')}</q></li>`).join(''):'<li class="sub">아직 마친 삶이 없습니다.</li>';
+  $('hubLives').outerHTML=`<div id="hubLives">${lv.length?`<div class="tscroll"><table class="dtbl"><thead><tr><th>삶의 제목 · 이름</th><th>태어난 곳 · 향년</th><th>성향 · 남긴 말</th></tr></thead><tbody>${lv.slice().reverse().map(l=>`<tr><td><b>${esc(l.title||'제목 없는 삶')}</b><br>${esc(l.name)}</td><td>${(COUNTRIES[l.c||'KR']||COUNTRIES.KR).n} ${SETN[l.set]||''}<br><b>${l.age}세</b>${l.cause?` <span class="small sub">(${esc(l.cause)})</span>`:''}</td><td>${TRAIT[l.top]||'—'}<br><span class="q">“${esc(l.epi||'남긴 말 없음')}”</span></td></tr>`).join('')}</tbody></table></div>`:'<p class="sub">아직 마친 삶이 없습니다.</p>'}</div>`;
   renderHubRoom(); show('hub');
 }
 function renderHubRoom(msg){
@@ -5648,15 +6327,36 @@ function personSpriteOld(o){
 }
 /* ---------- 탈것 · 동물 (오른쪽을 향한 그림, 왼쪽은 뒤집는다) ---------- */
 function vehicleSprite(kind,face,col,rider){
-  const key=['V',kind,face,col,rider?rider.skin+rider.hair+rider.body:''].join('|'), w=kind==='car'?28:kind==='horse'?22:18, h=kind==='horse'?20:18;
+  const rk=rider?[rider.skin,rider.hair,rider.body,rider.pants||'',rider.st||'',rider.long?1:0,rider.sty|0].join(','):'';
+  const key=['V2',kind,face,col,rk].join('|'), w=kind==='car'?28:kind==='horse'?30:kind==='moto'?28:26, h=kind==='car'?18:kind==='horse'?30:28;
   if(face<0) return cached(key,w,h,(x)=>x.drawImage(flipX(vehicleSprite(kind,1,col,rider)),0,0));
   return cached(key,w,h,(x,c)=>{ const P=(X,Y,W,H,cc)=>pr(x,X,Y,W,H,cc), cD=shade(col,.7), cL=shade(col,1.35), tire='#303038', rim='#A8B0B8';
-    const riderAt=(X,Y)=>{ if(!rider) return; P(X,Y+5,5,5,rider.body); P(X+1,Y,4,5,rider.skin); P(X,Y-1,5,2,rider.hair); P(X+3,Y+2,1,1,INK); };
+    const ln=(x0,y0,x1,y1,cc,t)=>{ const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1); for(let i=0;i<=n;i++) P(Math.round(x0+(x1-x0)*i/n),Math.round(y0+(y1-y0)*i/n),t||1,t||1,cc); };
+    const wheel=(cx,cy,th)=>{ [[-1,-3],[0,-3],[1,-3],[-2,-2],[2,-2],[-3,-1],[3,-1],[-3,0],[3,0],[-3,1],[3,1],[-2,2],[2,2],[-1,3],[0,3],[1,3]].forEach(([dx,dy])=>P(cx+dx,cy+dy,1,1,tire));
+      if(th){ [[-1,-2],[0,-2],[1,-2],[-2,-1],[2,-1],[-2,0],[2,0],[-2,1],[2,1],[-1,2],[0,2],[1,2]].forEach(([dx,dy])=>P(cx+dx,cy+dy,1,1,'#484852')); }
+      P(cx,cy,1,1,rim); if(!th){ P(cx-2,cy,1,1,rim); P(cx+2,cy,1,1,rim); P(cx,cy-2,1,1,rim); P(cx,cy+2,1,1,rim); } };
+    // 타는 사람: 걷는 그림과 똑같은 사람의 윗몸을 안장에 앉히고, 굽힌 다리와 앞으로 뻗은 팔만 더 그린다
+    const R=rider?Object.assign({pants:'#384868',st:'adult'},rider):null;
+    const seat=(sx,sy,hand,foot)=>{ if(!R) return; const st=R.st==='baby'||R.st==='tod'?'kid':R.st, D=personDims(st), pt=R.pants, ptD=shade(pt,.8);
+      const half=personSprite({dir:2,fr:0,st,skin:R.skin,hair:R.hair,body:R.body,pants:pt,long:R.long,sty:R.sty|0,half:1});
+      ln(sx,sy,foot[0],foot[1]-1,pt,2); P(foot[0]-1,foot[1],4,1,'#3A2E2E');                       // 굽힌 다리와 신발
+      x.drawImage(half,sx-8,sy-23);                                                            // 윗몸 (엉덩이가 안장 위에)
+      const shY=sy-D.tH+1; ln(sx+1,shY,hand[0]-1,hand[1],shade(R.body,.85),2); P(hand[0],hand[1],2,2,R.skin); };
     if(kind==='car'){ P(1,8,26,6,col); P(1,12,26,2,cD); P(6,3,15,6,col); P(8,4,5,4,'#BFE3F5'); P(14,4,5,4,'#BFE3F5'); P(8,4,2,1,'#FFFFFF'); P(2,8,4,1,cL); P(25,9,2,2,'#FFE9A8'); P(1,10,1,2,'#E05050');
       P(4,13,5,4,tire); P(19,13,5,4,tire); P(6,14,1,2,rim); P(21,14,1,2,rim); }
-    else if(kind==='moto'){ P(2,12,4,4,tire); P(12,12,4,4,tire); P(3,13,2,2,rim); P(13,13,2,2,rim); P(4,10,10,3,col); P(5,9,6,2,cD); P(13,7,1,4,'#606870'); P(12,7,3,1,'#606870'); riderAt(5,1); }
-    else if(kind==='cycle'){ P(1,11,5,5,tire); P(11,11,5,5,tire); P(2,12,3,3,'#FFFFFF00'); x.clearRect(2,12,3,3); x.clearRect(12,12,3,3); P(4,10,9,1,col); P(7,8,1,3,col); P(12,7,1,4,col); P(11,7,3,1,'#606870'); riderAt(5,0); }
-    else { const b='#9A6A40', bD=shade(b,.75); P(3,8,14,6,b); P(3,13,14,1,bD); P(15,3,4,7,b); P(17,2,4,4,b); P(20,4,1,1,INK); P(16,1,2,2,bD); P(2,8,2,5,'#4A3020'); P(4,14,2,5,bD); P(8,14,2,5,b); P(12,14,2,5,bD); P(15,14,2,5,b); P(6,6,6,3,'#C04040'); riderAt(7,-1); }
+    else if(kind==='cycle'){
+      wheel(5,23); wheel(20,23);
+      ln(5,23,10,18,col); ln(5,23,11,23,col); ln(11,23,10,18,col); ln(10,18,17,18,col); ln(11,23,17,18,col); ln(17,18,20,23,col);
+      P(17,14,1,4,'#505860'); P(16,14,3,1,'#505860'); P(8,17,4,1,'#3A3030'); P(10,22,3,2,'#404850');
+      seat(10,17,[16,13],[12,23]); P(17,14,1,1,'#505860'); }
+    else if(kind==='moto'){
+      wheel(5,23,1); wheel(22,23,1);
+      P(7,18,13,3,col); P(8,17,10,1,col); P(8,17,4,1,cL); P(7,20,13,1,cD); P(10,21,6,2,'#4A4C54'); P(3,19,6,1,'#7A7E86'); P(19,13,1,7,'#606870'); P(18,13,3,1,'#606870'); P(21,16,2,2,'#FFE9A8');
+      P(7,16,6,1,'#2E2A2A'); seat(10,16,[18,12],[14,21]); }
+    else { const b='#9A6A40', bD=shade(b,.75), bL=shade(b,1.2);
+      P(4,15,18,7,b); P(4,15,18,1,bL); P(4,21,18,1,bD); P(20,8,5,9,b); P(22,6,6,5,b); P(27,8,1,2,b); P(25,8,1,1,INK); P(22,4,2,3,bD); P(19,8,2,7,'#4A3020'); P(2,15,3,6,'#4A3020');
+      P(5,22,2,7,bD); P(9,22,2,7,b); P(16,22,2,7,bD); P(20,22,2,7,b); P(5,28,2,1,'#2A2020'); P(9,28,2,1,'#2A2020'); P(16,28,2,1,'#2A2020'); P(20,28,2,1,'#2A2020');
+      P(8,13,8,3,'#C04040'); P(8,15,8,1,'#8A2A2A'); seat(12,14,[21,11],[14,21]); }
     outline(c); });
 }
 function animalSprite(kind,fr,face){
@@ -5884,49 +6584,77 @@ const SHADOW_C='rgba(24,40,28,.30)';
 function dropShadow(c,x,y,w){ x=Math.round(x); y=Math.round(y); c.fillStyle=SHADOW_C; c.fillRect(x-(w>>1)+2,y-1,w-4,1); c.fillRect(x-(w>>1),y,w,2); c.fillRect(x-(w>>1)+2,y+2,w-4,1); }
 
 /* ---------- 사람 ---------- */
+/* ---------- 사람 (5판) ----------
+   포켓몬·스타듀밸리 같은 인디 도트 게임처럼, 머리와 몸통을 또렷하게 그리고 다리는 짧게 줄였다.
+   나이에 따라 몸의 비율이 달라진다: 걸음마(2~5살) · 어린이(6~12살) · 어른 · 노인. */
+function personDims(st){
+  if(st==='tod') return {HW:8,HH:7,TW:6,tH:3,lH:2,LW:2};
+  if(st==='kid') return {HW:8,HH:8,TW:6,tH:4,lH:3,LW:2};
+  if(st==='elder') return {HW:10,HH:9,TW:8,tH:6,lH:4,LW:3};
+  return {HW:10,HH:9,TW:8,tH:6,lH:5,LW:3};
+}
 function personSprite(o){
-  const key=['P2',o.dir,o.fr|0,o.blink?1:0,o.st,o.skin,o.hair,o.body,o.pants,o.long?1:0,o.hat||'',o.sty|0].join('|');
+  const key=['P5',o.dir,o.fr|0,o.blink?1:0,o.st,o.skin,o.hair,o.body,o.pants,o.long?1:0,o.hat||'',o.sty|0,o.half?1:0].join('|');
   if(o.dir===2) return cached(key,16,24,(x)=>{ x.drawImage(flipX(personSprite(Object.assign({},o,{dir:1}))),0,0); });
   return cached(key,16,24,(x,c)=>{
-    const P=(X,Y,W,H,col)=>pr(x,X,Y,W,H,col), sk=o.skin, skD=shade(sk,.84), skL=shade(sk,1.1), hr=o.hair, hrD=shade(hr,.7), hrL=shade(hr,1.45),
-      bd=o.body, bdD=shade(bd,.76), bdL=shade(bd,1.2), pt=o.pants, ptD=shade(pt,.78), sh='#3A2E2E', d=o.dir, fr=o.fr|0, st=o.st, sty=o.sty|0, blush='#F0A090';
-    if(st==='baby'){ x.translate(0,8); const a=fr===1?1:0;      // 기어 다니는 아기 (옆모습은 오른쪽을 보게 그린 뒤 뒤집어, 가는 쪽으로 머리가 향하게)
+    const P=(X,Y,W,H,col)=>{ if(W>0&&H>0) pr(x,X,Y,W,H,col); }, sk=o.skin, skD=shade(sk,.84), skL=shade(sk,1.1), hr=o.hair, hrD=shade(hr,.7), hrL=shade(hr,1.35),
+      bd=o.body, bdD=shade(bd,.76), bdL=shade(bd,1.2), pt=o.pants||'#384868', ptD=shade(pt,.78), sh='#3A2E2E', shL='#6A5650', d=o.dir, fr=o.fr|0, st=o.st, sty=o.sty|0, blush='#F0A090', mo='#A85A50';
+    if(st==='baby'){ x.translate(0,8); const a=fr===1?1:0, dp='#F4F2EC', dpD='#D6D0C4', bmo='#C8705A';
       if(d===1){ const tc=mk(16,16), tx=tc.getContext('2d'), Q=(X,Y,W,H,col)=>pr(tx,X,Y,W,H,col);
-        Q(3,9,8,4,bd); Q(3,12,8,1,bdD); Q(2+a,13,2,1,sk); Q(8-a,13,2,1,sk); Q(9,6,5,5,sk); Q(9,6,5,1,hr); Q(9,5,2,2,hr); Q(12,8,1,1,INK); Q(13,10,1,1,skD); Q(11,9,1,1,blush); x.drawImage(flipX(tc),0,0); outline(c); return; }
-      if(false){ P(3,9,8,4,bd); P(3,12,8,1,bdD); P(2+a,13,2,1,sk); P(8-a,13,2,1,sk); P(9,6,5,5,sk); P(9,6,5,1,hr); P(12,5,2,2,hr); P(10,8,1,1,INK); P(13,10,1,1,skD); P(10,9,1,1,blush); }
-      else { P(5,9,6,4,bd); P(5,12,6,1,bdD); P(3,10+a,2,2,sk); P(11,11-a,2,2,sk); P(5,3,6,6,sk); P(5,8,6,1,skD); P(6,2,4,2,hr); P(5,3,1,2,hr); P(10,3,1,2,hr); if(d===0){ P(6,5,1,2,INK); P(9,5,1,2,INK); P(5,7,1,1,blush); P(10,7,1,1,blush); } else P(5,3,6,4,hr); }
+        Q(1,7,3,3,dp); Q(1,9,3,1,dpD); Q(3,6,7,4,bd); Q(4,6,5,1,bdL); Q(3,9,7,1,bdD);
+        Q(2+a,10,3,2,bdD); Q(1+a,11,1,1,sk); Q(5-a,10,2,2,bd); Q(9+a,9,2,3,bd); Q(9+a,12,2,1,sk);
+        Q(9,1,6,6,sk); Q(9,6,6,1,skD); Q(9,1,6,1,hr); Q(9,2,2,2,hr); Q(11,0,2,1,hr);
+        Q(10,4,1,1,skD); Q(13,3,1,2,INK); Q(13,5,1,1,blush); Q(14,5,1,1,bmo); Q(14,2,1,1,skL);
+        x.drawImage(flipX(tc),0,0); outline(c); return; }
+      P(4,0,8,7,sk); P(4,6,8,1,skD); P(3,3,1,2,sk); P(12,3,1,2,sk); P(4,7,8,4,bd); P(6,7,4,1,bdL); P(4,10,8,1,bdD);
+      P(5,11,6,2,dp); P(5,12,6,1,dpD); P(1,11,4,2,bd); P(11,11,4,2,bd); P(0,12,2,1,sk); P(14,12,2,1,sk); P(2,8,2,3,bd); P(2,11,2,1,sk);
+      if(a){ P(12,5,2,3,bd); P(12,4,2,1,sk); } else { P(12,8,2,3,bd); P(12,11,2,1,sk); }
+      if(d===3){ P(4,0,8,6,hr); P(6,1,3,1,hrL); P(7,-1,2,1,hr); }
+      else { P(5,0,6,1,hr); P(4,0,1,2,hr); P(11,0,1,2,hr); P(7,-1,2,1,hr);
+        if(o.blink){ P(6,4,1,1,INK); P(9,4,1,1,INK); } else { P(6,3,1,2,INK); P(9,3,1,2,INK); P(6,3,1,1,'#FFFFFF'); P(9,3,1,1,'#FFFFFF'); }
+        P(5,5,1,1,blush); P(10,5,1,1,blush); P(7,5,2,1,bmo); }
       outline(c); return; }
-    const kid=st==='kid', el=st==='elder', tH=kid?4:el?5:6, lH=kid?3:el?4:5, total=10+tH+lH+2, hy=24-total, by=hy+10, ly=by+tH;
-    const la=fr===1?1:0, lb=fr===2?1:0;                          // 들린 다리
-    // ---- 다리와 신발
-    if(d===1){ const o1=fr===1?-2:fr===2?2:0;
-      P(6-o1,ly,3,lH-(o1<0?1:0)+0,ptD); P(4-o1,ly+lH-(o1<0?1:0),5,2,sh);              // 뒤쪽 다리
-      P(6+o1,ly,3,lH-(o1>0?1:0),pt); P(4+o1,ly+lH-(o1>0?1:0),5,2,sh); P(4+o1,ly+lH-(o1>0?1:0),2,1,shade(sh,1.5)); }
-    else { P(5,ly,3,lH-la,pt); P(8,ly,3,lH-lb,pt); P(8,ly,1,lH-lb,ptD); P(4,ly+lH-la,4,2,sh); P(8,ly+lH-lb,4,2,sh); P(4,ly+lH-la,1,1,shade(sh,1.6)); P(8,ly+lH-lb,1,1,shade(sh,1.6)); }
-    // ---- 머리카락이 어깨 뒤로 (긴 머리)
-    if(o.long&&d!==1) P(3,hy+3,10,tH+5,d===3?hr:hrD);
-    if(o.long&&d===1) P(8,hy+3,4,tH+6,hrD);
+    const D=personDims(st), el=st==='elder', big=D.HW===10, small=!big;
+    const legs=o.half?0:D.lH+1, total=D.HH+D.tH+legs, hy=24-total-(o.half?0:0), by=hy+D.HH, ly=by+D.tH, L0=8-D.HW/2, T0=8-D.TW/2;
+    const l1=fr===1?1:0, l2=fr===2?1:0;                                 // 걸을 때 들리는 발
+    // ---- 긴 머리는 몸 뒤로
+    if(o.long&&d!==1) P(L0,hy+3,D.HW,D.tH+(big?4:3),d===3?hr:hrD);
+    if(o.long&&d===1) P(L0+D.HW-4,hy+3,4,D.tH+(big?4:3),hrD);
+    // ---- 다리: 짧게, 발만 또렷하게
+    if(!o.half){
+      if(d===1){ const s=fr===1?1:fr===2?-1:0, lx0=8-D.LW;
+        P(lx0+1-s,ly,D.LW,D.lH,ptD); P(lx0-s,ly+D.lH,D.LW+1,1,shade(sh,.8));              // 뒤쪽 다리
+        P(lx0+s,ly,D.LW,D.lH,pt); P(lx0-1+s,ly+D.lH,D.LW+1,1,sh); P(lx0-1+s,ly+D.lH,1,1,shL); }   // 앞쪽 다리 (발끝이 앞으로)
+      else { const a0=8-D.LW, b0=8;
+        P(a0,ly,D.LW,D.lH-l1,pt); P(b0,ly,D.LW,D.lH-l2,pt); P(b0,ly,1,D.lH-l2,ptD);
+        P(a0-1,ly+D.lH-l1,D.LW+1,1,sh); P(b0,ly+D.lH-l2,D.LW+1,1,sh); if(big){ P(a0-1,ly+D.lH-l1,1,1,shL); P(b0+D.LW,ly+D.lH-l2,1,1,shL); } } }
     // ---- 몸통과 팔
-    if(d===1){ P(5,by,6,tH,bd); P(5,by,1,tH,bdL); P(9,by,2,tH,bdD); P(5,by+tH-1,6,1,pt);
-      const sw=fr===1?1:fr===2?-1:0; P(6+sw,by+1,3,tH-1,bdD); P(6+sw,by+tH-1,3,1,sk); P(6+sw,by,3,1,bd); }
-    else { P(4,by,8,tH,bd); P(4,by,1,tH,bdL); P(10,by,2,tH,bdD); P(4,by+tH-1,8,1,pt);
-      if(d===0){ P(6,by,4,1,skD); P(7,by,2,1,sk); P(7,by+1,2,tH-3,bdL); }     // 목과 단추 줄
-      const a1=fr===1?1:0, a2=fr===2?1:0;
-      P(3,by+a1,1,tH-1,bd); P(12,by+a2,1,tH-1,bdD); P(3,by+tH-1+a1,1,1,sk); P(12,by+tH-1+a2,1,1,sk); P(3,by+a1,1,1,bdL); }
+    if(d===1){ const tw=D.TW-2, t0=8-tw/2, sw=fr===1?1:fr===2?-1:0;
+      P(t0,by,tw,D.tH,bd); P(t0,by,1,D.tH,bdL); P(t0+tw-1,by,1,D.tH,bdD); P(t0,by+D.tH-1,tw,1,pt);
+      P(t0+1+sw,by+1,2,D.tH-1,bdD); P(t0+1+sw,by+1,1,D.tH-2,bd); P(t0+1+sw,by+D.tH-1,2,1,sk); }
+    else { P(T0,by,D.TW,D.tH,bd); P(T0,by,1,D.tH,bdL); P(T0+D.TW-1,by,1,D.tH,bdD); P(T0,by+D.tH-1,D.TW,1,pt);
+      if(d===0){ P(7,by,2,1,skD); if(D.tH>=5) P(7,by+1,2,D.tH-3,bdL); }
+      P(T0-1,by+1+l2,1,D.tH-1,bd); P(T0+D.TW,by+1+l1,1,D.tH-1,bdD); P(T0-1,by+D.tH-1+l2,1,1,sk); P(T0+D.TW,by+D.tH-1+l1,1,1,sk); }
     // ---- 머리
-    if(d===3){ P(4,hy,8,1,hr); P(3,hy+1,10,8,hr); P(4,hy+9,8,1,hrD); P(5,hy+1,3,1,hrL); P(4,hy+2,1,2,hrL); P(3,hy+8,10,1,hrD); P(6,hy+9,4,1,skD); P(9,hy+4,2,3,hrD); }
-    else if(d===1){ P(5,hy,6,1,hr); P(4,hy+1,8,2,hr); P(4,hy+3,7,7,sk); P(4,hy+9,7,1,skD); P(4,hy+3,4,1,hr); P(4,hy+4,1,1,hr); P(8,hy+3,4,6,hr); P(8,hy+8,3,1,hrD); P(5,hy+1,3,1,hrL); P(7,hy+6,1,2,skD);
-      P(5,hy+5,1,2,INK); if(!o.blink) P(5,hy+5,1,1,'#FFFFFF'); P(3,hy+7,1,1,skL); P(5,hy+7,1,1,blush); P(4,hy+8,1,1,'#A85A50'); if(o.blink) P(5,hy+5,1,2,sk); if(o.blink) P(5,hy+6,1,1,INK); }
-    else { P(5,hy,6,1,hr); P(4,hy+1,8,1,hr); P(3,hy+2,10,2,hr); P(4,hy+3,8,7,sk); P(4,hy+9,8,1,skD);
-      if(sty===0){ P(4,hy+3,8,1,hr); P(3,hy+4,1,3,hr); P(12,hy+4,1,3,hr); }
-      else if(sty===1){ P(4,hy+3,6,2,hr); P(10,hy+3,2,1,hr); P(3,hy+4,1,4,hr); P(12,hy+4,1,3,hr); P(10,hy+4,1,1,hr); }
-      else if(sty===2){ P(5,hy-1,2,1,hr); P(9,hy-1,2,1,hr); P(4,hy+3,8,1,hr); P(6,hy+3,4,1,hrD); P(3,hy+4,1,2,hr); P(12,hy+4,1,2,hr); }
-      else { P(3,hy+3,10,2,hr); P(3,hy+5,2,3,hr); P(11,hy+5,2,3,hr); }
-      P(5,hy+1,3,1,hrL); P(9,hy+2,1,1,hrL);
-      if(d===0){ if(o.blink){ P(5,hy+6,2,1,INK); P(9,hy+6,2,1,INK); } else { P(5,hy+5,2,2,INK); P(9,hy+5,2,2,INK); P(5,hy+5,1,1,'#FFFFFF'); P(9,hy+5,1,1,'#FFFFFF'); }
-        P(4,hy+7,2,1,blush); P(10,hy+7,2,1,blush); P(7,hy+8,2,1,'#A85A50'); P(6,hy+6,0,0,sk); } }
-    if(o.hat){ P(2,hy,12,2,o.hat); P(4,hy-1,8,1,o.hat); P(2,hy+1,12,1,shade(o.hat,.75)); }
-    if(el){ if(d===1) P(2,by+2,1,total-(by-hy)-2+1,'#7A5A3C'); else if(d===0) { P(13,by+3,1,lH+tH-2,'#7A5A3C'); P(12,by+2,2,1,'#7A5A3C'); } }
+    const R=L0+D.HW-1, ft=hy+3, ey=hy+D.HH-(big?4:4);
+    if(d===3){ P(L0+1,hy,D.HW-2,1,hr); P(L0,hy+1,D.HW,D.HH-2,hr); P(L0+1,hy+D.HH-1,D.HW-2,1,hrD); P(L0+2,hy+1,3,1,hrL); P(L0+1,hy+2,1,2,hrL); P(7,hy+D.HH-1,2,1,skD);
+      if(sty===2) { P(L0+1,hy-1,2,1,hr); P(R-2,hy-1,2,1,hr); } }
+    else if(d===1){ P(L0+1,hy,D.HW-2,1,hr); P(L0,hy+1,D.HW,2,hr); P(L0,ft,D.HW-3,D.HH-3,sk); P(L0+1,hy+D.HH-1,D.HW-4,1,skD);
+      P(L0,ft,3,1,hr); P(R-3,ft-1,4,D.HH-3,hr); P(R-3,hy+D.HH-2,3,1,hrD); P(L0+2,hy+1,3,1,hrL); P(R-4,ey+1,1,2,skD);
+      P(L0-1,ey+1,1,1,sk); P(L0+1,ey,1,2,INK); if(!o.blink) P(L0+1,ey,1,1,'#FFFFFF'); else { P(L0+1,ey,1,1,sk); }
+      P(L0+1,ey+2,1,1,blush); P(L0,ey+3>hy+D.HH-2?hy+D.HH-2:ey+3,1,1,mo);
+      if(sty===2) P(R-1,hy-1,2,1,hr); }
+    else { P(L0+2,hy,D.HW-4,1,hr); P(L0+1,hy+1,D.HW-2,1,hr); P(L0,hy+2,D.HW,2,hr); P(L0+1,ft,D.HW-2,D.HH-3,sk); P(L0+2,hy+D.HH-1,D.HW-4,1,skD);
+      if(sty===0){ P(L0+1,ft,D.HW-2,1,hr); P(L0,ft,1,2,hr); P(R,ft,1,2,hr); P(L0+1,ft+1,2,1,hr); }
+      else if(sty===1){ P(L0+1,ft,D.HW-5,2,hr); P(R-2,ft,2,1,hr); P(L0,ft,1,3,hr); P(R,ft,1,2,hr); }
+      else if(sty===2){ P(L0+1,hy-1,2,1,hr); P(R-2,hy-1,2,1,hr); P(L0+1,ft,D.HW-2,1,hr); P(7,ft,2,1,hrD); P(L0,ft,1,2,hr); P(R,ft,1,2,hr); }
+      else { P(L0,ft,D.HW,1,hr); P(L0,ft+1,1,3,hr); P(R,ft+1,1,3,hr); }
+      P(L0+2,hy+1,3,1,hrL); P(R-2,hy+2,1,1,hrL);
+      if(d===0){ const e1=big?L0+2:L0+2, e2=big?R-3:R-2, ew=big?2:1;
+        if(o.blink){ P(e1,ey+1,ew,1,INK); P(e2,ey+1,ew,1,INK); } else { P(e1,ey,ew,2,INK); P(e2,ey,ew,2,INK); P(e1,ey,1,1,'#FFFFFF'); P(e2,ey,1,1,'#FFFFFF'); }
+        P(L0+1,ey+2,big?2:1,1,blush); P(big?R-2:R-1,ey+2,big?2:1,1,blush); P(7,ey+(big?3:2),2,1,mo); } }
+    if(o.hat){ P(L0-1,hy,D.HW+2,2,o.hat); P(L0+1,hy-1,D.HW-2,1,o.hat); P(L0-1,hy+1,D.HW+2,1,shade(o.hat,.75)); }
+    if(el&&!o.half){ if(d===1) P(2,by+2,1,24-(by+2),'#7A5A3C'); else if(d===0){ P(13,by+3,1,24-(by+3),'#7A5A3C'); P(12,by+2,2,1,'#7A5A3C'); } }
     outline(c);
   });
 }
@@ -6115,7 +6843,7 @@ function startSick(name){ const L=G.life; if(L.f.dying||G.sickT>0) return; const
 let NPCMAP={};
 function npcFind(map,key){ const l=NPCMAP[map]; return l?l.find(n=>n.key===key):null; }
 function famLook(key){ const L=G.life; L.looks=L.looks||{}; if(!L.looks[key]) L.looks[key]=randLook(L.C.rg,L.look); return L.looks[key]; }
-function stageAt(age){ return age<2?'baby':age<13?'kid':age>=62?'elder':'adult'; }
+function stageAt(age){ return age<2?'baby':age<6?'tod':age<13?'kid':age>=62?'elder':'adult'; }
 function npcBuild(map){
   const L=G.life, list=[], P=(o)=>list.push(Object.assign({kind:'p',dir:0,fr:0,wt:R()*2,tx:null,spd:1.2,r:1.4,moving:false},o));
   if(map==='home'){ const a=L.age, male=L.sex===0;
@@ -6328,7 +7056,7 @@ function popup(tag,txt,fx,after,cls,sc,nt){ sheet(`${sceneHTML(sc)}<div class="p
 function flash(place,t,fx,tr,bad){ const f=$('flash'); f.className='gbox'+(bad?' bad':''); f.innerHTML=`<div class="place">${esc(place)}</div><p>${esc(t)}</p>${chips(fx,tr)}`; f.hidden=false; f.style.animation='none'; void f.offsetWidth; f.style.animation=''; clearTimeout(flash.t); flash.t=setTimeout(()=>f.hidden=true,2600); }
 function sheet(html,cls){ $('sheetBox').className='box gbox '+(cls||''); $('sheetBox').innerHTML=html; $('sheet').hidden=false; paused=true; IN.jx=IN.jy=0; IN.id=null; animScenes(); }
 function closeSheet(){ $('sheet').hidden=true; paused=false; lastT=performance.now(); }
-const pct=p=>p==null?'':`<span>잘될 확률 ${Math.round(p*100)}%</span>`;
+const pct=p=>p==null?'<span>확실 100%</span>':`<span>잘될 확률 ${Math.round(p*100)}%</span>`;
 function onOpts(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e.target.closest('button'); if(b) fn(+b.dataset.i); }; }
 // 작은 선택
 function openScene(k){
@@ -6420,31 +7148,98 @@ $('btnInfo').onclick=()=>{
   const money=adult?`<dt>가진 돈</dt><dd><b class="${L.cash<0?'neg':''}">${fmtWon(L.cash)}</b>${L.cash<0?' (빚)':''}${L.house?`<br>집 ${fmtWon(L.house)} · 모두 합하면 ${fmtWon(L.nw)}`:'<br><span class="sub">아직 내 집이 없어요</span>'}${lastM?`<br><span class="sub">지난 ${lastM.step>1?lastM.step+'년':'해'}: 번 돈 ${fmtWon(lastM.inc)} · 쓴 돈 ${fmtWon(lastM.spend)} · 이자 ${lastM.int>=0?'+':''}${fmtWon(lastM.int)}${lastM.ev?` · 큰일 ${lastM.ev>0?'+':''}${fmtWon(lastM.ev)}`:''}</span>`:''}${moneySvg(L)}</dd>`:'';
   sheet(`<div class="place">내 정보</div><h2>${esc(L.name)} · ${a}살 (${stageOf(a)}) · ${L.by+a}년</h2>
     <dl class="info"><dt>사는 곳</dt><dd>${C.n} · ${esc(L.town||'')} (${SETN[L.set]})</dd><dt>태어난 가정</dt><dd>${FAM[L.famI].n} · 지금 살림은 ${wtxt}${L.fam&&L.fam.rel?` · 가족의 종교: ${esc(L.fam.rel)}`:''}</dd><dt>함께 사는 사람</dt><dd>${fam.length?fam.join(' · '):'혼자 살아요'}</dd>
-    <dt>학교</dt><dd>${school}</dd><dt>하는 일</dt><dd>${job}</dd>${money}<dt>나라의 제도</dt><dd><span class="sub">병원비 가운데 직접 내는 몫 약 ${I.oop}% (WHO)${I.hi?` · ${esc(I.hi)}`:''}<br>일하는 사람 가운데 비공식 일자리 약 ${I.inf}% (ILO)${retAgeOf(L)?` · 정년 ${retAgeOf(L)}세`:' · 정해진 정년 없음'}${I.cs&&I.cs[0]&&(I.cs[2]===2||L.sex===0)?` · 군 복무 ${I.cs[0]>=24?Math.round(I.cs[0]/12)+'년':I.cs[0]+'개월'}`:''}</span></dd>${L.jobs&&L.jobs.length?`<dt>거쳐 온 일</dt><dd>${L.jobs.map(x=>x.n+'('+x.a+'살)').join(' → ')}</dd>`:''}<dt>가족</dt><dd>${f.widow&&P.spouse?`${esc(P.spouse.n)}과(와)는 ${f.widA}살에 사별했어요`.replace('과(와)',josa(P.spouse.n,'과','와').slice(P.spouse.n.length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:''):f.family?`${esc(P.spouse?P.spouse.n:'')}과(와) 가정을 꾸렸어요`.replace('과(와)',josa(P.spouse?P.spouse.n:'배우자','과','와').slice((P.spouse?P.spouse.n:'배우자').length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:'')+(f.grandkid?' · 손주 있음':''):'아직 가정을 꾸리지 않았어요'}</dd><dt>친구</dt><dd>${esc(P.friend?P.friend.n:'')}</dd>${L.f.pet?`<dt>반려동물</dt><dd>${esc(L.f.pet.n)} (${esc(L.f.pet.sp)}${L.f.pet.dA!=null?`, ${L.f.pet.dA}살 때 무지개다리를 건넘`:`, 함께한 지 ${a-L.f.pet.a}년`})</dd>`:''}${L.f.hob&&L.f.hob.length?`<dt>취미</dt><dd>${L.f.hob.map(h=>esc(h.n)+' Lv.'+h.lv).join(' · ')}</dd>`:''}
-    <dt>갈 수 있는 곳</dt><dd>${places.join(' → ')}</dd><dt>성향</dt><dd>${tot?Object.keys(TRAIT).map(k=>TRAIT[k]+' '+L.tr[k]).join(' · ')+`<br><span class="sub">지금까지는 '${TRAIT[top]}'이 가장 많아요</span>`:'아직 쌓인 것이 없어요'}</dd>
+    <dt>학교</dt><dd>${school}</dd><dt>하는 일</dt><dd>${job}</dd>${money}<dt>나라의 제도</dt><dd><span class="sub">병원비 가운데 직접 내는 몫 약 ${I.oop}% (WHO)${I.hi?` · ${esc(I.hi)}`:''}<br>일하는 사람 가운데 비공식 일자리 약 ${I.inf}% (ILO)${retAgeOf(L)?` · 정년 ${retAgeOf(L)}세`:' · 정해진 정년 없음'}${I.cs&&I.cs[0]&&(I.cs[2]===2||L.sex===0)?` · 군 복무 ${I.cs[0]>=24?Math.round(I.cs[0]/12)+'년':I.cs[0]+'개월'}`:''}</span></dd><dt>가족</dt><dd>${f.widow&&P.spouse?`${esc(P.spouse.n)}과(와)는 ${f.widA}살에 사별했어요`.replace('과(와)',josa(P.spouse.n,'과','와').slice(P.spouse.n.length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:''):f.family?`${esc(P.spouse?P.spouse.n:'')}과(와) 가정을 꾸렸어요`.replace('과(와)',josa(P.spouse?P.spouse.n:'배우자','과','와').slice((P.spouse?P.spouse.n:'배우자').length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:'')+(f.grandkid?' · 손주 있음':''):'아직 가정을 꾸리지 않았어요'}</dd><dt>친구</dt><dd>${esc(P.friend?P.friend.n:'')}</dd>${L.f.pet?`<dt>반려동물</dt><dd>${esc(L.f.pet.n)} (${esc(L.f.pet.sp)}${L.f.pet.dA!=null?`, ${L.f.pet.dA}살 때 무지개다리를 건넘`:`, 함께한 지 ${a-L.f.pet.a}년`})</dd>`:''}${L.f.hob&&L.f.hob.length?`<dt>취미</dt><dd>${L.f.hob.map(h=>esc(h.n)+' Lv.'+h.lv).join(' · ')}</dd>`:''}
+    <dt>갈 수 있는 곳</dt><dd>${places.join(' → ')}</dd><dt>성향</dt><dd>${tot?`<span class="sub">지금까지는 '${TRAIT[top]}'이 가장 많아요 (아래 그래프)</span>`:'아직 쌓인 것이 없어요'}</dd>
     <dt>지금까지</dt><dd>선택 ${L.n}번 · 뜻대로 안 된 일 ${L.fail||0}번 · 놓친 순간 ${L.miss}번</dd>${G.room?`<dt>학급 방</dt><dd>${esc(G.room)}</dd>`:''}</dl>
     ${L.comps&&L.comps.length?`<div class="stack-s"><b style="font-weight:400">같은 1초에 태어난 사람들 · 지금 ${a}살 무렵</b><table class="famtbl">${L.comps.map(p=>`<tr><th>${esc(p.n)}</th><td>${esc(p.cn)} · ${p.sex?'여':'남'}</td><td>${esc(L.compNow(p,a))}</td></tr>`).join('')}</table></div>`:''}
     ${L.fam?`<div class="stack-s"><b style="font-weight:400">우리 가족</b><table class="famtbl">${L.famList().map(r=>`<tr><th>${esc(r[0])}</th><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('')}</table></div>`:''}
-    <div class="kpi">${Object.keys(STAT).map(k=>`<div><b class="num">${Math.round(L.s[k])}</b><span>${STAT[k]}</span></div>`).join('')}</div>
+    ${statPanel(L)}${traitPanel(L)}${jobsTable(L)}
     <div class="stack-s"><b style="font-weight:400">지금 내 행복을 만드는 것</b>${bars}<p class="small sub">돈(살림)만이 아니라 곁의 사람들, 작은 일에도 감사하는 마음, 함께 웃는 문화가 행복을 크게 바꿉니다.</p></div>
     <p class="small sub">${esc(C.fact)} 물가가 나라마다 달라서 같은 돈으로 살 수 있는 것도 다릅니다.</p><button class="btn" id="btnOk">닫기</button>`);
   $('btnOk').onclick=closeSheet;
 };
+// 능력치: 지금 값 막대 + 지난해와 비교 + 나이에 따른 변화 꺾은선
+const STAT_COL={h:'#2F8F7A',j:'#E2703A',k:'#3870D0',r:'#C2577A'};
+function statPanel(L){ const H=(L.hist||[]).filter(x=>x.a<L.age), prev=H.length?H[H.length-1]:null;
+  const bars=Object.keys(STAT).map(k=>{ const v=Math.round(L.s[k]), d=prev?v-prev[k]:0;
+    return `<div class="sbar"><span>${STAT[k]}</span><div class="tr" role="img" aria-label="${STAT[k]} ${v}"><i style="width:${v}%;background:${STAT_COL[k]}"></i><em style="left:50%"></em></div><span class="v"><b>${v}</b>${prev&&d?` <small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:''}</span></div>`; }).join('');
+  return `<div class="chart"><h3>능력치 <span class="sub small">(0~100 · 가운데 선이 50 · ▲▼는 지난해와 비교)</span></h3>${bars}${statLine(L)}</div>`; }
+function statLine(L){ const H=(L.hist||[]).slice(); H.push({a:L.age,h:L.s.h,j:L.s.j,k:L.s.k,r:L.s.r}); if(H.length<3) return '';
+  const W=480, Hh=150, pl=28, pr=8, pt=8, pb=20, a0=H[0].a, a1=Math.max(a0+1,H[H.length-1].a), X=a=>pl+(a-a0)/(a1-a0)*(W-pl-pr), Y=v=>pt+(1-v/100)*(Hh-pt-pb);
+  let g=''; [0,25,50,75,100].forEach(v=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="#E2E8EE"/><text x="${pl-4}" y="${Y(v)+3}" text-anchor="end">${v}</text>`; });
+  const step=Math.max(5,Math.ceil((a1-a0)/6/5)*5); for(let a=Math.ceil(a0/step)*step;a<=a1;a+=step) g+=`<text x="${X(a)}" y="${Hh-4}" text-anchor="middle">${a}살</text>`;
+  const lines=Object.keys(STAT).map(k=>`<polyline points="${H.map(p=>X(p.a).toFixed(1)+','+Y(p[k]).toFixed(1)).join(' ')}" fill="none" stroke="${STAT_COL[k]}" stroke-width="2" stroke-linejoin="round"/>`).join('');
+  return `<svg class="lchart" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="나이에 따른 능력치 변화">${g}${lines}</svg><div class="lgd">${Object.keys(STAT).map(k=>`<span><i style="background:${STAT_COL[k]}"></i>${STAT[k]}</span>`).join('')}</div>`; }
+function traitPanel(L){ const ks=Object.keys(TRAIT), mx=Math.max(1,...ks.map(k=>L.tr[k]||0)); if(!ks.some(k=>L.tr[k])) return '';
+  return `<div class="chart"><h3>성향 <span class="sub small">(그 성향으로 고른 횟수)</span></h3>${ks.map(k=>`<div class="sbar"><span>${TRAIT[k]}</span><div class="tr"><i style="width:${(L.tr[k]||0)/mx*100}%;background:#7C95AE"></i></div><span class="v">${L.tr[k]||0}번</span></div>`).join('')}</div>`; }
+function jobsTable(L){ const J=L.jobs||[]; if(!J.length) return '';
+  return `<div class="stack-s"><b style="font-weight:400">거쳐 온 일</b><div class="tscroll"><table class="dtbl"><thead><tr><th>나이</th><th>일</th><th>일터</th><th>계기</th></tr></thead><tbody>${J.map(x=>`<tr><td class="a">${x.a}살</td><td>${esc(x.n)}</td><td>${esc(x.co||'')}</td><td class="q">${esc(x.why||'')}</td></tr>`).join('')}</tbody></table></div></div>`; }
 // 해마다 가진 돈(집 포함)의 흐름
 function moneySvg(L){ const h=(L.money||[]).map(m=>m.cash+m.house); if(h.length<2) return ''; const mx=Math.max(...h.map(Math.abs),1), n=h.length, W=200, H=44, y=v=>H/2-v/mx*(H/2-3);
   const pts=h.map((v,i)=>`${(i/(n-1)*W).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
   return `<svg class="msvg" viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="#C0C8D0" stroke-width="1"/><polyline points="${pts}" fill="none" stroke="#3870D0" stroke-width="2"/></svg><span class="sub small">${L.money[0].a}살부터 지금까지 가진 돈(집 포함)의 흐름</span>`; }
 function barSvg(v){ const w=Math.min(50,Math.abs(v)*3.2), pos=v>=0; return `<svg viewBox="0 0 100 8" width="100%" height="8" preserveAspectRatio="none"><rect x="0" y="3.5" width="100" height="1" fill="#C0C8D0"/><rect x="${pos?50:50-w}" y="0" width="${w}" height="8" fill="${pos?'#48B888':'#E07070'}"/><rect x="49.5" y="0" width="1" height="8" fill="#283038"/></svg>`; }
-$('btnMem').onclick=()=>{ const L=G.life, list=L.mem.slice(-50).reverse();
-  sheet(`<h2>${esc(L.name)}의 기억</h2><p class="small sub">선택 ${L.n}번 · 놓친 순간 ${L.miss}번 · 회색 글씨는 그때의 상황과 내 선택 · ▣ 표시를 누르면 그 장면을 다시 봅니다</p><ul class="memlist">${list.map((m,i)=>`<li class="${m.sc?'sc':''}" data-i="${i}"><span class="a">${m.a}살</span><span>${m.q?`<small class="mq">${esc(m.q)}${m.l?` → ${esc(m.l)}`:''}</small>`:''}${esc(memT(m))}${m.rp>1?` <small class="rp">×${m.rp}</small>`:''}</span></li>`).join('')}</ul><button class="btn" id="btnOk">닫기</button>`);
+$('btnMem').onclick=()=>openMem('all');
+function openMem(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()=>true,big:m=>m.big,fam:m=>m.fam||/엄마|아빠|아내|남편|아들|딸|손주|동생|형|누나|언니|오빠|할머니|할아버지|가족/.test(m.t+(m.q||'')),pick:m=>!!m.q}[flt], list=all.filter(test).slice(0,80);
+  const tab=(k,n)=>`<button data-f="${k}" class="${flt===k?'on':''}">${n}</button>`;
+  sheet(`<h2>${esc(L.name)}의 기억</h2><p class="small sub">선택 ${L.n}번 · 놓친 순간 ${L.miss}번 · 주황 줄은 큰 일 · ▣ 표시 줄을 누르면 그 장면을 다시 봅니다</p>
+    <div class="mtabs">${tab('all','전체')}${tab('big','큰 일')}${tab('pick','내가 고른 일')}${tab('fam','가족')}</div>
+    <div class="tscroll"><table class="dtbl"><thead><tr><th>나이</th><th>그때의 상황 · 나의 선택</th><th>그 결과</th></tr></thead><tbody>${list.length?list.map((m,i)=>`<tr class="${m.sc?'sc':''} ${m.big?'big':''}" data-i="${i}"><td class="a">${m.a}살</td><td class="q">${m.q?esc(m.q):'<span class="sub">—</span>'}${m.l?`<br><b style="font-weight:600;color:#2858A8">→ ${esc(m.l)}</b>`:''}</td><td>${esc(memT(m))}${m.rp>1?` <span class="rp">×${m.rp}</span>`:''}${m.f?'<span class="tag">뜻대로 안 됨</span>':''}${m.sc?' <span class="sub">▣</span>':''}</td></tr>`).join(''):'<tr><td colspan="3" class="sub">아직 없어요</td></tr>'}</tbody></table></div>
+    <p class="small sub">최근 기억부터 ${list.length}개를 보여 줍니다.</p><button class="btn" id="btnOk">닫기</button>`);
   $('btnOk').onclick=closeSheet;
-  $('sheetBox').querySelector('.memlist').onclick=e=>{ const li=e.target.closest('li.sc'); if(!li) return; const m=list[+li.dataset.i]; popup(`${m.a}살의 기억`,memT(m),null,()=>$('btnMem').click(),'',m.sc,m.q?`${m.q}${m.l?' → '+m.l:''}`:null); }; };
+  $('sheetBox').querySelectorAll('.mtabs button').forEach(b=>b.onclick=()=>openMem(b.dataset.f));
+  $('sheetBox').querySelector('tbody').onclick=e=>{ const tr=e.target.closest('tr.sc'); if(!tr) return; const m=list[+tr.dataset.i]; popup(`${m.a}살의 기억`,memT(m),null,()=>openMem(flt),'',m.sc,m.q?`${m.q}${m.l?' → '+m.l:''}`:null); }; }
 $('btnExit').onclick=()=>{ sheet(`<h2>잠시 멈출까요?</h2><p class="sub">${G.teacher?'지금까지의 삶은 교사용 모드의 \'내 체험 기록\'에 저장됩니다. 언제든 이어서 살 수 있어요.':'지금까지의 삶은 저장됩니다. 언제든 이어서 살 수 있어요.'}</p><div class="row"><button class="btn primary" id="btnQuit">저장하고 나가기</button><button class="btn" id="btnOk">계속 살기</button></div>`);
   $('btnOk').onclick=closeSheet; $('btnQuit').onclick=()=>{ G.running=false; closeSheet(); if(G.teacher){ persist(true); G.teacher=false; G.life=null; G.tid=null; openTeacherBody(); } else { persist(true); openHub(); } }; };
-$('miniWrap').onclick=()=>{ if(!$('sheet').hidden) return; const L=G.life;
-  sheet(`<div class="place">${esc(L.C.n)} · ${SETN[L.set]}</div><h2>우리 동네 지도</h2><canvas id="bigMap" width="992" height="416"></canvas>
-    <div class="legend"><span><i style="background:#E2703A"></i>할 일</span><span><i style="background:#3870D0"></i>미션</span><span><i style="background:#FFFFFF"></i>나</span><span><i style="background:#58606A"></i>아직 못 가는 곳</span></div><button class="btn" id="btnOk">닫기</button>`);
-  drawBigMap($('bigMap')); $('btnOk').onclick=closeSheet; };
+$('miniWrap').onclick=()=>{ if(!$('sheet').hidden) return; openMaps('town'); };
+// 동네와 나라 사이: 내가 사는 도시(시골이면 둘레 마을과 읍내)를 그림 지도로 보여 준다
+function regionSVG(L){ const C=L.C, U=L.set==='U', sch=L.sch||{}, f=L.f||{}, town=L.town||C.city;
+  let sd=0; for(const ch of town+L.c) sd=(sd*31+ch.charCodeAt(0))>>>0; const rnd=()=>((sd=(sd*1664525+1013904223)>>>0)/4294967296);
+  const W=600, H=300; let h=`<svg class="wmap rmap" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(town)} 그림 지도">`;
+  const lab=(x,y,t,o)=>{ o=o||{}; const fs=o.fs||13; return `<text x="${x}" y="${y}" font-size="${fs}" text-anchor="${o.a||'middle'}" fill="${o.c||'#33404C'}" stroke="#FFFDF6" stroke-width="3.2" paint-order="stroke" font-weight="${o.b?700:500}">${esc(t)}</text>`; };
+  const pin=(x,y,col,t,big)=>`<circle cx="${x}" cy="${y}" r="${big?9:6}" fill="${col}" stroke="#283038" stroke-width="2"/>`+lab(x,y-(big?15:11),t,{b:big,fs:big?15:12});
+  const rv=rnd()*0.6+0.2;
+  if(U){ h+=`<rect width="${W}" height="${H}" fill="#E9E4D4"/>`;
+    for(let i=0;i<7;i++){ const x=40+rnd()*520, y=30+rnd()*240, r=30+rnd()*50; h+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${['#DCD4BE','#E2DCC8','#D6E3C2'][i%3]}"/>`; }
+    h+=`<path d="M -10 ${H*rv} C 150 ${H*rv-60}, 260 ${H*rv+80}, 380 ${H*rv+10} S 560 ${H*rv-40}, 620 ${H*rv+30}" fill="none" stroke="#9CC9EC" stroke-width="18" stroke-linecap="round"/>`;
+    for(let i=1;i<6;i++) h+=`<line x1="${i*100}" y1="0" x2="${i*100+rnd()*40-20}" y2="${H}" stroke="#FFFFFF" stroke-width="${i===3?7:4}"/>`;
+    for(let i=1;i<3;i++) h+=`<line x1="0" y1="${i*100}" x2="${W}" y2="${i*100+rnd()*30-15}" stroke="#FFFFFF" stroke-width="${i===1?7:4}"/>`;
+    h+=`<ellipse cx="300" cy="150" rx="250" ry="120" fill="none" stroke="#F4D9A0" stroke-width="5" stroke-dasharray="2 0"/>`;
+    h+=`<rect x="270" y="115" width="60" height="40" rx="6" fill="#C9B8E0" stroke="#7A68A0" stroke-width="2"/>`+lab(300,140,'도심',{b:1,fs:13});
+    const spots=[['기차역',470,70,'#5A6878'],['시장',180,215,'#C8743A'],['큰 병원',420,225,'#C84B62'],[C.tier<=2?'공장 지대':'산업 단지',90,70,'#6E7E8E']];
+    if(sch.univ&&f.univ) spots.push([sch.univ,520,170,'#3870D0']);
+    spots.forEach(([t,x,y,c])=>h+=pin(x,y,c,t));
+    const mx=150+rnd()*120, my=110+rnd()*80;
+    if(f.job&&f.co&&!f.school) h+=pin(Math.min(560,mx+170),my+40,'#3870D0',f.co);
+    else if(f.school&&L.age<19){ const sn=L.age<13?sch.elem:L.age<16?sch.mid:(f.hs==='voc'?sch.voc:sch.high); if(sn) h+=pin(mx+70,my-45,'#3870D0',sn); }
+    h+=pin(mx,my,'#E2703A','우리 동네',1);
+    h+=lab(W-14,22,`${C.city===town?'':C.city+' 방향 →'}`,{a:'end',fs:12,c:'#5A6878'});
+  } else {
+    h+=`<rect width="${W}" height="${H}" fill="#D6E5B4"/>`;
+    for(let i=0;i<26;i++){ const x=rnd()*W, y=rnd()*H, w=40+rnd()*60, hh=24+rnd()*36; h+=`<rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="${['#C8DA9C','#E4D79A','#BFD48C','#DCCB8C'][i%4]}" stroke="#B0C27C" stroke-width="1" transform="rotate(${rnd()*20-10} ${x} ${y})"/>`; }
+    h+=`<path d="M -10 ${H*rv} C 120 ${H*rv+70}, 240 ${H*rv-70}, 360 ${H*rv+20} S 520 ${H*rv+60}, 620 ${H*rv-20}" fill="none" stroke="#8EC0E6" stroke-width="12" stroke-linecap="round"/>`;
+    const vx=120+rnd()*80, vy=80+rnd()*120, tx=430+rnd()*60, ty=90+rnd()*100;
+    h+=`<path d="M ${vx} ${vy} Q ${(vx+tx)/2} ${vy-60+rnd()*120}, ${tx} ${ty} T 620 ${ty-30}" fill="none" stroke="#B89A6A" stroke-width="6" stroke-dasharray="10 5"/>`;
+    for(let i=0;i<3;i++){ const x=40+rnd()*300, y=30+rnd()*240; if(Math.hypot(x-vx,y-vy)<70) continue; h+=pin(x,y,'#8A9A6A','이웃 마을'); }
+    h+=`<circle cx="${tx}" cy="${ty}" r="26" fill="#E8DCC0" stroke="#A08A60" stroke-width="2"/>`+lab(tx,ty+5,'읍내',{b:1});
+    h+=pin(tx-34,ty+44,'#C8743A','장터')+pin(tx+40,ty+40,'#C84B62','보건소');
+    if(sch.elem) h+=pin(vx+60,vy+46,'#3870D0',sch.elem);
+    h+=pin(vx,vy,'#E2703A','우리 마을',1);
+    h+=lab(W-14,22,`${C.city} 방향 →`,{a:'end',fs:12,c:'#5A6878'});
+  }
+  return h+'</svg>'; }
+function openMaps(tab){ const L=G.life, C=L.C, g=GEO[L.c], km=g&&L.c!=='KR'?geoKm(GEO.KR,g):0, share=birthShare(L.c)*1000;
+  const tabs=`<div class="mtabs" role="tablist"><button data-t="town" class="${tab==='town'?'on':''}">우리 동네</button><button data-t="city" class="${tab==='city'?'on':''}">${esc(L.set==='U'?(L.town||C.city):'우리 고장')}</button><button data-t="near" class="${tab==='near'?'on':''}">${esc(C.n)}</button><button data-t="world" class="${tab==='world'?'on':''}">세계 지도</button></div>`;
+  const facts=`<div class="mfacts"><div><span>지역</span><b>${esc(RGN_N[C.rg]||'')}</b></div><div><span>대표 도시</span><b>${esc(C.city)}</b></div>${km?`<div><span>서울에서</span><b>약 ${km.toLocaleString()}km</b></div>`:`<div><span>사는 곳</span><b>${esc(L.town||'')}</b></div>`}<div><span>세계 아기 1000명 가운데</span><b>${share>=1?share.toFixed(1):share.toFixed(2)}명이 이 나라에서</b></div></div>`;
+  let body;
+  if(tab==='town') body=`<canvas id="bigMap" width="992" height="416"></canvas><div class="legend"><span><i style="background:#E2703A"></i>할 일</span><span><i style="background:#3870D0"></i>미션</span><span><i style="background:#FFFFFF"></i>나</span><span><i style="background:#58606A"></i>아직 못 가는 곳</span></div>`;
+  else if(tab==='city') body=regionSVG(L)+`<p class="small sub">${L.set==='U'?`${esc(L.town||C.city)}의 그림 지도예요. 주황색이 우리 동네, 파란색이 다니는 학교·일터입니다.`:`${esc(L.town||'')} 둘레의 그림 지도예요. 장을 보고 병원에 가려면 읍내까지 걸어가야 합니다.`} 실제 거리와 모양은 다를 수 있어요.</p>`;
+  else if(tab==='near') body=worldSVG(L,'near')+`<p class="small sub">주황색 점이 ${esc(C.n)}(수도 근처)예요. 회색 점은 이웃 나라들입니다.</p>`;
+  else body=worldSVG(L,'world')+`<div class="legend"><span><i style="background:#E2703A"></i>내가 태어난 나라</span>${L.comps&&L.comps.length?'<span><i style="background:#3870D0"></i>같은 1초에 태어난 사람들</span>':''}${L.c!=='KR'?'<span><i style="background:#283038"></i>대한민국</span>':''}</div>${L.comps&&L.comps.length?`<p class="small sub">같은 1초에 태어난 ${L.comps.map(p=>esc(p.n)+'('+esc(p.cn)+')').join(', ')}</p>`:''}`;
+  sheet(`<div class="place">${esc(C.n)} · ${esc(L.town||'')} (${SETN[L.set]})</div><h2>지도</h2>${tabs}${body}${facts}<button class="btn" id="btnOk">닫기</button>`);
+  if(tab==='town') drawBigMap($('bigMap'));
+  $('sheetBox').querySelectorAll('.mtabs button').forEach(b=>b.onclick=()=>openMaps(b.dataset.t));
+  $('btnOk').onclick=closeSheet; }
 addEventListener('visibilitychange',()=>{ if(document.hidden&&G.running) persist(true); });
 
 // 지금 다가갈 수 있는 것들: 작은 선택(!)과 미션(?)
@@ -6503,11 +7298,14 @@ function label(txt,x,y,size,bg,fg,bd){ g.font=`${size}px ${LABEL_FONT}`; const w
   g.fillStyle=fg; g.textAlign='center'; g.textBaseline='middle'; g.fillText(txt,Math.round(x),Math.round(y)+1); }
 
 /* ---------- 땅 지도 만들기 ---------- */
+// 이사하면 지도 풍경이 바뀐다: 도시로 옮기면 도시 풍경, 고향에 돌아가면 고향 풍경. 동네가 바뀔 때마다 나무·꽃 자리도 달라진다
+function visU(L){ return ((L.f&&L.f.vSet)||L.set)==='U'; }
+const placeOff=L=>((L.f&&L.f.placeN)||0)*37;
 const TCOL={g:'#88C860',t:'#58A040',f:'#A8D878',p:'#E8D4A0',k:'#D8D8D0',r:'#6E767E',d:'#C8A878',h:'#585E68',w:'#3C90E0',s:'#F0DCA0',z:'#E8D0A0',c:'#B8A060'};
-function terrain(){ const L=G.life, key=['T',L.set,L.C.rg,L.C.lt,L.C.tier<=1?1:L.C.tier>=3?3:L.C.gni<2?2.5:2].join('|'); if(terrain.k===key) return terrain.v;
-  const U=L.set==='U', T=[], poor=L.C.tier<=1;   // 살림이 어려운 나라의 도시는 흙길이 많다
+function terrain(){ const L=G.life, key=['T',(L.f.vSet||L.set),L.f.placeN||0,L.C.rg,L.C.lt,L.C.tier<=1?1:L.C.tier>=3?3:L.C.gni<2?2.5:2].join('|'); if(terrain.k===key) return terrain.v;
+  const U=visU(L), T=[], poor=L.C.tier<=1;   // 살림이 어려운 나라의 도시는 흙길이 많다
   for(let y=0;y<OUT.h;y++){ const row=[]; for(let x=0;x<OUT.w;x++){ const cx=x+.5, cy=y+.5; let t='g';
-    if(hash(x,y)<.035) t='f'; else if(!U&&hash(y,x+40)<.03) t='t';
+    if(hash(x+placeOff(L),y)<.035) t='f'; else if(!U&&hash(y,x+40+placeOff(L))<.03) t='t';
     if(!U) OUT.fields.forEach(r=>{ if(inRect(cx,cy,r)) t='c'; });
     if(inRect(cx,cy,OUT.patch.play)) t=U&&!poor?'k':'p';
     if(inRect(cx,cy,OUT.patch.nature)) t=U?(hash(x,y)<.3?'f':'g'):(inRect(cx,cy,[1.6,20.6,4.8,3.8])?'w':'s');
@@ -6523,7 +7321,7 @@ function terrain(){ const L=G.life, key=['T',L.set,L.C.rg,L.C.lt,L.C.tier<=1?1:L
   for(const k in OUT.b){ const d=doorOf(k); for(let i=0;i<2;i++){ const yy=Math.floor(d[1]+i), xx=Math.floor(d[0]-.5); for(const x2 of [xx,xx+1]) if(T[yy]&&T[yy][x2]&&'gftc'.includes(T[yy][x2])) T[yy][x2]=U&&!poor?'k':'p'; } }
   terrain.k=key; terrain.v=T; return T; }
 const LAYER_TOP=24;   // 지도 위쪽 여백(지붕·산이 칸 위로 솟는 부분)
-function worldKey(){ const L=G.life; return ['O',L.set,L.c,spOf(L),L.age>=7&&L.age<=12&&L.f.elem?1:0,L.job?L.job.kind:'',L.famI].join('|'); }
+function worldKey(){ const L=G.life; return ['O',(L.f.vSet||L.set),L.f.placeN||0,L.c,spOf(L),L.age>=7&&L.age<=12&&L.f.elem?1:0,L.job?L.job.kind:'',L.famI].join('|'); }
 function worldLayer(){ const L=G.life, key=worldKey(); if(worldLayer.k===key) return worldLayer.c;
   const T=terrain(), sp=spOf(L), c=worldLayer.c&&worldLayer.c.width===OUT.w*PX?worldLayer.c:mk(OUT.w*PX,OUT.h*PX+LAYER_TOP), x=c.getContext('2d'); x.imageSmoothingEnabled=false; x.clearRect(0,0,c.width,c.height);
   const oy=LAYER_TOP;
@@ -6535,12 +7333,12 @@ function worldLayer(){ const L=G.life, key=worldKey(); if(worldLayer.k===key) re
     if(t==='k'||t==='p'){ const ec=t==='k'?'#B4B4AA':'#C4A872'; if(soft(nb(0,-1))) pr(x,px,py,PX,1,ec); if(soft(nb(0,1))) pr(x,px,py+PX-1,PX,1,ec); if(soft(nb(-1,0))) pr(x,px,py,1,PX,ec); if(soft(nb(1,0))) pr(x,px+PX-1,py,1,PX,ec);
       if(soft(nb(0,-1))) pr(x,px,py-1,PX,1,'rgba(30,60,20,.18)'); }
     if(t==='r'||t==='d'){ const kk=nb(0,-1)==='k'||nb(0,-1)==='p', kb=nb(0,1)==='k'||nb(0,1)==='p'; if(kk) pr(x,px,py,PX,1,t==='r'?'#E4E4DC':'#D8BC88'); if(kb) pr(x,px,py+PX-1,PX,1,t==='r'?'#4E565E':'#A88858'); } }
-  const poleKind=(L.set==='U'&&L.C.tier>1&&!(L.C.tier===2&&L.C.gni<2))||L.C.tier>=3?'lamp':'pole';
+  const poleKind=(visU(L)&&L.C.tier>1&&!(L.C.tier===2&&L.C.gni<2))||L.C.tier>=3?'lamp':'pole';
   for(let y=1;y<OUT.h-1;y++) for(let i=1;i<OUT.w-1&&i<46;i++){ if(T[y][i]!=='k'&&T[y][i]!=='p') continue; const nr=['r','d'].some(q=>T[y+1][i]===q||T[y-1][i]===q); if(!nr||(i*5+y*3)%13!==0) continue;
     const px=i*PX+4, py=y*PX+oy+PX-1; if(poleKind==='lamp') x.drawImage(cached('LAMP',8,22,(lx2,cc)=>{ const P=(X,Y,Wd,H,c2)=>pr(lx2,X,Y,Wd,H,c2); P(3,6,2,15,'#5A6068'); P(3,6,1,15,'#7A8088'); P(1,3,6,3,'#5A6068'); P(2,4,4,2,'#FFF0B0'); P(2,3,4,1,'#8A9098'); P(2,20,4,1,'#484E54'); outline(cc); }),px-4,py-21);
     else x.drawImage(cached('POLE',10,24,(lx2,cc)=>{ const P=(X,Y,Wd,H,c2)=>pr(lx2,X,Y,Wd,H,c2); P(4,2,2,22,'#8A6A48'); P(4,2,1,22,'#A88860'); P(0,4,10,2,'#6A4A30'); P(1,3,1,2,'#D8D8D0'); P(8,3,1,2,'#D8D8D0'); outline(cc); }),px-5,py-23); }
   // 큰길 가운데 선
-  for(let i=0;i<OUT.w;i+=2){ if(i>=15&&i<=17||i>=30&&i<=32||(i>=46&&i<=50)) continue; if((L.set==='U'&&L.C.tier>1)||L.C.tier>=3||i>=50) pr(x,i*PX+4,12*PX+oy-1,8,2,'#F0F0E8'); }
+  for(let i=0;i<OUT.w;i+=2){ if(i>=15&&i<=17||i>=30&&i<=32||(i>=46&&i<=50)) continue; if((visU(L)&&L.C.tier>1)||L.C.tier>=3||i>=50) pr(x,i*PX+4,12*PX+oy-1,8,2,'#F0F0E8'); }
   for(let y=0;y<OUT.h;y+=2){ pr(x,48*PX-1,y*PX+oy+4,2,8,'#F2C14E'); }
   // 먼 곳의 명소
   const lt=L.C.lt, mp=OUT.patch.mount;
@@ -6562,7 +7360,7 @@ function worldLayer(){ const L=G.life, key=worldKey(); if(worldLayer.k===key) re
   if(lt==='fr') for(let i=0;i<7;i++) x.drawImage(treeSprite(treeTypeFor(L.C.rg,i+3),sp,1),(mp[0]+.2+(i%4)*1.3)*PX,(mp[1]+.5+Math.floor(i/4)*2.6)*PX+oy);
   if(lt==='ds') for(let i=0;i<3;i++) x.drawImage(treeSprite('cactus',sp,1),(mp[0]+.6+i*1.6)*PX,(mp[1]+4.6)*PX+oy);
   worldLayer.k=key; worldLayer.c=c; return c; }
-function kindOf(key){ const L=G.life, U=L.set==='U', C=L.C, rg=C.rg, code=C.code, T=C.tier, poor=T<=1, R2=!U&&T<=2,
+function kindOf(key){ const L=G.life, U=visU(L), C=L.C, rg=C.rg, code=C.code, T=C.tier, poor=T<=1, R2=!U&&T<=2,
     tin=['AF','SA','SE','OC','LA'].includes(rg)&&T<=2, mud=C.arid||['AF','YE','SY'].includes(code), soviet=['EA','CA','EE'].includes(rg);
   switch(key){ case 'home': case 'friend':
       if(code==='MN'||(!U&&['KZ','KG'].includes(code))) return 'ger';
@@ -6605,7 +7403,7 @@ function roomLayer(map){ const L=G.life, kind=intKind(map), ph=map==='home'&&poo
   fl.forEach(f=>{ pr(x,Math.round(f[1]*PX)+2,Math.round(f[2]*PX)+oy+Math.round(f[4]*PX)-1,Math.round(f[3]*PX),3,'rgba(40,30,20,.20)'); });
   fl.forEach(f=>x.drawImage(furnSprite(ph&&FURN_POOR[f[0]]||f[0],Math.round(f[3]*PX),Math.round(f[4]*PX),kind),Math.round(f[1]*PX)-1,Math.round(f[2]*PX)+oy-1));
   if(map==='home'){ if(L.famI===0) x.drawImage(furnSprite('piano',24,11),12*PX-1,4.2*PX+oy-1);
-    pr(x,10.8*PX,5.6*PX+oy,2.8*PX,3.4*PX,L.set==='U'?'#D5E3EA':GRASS[spOf(L)][1]); x.drawImage(treeSprite(L.set==='U'?'bush':treeTypeFor(L.C.rg,3),spOf(L),1),12.2*PX-8,5.9*PX+oy);
+    pr(x,10.8*PX,5.6*PX+oy,2.8*PX,3.4*PX,visU(L)?'#D5E3EA':GRASS[spOf(L)][1]); x.drawImage(treeSprite(visU(L)?'bush':treeTypeFor(L.C.rg,3),spOf(L),1),12.2*PX-8,5.9*PX+oy);
     pr(x,4.4*PX,4*PX+oy,5*PX,2.6*PX,'#C86A5A'); pr(x,4.6*PX,4.2*PX+oy,4.6*PX,2.2*PX,'#E08A70'); }
   roomLayer.k=key; roomLayer.c=c; return c; }
 
@@ -6624,7 +7422,7 @@ function draw(t){
   { const dtc=Math.min(.05,Math.max(.001,t-(draw.lt||t))); draw.lt=t; const cm=draw.cam;
     if(!cm||cm.m!==W.map||Math.abs(cm.x-cx)>LW||Math.abs(cm.y-cy)>LH) draw.cam={m:W.map,x:cx,y:cy}; else { const k=1-Math.exp(-dtc*10); cm.x+=(cx-cm.x)*k; cm.y+=(cy-cm.y)*k; cx=cm.x; cy=cm.y; } }
   cx=Math.round(cx); cy=Math.round(cy);
-  lx.fillStyle=out?(L.set==='U'?'#3A5040':GRASS[sp][2]):'#101418'; lx.fillRect(0,0,LW,LH);
+  lx.fillStyle=out?(visU(L)?'#3A5040':GRASS[sp][2]):'#101418'; lx.fillRect(0,0,LW,LH);
   const layer=out?worldLayer():roomLayer(W.map); lx.drawImage(layer,-cx,-cy-LAYER_TOP);
   const X=v=>Math.round(v*PX-cx), Y=v=>Math.round(v*PX-cy), fr=Math.floor(t*2.5);
   if(out){ const T=terrain(); const x0=Math.max(0,Math.floor(cx/PX)), x1=Math.min(OUT.w,Math.ceil((cx+LW)/PX)), y0=Math.max(0,Math.floor(cy/PX)), y1=Math.min(OUT.h,Math.ceil((cy+LH)/PX));
@@ -6636,13 +7434,13 @@ function draw(t){
     else if(n.kind==='a') spr.push({y:n.y,d:()=>{ dropShadow(lx,X(n.x),Y(n.y)-1,9); lx.drawImage(animalSprite(n.a,n.moving?Math.floor(n.fr)%2:0,n.face||1),X(n.x)-6,Y(n.y)-10-(n.moving&&Math.floor(n.fr)%2?1:0)); }});
     else spr.push({y:n.y,d:()=>{ const f=n.moving?[1,0,2,0][Math.floor(n.fr)%4]:0, bob=n.moving&&f===0?1:0; dropShadow(lx,X(n.x),Y(n.y)-1,n.st==='baby'?10:12); lx.drawImage(personSprite({dir:n.dir,fr:f,st:n.st,skin:n.look.skin,hair:n.st==='elder'?'#D8DCE0':n.look.hair,body:n.look.body,pants:n.look.pants,long:n.long,sty:Math.floor(hash(Math.round(n.look.body.charCodeAt(2)*7+n.look.hair.charCodeAt(3)),9)*4),blink:Math.floor(t*10+n.x*7)%41===0}),X(n.x)-8,Y(n.y)-22-bob); }}); }
   const a=L.age, st=stageAt(a), f=W.moving?[1,0,2,0][Math.floor(W.walk)%4]:0, lk=L.look;
-  spr.push({y:W.y,me:1,d:()=>{ if(W.car){ dropShadow(lx,X(W.x),Y(W.y)+2,C_VEH()==='car'?24:16); const s=vehicleSprite(C_VEH(),W.dir===1?-1:1,'#C2577A',C_VEH()==='car'?null:{skin:lk.skin,hair:lk.hair,body:'#E2703A'}); lx.drawImage(s,X(W.x)-s.width/2,Y(W.y)-s.height+4); }
+  spr.push({y:W.y,me:1,d:()=>{ if(W.car){ dropShadow(lx,X(W.x),Y(W.y)+2,C_VEH()==='car'?24:16); const s=vehicleSprite(C_VEH(),W.dir===1?-1:1,'#C2577A',C_VEH()==='car'?null:{skin:lk.skin,hair:a>=62?'#D8DCE0':lk.hair,body:'#E2703A',pants:lk.pants,st:stageAt(a),long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:0}); lx.drawImage(s,X(W.x)-s.width/2,Y(W.y)-s.height+4); }
     else { dropShadow(lx,X(W.x),Y(W.y)-1,st==='baby'?10:12); const bob=W.moving&&f===0?1:0; lx.drawImage(personSprite({dir:W.dir,fr:f,st,skin:lk.skin,hair:a>=62?'#D8DCE0':a>=50?shade(lk.hair,1.6):lk.hair,body:'#E2703A',pants:lk.pants,long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:Math.floor(hash(lk.si*5+lk.hair.charCodeAt(3),9)*4),blink:Math.floor(t*10)%38===0}),X(W.x)-8,Y(W.y)-22-bob); } }});
   if(out&&canDrive()&&!W.car) spr.push({y:10.9,d:()=>{ const s=vehicleSprite(C_VEH(),1,'#C2577A',null); lx.drawImage(s,X(6.2)-s.width/2,Y(10.9)-s.height+4); }});
   spr.sort((p,q)=>p.y-q.y).forEach(s=>s.d());
   if(W.fx&&W.fx.length){ W.fx=W.fx.filter(p=>t-p.b<.45); W.fx.forEach(p=>{ const k=(t-p.b)/.45, px=X(p.x)+p.dx, py=Y(p.y)-1-Math.floor(k*4); lx.fillStyle=`rgba(244,238,220,${.75*(1-k)})`; const r=k<.4?2:1; lx.fillRect(px-r,py,r*2,r); lx.fillRect(px-r+1,py-1,r*2-2,1); }); }
   // 아플 때: 머리 위 땀방울, 화면도 조금 가라앉는다
-  if(isSick()){ const hx=X(W.x)+4, hy=Y(W.y)-(st==='baby'?12:st==='kid'?19:24)+Math.round(Math.sin(t*4)*1); lx.fillStyle='#283038'; lx.fillRect(hx-1,hy-1,4,6); lx.fillStyle='#9ACCF8'; lx.fillRect(hx,hy+1,2,4); lx.fillRect(hx+.5|0,hy,1,1); lx.fillStyle='#FFFFFF'; lx.fillRect(hx,hy+2,1,1);
+  if(isSick()){ const hx=X(W.x)+4, hy=Y(W.y)-(st==='baby'?12:st==='tod'?14:st==='kid'?17:23)+Math.round(Math.sin(t*4)*1); lx.fillStyle='#283038'; lx.fillRect(hx-1,hy-1,4,6); lx.fillStyle='#9ACCF8'; lx.fillRect(hx,hy+1,2,4); lx.fillRect(hx+.5|0,hy,1,1); lx.fillStyle='#FFFFFF'; lx.fillRect(hx,hy+2,1,1);
     lx.fillStyle=L.f.dying?'rgba(40,30,60,.22)':'rgba(50,70,110,.14)'; lx.fillRect(0,0,LW,LH); }
   // 할 일 · 미션 표시
   const tg=targets();
@@ -6660,9 +7458,9 @@ function draw(t){
     [['play',4.5,15.2],['nature',4,20.2],['mount',53.7,1.4],['sea',59.7,9.6]].forEach(([k,xx,yy])=>{ const lxp=S(X(xx)), lyp=S(Y(yy)); if(lxp>-80&&lxp<VW+80&&lyp>HUDH-10&&lyp<VH) label(L.spotName(k),lxp,lyp,11,'#FFF6DC','#5A4030'); });
     OUT.gates.forEach(gt=>{ if(L.age>=gt[1]) return; const lxp=S(X(gt[0]+.3)), lyp=S(Y(12)); if(lxp>-40&&lxp<VW+40) label(gt[1]+'살부터',lxp,lyp,10,'#283038','#F8F8F0','#F2C14E'); }); }
   for(const n of list){ if(n.kind!=='p'||!n.key||n.static) continue; const pd=Math.hypot(n.x-W.x,n.y-W.y), isT=tg.some(k=>k.key===n.key&&k.m===W.map); if(pd>3.2&&!isT) continue;
-    const nm=n.label||(W.map==='home'?L.spotName(n.key):n.key==='p0'?intNames(W.map)[0]:n.key==='p2'?intNames(W.map)[2]:null); if(nm) label(nm,S(X(n.x)),S(Y(n.y)-(n.st==='kid'?24:n.st==='baby'?14:28)),10,'#F8F8F0','#283038'); }
+    const nm=n.label||(W.map==='home'?L.spotName(n.key):n.key==='p0'?intNames(W.map)[0]:n.key==='p2'?intNames(W.map)[2]:null); if(nm) label(nm,S(X(n.x)),S(Y(n.y)-(n.st==='kid'?21:n.st==='tod'?17:n.st==='baby'?14:27)),10,'#F8F8F0','#283038'); }
   if(!out){ const nm=W.map==='home'?'현관 · 밖으로':L.spotName(W.map)+' · 밖으로'; label(W.map==='home'&&a<6?'현관 (아직 못 나가요)':nm,S(X(IDOOR[0])),S(Y(9.1)),10,'#283038','#F8F8F0'); }
-  label(L.given||L.name,S(X(W.x)),S(Y(W.y)-(W.car?20:st==='baby'?13:st==='kid'?24:28)),10,'#283038','#FFFFFF');
+  label(L.given||L.name,S(X(W.x)),S(Y(W.y)-(W.car?(C_VEH()==='car'?20:30):st==='baby'?13:st==='tod'?17:st==='kid'?21:27)),10,'#283038','#FFFFFF');
   // 화면 밖의 할 일 쪽을 가리키는 화살표
   for(const k of tg){ let tx,ty; if(k.m===W.map){ tx=S(X(k.p[0])); ty=S(Y(k.p[1])); } else { const d=W.map!=='out'?IDOOR:doorOf(k.m==='out'?'home':k.m); tx=S(X(d[0])); ty=S(Y(d[1])); }
     const top=HUDH+8; if(tx<12||tx>VW-12||ty<top||ty>VH-12){ const ax=clamp(tx,18,VW-18), ay=clamp(ty,top+8,VH-110), an=Math.atan2(ty-ay,tx-ax);
@@ -7089,7 +7887,13 @@ const jobKindOf=n=>{ for(const id in JOBS){ if(G.life&&G.life.tx(JOBS[id].n)===n
 // 위키미디어 주소 만들기 (MediaWiki와 같은 방식으로 파일 이름을 바꾼다)
 const mwEnc=f=>encodeURIComponent(f).replace(/'/g,'%27').replace(/%3B/gi,';').replace(/%40/gi,'@').replace(/%24/gi,'$').replace(/%2C/gi,',').replace(/%3A/gi,':');
 function phURL(p){ const f=mwEnc(p[0]), h=p[1]; return h.endsWith('!')?`${PH_BASE}${h.slice(0,-1)}/${f}`:`${PH_BASE}thumb/${h}/${f}/500px-${f}`; }
-function phLoad(src){ return new Promise((ok,no)=>{ const i=new Image(); i.crossOrigin='anonymous'; const tm=setTimeout(()=>no('timeout'),9000); i.onload=()=>{ clearTimeout(tm); ok(i); }; i.onerror=()=>{ clearTimeout(tm); no('err'); }; i.src=src; }); }
+const phFnv=t=>{ let h=0x811c9dc5; for(let i=0;i<t.length;i++){ h^=t.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h.toString(16).padStart(8,'0'); };
+const PH_CACHE=new Map();
+// 미리 받아 둔 사진(이 사이트의 ph 폴더)을 먼저 쓰고, 없으면 위키미디어에서 직접 불러온다. 한 번 부른 사진은 다시 받지 않는다.
+function phGet(p){ const k=p[0]; if(PH_CACHE.has(k)) return PH_CACHE.get(k);
+  const local=location.protocol.startsWith('http')?phLoad('ph/'+phFnv(p[0])+'.jpg',4000):Promise.reject('no');
+  const pr=local.catch(()=>phLoad(phURL(p))); PH_CACHE.set(k,pr); pr.catch(()=>PH_CACHE.delete(k)); return pr; }
+function phLoad(src,ms){ return new Promise((ok,no)=>{ const i=new Image(); i.crossOrigin='anonymous'; const tm=setTimeout(()=>no('timeout'),ms||9000); i.onload=()=>{ clearTimeout(tm); ok(i); }; i.onerror=()=>{ clearTimeout(tm); no('err'); }; i.src=src; }); }
 // 실제 사진을 필름 사진처럼: 살짝 기울고 당겨 찍은 구도 + 바랜 색 · 입자 · 날짜
 function drawRealPhoto(cv,img,m,L,idx){ const w0=PH_W,h0=PH_H; PH_W=480; PH_H=360; try{ drawRealPhoto0(cv,img,m,L,idx); } finally{ PH_W=w0; PH_H=h0; } }
 function drawRealPhoto0(cv,img,m,L,idx){ const r=phRng(Math.floor(hashStr(m.t+'|'+m.a)*1e9)), x=cv.getContext('2d'); cv.width=PH_W; cv.height=PH_H;
@@ -7099,7 +7903,7 @@ function drawRealPhoto0(cv,img,m,L,idx){ const r=phRng(Math.floor(hashStr(m.t+'|
   finishFilm(x,r,{tone:kind==='sick'||kind==='hosp'?'#C8D8E4':kind==='farewell'?'#E8A890':'#F2C48D',toneA:.22,night,age:L.lifespan?(L.lifespan-m.a)/Math.max(30,L.lifespan):.3,date:[(L.by||2026)+m.a,1+Math.floor(r()*12),1+Math.floor(r()*28)]}); }
 // 기억 하나의 사진: 실제 사진을 먼저 찾고, 없거나 불러오지 못하면 그림으로
 async function drawMemPhoto(cv,m,L,idx){ const src=photoSrc(m,L,idx);
-  if(src&&src.p){ try{ const img=await phLoad(phURL(src.p)); drawRealPhoto(cv,img,m,L,idx); return src; }catch(e){} }
+  if(src&&src.p&&(src.place||/^(town|travel|sea|fest|harvest)$/.test(photoKind(m)))){ try{ const img=await phGet(src.p); drawRealPhoto(cv,img,m,L,idx); return src; }catch(e){} }
   drawPhoto(cv,m,L,idx); return null; }
 function photoCredit(src){ if(!src||!src.p) return '그림'; const f=src.p[0], a=(src.p[2]||'').replace(/\s+/g,' ').trim().slice(0,32);
   return `<a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(f.replace(/ /g,'_'))}" target="_blank" rel="noopener">사진${src.place?' · '+esc(src.place):''}: ${esc(a||'위키미디어 공용')} · ${esc(src.p[3]||'')}</a>`; }
@@ -7144,7 +7948,7 @@ function finishLife(){
   const s1=`<p class="soft">${by+a}년 · ${a}살 · ${seasonOf(L)} · ${esc(C.n)} ${esc(L.town||'')}</p><p class="big">${esc(nm)}(${by}~${by+a})${josa(nm,'은','는').slice(nm.length)} ${young?'짧은 삶을 마쳤습니다.':'조용히 눈을 감았습니다.'}</p><p>${esc(who)} ${how}</p><p class="soft">${young?'짧았지만, 분명히 있었던 삶이었습니다.':`${a}년 동안 ${L.n}번의 선택을 하며 살았습니다.`}</p>`;
   // 2막 · 세 장면
   const three=pickThree(L), hp=(L.hist||[]).reduce((b,x)=>x.j>(b?b.j:-1)?x:b,null);
-  const photosHTML=arr=>`<div class="cardnews">${arr.map((m,i)=>`<article class="ncard"><div class="nimg"><canvas data-mi="${L.mem.indexOf(m)}" width="480" height="360"></canvas><span class="nage">${m.a}살 · ${by+m.a}년</span><span class="nno">${i+1} / ${arr.length}</span></div><div class="nbody">${m.q?`<p class="mq">${esc(m.q)}${m.l?`<span class="ml">→ ${esc(m.l)}</span>`:''}</p>`:''}<p>${esc(memT(m))}${m.rp>1?` <small class="rp">(그 뒤로도 ${m.rp-1}번 더)</small>`:''}</p><small class="cr"></small></div></article>`).join('')}</div><p class="note">사진은 위키백과·위키미디어 공용에 자유 이용으로 공개된 실제 사진입니다(카드 아래에 찍은 사람과 라이선스 표시). 그 사람이 사는 도시·고향·명소·음식·대학, 그리고 재난·병원·결혼·졸업처럼 장면이 분명한 기억은 실제 사진을 쓰고, 나머지는 그 장면을 그림으로 그립니다.</p>`;
+  const photosHTML=arr=>`<ul class="photos">${arr.map((m,i)=>`<li style="animation-delay:${i*.6}s"><figure class="pf" style="margin:0"><canvas data-mi="${L.mem.indexOf(m)}" width="320" height="240"></canvas><figcaption>${by+m.a}년 · ${m.a}살</figcaption><small class="cr"></small></figure><div><b>${m.a}살 · ${by+m.a}년</b>${m.q?`<p class="mq">${esc(m.q)}${m.l?`<span class="ml">→ ${esc(m.l)}</span>`:''}</p>`:''}<p>${esc(memT(m))}${m.rp>1?` <small class="rp">(그 뒤로도 ${m.rp-1}번 더)</small>`:''}</p></div></li>`).join('')}</ul><p class="note">사진은 위키백과·위키미디어 공용에 자유 이용으로 공개된 실제 사진입니다(사진 아래에 찍은 사람과 라이선스 표시). 사람이 나오는 장면(결혼·졸업·가족 등)은 이 삶의 모습으로 그린 그림이고, 사진을 불러오지 못하면 그림으로 대신합니다.</p>`;
   const s2=`<p class="soft">눈을 감자, 세 장면이 사진처럼 스쳐 갑니다.</p>${three.length?photosHTML(three):'<p>엄마 품에서 방긋 웃던 날이 있었습니다.</p>'}${hp&&!young?`<p class="soft">가장 행복했던 해는 ${by+hp.a}년, ${hp.a}살 무렵이었습니다.</p>`:''}`;
   // 3막 · 남겨진 사람들의 말
   const voices=voicesOf(L), cut=(s,n)=>s.length>n?s.slice(0,n-1)+'…':s;
@@ -7165,23 +7969,51 @@ function finishLife(){
   const s6=`<p class="soft">이제 당신에게로</p>${RQ.map((q,i)=>`<label class="stack-s" for="rq${i}">${esc(q)}<textarea id="rq${i}" maxlength="100" rows="2"></textarea></label>`).join('')}
     <label class="stack-s" for="ltitle">이 삶의 제목<input id="ltitle" maxlength="30" placeholder="예: 바다를 사랑한 어부의 일흔두 해"></label><label class="stack-s" for="epi">${esc(nm)}에게 남기는 한마디<input id="epi" maxlength="40" placeholder="예: 다음에는 더 자주 연락할게"></label>
     <p class="soft">인생 기록</p><canvas id="card" width="720" height="1180"></canvas><div class="row"><button class="btn primary" id="btnDone">${G.teacher?'마치기':'남기고 돌아가기'}</button><button class="btn" id="btnSave">카드 저장</button></div>`;
-  const steps=[s1,s2,s3,s4,s5,s6];
-  let i=0; show('end');
-  const render=()=>{ $('endIn').innerHTML=`<div class="step">${steps[i]}${i<steps.length-1?'<div><button class="btn" id="btnStep">다음</button></div>':''}</div>`; $('s-end').scrollTo(0,0);
-    $('endIn').querySelectorAll('canvas[data-mi]').forEach((c,k)=>{ const m=L.mem[+c.dataset.mi]; try{ drawPhoto(c,m,L,k); }catch(e){} drawMemPhoto(c,m,L,k).then(src=>{ const cr=c.parentElement.querySelector('.cr'); if(cr) cr.innerHTML=photoCredit(src); }).catch(()=>{}); });
-    if(i<steps.length-1) $('btnStep').onclick=()=>{ i++; render(); };
+  // ----- 슬라이드쇼: 정보를 한 장씩 살펴보며 넘긴다. 사진은 맨 끝의 마무리 장면으로 -----
+  const dr=deathRecord(L), dcut=dr.indexOf('<p class="soft" style="margin-top:14px">'), recHTML=dcut>0?dr.slice(0,dcut):dr, compsHTML=dcut>0?dr.slice(dcut).replace('<p class="soft" style="margin-top:14px">','<p class="soft">'):'';
+  const strip=h=>String(h).replace(/^\s*<p class="soft">[^<]*<\/p>/,'');
+  const SL=(k,b,t)=>({k,b,t:t||''}), slides=[SL('마지막 순간',s1)];
+  voices.forEach((v,j)=>slides.push(SL('남겨진 사람들의 말',`<blockquote class="bigq">${esc(v[1])}<cite>${esc(v[0])}</cite>${v[2]?`<span class="mref">함께한 기억 · ${v[2].a}살: ${esc(cut(memT(v[2]),70))}</span>`:''}</blockquote>`,voices.length>1?`${j+1} / ${voices.length}`:'')));
+  slides.push(SL('사망 기록',strip(recHTML)));
+  if(compsHTML) slides.push(SL('같은 1초에 태어난 사람들',strip(compsHTML)));
+  slides.push(SL('어디에서 태어났는가',`<p>${esc(C.n)}에서 태어난 아기의 기대수명은 약 ${C.le}세, 대한민국은 약 ${K.le}세, 지금 태어나는 아기 평균은 약 ${Math.round(W.le)}세입니다.${young?` ${esc(C.n)}에서는 아이 1000명 가운데 약 ${C.u5}명이 다섯 살이 되기 전에 삶을 마칩니다. 대한민국은 약 ${K.u5}명입니다.`:''}</p><p class="big">어디에서 태어났는가가, 얼마나 그리고 어떻게 사는가를 바꾸기도 합니다.</p>`));
+  slides.push(SL('이 사람의 이야기',strip(lifeStory(L))));
+  if(!young) slides.push(SL('돈 이야기',strip(moneyStep(L))));
+  slides.push(SL(`${nm}의 선택 ${L.n}번`,traitHTML));
+  if(!young) slides.push(SL('행복은 어디서 왔을까',strip(happyStep(L))));
+  const card=(m,j)=>`<article class="ncard"><div class="nimg"><canvas data-k="${j}" width="480" height="360"></canvas><span class="nage">${m.a}살 · ${by+m.a}년</span>${three.length>1?`<span class="nno">${j+1} / ${three.length}</span>`:''}</div><div class="nbody">${m.q?`<p class="mq">${esc(m.q)}${m.l?`<span class="ml">→ ${esc(m.l)}</span>`:''}</p>`:''}<p>${esc(memT(m))}${m.rp>1?` <small class="rp">(그 뒤로도 ${m.rp-1}번 더)</small>`:''}</p><small class="cr"></small></div></article>`;
+  const phNote='<p class="note">사진은 위키백과·위키미디어 공용에 자유 이용으로 공개된 실제 사진입니다(카드 아래에 찍은 사람과 라이선스 표시). 장소·음식·재난처럼 장면이 분명한 기억은 실제 사진을, 나머지는 이 삶의 모습으로 그린 그림을 씁니다.</p>';
+  three.forEach((m,j)=>slides.push(SL('마지막으로 스쳐 간 장면',(j===0?`<p class="soft">눈을 감기 전, ${three.length>1?three.length+'개의 장면이':'한 장면이'} 사진처럼 스쳐 갑니다.</p>`:'')+card(m,j)+(j===three.length-1?(hp&&!young?`<p class="soft">가장 행복했던 해는 ${by+hp.a}년, ${hp.a}살 무렵이었습니다.</p>`:'')+phNote:''))));
+  if(!three.length) slides.push(SL('마지막으로 스쳐 간 장면','<p class="big">엄마 품에서 방긋 웃던 날이 있었습니다.</p>'));
+  slides.push(SL('나에게로',s5)); slides.push(SL('이제 당신에게로',strip(s6)));
+  // 사진은 엔딩이 시작될 때 미리 받아 둔다 (사진 장면에 닿을 즈음엔 이미 준비되어 있다)
+  const pre=three.map((m,k)=>{ const c=document.createElement('canvas'); c.width=480; c.height=360; try{ drawPhoto(c,m,L,k); }catch(e){} return {c,pr:drawMemPhoto(c,m,L,k).catch(()=>null)}; });
+  let i=0; const keep={}; show('end');
+  const go=d=>{ const j=i+d; if(j<0||j>=slides.length) return; $('endIn').querySelectorAll('input,textarea').forEach(e=>keep[e.id]=e.value); i=j; render(); };
+  const render=()=>{ const sl=slides[i];
+    $('endIn').innerHTML=`<div class="slideshow"><div class="sbar" aria-hidden="true"><i style="width:${((i+1)/slides.length*100).toFixed(1)}%"></i></div><div class="shead"><span class="kick">${esc(sl.k)}${sl.t?` · ${sl.t}`:''}</span><span class="snum">${i+1} / ${slides.length}</span></div><div class="step slide">${sl.b}</div><div class="snav">${i>0?'<button class="btn" id="btnPrev">← 이전</button>':'<span></span>'}${i<slides.length-1?'<button class="btn primary" id="btnStep">다음 →</button>':''}</div></div>`;
+    $('s-end').scrollTo(0,0);
+    $('endIn').querySelectorAll('input,textarea').forEach(e=>{ if(keep[e.id]!=null) e.value=keep[e.id]; });
+    $('endIn').querySelectorAll('canvas[data-k]').forEach(c=>{ const p=pre[+c.dataset.k]; if(!p) return; const paint=()=>{ c.width=p.c.width; c.height=p.c.height; c.getContext('2d').drawImage(p.c,0,0); }; paint();
+      p.pr.then(src=>{ if(!c.isConnected) return; paint(); const cr=c.closest('.ncard').querySelector('.cr'); if(cr) cr.innerHTML=photoCredit(src); }); });
+    if($('btnPrev')) $('btnPrev').onclick=()=>go(-1);
+    if(i<slides.length-1) $('btnStep').onclick=()=>go(1);
     else{ const val=id=>($(id)?$(id).value.trim():''), opts=()=>({title:val('ltitle').slice(0,30),epi:val('epi').slice(0,40)});
       drawCard(three).catch(()=>{});
       $('btnSave').onclick=async()=>{ try{ await drawCard(three,opts()); }catch(e){} $('card').toBlob(b=>{ const l=document.createElement('a'); l.href=URL.createObjectURL(b); l.download='인생기록_'+L.name+'.png'; document.body.appendChild(l); l.click(); l.remove(); }); };
-      $('btnDone').onclick=()=>{ const {title,epi}=opts(), ans=RQ.map((q,k)=>val('rq'+k).slice(0,100)).filter(Boolean), nts=notes.map(n=>[n.a,String(n.t).slice(0,120)]);
+      $('btnDone').onclick=()=>{ G.endNav=null; const {title,epi}=opts(), ans=RQ.map((q,k)=>val('rq'+k).slice(0,100)).filter(Boolean), nts=notes.map(n=>[n.a,String(n.t).slice(0,120)]);
         if(G.teacher){ const d=TStore.data||(TStore.data=TStore.fresh(null)); if(G.tid){ delete d.saves[G.tid]; TStore.dirty.add(G.tid); }
           d.lives=d.lives.concat(lifeRecord(L,{title,epi,top,kids:kidN.length,ans,notes:nts})).slice(-60); TStore.save(true,'lives');
           G.teacher=false; G.life=null; G.tid=null; openTeacherBody(); return; }
         G.data.lives=(G.data.lives||[]).concat({name:L.name,c:L.c,set:L.set,famI:L.famI,age:a,top,n:L.n,by,town:L.town,nw:Math.round(L.nw),kids:kidN.length,title,epi,ans,notes:nts,cause:causeOf(L).n,t:Date.now()}).slice(-30); G.data.save=null; G.life=null; Store.save(G.data,true);
         if(G.data.room&&Store.sess) Store.memberPut(G.data.room,{id:Store.sess.id,name:L.name,age:a,n:L.n,dead:1,title,epi,ans,c:L.c,cause:causeOf(L).n,t:Date.now()}); openHub(); }; } };
+  G.endNav=go;
+  const ei=$('endIn'); let tx0=null, ty0=0; ei.ontouchstart=e=>{ const t=e.touches[0]; tx0=t.clientX; ty0=t.clientY; };
+  ei.ontouchend=e=>{ if(tx0==null) return; const t=e.changedTouches[0], dx=t.clientX-tx0, dy=t.clientY-ty0; tx0=null; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5&&!/INPUT|TEXTAREA|CANVAS/.test(e.target.tagName)) go(dx<0?1:-1); };
   if(!G.teacher){ G.data.save=null; } else tPersist(true);
   render();
 }
+document.addEventListener('keydown',e=>{ if(!G.endNav||$('s-end').hidden||/INPUT|TEXTAREA|SELECT/.test((e.target&&e.target.tagName)||'')) return; if(e.key==='ArrowRight') G.endNav(1); else if(e.key==='ArrowLeft') G.endNav(-1); });
 // 마지막 기록: 무엇으로, 같은 해 태어난 사람들 가운데 얼마나, 누가 배웅했는지, 같은 1초에 태어난 사람들은
 function deathRecord(L){ const C=L.C, a=L.lifespan, cz=causeOf(L), sv=survTo(C,a+1), longer=Math.round((1-sv)*100), P=L.ppl||{}, fm=L.fam;
   const hp=(L.hist||[]).reduce((b,x)=>x.j>(b?b.j:-1)?x:b,null);
@@ -7272,6 +8104,54 @@ function lifeRecord(L,o){ const a=L.lifespan, cz=causeOf(L), by=L.by||2026; let 
   const big=L.mem.filter(m=>m.big&&m.t), pick=[]; const n=Math.min(14,big.length); for(let i=0;i<n;i++) pick.push(big[Math.floor(i*big.length/n)]);
   return {name:L.name,c:L.c,set:L.set,famI:L.famI,age:a,by,top:o.top,n:L.n,town:L.town,nw:Math.round(L.nw||0),kids:o.kids,title:o.title,epi:o.epi,cause:cz.n,
     rows:rows.slice(0,24).map(r=>[r[0].slice(0,30),r[1].slice(0,240)]),mem:pick.map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,140)]),ans:o.ans||[],notes:o.notes||[],t:Date.now()}; }
+</script>
+<!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
+<script id="visual-enhancer">
+(function(){
+  'use strict';
+  var end=document.getElementById('s-end'), inner=document.getElementById('endIn');
+  if(!end||!inner) return;
+  var cv=document.createElement('canvas'); cv.id='star-bg-canvas'; cv.setAttribute('aria-hidden','true');
+  end.insertBefore(cv,end.firstChild);              // #endIn 바깥에 두어 장면이 다시 그려져도 남는다
+  var ctx=cv.getContext('2d'), stars=[], raf=0;
+  var still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function size(){
+    var w=window.innerWidth, h=window.innerHeight;
+    cv.width=w; cv.height=h;
+    var n=Math.round(Math.min(130,Math.max(60,w*h/9000)));
+    stars=[];
+    for(var i=0;i<n;i++) stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6+.4,a:Math.random()*.8+.15,
+      da:(Math.random()*.015+.003)*(Math.random()<.5?1:-1)});
+    paint();
+  }
+  function paint(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    for(var i=0;i<stars.length;i++){
+      var s=stars[i]; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,6.2832);
+      ctx.fillStyle='rgba(255,228,205,'+s.a.toFixed(2)+')'; ctx.fill();
+    }
+  }
+  function tick(){
+    if(end.hidden||document.hidden){ raf=0; return; }
+    for(var i=0;i<stars.length;i++){ var s=stars[i]; s.a+=s.da; if(s.a>.95||s.a<.15) s.da*=-1; }
+    paint(); raf=requestAnimationFrame(tick);
+  }
+  function sync(){
+    if(end.hidden){ if(raf){ cancelAnimationFrame(raf); raf=0; } return; }
+    size();
+    if(!still&&!raf) raf=requestAnimationFrame(tick);
+  }
+  new MutationObserver(sync).observe(end,{attributes:true,attributeFilter:['hidden']});
+  document.addEventListener('visibilitychange',function(){ if(!end.hidden&&!document.hidden&&!still&&!raf) raf=requestAnimationFrame(tick); });
+  window.addEventListener('resize',function(){ if(!end.hidden) size(); });
+
+  // 한 장면 안에서 기억·사진이 차례로 떠오르게 한다 (장면이 바뀔 때마다 0부터 다시 센다)
+  new MutationObserver(function(){
+    var items=inner.querySelectorAll('.photos li, .mem > div');
+    for(var i=0;i<items.length;i++) items[i].style.animationDelay=Math.min(i*.18,1.2)+'s';
+  }).observe(inner,{childList:true});
+})();
 </script>
 </body>
 </html>
