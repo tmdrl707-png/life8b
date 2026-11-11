@@ -211,6 +211,32 @@ h3{font-size:1rem;margin:0} p{margin:0}
 #s-end .btn{background:transparent;color:#fff;border-color:#6B7E8D}
 #s-end .btn.primary{background:var(--fox);border-color:var(--fox)}
 
+
+/* ----- 능력치 2판: 오각형 · 건강/재산 막대 ----- */
+.radar{width:100%;max-width:380px;display:block;margin:4px auto 0;overflow:visible}
+.radar .rg{fill:none;stroke:#D8E0E8;stroke-width:1}
+.radar .rfull{fill:rgba(124,149,174,.06);stroke:#7C95AE;stroke-width:1.6}
+.radar .rax{stroke:#D8E0E8;stroke-width:1}
+.radar .rnow{fill:rgba(226,112,58,.26);stroke:#E2703A;stroke-width:2.4;stroke-linejoin:round}
+.radar .rlab{font-size:14px;font-weight:700;fill:#33404C}
+.radar .rnum{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.rlgd i.dash{display:inline-block;width:16px;height:0;border-top:2px dashed;vertical-align:middle;margin-right:4px;background:none!important}
+.axrow{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;font-size:.9rem;margin:6px 0}
+.axrow small.up{color:#2F8F5A}.axrow small.dn{color:#C23B56}
+.res{display:flex;flex-direction:column;gap:6px;margin:6px 0}
+.rbar{display:grid;grid-template-columns:4.4em 1fr auto;align-items:center;gap:8px;font-size:.88rem}
+.rbar .rt{position:relative;height:10px;background:#E6ECF1;border-radius:5px;overflow:hidden}
+.rbar .rt i{display:block;height:100%;border-radius:5px;background:#2F8F7A}
+.rbar .rt i.mid{background:#D49216}.rbar .rt i.bad{background:#C84B62}.rbar .rt i.money{background:#3577B8}.rbar .rt i.debt{background:#C23B56}.rbar .rt i.rel{background:#C2577A}
+.rbar .rt em{position:absolute;top:-2px;bottom:-2px;width:2px;background:#33404C;opacity:.45}
+.rbar .rv{font-variant-numeric:tabular-nums;white-space:nowrap}.rbar .rv small{color:#5A6878}.rbar .rv b.neg{color:#C23B56}
+#hRes .res.cmp{gap:3px;margin:3px 0 2px}#hRes .rbar{font-size:.72rem;grid-template-columns:2.6em 1fr auto;gap:5px}#hRes .rbar .rt{height:7px}
+.opts button.off{opacity:.45;cursor:not-allowed;filter:grayscale(.6)}
+.opts button small.why{display:block;color:#C23B56;font-weight:700;font-size:.78rem;margin-top:2px}
+.opts button small.cost{display:block;color:#5A6878;font-size:.76rem;margin-top:2px}
+#s-end .rbox{background:#FAF8F2;border-radius:16px;padding:10px 8px 6px;color:#2A2622}
+#s-end .rbox .lgd{color:#4A5560}
+#s-end .res .rbar{color:#E7EEF4}#s-end .res .rbar .rt{background:rgba(255,255,255,.14)}#s-end .res .rbar .rv small{color:#AFC0CD}
 /* ----- 엔딩 슬라이드쇼 ----- */
 #s-end .slideshow{position:relative;z-index:2;display:flex;flex-direction:column;gap:14px;min-height:calc(100dvh - 3rem)}
 #s-end .sbar{height:4px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden}
@@ -5938,6 +5964,188 @@ function specText(L,s){ const E=SPEC[s]; if(!E) return s; const g=specGroup(L); 
   if(Array.isArray(v)){ let h=(L.ws|0)^(L.age*2654435761); for(let i=0;i<s.length;i++) h=Math.imul(h^s.charCodeAt(i),16777619); v=v[Math.abs(h)%v.length]; }
   return v; }
 
+/* ========== 능력치 2판: 오각형 5축(행복·지식·기술·관계·경험) + 따로 보는 건강·재산 ==========
+   행복  — 건강·관계·돈 걱정·일과 꿈·경험에서 해마다 계산되어 천천히 움직이고, 큰 사건은 직접 오르내린다
+   지식  — 공부·진학·시험. 배운 것은 잘 줄지 않고 노년에 느리게 준다
+   기술  — 학창 시절에는 공부 밖의 활동, 일을 시작한 뒤에는 경력·승진·자격증. 일을 쉬거나 분야를 바꾸면 준다
+   관계  — 사람마다 친밀도를 따로 두고(가족은 천천히, 친구·동료는 빨리 멀어진다) 합쳐서 보여 준다
+   경험  — 처음 해 보는 일은 크게, 같은 일을 또 하면 조금만 쌓인다 (줄지 않는다)
+   건강  — 몸 상태(결과값). 나이가 들면 최대치가 내려가고, 사고·재난·병이 깎는다. 0은 삶이 끝난 뒤의 표시
+   재산  — 실제 금액은 그대로, 화면에는 '쓸 수 있는 돈'을 막대로. 빚은 한도까지만 */
+STAT.t='기술'; STAT.e='경험';
+const AXES=['j','k','t','e','r'];                       // 오각형: 행복이 맨 위, 시계 방향
+const AX_N={j:'행복',k:'지식',t:'기술',e:'경험',r:'관계'};
+const REL_N={mom:'엄마',dad:'아빠',gran:'할머니',sib:'형제자매',friend:'친구',spouse:'배우자',kids:'아이들',coll:'동료',nb:'이웃'};
+const REL_FADE={mom:.35,dad:.35,gran:.45,sib:.55,friend:1.3,spouse:.25,kids:.25,coll:1.8,nb:.9};
+const REL_RX=[['spouse',/\{spouse\}|\{lover\}|배우자|남편|아내|연인|애인|신랑|신부|결혼/],['kids',/\{kid\}|아이가|아이를|아이와|아이의|딸|아들|손주|육아/],['friend',/\{friend\}|\{bff\}|친구|단짝|짝꿍|동창/],
+  ['coll',/\{coll\d?\}|동료|후배|선배|팀장|사장|상사|직원|손님/],['mom',/엄마|어머니|\{mom\}|부모님/],['dad',/아빠|아버지|\{dad\}|부모님/],['gran',/할머니|할아버지|조부모/],['sib',/동생|언니|오빠|누나|형이|형과|형제|자매|\{sib\}/],['nb',/이웃|마을|동네|주민/]];
+// 원래의 사망률 식은 예전 건강 눈금에 맞춰져 있어, 그 계산을 할 때만 예전 눈금으로 바꿔 넣는다 (기대수명이 나라 통계와 맞도록)
+const H_OFF=15;
+function hMaxAt(a){ return a<30?100:Math.max(38,100-(a-30)*.72); }
+// 경험의 갈래: 처음이면 크게, 다시 하면 조금
+const EXP_CATS=[['abroad',/외국|해외|다른 나라|비행기|공항|여권/],['travel',/여행|관광|구경을 갔|가 보았|명소|소풍|나들이/],['move',/이사|도시로 떠|이주|새 동네|고향을 떠/],['sea',/바다|해변|파도/],['mount',/산에 올|등산|정상|오름/],
+  ['stage',/무대|공연|발표회|재롱|연극|합창|연주/],['contest',/대회|시합|결승|경기에 나/],['art',/그림|미술|전시|사진을 찍|만들기/],['music',/노래|악기|기타|피아노|밴드|춤/],['sport',/축구|농구|야구|달리기|수영|운동|체육|자전거|줄넘기/],
+  ['firstjob',/일을 시작|첫 월급|첫 출근|입사|일자리를 얻/],['parttime',/아르바이트|알바|일당|품삯/],['volunteer',/봉사|기부|도와주는 일/],['lang',/외국어|영어|언어를|말을 배우/],['romance',/첫사랑|고백|연인|데이트|좋아하는 사람/],
+  ['wedding',/결혼식|결혼했|혼례|가정을 꾸/],['parent',/아이가 태어|아기가 태어|태어났다\. 작은 손|쌍둥이/],['loss',/세상을 떠|장례|떠나보|먼 길을 떠나/],['disaster',/홍수|지진|태풍|폭풍|산불|화산|가뭄|물난리/],['hosp',/입원|수술|응급실/],
+  ['pet',/강아지|고양이|반려|병아리|토끼/],['cook',/요리|음식을 만들|김장|빵을 구/],['fest',/축제|명절|잔치|설날|추석/],['camp',/캠핑|야영|별이 쏟|밤하늘/],['drive',/운전|면허|오토바이를|차를 몰/],
+  ['tech',/컴퓨터|코딩|인공지능|휴대폰을 처음|게임을 만들/],['faith',/교회|성당|절에|사원|모스크|순례|예배/],['civic',/투표|선거|시위|모임 대표|동네 일/],['biz',/가게를 차|창업|사업을 시작|장사를 시작/],['cert',/자격증|면허를 땄|시험에 합격/],
+  ['house',/집을 샀|새 집|내 집|집을 지/],['friendnew',/친구를 사귀|친구가 생|새 친구/],['nature',/숲|강가|호수|들판|폭포|동굴/],['read',/책 한 권|도서관|소설|시를 썼/],['school',/입학|졸업|새 학년|학교에 다니/],
+  ['work2',/승진|팀장|반장이|맡게 되었/],['danger',/사고|다쳤|부러|꿰맸|빠졌|넘어져/],['news',/뉴스|소식이|세계 경기/]];
+function expCat(t){ for(const [c,re] of EXP_CATS) if(re.test(t)) return c; return null; }
+Life.prototype.relInit=function(){ const P=this.ppl||{}, f=this.f, fm=this.fam, a=this.age, R={}, base=this.s&&this.s.r!=null?this.s.r:55, adj=v=>clamp(v+(base-55)*.5,15,95);
+  if(!fm||fm.mom.al) R.mom=adj(a<19?68:56); if(!f.dad0&&(!fm||(fm.dad.al&&f.div!=='dad'))) R.dad=adj(a<19?60:50);
+  if(this.gran&&!f.ggone&&a<40) R.gran=adj(60); if(fm?fm.sibs.some(s=>s.born&&s.al):this.sib) R.sib=adj(56);
+  if(a>=7) R.friend=adj(a<30?50:42); if(a>=6) R.nb=adj(34); if(f.job&&a>=19) R.coll=adj(38);
+  if(f.family&&P.spouse&&!f.widow) R.spouse=adj(74); if(this.kids&&this.kids.length) R.kids=adj(74);
+  this.rel=R; };
+Life.prototype.relAgg=function(){ const v=Object.values(this.rel||{}).sort((a,b)=>b-a); const top=(v[0]||0)+(v[1]||0), rest=(v[2]||0)+(v[3]||0)+(v[4]||0); return clamp(.6*top/2+.4*rest/3,0,100); };
+Life.prototype.relAdd=function(d,txt){ const R=this.rel||(this.rel={}); let keys=[]; for(const [k,re] of REL_RX) if(re.test(txt||'')&&k in R) keys.push(k);
+  const tg=keys.length?keys:Object.keys(R), m=keys.length?1.5/Math.sqrt(keys.length):.45;
+  tg.forEach(k=>{ let dd=d*m; if(dd>0) dd*=Math.min(1,(104-R[k])/60); R[k]=Math.round(clamp(R[k]+dd,0,100)*10)/10; }); };
+Life.prototype.expAdd=function(t){ const c=expCat(t); if(!c) return 0; const X=this.xc||(this.xc={}), n=(X[c]=(X[c]||0)+1); const s=this.s;
+  const d=(n===1?1.5:.3/n)*Math.max(.2,1-s.e/100); s.e=clamp(s.e+d,0,100); return d; };
+// 저장된 옛 삶을 새 체계로 한 번 바꾼다 (지식·건강·행복은 그대로, 기술·경험·사람별 친밀도는 기록에서 다시 계산)
+function ensureV2(L){ if(L.v===2) return; const s=L.s; s.h=clamp(s.h+H_OFF,0,hMaxAt(L.age));
+  if(s.t==null){ let yrs=0; const J=L.jobs||[]; J.forEach((j,i)=>{ const end=i+1<J.length?J[i+1].a:(L.f.job?L.age:j.a+2); yrs+=Math.max(0,end-j.a); }); s.t=clamp(yrs*1.7+(L.age>=13?6:0),0,80); }
+  if(s.e==null){ s.e=0; L.xc={}; (L.mem||[]).forEach(m=>{ if(m.a>0) for(let i=0;i<(m.rp||1);i++) L.expAdd([m.t,m.q,m.l].filter(Boolean).join(' ')); }); }
+  if(!L.rel) L.relInit(); s.r=L.relAgg(); L.v=2; }
+// 해마다: 행복은 목표값을 향해, 관계는 저절로 멀어지고, 기술은 일과 함께, 건강은 나이의 한계 안에서
+Life.prototype.moneyEase=function(){ const C=this.C, a=this.age, f=this.f; if(a<19&&!f.job) return clamp(50+(this.w-.5)*90,5,95);
+  const yr=Math.max(C.med*12,(this.inc||0)*12), debt=this.cash<0?Math.min(40,-this.cash/yr*(this.house?6:14)):0; return clamp(this.w*100-debt,0,100); };
+Life.prototype.workSat=function(){ const f=this.f, a=this.age, s=this.s, j=this.job; if(f.dying) return 30; if(a<7) return 60;
+  if(f.school) return clamp(45+(s.k-40)*.3+s.t*.1,15,90); if(f.job&&j) return clamp(38+s.t*.38+(j.kind==='dream'?10:0)+(this.inc>this.C.med*1.5?5:0)-(f.inf?5:0),10,95);
+  if(f.retired||a>=65) return 58; return a<19?50:24; };
+Life.prototype.joyTarget=function(){ const s=this.s; return .25*s.h+.25*s.r+.15*this.moneyEase()+.20*this.workSat()+.15*s.e; };
+Life.prototype.debtLimit=function(){ const C=this.C, f=this.f, inc=(this.inc||0)*(this.age>=19&&!f.school?12:0); const tierK=[1.2,2,2.6,3][Math.max(0,(C.tier||2)-1)];
+  if(inc>0) return inc*tierK+this.house*.7; if(f.univ&&f.school) return C.med*12*(C.tier>=3?2:.6); return C.med*3+this.house*.5; };
+Life.prototype.spendable=function(){ return this.cash-this.C.med*3; };
+// 이 선택을 지금 고를 수 있나: 모자라면 이유를 돌려준다 ('' 이면 고를 수 있다)
+const RX_HARD=/등산|마라톤|철인|밤새|밤샘|야간|밤일|철야|원정|배낭|오지|장거리|멀리 떠|무리해서|격하게|산에 오른|대회에 나|전력으로|뛰어든다|헤엄쳐/, RX_WORK=/더 일한다|야근|부업|잔업|두 가지 일|밤늦게까지 일/;
+Life.prototype.optCost=function(fx){ if(!fx) return 0; let c=0; if(fx['@']<0) c+=-fx['@']*this.C.med; if(fx.H>0&&!this.house) c+=this.housePrice()*fx.H/100; return c; };
+Life.prototype.optBlocked=function(o,kind){ if(!o) return ''; const fx=kind==='m'?o.okFx:kind==='ch'?(o.ok&&o.ok[1]):o.fx, lab=String(o.l||o.label||''), s=this.s, a=this.age;
+  if(a>=8&&s.h<60&&RX_HARD.test(lab)) return '건강이 좋지 않아요';
+  if(a>=19&&s.h<38&&RX_WORK.test(lab)) return '몸이 버티기 어려워요';
+  const c=this.optCost(fx); if(c>0&&a>=16){ const after=this.cash-c+(fx&&fx.H>0?this.housePrice()*fx.H/100*.7:0); if(after< -this.debtLimit()) return '돈이 부족해요'; }
+  return ''; };
+(function(){ const P=Life.prototype;
+  const _apply=P.apply; P.apply=function(fx){ if(!fx) return; ensureV2(this); const g=Object.assign({},fx), s=this.s;
+    if(g.r){ this.relAdd(g.r,this._why||''); delete g.r; }
+    if(this._ctx==='cal'||this._ctx==='scene'){ if(g.j) g.j*=.6; if(g.k>0) g.k*=.5; }
+    if(g.h<0) g.h=Math.max(g.h,-25);
+    const j0=s.j; _apply.call(this,g); if(this._inEnd) this._dj=(this._dj||0)+(s.j-j0);
+    if(fx.h<0&&!this.dead) s.h=Math.min(s.h,hMaxAt(this.age));
+    s.r=this.relAgg(); };
+  const ctxWrap=(name,ctx)=>{ const o=P[name]; P[name]=function(){ const prev=this._ctx; this._ctx=ctx; try{ return o.apply(this,arguments); } finally{ this._ctx=prev; } }; };
+  ctxWrap('calDo','cal'); ctxWrap('doScene','scene'); ctxWrap('chooseMajor','maj'); ctxWrap('choose','maj'); ctxWrap('questEnd','cal');
+  const _rem=P.remember; P.remember=function(o){ const r=_rem.call(this,o); if(o&&o.a>0&&!this._noExp){ ensureV2(this); this.expAdd([o.t,o.q,o.l].filter(Boolean).join(' ')); } return r; };
+  // 사건의 조건에 지금 능력치를 쓸 수 있게: v:h<50, v:r>65, v:cash<-10 (돈은 보통 한 달 벌이의 몇 배)
+  const _cc=P.calCtx; P.calCtx=function(ev,st,sy){ const c=ev&&ev.c; if(c&&c.some(t=>t.startsWith('v:'))){ for(const t of c){ if(!t.startsWith('v:')) continue; const m=t.match(/^v:(\w+)([<>])(-?[\d.]+)$/); if(!m) continue; const v=m[1]==='cash'?this.cash/this.C.med:this.s[m[1]]; if(v==null||!(m[2]==='<'?v<+m[3]:v>+m[3])) return null; }
+      return _cc.call(this,Object.assign({},ev,{c:c.filter(t=>!t.startsWith('v:'))}),st,sy); } return _cc.call(this,ev,st,sy); };
+  const _rk=P.rankUp; P.rankUp=function(n){ const r=_rk.call(this,n); if(r&&this.s.t!=null) this.s.t=clamp(this.s.t+2.5*Math.max(.3,1-this.s.t/110),0,100); return r; };
+  const _sp=P.startPeriod; P.startPeriod=function(){ ensureV2(this); return _sp.apply(this,arguments); };
+  const _end=P.endPeriod; P.endPeriod=function(){ ensureV2(this); const s=this.s, f=this.f, a=this.age, step=this.step, school=!!f.school, univ=!!f.univ, jn=(this.jobs||[]).length, hadJob=!!f.job, jPre=s.j, k0=s.k;
+    this._dj=0; this._inEnd=true; s.h-=H_OFF; let res; try{ res=_end.apply(this,arguments); } finally{ this._inEnd=false; s.h+=H_OFF; }
+    // 지식: 학교에 다니는 해에 저절로 오르는 몫을 줄인다 (공부를 고른 해가 더 차이 나도록)
+    if(school) s.k=Math.max(k0,s.k-(univ?1.7:1.2)*step);
+    if(a>=65) s.k-=.25*step;
+    if(f.ch&&f.ch.smoke!=null&&!(f.ch.quit!=null)) s.h-=.8*step;
+    // 기술: 일하는 동안 쌓이고, 쉬거나 분야를 바꾸면 준다. 학교 대신 일을 돕는 아이도 손에 익는다
+    const T=s.t; if(f.job&&!f.school&&a>=15) s.t+=(f.inf?1.6:2.1)*step*Math.max(.15,1-T/105);
+    else if(!f.school&&!f.retired&&a>=19&&a<65) s.t-=1.3*step; else if(f.retired) s.t-=.6*step;
+    else if(!f.school&&a>=10&&a<19) s.t+=1.1*step*Math.max(.2,1-T/90);
+    if(hadJob&&(this.jobs||[]).length>jn&&jn>0) s.t*=.86;
+    // 관계: 연락이 없으면 저절로 멀어진다. 새로 생긴 사람, 떠난 사람을 반영
+    const R=this.rel, P=this.ppl||{}, fm=this.fam;
+    for(const k in R) R[k]=Math.round(Math.max(k==='mom'||k==='dad'||k==='kids'||k==='spouse'?25:5,R[k]-REL_FADE[k]*step*(k==='coll'&&!f.job?2:1))*10)/10;
+    if(fm){ if(!fm.mom.al) delete R.mom; if(!fm.dad.al) delete R.dad; }
+    if(f.widow) delete R.spouse; if(f.ggone||a>=45) delete R.gran;
+    if(this.age>=7&&R.friend==null) R.friend=48; if(this.age>=6&&R.nb==null) R.nb=34;
+    if(f.job&&R.coll==null) R.coll=38; if(!f.job&&R.coll!=null&&R.coll<12) delete R.coll;
+    if(f.family&&P.spouse&&!f.widow&&R.spouse==null) R.spouse=76; if(this.kids.length&&R.kids==null) R.kids=78;
+    s.r=this.relAgg();
+    // 건강: 나이가 들면 최대치가 내려가고, 크게 다치거나 앓은 뒤에는 조금씩 회복한다
+    const hm=hMaxAt(this.age); const hT=Math.min(hm,this.C.hb+H_OFF+6); if(!f.dying&&!this.dead&&s.h<hT-4) s.h+=Math.min(hT-4-s.h,1.8*step); s.h=Math.min(s.h,hm);
+    // 행복: 목표값 = 건강 25% · 관계 25% · 돈 걱정 없음 15% · 일·꿈 20% · 경험 15%. 해마다 30%씩 다가간다
+    s.j=clamp(jPre+(this._dj||0),0,100); const tg=clamp(50+3*(this.joyTarget()-58),2,98); s.j+=(1-Math.pow(.7,step))*(tg-s.j);
+    for(const k of ['h','j','k','r','t','e']) s[k]=clamp(s[k],0,100);
+    if(this.dead) s.h=0;
+    const H=this.hist[this.hist.length-1]; if(H&&H.a===a) Object.assign(H,{h:Math.round(this.dead?0:s.h),j:Math.round(s.j),k:Math.round(s.k),r:Math.round(s.r),t:Math.round(s.t),e:Math.round(s.e)});
+    return res; };
+  const _load=Life.load; Life.load=function(o){ const L=_load.call(this,o); try{ ensureV2(L); }catch(e){} return L; };
+})();
+// 기술이 높을수록 원하는 일자리를 얻기 쉽다
+jobP=(old=>(L,j)=>clamp(old(L,j)+(L.s&&L.s.t!=null?(L.s.t-35)/100*.35:0),.04,.96))(jobP);
+
+/* ===== 새 사건 (능력치 2판) =====
+   학창 시절 활동(기술) · 일의 성장(교육·자격증·선배) · 처음 해 보는 일(경험) · 몸이 약할 때의 치료와 회복 · 외로울 때 · 빚에 쫓길 때.
+   조건의 v:축<값 / v:축>값 은 지금 능력치(h 건강, r 관계 …), v:cash<값 은 가진 돈(그 나라 보통 한 달 벌이의 몇 배) */
+Y(7,12,'e','[3,4,9]','방과 후 수업 신청서를 받았다.',[['로봇 만들기 반에 들어간다','t2 e2','작은 로봇이 처음 움직였을 때 소리를 질렀다.'],['책 읽기 반에 들어간다','k2','도서관 냄새가 좋아졌다.'],['신청하지 않고 놀이터에서 논다','j2 h1','해 질 때까지 친구들과 뛰어놀았다.']],{cd:3,sc:'school'});
+Y(8,12,'e','*','학교 줄넘기 대회 연습이 시작됐다.',[['매일 아침 일찍 나가 연습한다','t2 h2','쌩쌩이를 처음으로 열 번 넘었다.'],['쉬는 시간에만 조금 한다','h1','대회 날 무난하게 뛰었다.'],['연습 대신 공부한다','k2','받아쓰기 공책을 한 장 더 채웠다.']],{cd:3,sc:'sport'});
+Y(9,12,'e','*','학교 미술 대회에 낼 그림을 그린다.',[['동네 풍경을 정성껏 그린다','t2 e1','붓끝으로 우리 동네 지붕을 하나하나 그렸다.'],['대충 그리고 놀러 간다','j1','그림은 반쯤 비어 있었다.']],{cd:3});
+Y(10,12,'e U','*','학교 코딩 교실에서 처음으로 컴퓨터 게임을 만들어 볼 수 있다.',[['직접 만들어 본다','t3','고양이가 화면 위를 걷게 만들었다.'],['친구 것을 구경만 한다','r1','친구가 만든 게임을 함께 해 보았다.']],{once:1});
+Y(13,15,'m','[3,4]','중학교 동아리를 고른다.',[['밴드부에 들어간다','t2 r1','처음 잡아 본 드럼 스틱에 손바닥이 얼얼했다.'],['과학 탐구반에 들어간다','k2 t1','현미경으로 양파 껍질을 들여다보았다.'],['운동부에 들어간다','h2 t1','방과 후마다 운동장을 뛰었다.'],['동아리 없이 집에 간다','j1','방과 후 시간이 길었다.']],{once:1,sc:'school'});
+Y(13,15,'m','*','동네 복지관의 봉사 활동 모집 공고가 붙었다.',[['어르신 말벗 봉사를 한다','r2 t1','할머니 한 분이 내 손을 오래 잡고 계셨다.'],['강가 쓰레기 줍기 봉사를 한다','h1 t1','강가에서 쓰레기를 두 자루 주웠다.'],['신청하지 않는다','','그 시간에 집에서 쉬었다.']],{cd:2});
+Y(14,15,'m','*','지역 발명 대회 공고가 나왔다.',[['친구와 팀을 짜서 나간다','t2 r1','밤늦게까지 친구 집에서 발명품을 만들었다.'],['혼자 준비해 나간다','t2 k1','혼자 설계도를 그리고 부품을 사러 다녔다.'],['나가지 않는다','','다음에 하기로 했다.']],{once:1,sc:'stage'});
+Y(16,18,'h','[6,7,12]','방학 동안 아르바이트를 해 볼까?',[['식당에서 서빙을 한다','t2 @1','쟁반 세 개를 한 번에 드는 법을 익혔다.'],['편의점에서 일한다','t1 @1 h-1','밤 근무가 생각보다 길었다.'],['방학 내내 공부한다','k2','문제집 두 권을 끝냈다.'],['푹 쉰다','h1 j1','오랜만에 늦잠을 실컷 잤다.']],{cd:1});
+Y(16,18,'h','*','자격증 시험 공고가 붙었다.',[['컴퓨터 활용 자격증에 도전한다','t2','합격 문자를 받고 엄마에게 보여 드렸다.'],['조리 기능사에 도전한다','t2 e1','칼질 소리가 리듬처럼 들리기 시작했다.'],['학교 시험공부에 집중한다','k2','교과서에 밑줄이 늘었다.']],{cd:2});
+Y(16,18,'h','*','동아리 부장을 맡아 달라는 부탁을 받았다.',[['맡는다','t2 r1','후배들 연락처를 휴대폰에 하나하나 저장했다.'],['부원으로 남는다','j1','하던 대로 즐겁게 활동했다.'],['동아리를 그만두고 공부에 집중한다','k2 r-1','동아리 단톡방을 조용히 나왔다.']],{once:1});
+Y(16,18,'h','*','직업 체험의 날, 하루 동안 일터를 따라가 볼 수 있다.',[['병원을 따라가 본다','e2 t1','하얀 가운 사이를 하루 종일 따라다녔다.'],['공장을 따라가 본다','e2 t1','기계 소리 속에서 사람들이 쉬지 않고 움직였다.'],['방송국을 따라가 본다','e2 t1','카메라 뒤에 이렇게 많은 사람이 있는 줄 몰랐다.']],{once:1});
+Y(10,17,'ns','*','시장 일을 돕다 보니 물건 값 셈이 빨라졌다.','t2 k1',{cd:3,sc:'job'});
+Y(20,24,'u','[6,7]','여름 인턴십 공고가 떴다.',[['지원해서 일해 본다','t3','처음으로 명함을 받아 보았다.'],['교환 학생을 신청한다','e3 k1','다른 나라 기숙사에서 한 학기를 보냈다.'],['계절 학기를 듣는다','k2','학점을 미리 채웠다.']],{cd:1});
+Y(19,24,'u','*','공모전에 함께 나가자는 제안을 받았다.',[['밤새 준비해 나간다','t2 r1 h-1','마감 십 분 전에 제출 버튼을 눌렀다.'],['혼자 다른 공모전에 나간다','t2','혼자 끝까지 해냈다.'],['거절한다','','시험공부에 집중했다.']],{cd:2});
+Y(22,55,'w','*','일터에서 직무 교육 과정을 열었다.',[['저녁 시간을 내서 듣는다','t3 h-1','수료증을 받았다. 일하는 방식이 조금 달라졌다.'],['꼭 필요한 부분만 듣는다','t1','필요한 부분만 골라 들었다.'],['듣지 않는다','j1','그 시간에 가족과 저녁을 먹었다.']],{cd:4,sc:'job'});
+Y(24,55,'w','*','일과 관련된 자격증 시험이 석 달 뒤에 있다.',[['학원비를 내고 준비한다','t3 @-1','학원 책상에 매일 저녁 앉았다.'],['혼자 책으로 준비한다','t2','책 한 권을 너덜너덜해질 때까지 봤다.'],['이번에는 넘긴다','h1','다음 해로 미뤘다.']],{cd:5,ex:'cert',sc:'job'});
+Y(25,50,'w','*','같은 일을 오래 한 선배가 일을 가르쳐 주겠다고 한다.',[['주말마다 배운다','t3 j-1','선배만의 요령을 공책에 적어 두었다.'],['일하면서 어깨너머로 익힌다','t1 r1','선배와 점심을 자주 먹게 되었다.'],['정중히 사양한다','','하던 방식대로 일했다.']],{cd:6,sc:'job'});
+Y(30,55,'w','*','다른 분야로 옮겨 볼 기회가 생겼다. 처음부터 다시 배워야 한다.',[['옮겨서 새로 배운다','e3 t-3 j1','모든 것이 낯설었지만 다시 신입이 된 기분이 나쁘지 않았다.'],['지금 일을 더 깊이 판다','t2','하던 일을 더 잘하게 되었다.']],{once:1,sc:'job'});
+Y(14,70,'','*','혼자서 기차(버스)를 타고 처음 가 보는 도시에 가 볼까?',[['혼자 떠나 본다','e3 j1','낯선 역에서 내려 지도를 펼쳤다.'],['다음에 가족과 간다','r1','가족과 갈 날을 달력에 표시했다.']],{once:1,sc:'travel'});
+Y(20,70,'U','*','처음 보는 나라의 음식을 파는 가게가 동네에 생겼다.',[['처음 보는 메뉴를 시켜 본다','e2 j1','이름도 어려운 음식이 생각보다 맛있었다.'],['늘 먹던 것을 먹는다','','익숙한 맛이 편했다.']],{once:1});
+Y(30,75,'','*','한 번도 해 보지 않은 취미를 배워 볼까?',[['도예(목공)를 배워 본다','e2 t1','삐뚤어진 첫 그릇을 식탁에 올려 두었다.'],['춤을 배워 본다','e2 h1','거울 앞에서 서툰 발걸음을 밟았다.'],['지금 하던 대로 지낸다','h1','익숙한 저녁이 이어졌다.']],{cd:12});
+Y(60,85,'','*','손주(조카)가 영상 통화하는 법을 가르쳐 주겠다고 한다.',[['배워 본다','e2 r2','화면 속 손주 얼굴을 보고 한참 웃었다.'],['괜찮다며 사양한다','','전화로 목소리만 들었다.']],{once:1});
+Y(18,40,'','*','다른 나라 말을 처음 배워 볼 기회가 생겼다.',[['배워 본다','e2 k1','첫 인사말을 소리 내어 따라 했다.'],['지금은 바빠서 넘긴다','','하던 일을 했다.']],{once:1});
+Y(19,80,'v:h<50','*','몸이 많이 지쳤다. 의사는 한동안 일을 줄이라고 한다.',[['일을 줄이고 치료에 집중한다','h4 $-10 j-1','석 달 동안 일을 줄였다. 몸이 조금씩 돌아왔다.'],['약만 먹으며 버틴다','h-3 @1','일은 계속했지만 몸이 더 무거워졌다.'],['가족에게 도움을 청한다','h2 r2','가족이 집안일을 나눠 맡아 주었다.']],{cd:4,sc:'hosp'});
+Y(8,80,'v:h<55','*','다친 뒤로 몸이 예전 같지 않다. 재활 치료를 받을까?',[['치료비를 내고 꾸준히 받는다','h4 @-2','몇 달 뒤 계단을 가볍게 오를 수 있었다.'],['집에서 혼자 운동한다','h2','매일 저녁 몸을 풀었다.'],['그냥 지낸다','','불편한 채로 지냈다.']],{cd:5,sc:'hosp'});
+Y(10,85,'v:h<60 hz:flood|quake|storm','*','재난 뒤 다친 몸이 아직 낫지 않았다. 무료 진료소가 문을 열었다.',[['진료소에 가서 치료받는다','h4 j1','의사가 상처를 꼼꼼히 다시 감아 주었다.'],['일하느라 미룬다','h-2 @1','일은 계속했지만 상처가 덧났다.']],{cd:4,sc:'hosp'});
+Y(16,40,'','*','친구들이 담배를 권한다.',[['거절한다','h1','처음엔 어색했지만 금세 괜찮아졌다.'],['한번 피워 본다','h-2 r1','목이 따갑고 기침이 났다.'],['그 자리를 피한다','r-1','먼저 집에 가겠다고 했다.']],{once:1,set:['','smoke','']});
+Y(30,80,'fl:smoke','*','오랫동안 피운 담배 때문에 계단에서 숨이 찬다.',[['끊기로 한다','h3 j-1','금연 패치를 붙이고 버텼다.'],['계속 피운다','h-3','계단에서 자주 쉬어야 했다.']],{cd:8,set:['quit',''],clr:'',sc:'sick'});
+Y(19,90,'v:r<30','*','며칠째 아무와도 이야기를 나누지 않았다.',[['오래 연락 못 한 친구에게 먼저 전화한다','r3 j1','친구가 반갑게 받아 주었다.'],['동네 모임에 나가 본다','r2 e1','처음 보는 사람들과 인사를 나눴다.'],['혼자 지낸다','j-2','텔레비전 소리만 집 안을 채웠다.']],{cd:3});
+Y(19,90,'v:r>65 v:cash<0','*','형편이 어려울 때, 오래 알고 지낸 사람들이 먼저 손을 내밀었다.','@1 j2 r1',{cd:8});
+Y(25,75,'v:cash<-10','*','빚 독촉 전화가 이어진다.',[['상담 기관을 찾아 갚을 계획을 세운다','j1 k1','달마다 갚을 금액을 정했다. 마음이 조금 놓였다.'],['가족에게 털어놓는다','r2 j-1','가족이 함께 방법을 찾아 주었다.'],['전화를 피한다','j-3 r-1','휴대폰이 울릴 때마다 가슴이 내려앉았다.']],{cd:4,sc:'money'});
+
+/* ===== 기존 사건의 효과를 새 체계로 바꾼다 (불러올 때 한 번) =====
+   · 공부 밖의 활동(연습·훈련·동아리·대회·아르바이트·자격증·일을 배움)은 지식 대신 기술로
+   · 거짓말·모른 척·약속 어기기는 관계(신뢰)를 깎고, 솔직함·약속 지키기·사과는 조금 올린다
+   · 한 선택에서 크게 오르는 축은 두 개까지(각 +3), 나머지는 +1, 내리는 쪽은 −3까지 (큰 사건은 조금 더 넓게)
+   · 재난·사고 사건에는 건강 감소를 붙인다 (한 번에 25까지) */
+const RX_SKILL=/연습|훈련|동아리|대회|아르바이트|알바|자격증|기술|일을 배|배워 본다|배운다|실력|수습|견습|인턴|코딩|악기|만들어|고쳐|손에 익|부업|봉사|공모전|작품|무대|리더|반장|회장|부장|맡아/,
+  RX_STUDY=/공부|시험|책|수업|숙제|복습|예습|학원|과외|도서관|문제집|강의/,
+  RX_LIE=/거짓말|속인다|속여|속였|모른 척|약속을 어|핑계|베낀다|베꼈|훔친|몰래|뒷담|떠넘|발뺌|숨긴다|숨겼/,
+  RX_TRUST=/솔직|약속을 지|사과한다|사과했|정직|돌려준다|돌려주었|돌려줬|책임진다|책임졌|사실대로/,
+  RX_NOVEL=/처음|새로운|새로 |도전|떠난다|가 본다|가 보기로|배워 본다|여행|모험|낯선|외국|해외|직접 해 본다|나가 본다|참가|신청한다|지원한다/, RX_STAY=/집에 있는다|쉰다|가지 않는다|안 간다|빠진다|미룬다|거절|포기|하지 않는다|그만둔다|다음에/,
+  RX_HURT=/다쳤|다친|부러|입원|꿰맸|사고를 당|사고가 났|화상|쓰러|깔렸|물에 빠/,
+  DIS_SC=/^(flood|quake|storm|fire|volcano|drought|heat|cold)$/;
+const CONV={opt:0,skill:0,trust:0,cap:0,hurt:0};
+function convFx(fx,txt,big,lab){ if(!fx) return fx; const g=Object.assign({},fx), AX=['h','j','k','r','t','e'];
+  if(RX_SKILL.test(txt)&&!RX_STUDY.test(txt)&&((g.k||0)>0||!AX.some(k=>(g[k]||0)>0))){ const t=Math.min(3,Math.max(1,Math.round(((g.k||0)>0?g.k:2)*.8))); g.t=(g.t||0)+t; if(g.k>0) g.k=Math.max(0,g.k-t)||undefined; CONV.skill++; }
+  if(lab&&RX_NOVEL.test(lab)&&!RX_STAY.test(lab)){ g.e=(g.e||0)+2; CONV.novel=(CONV.novel||0)+1; }
+  if(RX_LIE.test(txt)){ g.r=Math.min(g.r||0,0)-2; CONV.trust++; } else if(RX_TRUST.test(txt)&&(g.r||0)<2){ g.r=(g.r||0)+1; CONV.trust++; }
+  const up=big?4:3, dn=big?-5:-3, pos=AX.filter(k=>(g[k]||0)>0).sort((a,b)=>g[b]-g[a]);
+  pos.forEach((k,i)=>{ const lim=i<2?(big&&k==='j'?6:up):1; if(g[k]>lim){ g[k]=lim; CONV.cap++; } });
+  AX.forEach(k=>{ if((g[k]||0)<0){ const lim=k==='h'?(big?-12:-6):k==='j'&&big?-6:dn; if(g[k]<lim){ g[k]=lim; CONV.cap++; } } });
+  for(const k in g) if(g[k]===undefined||g[k]===0&&AX.includes(k)) delete g[k];
+  return g; }
+(function(){
+  CAL.forEach(ev=>{ const base=String(ev.txt||'');
+    (ev.opts||[]).forEach(o=>{ CONV.opt++; o.fx=convFx(o.fx||{},[o.l,o.res,o.fail].flat().filter(Boolean).join(' '),false,o.l); });
+    if(!ev.opts&&ev.fx){ const g=Object.assign({},ev.fx); if(RX_HURT.test(base)){ g.h=Math.min(g.h||0,-8); CONV.hurt++; } else if(DIS_SC.test(ev.sc||'')||ev.c&&ev.c.some(t=>/^hz:/.test(t))){ g.h=Math.min(g.h||0,-3); CONV.hurt++; } if(g.h<-25) g.h=-25; ev.fx=g; }
+    else if(!ev.opts&&!ev.fx&&RX_HURT.test(base)&&!ev.run){ ev.fx={h:-8}; CONV.hurt++; } });
+  SCENES.forEach(sc=>sc.opts.forEach(o=>{ CONV.opt++; o.fx=convFx(o.fx||{},[o.l,o.res].join(' '),false,o.l); }));
+  MAJORS.forEach(m=>m.opts.forEach(o=>{ CONV.opt++; const tx=[m.txt,o.l,o.ok,o.fail].flat().filter(Boolean).join(' '); o.okFx=convFx(o.okFx||{},tx,true,o.l); o.failFx=convFx(o.failFx||{},tx,true); }));
+  if(typeof QUESTS!=='undefined') QUESTS.forEach(q=>{ if(q.fx){ CONV.opt++; q.fx=convFx(q.fx,[q.ask,q.ok].join(' '),false); } });
+})();
+// 검사: 한 선택에서 크게 오르는 축 두 개, 각 +3(큰 사건 +4, 행복 +6) 이하
+function convCheck(){ const bad=[], AX=['h','j','k','r','t','e'], chk=(fx,big,w)=>{ const p=AX.filter(k=>(fx[k]||0)>1); if(p.length>2||p.some(k=>fx[k]>(big?(k==='j'?6:4):3))) bad.push(w); };
+  CAL.forEach(ev=>(ev.opts||[]).forEach(o=>chk(o.fx||{},false,ev.txt))); SCENES.forEach(sc=>sc.opts.forEach(o=>chk(o.fx||{},false,sc.txt))); MAJORS.forEach(m=>m.opts.forEach(o=>{ chk(o.okFx||{},true,m.txt); chk(o.failFx||{},true,m.txt); })); return bad; }
+
 </script>
 
 <!-- =====================================================================
@@ -6949,7 +7157,7 @@ function memScore(m){ const k=photoKind(m); return (m.big?3:0)+(m.q&&!m.au?2:0)+
 // 한 해(어른은 두 해)를 돌아보는 카드: 그해의 한 장면 · 달라진 것 · 이 나라의 숫자 · 같은 1초에 태어난 사람
 function yearPick(L,a0,a1){ const M=L.mem.filter(m=>m.a>=a0&&m.a<a1&&m.a>0); if(!M.length) return null; return M.reduce((b,m)=>memScore(m)>=memScore(b)?m:b,M[0]); }
 function yearCard(L,done){ const h=L.hist||[], last=h[h.length-1]; if(!last){ done(); return; }
-  const a0=last.a, a1=L.age, m=yearPick(L,a0,a1), prev=h[h.length-2], d=prev?{h:Math.round(last.h-prev.h),j:Math.round(last.j-prev.j),k:Math.round(last.k-prev.k),r:Math.round(last.r-prev.r)}:null;
+  const a0=last.a, a1=L.age, m=yearPick(L,a0,a1), prev=h[h.length-2], d=prev?{h:Math.round(last.h-prev.h),j:Math.round(last.j-prev.j),k:Math.round(last.k-prev.k),t:Math.round((last.t||0)-(prev.t||0)),e:Math.round((last.e||0)-(prev.e||0)),r:Math.round(last.r-prev.r)}:null;
   const nt=(L.mem.filter(x=>x.a>=a0&&x.a<a1&&x.nt&&!(L.ntSeen||[]).includes(strHash(x.nt))).slice(-1)[0]||{}).nt, fact=(nt&&ntFirst(L,nt)?nt:null)||factLine(L,a0), cp=L.comps&&L.comps.length?L.comps[L.pi%L.comps.length]:null;
   sheet(`<div class="place">${L.by+a0}년 · ${a1-a0>1?`${a0}~${a1-1}살`:`${a0}살`}을 돌아보며</div>
     ${m?`<div class="ycard">${memHTML(m)}</div>`:'<p class="evt">조용히 지나간 한 해였다.</p>'}${d?chips(d):''}
@@ -7062,19 +7270,19 @@ function onOpts(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e
 function openScene(k){
   const L=G.life, c=L.cur.scenes[k], sc=SCENES[c.i], txt=L.tx(Array.isArray(sc.txt)?sc.txt[L.set==='U'?0:1]:sc.txt), place=scenePos(c.i).n;
   sheet(`<div class="place">${esc(place)}</div><h2>${esc(txt)}</h2><div class="opts">${sc.opts.map((o,i)=>`<button data-i="${i}">${esc(L.tx(o.l))}${pct(L.optP(o))}</button>`).join('')}</div>`);
-  onOpts(i=>{ const r=L.doScene(k,i); closeSheet(); if(r) flash(place+(r.ok?' · 나의 선택':' · 뜻대로 되지 않음'),r.t,r.fx,r.tr,!r.ok); G.spawnT=4; renderHud(); persist(); });
+  gateUI('s',sc.opts); onOpts(i=>{ const r=L.doScene(k,i); closeSheet(); if(r) flash(place+(r.ok?' · 나의 선택':' · 뜻대로 되지 않음'),r.t,r.fx,r.tr,!r.ok); G.spawnT=4; renderHud(); persist(); });
 }
 // 큰 갈림길 (정해진 나이) · 일자리 고르기
 function openCross(){
   const L=G.life, ch=L.pending, sc=ch.job?'job':sceneKindOf(ch.q);
   sheet(`${sceneHTML(sc)}<div class="place">${L.age}살 · ${ch.job?'일자리 고르기':'큰 갈림길'}</div><h2>${esc(ch.q)}</h2><div class="opts">${ch.opts.map((o,i)=>`<button data-i="${i}"><div>${esc(o.label)}${o.sub?`<small>${esc(o.sub)}</small>`:''}</div>${pct(o.p)}</button>`).join('')}</div><p class="small sub">${ch.job?'월급은 그 나라의 벌이를 한국 돈으로 바꾼 근사치입니다. 확률은 배운 것과 쌓아 온 수치·성향이 만듭니다.':'확률은 지금까지 쌓아 온 작은 선택들이 만들었습니다.'}</p>`,'cross big');
-  onOpts(i=>{ const r=L.choose(i); popup(`${L.age}살 · ${r.label} · ${r.p==null?'결정':r.ok?'이루어짐':'이루어지지 않음'}`,r.t,r.fx,()=>{ renderHud(); persist(); if(L.pending) openCross(); },r.ok?'':'bad',r.sc||sc); });
+  gateUI('ch',ch.opts); onOpts(i=>{ const r=L.choose(i); popup(`${L.age}살 · ${r.label} · ${r.p==null?'결정':r.ok?'이루어짐':'이루어지지 않음'}`,r.t,r.fx,()=>{ renderHud(); persist(); if(L.pending) openCross(); },r.ok?'':'bad',r.sc||sc); });
 }
 // 그해의 큰 사건 (선택은 모두 확률)
 function openMajor(){
   const L=G.life, m=MAJORS[L.cur.m], sc=m.sc||m.hz||sceneKindOf(m.txt);
   sheet(`${sceneHTML(sc)}<div class="place">${L.age}살 · 큰 사건</div><h2>${esc(L.tx(m.txt))}</h2><div class="opts">${m.opts.map((o,i)=>`<button data-i="${i}">${esc(L.tx(o.l))}${pct(L.majorP(o))}</button>`).join('')}</div><p class="small sub">어떤 선택도 결과를 보장하지 않습니다. 쌓아 온 것들이 확률을 바꿀 뿐입니다.</p>`,'cross big');
-  onOpts(i=>{ const r=L.chooseMajor(i); popup(`${L.age}살 · ${L.tx(r.label)} · ${r.ok?'잘됨':'뜻대로 되지 않음'} (확률 ${Math.round(r.p*100)}%)`,r.t,r.fx,()=>{ renderHud(); persist(); if(r.sick) startSick(); },r.ok?'':'bad',r.sc); });
+  gateUI('m',m.opts); onOpts(i=>{ const r=L.chooseMajor(i); popup(`${L.age}살 · ${L.tx(r.label)} · ${r.ok?'잘됨':'뜻대로 되지 않음'} (확률 ${Math.round(r.p*100)}%)`,r.t,r.fx,()=>{ renderHud(); persist(); if(r.sick) startSick(); },r.ok?'':'bad',r.sc); });
 }
 // 미션: 부탁을 받고 → 다른 곳에 다녀와서 → 돌아와 알린다
 function openQuest(){
@@ -7112,7 +7320,7 @@ function fireCal(k){ const L=G.life, it=L.cur.cal[k], ev=L.calEv(it), ym=ymOf(it
   if(!ev){ it.done=1; return; }
   if(ev.opts){ const v=L.calVars(ev,it), q=L.fillV(v.__t||ev.txt,v);
     sheet(`<div class="place calp">${esc(head)}</div><h2>${esc(q)}</h2><div class="opts">${ev.opts.map((o,i)=>`<button data-i="${i}">${esc(L.fillV(o.l,v))}${pct(L.calOptP(o))}</button>`).join('')}</div>`,'calq');
-    onOpts(i=>{ const r=L.calDo(k,i); closeSheet(); renderMon(); persist(); if(!r) return;
+    gateUI('c',ev.opts); onOpts(i=>{ const r=L.calDo(k,i); closeSheet(); renderMon(); persist(); if(!r) return;
       if(r.big||ev.ex||ntFirst(L,r.nt)) popup(`${head} · ${r.label||''}${r.p!=null?(r.ok?' · 잘됨':' · 뜻대로 되지 않음'):''}`,r.t,r.fx,()=>{ renderHud(); if(r.die){ if(!caughtUp()) endPeriod(); else toast('몸이 몹시 약해졌다. 가족이 곁을 지킨다.'); } else if(r.sick) startSick(r.sick); },r.ok&&!r.die?'':'bad',r.sc,r.nt);
       else flash(`${ym.m}월 · ${r.p==null?'나의 선택':r.ok?'나의 선택':'뜻대로 되지 않음'}`,r.t,r.fx,r.tr,!r.ok); });
     return; }
@@ -7981,6 +8189,7 @@ function finishLife(){
   if(!young) slides.push(SL('돈 이야기',strip(moneyStep(L))));
   slides.push(SL(`${nm}의 선택 ${L.n}번`,traitHTML));
   if(!young) slides.push(SL('행복은 어디서 왔을까',strip(happyStep(L))));
+  slides.push(SL('삶의 모양',shapeHTML(L)));
   const card=(m,j)=>`<article class="ncard"><div class="nimg"><canvas data-k="${j}" width="480" height="360"></canvas><span class="nage">${m.a}살 · ${by+m.a}년</span>${three.length>1?`<span class="nno">${j+1} / ${three.length}</span>`:''}</div><div class="nbody">${m.q?`<p class="mq">${esc(m.q)}${m.l?`<span class="ml">→ ${esc(m.l)}</span>`:''}</p>`:''}<p>${esc(memT(m))}${m.rp>1?` <small class="rp">(그 뒤로도 ${m.rp-1}번 더)</small>`:''}</p><small class="cr"></small></div></article>`;
   const phNote='<p class="note">사진은 위키백과·위키미디어 공용에 자유 이용으로 공개된 실제 사진입니다(카드 아래에 찍은 사람과 라이선스 표시). 장소·음식·재난처럼 장면이 분명한 기억은 실제 사진을, 나머지는 이 삶의 모습으로 그린 그림을 씁니다.</p>';
   three.forEach((m,j)=>slides.push(SL('마지막으로 스쳐 간 장면',(j===0?`<p class="soft">눈을 감기 전, ${three.length>1?three.length+'개의 장면이':'한 장면이'} 사진처럼 스쳐 갑니다.</p>`:'')+card(m,j)+(j===three.length-1?(hp&&!young?`<p class="soft">가장 행복했던 해는 ${by+hp.a}년, ${hp.a}살 무렵이었습니다.</p>`:'')+phNote:''))));
@@ -8104,6 +8313,64 @@ function lifeRecord(L,o){ const a=L.lifespan, cz=causeOf(L), by=L.by||2026; let 
   const big=L.mem.filter(m=>m.big&&m.t), pick=[]; const n=Math.min(14,big.length); for(let i=0;i<n;i++) pick.push(big[Math.floor(i*big.length/n)]);
   return {name:L.name,c:L.c,set:L.set,famI:L.famI,age:a,by,top:o.top,n:L.n,town:L.town,nw:Math.round(L.nw||0),kids:o.kids,title:o.title,epi:o.epi,cause:cz.n,
     rows:rows.slice(0,24).map(r=>[r[0].slice(0,30),r[1].slice(0,240)]),mem:pick.map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,140)]),ans:o.ans||[],notes:o.notes||[],t:Date.now()}; }
+
+/* ========== 능력치 2판 화면: 오각형 · 건강/재산 막대 · 제한된 선택지 · 엔딩의 삶의 모양 ========== */
+const AX_COL={j:'#E2703A',k:'#3870D0',t:'#7A5AC8',e:'#2F8F7A',r:'#C2577A'};
+const OV_COL={20:'#58A6D8',40:'#8E7CC3',60:'#C9A227'};
+// 정오각형: 행복이 맨 위. 만점(100) 외곽선과 지금 모양을 함께, 숫자도 꼭짓점에
+function radarSVG(v,ov,o){ o=o||{}; const W=340, H=300, cx=170, cy=158, R=104, n=AXES.length, ang=i=>-Math.PI/2+i*2*Math.PI/n, pt=(i,val)=>[cx+Math.cos(ang(i))*R*val/100,cy+Math.sin(ang(i))*R*val/100];
+  const poly=vals=>AXES.map((k,i)=>pt(i,clamp(vals[k]||0,0,100)).map(x=>x.toFixed(1)).join(',')).join(' ');
+  let g=''; [25,50,75].forEach(l=>g+=`<polygon points="${poly(Object.fromEntries(AXES.map(k=>[k,l])))}" class="rg"/>`);
+  g+=`<polygon points="${poly(Object.fromEntries(AXES.map(k=>[k,100])))}" class="rfull"/>`;
+  AXES.forEach((k,i)=>{ const p=pt(i,100); g+=`<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" class="rax"/>`; });
+  (ov||[]).forEach(x=>{ g+=`<polygon points="${poly(x.v)}" fill="none" stroke="${OV_COL[x.a]||'#999'}" stroke-width="2" stroke-dasharray="5 4"/>`; });
+  g+=`<polygon points="${poly(v)}" class="rnow"/>`;
+  AXES.forEach((k,i)=>{ const p=pt(i,clamp(v[k]||0,0,100)); g+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.6" fill="${AX_COL[k]}"/>`;
+    const q=pt(i,126), anc=Math.abs(q[0]-cx)<8?'middle':q[0]<cx?'end':'start';
+    g+=`<text x="${q[0].toFixed(1)}" y="${(q[1]-2).toFixed(1)}" text-anchor="${anc}" class="rlab">${AX_N[k]}</text><text x="${q[0].toFixed(1)}" y="${(q[1]+15).toFixed(1)}" text-anchor="${anc}" class="rnum" fill="${AX_COL[k]}">${Math.round(v[k]||0)}</text>`; });
+  return `<svg class="radar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${AXES.map(k=>AX_N[k]+' '+Math.round(v[k]||0)).join(', ')}">${g}</svg>`; }
+function histAt(L,a){ const H=L.hist||[]; let best=null; H.forEach(h=>{ if(h.t==null) return; if(Math.abs(h.a-a)<=1&&(!best||Math.abs(h.a-a)<Math.abs(best.a-a))) best=h; }); return best; }
+function radarOverlays(L,upto){ return [20,40,60].filter(a=>a<upto-1).map(a=>({a,v:histAt(L,a)})).filter(x=>x.v); }
+function radarLegend(ov,now){ return ov.length?`<div class="lgd rlgd"><span><i style="background:#E2703A"></i>${now||'지금'}</span>${ov.map(x=>`<span><i class="dash" style="border-color:${OV_COL[x.a]}"></i>${x.a}살 무렵</span>`).join('')}</div>`:''; }
+// 건강·재산: 오각형과 따로
+function healthState(h){ return h>=70?['정상','ok']:h>=40?['약함','mid']:h>0?['위험','bad']:['—','bad']; }
+function resBars(L,compact){ const h=Math.round(L.s.h), hs=healthState(h), a=L.age, C=L.C, own=a>=19||L.f.univ||L.f.job;
+  const hb=`<div class="rbar"><span class="rl">건강</span><div class="rt"><i class="${hs[1]}" style="width:${h}%"></i>${compact?'':`<em style="left:${hMaxAt(a)}%" title="이 나이의 최대치"></em>`}</div><span class="rv"><b>${h}</b>${compact?'':` <small>${hs[0]}</small>`}</span></div>`;
+  let mb; if(!own){ const w=L.w; mb=`<div class="rbar"><span class="rl">살림</span><div class="rt"><i class="money" style="width:${Math.round(clamp(w,0,1)*100)}%"></i></div><span class="rv"><small>${w>=.7?'넉넉':w>=.45?'보통':w>=.25?'빠듯':'어려움'}</small></span></div>`; }
+  else { const sp=L.spendable(), lim=L.debtLimit(), debt=L.cash<0?-L.cash:0, fill=sp>0?clamp(Math.log2(1+sp/C.med)/Math.log2(1+60),0,1):0, df=debt>0?clamp(debt/Math.max(lim,1),0,1):0;
+    mb=`<div class="rbar"><span class="rl">재산</span><div class="rt">${df?`<i class="debt" style="width:${Math.round(df*100)}%"></i>`:`<i class="money" style="width:${Math.max(2,Math.round(fill*100))}%"></i>`}</div><span class="rv"><b class="${L.cash<0?'neg':''}">${fmtWon(L.cash)}</b>${compact?'':`<small>${df?` 빚 · 한도의 ${Math.round(df*100)}%`:` · 쓸 수 있는 돈 ${fmtWon(Math.max(0,sp))}`}</small>`}</span></div>`; }
+  return `<div class="res${compact?' cmp':''}">${hb}${mb}</div>`; }
+// 내 정보: 막대·꺾은선 대신 오각형
+statPanel=function(L){ const v=L.s, ov=radarOverlays(L,L.age), H=(L.hist||[]).filter(x=>x.a<L.age&&x.t!=null), prev=H.length?H[H.length-1]:null;
+  const rel=Object.entries(L.rel||{}).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  return `<div class="chart"><h3>삶의 모양 <span class="sub small">(0~100 · 꽉 찬 정오각형이 만점)</span></h3>${radarSVG(v,ov)}${radarLegend(ov)}
+    <div class="axrow">${AXES.map(k=>{ const d=prev?Math.round(v[k])-prev[k]:0; return `<span><b style="color:${AX_COL[k]}">${AX_N[k]}</b> ${Math.round(v[k])}${d?` <small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:''}</span>`; }).join('')}</div>
+    <p class="small sub">행복은 건강·관계·돈 걱정·일과 꿈·경험에서 해마다 조금씩 만들어집니다. 다섯 가지를 한꺼번에 키우기는 어려워요. 시간과 힘은 한정되어 있으니까요.</p>
+    <h3>건강과 재산</h3>${resBars(L)}
+    ${rel.length?`<h3>가까운 사람들 <span class="sub small">(친밀도)</span></h3><div class="rels">${rel.map(([k,x])=>`<div class="rbar"><span class="rl">${REL_N[k]||k}</span><div class="rt"><i class="rel" style="width:${Math.round(x)}%"></i></div><span class="rv">${Math.round(x)}</span></div>`).join('')}</div><p class="small sub">가족은 천천히, 친구와 동료는 연락이 없으면 빨리 멀어집니다.</p>`:''}</div>`; };
+statLine=()=> '';
+// 선택지: 지금 고를 수 없는 것은 흐리게 두고 이유를, 돈이 드는 것은 드는 돈을 적는다
+function gateUI(kind,list){ const L=G.life, box=$('sheetBox'); if(!L||!box||!L.optBlocked||!list) return; const btns=[...box.querySelectorAll('.opts button[data-i]')];
+  const fxOf=o=>kind==='m'?o.okFx:kind==='ch'?(o.ok&&o.ok[1]):o.fx, why=btns.map(b=>L.optBlocked(list[+b.dataset.i],kind)), all=why.every(Boolean);
+  let n=0; btns.forEach((b,i)=>{ const o=list[+b.dataset.i]; if(!o) return; const c=L.age>=16?L.optCost(fxOf(o)):0;
+    if(c>0) b.insertAdjacentHTML('beforeend',`<small class="cost">드는 돈 약 ${fmtWon(c)}</small>`);
+    if(why[i]&&!all){ b.disabled=true; b.classList.add('off'); b.insertAdjacentHTML('beforeend',`<small class="why">${esc(why[i])}</small>`); n++; } });
+  if(n) L.limN=(L.limN||0)+1; }
+onOpts=function(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e.target.closest('button'); if(b&&!b.disabled) fn(+b.dataset.i); }; };
+// 게임 화면 위쪽: 건강·재산 막대
+(function(){ const _rh=renderHud; renderHud=function(){ _rh.apply(this,arguments); const L=G.life; if(!L) return; let el=$('hRes');
+  if(!el){ const hl=document.querySelector('#hud .hinfo .hl'); if(!hl) return; el=document.createElement('div'); el.id='hRes'; hl.insertAdjacentElement('afterend',el); }
+  el.innerHTML=resBars(L,true); const mo=$('hMoney'); if(mo) mo.hidden=true; }; })();
+// 엔딩: 삶의 모양 (좋고 나쁨 없이 모양만 설명)
+function shapeLine(L,v){ const ks=AXES.slice().sort((a,b)=>v[b]-v[a]), top=ks[0], low=ks[ks.length-1], sp=v[top]-v[low];
+  const say={j:'스스로 느끼는 만족',k:'배움',t:'손에 익힌 기술',e:'여러 가지를 겪어 본 경험',r:'곁의 사람들과의 관계'};
+  return sp<12?`${josa(L.name,'은','는')} 다섯 가지를 고르게 키운, 둥근 모양의 삶을 살았습니다.`:`${josa(L.name,'이','가')} 가장 많이 키운 것은 ${say[top]}이었습니다. 오각형은 ${AX_N[top]} 쪽으로 가장 길게 뻗어 있습니다.`; }
+function shapeHTML(L){ const last=(L.hist||[]).filter(h=>h.t!=null).slice(-1)[0]||L.s, v={}; AXES.forEach(k=>v[k]=last[k]); const ov=radarOverlays(L,L.lifespan||L.age);
+  const hp=(L.hist||[]).reduce((m,h)=>Math.max(m,h.h||0),0);
+  return `<p class="big">${esc(shapeLine(L,v))}</p><div class="rbox">${radarSVG(v,ov)}${radarLegend(ov,'마지막 해')}</div>
+    <p class="soft">건강은 삶을 이어 가는 힘, 재산은 삶을 버티는 자원이라 오각형 밖에 따로 둡니다. 마지막 해 건강 0은 삶이 끝난 뒤의 표시입니다.</p>${resBars(Object.assign(Object.create(Object.getPrototypeOf(L)),L,{s:Object.assign({},L.s,{h:0})}))}
+    <p class="note">오각형이 크다고 더 좋은 삶은 아닙니다. 모양이 저마다 다를 뿐입니다. ${L.limN?`살면서 돈이나 건강 때문에 고를 수 없던 선택이 ${L.limN}번 있었습니다.`:''}</p>`; }
+
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
 <script id="visual-enhancer">
