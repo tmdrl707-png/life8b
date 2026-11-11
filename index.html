@@ -90,7 +90,10 @@ h3{font-size:1rem;margin:0} p{margin:0}
 #s-game.tmode #btnCar{bottom:calc(108px + env(safe-area-inset-bottom,0px))}
 .hmon{font:inherit;font-size:11px;border:2px solid var(--gb-ink);background:#E4EEFC;color:#1E3F7A;border-radius:4px;padding:0 6px;box-shadow:0 2px 0 var(--gb-ink);cursor:pointer;white-space:nowrap;line-height:1.5}
 .hmon:active{transform:translateY(2px);box-shadow:none}
-.toast.cal{border-color:#2858A8} .toast.cal .mb{display:inline-block;background:#2858A8;color:#fff;border-radius:3px;padding:0 5px;margin-right:6px;font-size:11px;font-weight:400}
+.famtbl{width:100%;border-collapse:collapse;font-size:11.5px;text-align:left} .famtbl th{font-weight:400;color:#B4501E;white-space:nowrap;padding:3px 6px 3px 0;vertical-align:top} .famtbl td{padding:3px 4px;border-top:1px dotted #C0C8D0;vertical-align:top} .famtbl td:last-child{color:#5A6878}
+.toast.cal{border-color:#2858A8} .toast.cal.fam{border-color:#B4501E} .toast.cal.fam .mb{background:#B4501E}
+.toast .nt,#sheet p.nt{display:block;font-size:10.5px;color:#5A6878;margin:3px 0 0;line-height:1.4} #sheet p.nt{font-size:11.5px;border-left:3px solid #C0C8D0;padding-left:7px;text-align:left}
+ .toast.cal .mb{display:inline-block;background:#2858A8;color:#fff;border-radius:3px;padding:0 5px;margin-right:6px;font-size:11px;font-weight:400}
 .calq .calp{color:#2858A8}
 .callist li{grid-template-columns:3.8rem minmax(0,1fr)} .callist li.todo{color:#8A96A3} .callist li.todo .a{color:#8A96A3}
 .toast.money{border-color:#2858A8;color:#1E3F7A} .toast.money.dn{border-color:#C2405A;color:#8A2438}
@@ -852,9 +855,22 @@ const GEN_NAMES={
   JP:{old:[['히로시','다카시','마코토','겐지','미노루','오사무'],['게이코','요코','가즈코','사치코','유미코','에미코']],
       mid:[['쇼타','쇼','다이스케','다쿠야','쓰바사','겐타'],['미사키','아야카','마이','하루카','유이','나오']]}
 };
-function givenPool(L,sex,gen){ const G=GEN_NAMES[L.c]; if(G&&G[gen]) return G[gen][sex]; if(G&&gen==='now'&&G.now) return G.now[sex]; return L.C.names[sex]; }
+// 같은 나라 안에서도 가족의 종교에 따라 흔한 이름이 다르다
+Object.assign(GEN_NAMES,{
+  IN_MUS:{now:[['아얀','아르한','레한','자이드','파이잔','이브라힘','아마안','사키브'],['아이라','자라','파티마','아이샤','마리암','이나야','사나','알리야']],
+    mid:[['무함마드','이르판','살림','아리프','자베드','나딤','라시드','샤히드'],['나지마','샤브나','루크사르','파르빈','살마','야스민','나스린','레하나']],
+    old:[['압둘','하미드','유수프','라힘','카림','바시르'],['아미나','주바이다','하지라','사키나','줄레카','메흐룬']]},
+  IN_SIKH:{now:[['아르자브','구르비르','하르짓','자스프리트','만딥','아르쉬딥'],['시므란','자스민','하르니트','구르리트','만프리트','노르프리트']],
+    mid:[['구르딥','발윈데르','수크윈데르','자스빈데르','하르프리트'],['만지트','쿨윈데르','자스윈데르','라즈윈데르','파람지트']],old:[['구르바찬','카르타르','바그완','다르샨'],['구르디알','파르카시','비비','다리파']]},
+  NG_MUS:{now:[['무사','이브라힘','우스만','아부바카르','유수프','사니','알리유','바시르'],['아미나','파티마','자이납','하디자','아이샤','하우와','마리아무','하프사']],
+    mid:[['무함마드','아미누','사리스','움마루','하루나','이사'],['라히마','줄라이하','살라마투','후레이라','아미나투','하자라']],old:[['알하지','가르바','단자','마이나','바바'],['하자','이나','라미','투레']]},
+  NG_CHR:{now:[['치디','에메카','올루','툰데','이케','페미','오비','추크우마'],['아다','응고지','치오마','폴라케','지나','이페','케미','블레싱']],mid:[['추쿠','오비나','아데','세군','은남디'],['은네카','폴라','아데바요','이피오마','은코']],old:[['오콘쿼','아칸데','오군','은와추'],['은그오','아베니','이야보','오비아게리']]},
+  ET_MUS:{now:[['아흐메드','무함마드','하미드','유수프','케디르','아브디'],['파투마','자흐라','하이아트','아미나','나스라','라흐마']],mid:[['케말','무스타파','후세인','아다무'],['자이납','후리야','메디나','사아다']],old:[['아바','오마르','이드리스'],['하와','아이샤','팔마타']]}
+});
+const SPOOL={IN_MUS:'칸 셰이크 안사리 쿠레시 시디키 파탄 사이에드 미르자',IN_SIKH:'싱 길 산두 그레왈 다알리왈 시두',NG_MUS:'벨로 무사 아부바카르 이브라힘 유수프 단자 사니 가르바',ET_MUS:'아흐메드 무함마드 유수프 오마르 케디르 후세인',NG_CHR:'오콘쿼 에제 아데예미 오군 오비 은와추쿠 아데바요 오세니'};
+function givenPool(L,sex,gen){ const G=GEN_NAMES[L.npool]||GEN_NAMES[L.c]; if(G&&G[gen]) return G[gen][sex]; if(G&&gen==='now'&&G.now) return G.now[sex]; return L.C.names[sex]; }
 function pickGiven(L,sex,gen){ const used=L._usedN||(L._usedN={}), pool=givenPool(L,sex,gen).filter(n=>!used[n]); const n=pool.length?pickOne(pool):pickOne(givenPool(L,sex,gen)); used[n]=1; return n; }
-function pickSur(L,not){ const p=surnPool(L.c).filter(s=>s!==not); return pickOne(p.length?p:surnPool(L.c)); }
+function pickSur(L,not){ const all=L.npool&&SPOOL[L.npool]?SPOOL[L.npool].split(' '):surnPool(L.c), p=all.filter(s=>s!==not); return pickOne(p.length?p:all); }
 // 사는 동네: 한국은 실제 도시·군, 큰 나라는 실제 도시·지방 이름, 그 밖의 나라는 가장 큰 도시
 const TOWNS={
   IN:[['델리','뭄바이','콜카타','벵갈루루','첸나이','하이데라바드','아마다바드','푸네'],['우타르프라데시주','비하르주','라자스탄주','서벵골주','마하라슈트라주','오디샤주']],
@@ -1012,6 +1028,35 @@ function fmtWon(m){ const neg=m<0; m=Math.abs(m); let s;
   if(m>=10000){ const e=Math.floor(m/10000), r=Math.round((m-e*10000)/100)*100; s=e+'억'+(r>0&&e<100?' '+r.toLocaleString('ko-KR')+'만':'')+' 원'; }
   else if(m>=1) s=Math.round(m).toLocaleString('ko-KR')+'만 원'; else if(m>=.05) s=Math.round(m*10)+'천 원'; else return '0원';
   return (neg?'−':'')+s; }
+/* ---------- [데이터] 나라마다 흔한 이름 (같은 지역이라도 나라·언어·종교에 따라 다르다) ---------- */
+(function(){
+  const N={
+    PK:[['무함마드','알리','하산','우스만','빌랄','함자','아흐마드','사드'],['아이샤','파티마','자이납','마리얌','히바','아이만','사나','이크라']],
+    BD:[['라피','타미드','아리판','자히드','사키브','마흐부브','레자울','나임'],['타스님','누스랏','파르하나','라비아','수마이야','마흐지아','니샤트','안와라']],
+    NP:[['아유시','비샬','수잔','프라빈','수만','라지','비벡','상게이'],['스리스티','아스미타','삼자나','프리얀카','수스미타','아누','사리타','니루타']],
+    LK:[['카순','나빈','디누샤','차미라','루완','타릭'],['니루샤','사치니','디루키','타루시','말리카','하시니']],
+    ID:[['부디','안디','리잘','파잘','아디트야','위비','루크만','하리스'],['시티','데위','누르','아유','푸트리','인단','라트나','와휴니']],
+    VN:[['민','안','남','훙','둑','롱','바오','칸'],['린','짱','투','한','흐엉','마이','응옥','비']],
+    TH:[['솜차이','타나왓','끄릿','아논','위차이','폰','삭다','나롱'],['쑤다','말리','니판','쁘라파이','루짜나','깐야','아랑','짠']],
+    MM:[['아웅','초','민','뚜라','텟','조','네','틴'],['수','에이','흘라','누','먓','띠다','잉','쪼']],
+    MY:[['아마드','아이만','하피즈','다니시','이르판','하킴'],['누르','아이샤','시티','파티마','아인','하나']],
+    KH:[['다라','소폰','비삿','손','찬','삼밧'],['스레이','소피아','찬나','다비','보파','쿤티아']],
+    CD:[['장','파트리스','조나탕','크리스','기욤','엠마뉘엘','무칸디','은조로'],['마리','그라스','베아트리스','조엘','사라','은세케','무에나','에스테르']],
+    SD:[['무함마드','아흐메드','오스만','오마르','알리','후세인','이브라힘','하이다르'],['파티마','아미나','라니아','하와','셀마','누르','사마','이스라']],
+    SO:[['압디','모하메드','아흐메드','하산','파라','유수프','아브디라만','이스마일'],['파두모','호단','아얀','님코','사흐라','아미나','하말리','캅도']],
+    ZA:[['시포','타보','만들라','르와지','시부시소','봉가니','라일','레볼로'],['놈불라','탄디웨','린디웨','아얀다','자넬레','프레셔스','레라토','케아마']],
+    AO:[['주앙','마누엘','안토니우','페드루','조제','파울루','이사키아스','에드송'],['마리아','아나','파울라','조아나','에스페란사','루시아','에바','이자벨']],
+    MZ:[['주앙','마누엘','안토니우','페드루','조제','파울루','셀레스티누','아르만두'],['마리아','아나','파울라','조아나','에스페란사','루시아','아멜리아','텔마']],
+    MG:[['라코투','안드리','파라','미안','토키','하자','니리나','리발'],['노로','파니','볼라','하니','라발로','미아','파라','소아']],
+    GH:[['콰메','코피','콰수','야우','코조','에벤','콰베나','쿠와쿠'],['아마','아코수아','아쿠아','아바','에피아','아체아','아두아','아피아']],
+    FR:[['루이','가브리엘','라파엘','쥘','아르튀르','레오','위고','노아'],['자드','루이즈','앙브르','알리스','엠마','로즈','안나','클로에']],
+    IT:[['레오나르도','프란체스코','알레산드로','로렌초','토마소','마티아','리카르도','안드레아'],['소피아','아우로라','줄리아','조르자','비토리아','알리체','지네브라','키아라']],
+    UG:[['무가비','오케요','무사사','카토','와스와','무엔다','브라이언','이반'],['나카토','나밧자','아키키','아웨코','나무가가','로라','에스더','그레이스']]
+  };
+  for(const c in N) if(COUNTRIES[c]) COUNTRIES[c].names=N[c];
+  Object.assign(SURN,{CDS:'일룽가 카빌라 음부유 카삼바 루물바 칼롬보 은겔레 마콘고',ZAS:'들라미니 은들로부 모예 쿠말로 마흘랑구 은코시 조바 몰레피',PTS:'실바 산투스 페헤이라 코스타 페레이라 알메이다 마샤두 소자',UGS:'무세베니 오케요 카토 무와가 와스와 나칼레 오지암보 키지토',GHS:'멘사 오세이 아산테 보아텡 아체암퐁 오우수 아도 단콰'});
+  Object.assign(SURN_OF,{CD:'CDS',CG:'CDS',ZA:'ZAS',AO:'PTS',MZ:'PTS',UG:'UGS',GH:'GHS'});
+})();
 /* ---------- [데이터] 장소 ----------
    zone: H 집(태어날 때부터) · A 동네(6세~) · B 큰길 건너(13세~) · C 일터가 있는 곳(19세~)
    이름이 [도시, 농촌] 배열이면 사는 곳에 따라 달라진다 */
@@ -1750,6 +1795,7 @@ function illnessOf(L){ const a=L.age, C=L.C, poor=C.tier<=2, hot=/^(AF|SA|SE|LA|
   SCENES.forEach(x=>{ x.txt=Array.isArray(x.txt)?x.txt.map(fix):fix(x.txt); }); MAJORS.forEach(x=>{ x.txt=fix(x.txt); }); EVENTS.forEach(x=>{ x.txt=fix(x.txt); }); QUESTS.forEach(x=>{ x.ask=fix(x.ask); }); })();
 
 /* ---------- 인생 엔진 ---------- */
+const failTx=l=>pickOne([`‘${l}’ — 마음은 그랬지만 일이 생각처럼 풀리지 않았다.`,`‘${l}’ — 해 보려 했지만 상황이 따라 주지 않았다.`,`‘${l}’ — 뜻대로 되지는 않았다. 다음엔 다르게 해 봐야겠다.`,`‘${l}’ — 그렇게 하고 싶었지만 결국 흐지부지되었다.`]);
 class Life{
   constructor(o){
     o=o||{};
@@ -1767,10 +1813,15 @@ class Life{
     this.cur=null; this.pending=null; this.dead=false; this.usedM={}; this.q=null; this.fail=0;
     this.inc=0; this.maxInc=0; this.jobs=[]; this.hp={m:0,n:0,r:0,g:0,c:0,h:0,cnt:0};
     this.cash=0; this.house=0; this.money=[]; this.mEv=0; this.mHouse=0; this.earned=0; this.maxNW=0; this.kids=[]; this.sick=0;
-    initPeople(this);
+    initPeople(this); initFamily(this,o);
     this.given = o.given || pickGiven(this,this.sex,'now'); this.name=myName(this,this.given);
-    this.mem.push({a:0,t:`${C.n} ${this.town}의 ${FAM[this.famI].n}에서 태어났다. 아빠는 ${this.ppl.dad.n}, 엄마는 ${this.ppl.mom.n}.`,big:1,sc:'birth'});
+    this.mem.push({a:0,t:this.birthText(),big:1,sc:'birth'});
   }
+  // 태어난 날의 기록: 어디서, 어떤 형편의 집에서, 부모님은 누구이고 형제자매는 몇인지
+  birthText(){ const C=this.C, f=this.fam, P=this.ppl; if(!f) return `${C.n} ${this.town}의 ${FAM[this.famI].n}에서 태어났다. 아빠는 ${P.dad.n}, 엄마는 ${P.mom.n}.`;
+    const old=f.sibs.filter(s=>s.d<0).sort((x,y)=>x.d-y.d), terms=old.map(s=>sibTerm(this,s)), n=old.length;
+    const sibT=!n?'첫째다.':n===1?`위로 ${josa(terms[0],'이','가')} 있다.`:n===2?`위로 ${josa(terms[0],'과','와')} ${josa(terms[1],'이','가')} 있다.`:`위로 형제자매가 ${n}명(${terms.join('·')}) 있다.`;
+    return `${this.by}년, ${C.n} ${this.town}의 ${FAM[this.famI].n}에서 ${this.sex?'여자':'남자'}아이로 태어났다. ${sibT} ${this.f.dad0?`엄마 ${f.mom.n}(${f.mom.a0}세, ${f.mom.job})가 혼자 나를 키운다. 아빠는 곁에 없다.`:`아빠 ${f.dad.n}(${f.dad.a0}세, ${f.dad.job}), 엄마 ${f.mom.n}(${f.mom.a0}세, ${f.mom.job}).`}${f.rel&&f.rel!=='종교 없음'?` 가족은 ${f.rel}을(를) 믿는다.`.replace('을(를)',josa(f.rel,'을','를').slice(f.rel.length)):''}`; }
   setGiven(g){ g=String(g||'').trim().slice(0,8); if(!g) return; const old=this.name; this.given=g; this.name=myName(this,g); }
   // '@지역' 표시는 그 지역의 모든 나라, 'KR,JP'처럼 쓰면 그 나라들만
   inC(x){ if(!x.c) return true; const rg=this.C.rg; return x.c.split(',').some(t=>t[0]==='@'?t.slice(1)===rg:t===this.c); }
@@ -1786,6 +1837,7 @@ class Life{
   static load(o){ const L=Object.assign(Object.create(Life.prototype),o); L.pending=null;
     if(!L.c){ L.c='KR'; L.f.elem=L.age>=7?1:0; L.f.sec=L.age>=13?1:0; }
     if(!COUNTRIES[L.c]) L.c='KR';
+    if(!L.fam){ try{ initFamily(L,{sib:L.sib,dad:1,keep:1}); L.fam.sibs.forEach(s=>{ if(s.d<=L.age) s.born=1; }); L.refreshSib(); }catch(e){} }
     L.tr=Object.assign({D:0,B:0,K:0,C:0,G:0},L.tr); L.hp=L.hp||{m:0,n:0,r:0,g:0,c:0,h:0,cnt:0}; L.jobs=L.jobs||[];
     if(L.f.job&&!jobInfo(L,L.f.job)){ const old={office:'office',dream:'artist',shop:'shopown',farm:'farm',part:'day'}[L.f.job]||'day'; L.f.job=old; }
     if(L.inc==null) L.inc=L.f.job?jobPayMid(L,jobInfo(L,L.f.job)):0; if(L.maxInc==null) L.maxInc=L.inc;
@@ -1799,7 +1851,8 @@ class Life{
   get nw(){ return this.cash+this.house; }
   housePrice(){ const C=this.C; return C.house*(this.set==='U'?(this.c==='KR'&&this.town!=='서울'?.55:1):C.tier>=3?.4:.3); }
   kidsHome(){ return (this.kids||[]).filter(k=>this.age-k.b<20); }
-  spotName(key){ if(key==='work'){ const j=this.job; return j?WORKN[j.kind]:'일터'; }
+  spotName(key){ if(key==='sib'&&this.fam&&this.ppl.sib){ const s=this.homeSibs().sort((x,y)=>Math.abs(x.d)-Math.abs(y.d))[0]; if(s) return sibTerm(this,s); }
+    if(key==='work'){ const j=this.job; return j?WORKN[j.kind]:'일터'; }
     if(key==='kid'){ const kh=this.kidsHome(); if(kh.length) return kh[0].given; if(this.f.dying&&this.kids.length) return this.kids[0].given; return '손주'; }
     if(key==='spouse'&&this.ppl&&this.ppl.spouse) return this.ppl.spouse.given;
     const n=this.C.spot[key]||SPOTS[key].n; return Array.isArray(n)?n[this.set==='U'?0:1]:n; }
@@ -1807,7 +1860,8 @@ class Life{
   // 지금 그 장소·사람을 만날 수 있는가
   spotOK(key){
     const f=this.f, a=this.age; if(a<ZONE_AGE[SPOTS[key].z]) return false; if(SPOTS[key].z==='D') return a<75;
-    switch(key){ case 'mom': case 'dad': return !f.pgone; case 'gran': return this.gran&&!f.ggone; case 'sib': return this.sib&&a<26;
+    const fm=this.fam;
+    switch(key){ case 'mom': return !f.pgone&&(!fm||fm.mom.al&&f.div!=='mom'); case 'dad': return !f.pgone&&(!fm||fm.dad.al&&f.div!=='dad'); case 'gran': return this.gran&&!f.ggone; case 'sib': return this.sib&&(fm?this.homeSibs().length>0:a<26);
       case 'spouse': return !!f.family; case 'kid': return this.kidHome()||!!f.grandkid||(!!f.dying&&this.kids.length>0); case 'work': return !!f.job; case 'elem': return a>=7&&a<=12&&!!f.elem; case 'mid': return a>18||!!f.sec; }
     return true;
   }
@@ -1949,7 +2003,7 @@ class Life{
   optP(o){ const pos=Object.keys(o.fx).filter(k=>o.fx[k]>0&&k in this.s); if(!pos.length&&!o.tr) return null; const st=((pos.length?this.s[pos[0]]:this.s.j)+60)/2; return clamp(.62+(st-50)/100*.5+Math.min(o.tr?this.tr[o.tr]:0,40)*.004,.25,.95); }
   doScene(k,oi){
     const c=this.cur.scenes[k]; if(!c||c.done) return null; const sc=SCENES[c.i], o=sc.opts[oi], p=this.optP(o), ok=p==null||R()<p;
-    let fx=o.fx, t=this.tx(o.res); if(!ok){ fx={}; for(const key in o.fx) if(o.fx[key]<0) fx[key]=o.fx[key]; t=`마음먹은 대로('${this.tx(o.l)}') 되지는 않았다.`; this.fail++; }
+    let fx=o.fx, t=this.tx(o.res); if(!ok){ fx={}; for(const key in o.fx) if(o.fx[key]<0) fx[key]=o.fx[key]; t=failTx(this.tx(o.l)); this.fail++; }
     c.done=1; this.n++; this.apply(fx); if(o.tr) this.tr[o.tr]++;
     if((sc.spot==='mom'||sc.spot==='dad')&&o.tr==='K') this.f.pv=(this.f.pv||0)+1;
     this.recent.push(c.i); if(this.recent.length>30) this.recent.shift();
@@ -2015,9 +2069,11 @@ class Life{
     if(this.cur){ this.ensureCal(); const left=this.calAuto(); if(left.length&&this.cur.el>0) out.push({t:`올해 남은 일 ${left.length}가지는 저절로 지나갔다. (${left.slice(0,2).map(r=>(r.m>12?r.m-12:r.m)+'월').join(', ')}${left.length>2?' …':''})`,fx:null,big:0}); }
     if(this.cur) this.miss+=this.cur.scenes.filter(x=>!x.done).length+(this.q&&this.q.st>0?1:0); this.q=null; this.sick=0;
     if(a===1&&this.c==='KR'){ const d=pickOne(DOL); add(`돌잔치에서 ${josa(d[0],'을','를')} 잡았다. ${d[1]}`,d[2],0); }
+    if(!this.fam){
     if(this.gran&&!f.ggone&&a>=9&&R()<.13){ f.ggone=1; add(`할머니(${this.ppl.gran?this.ppl.gran.n:''})가 먼 길을 떠나셨다. 할머니의 옛이야기가 오래 생각났다.`,{j:-6},1,'farewell'); }
     if(!f.pgone&&a>=51&&R()<.2){ f.pgone=1; const near=(f.pv||0)>=6, inh=C.med*[80,15,0][this.famI]*(C.tier>=3?1:.5);
       add(`${near?'부모님을 떠나보냈다. 함께 보낸 시간이 많아 고마운 마음이 더 컸다.':'부모님을 떠나보냈다. 더 자주 찾아뵐걸 하는 마음이 남았다.'}${inh>0?` 부모님이 남겨 주신 ${fmtWon(inh)}을 물려받았다.`:''}`,{j:near?-5:-10},1,'farewell'); if(inh>0){ this.cash+=inh; this.mEv+=inh; } }
+    }
     // 함께 늙어 가던 사람이 먼저 떠나기도 한다
     if(f.family&&!f.widow&&a>=50&&this.ppl.spouse){ const qs=(.0005+.05*Math.exp(.095*(a+(this.sex===0?-2:2)-C.ref)))*(this.sex===0?.8:1.25);
       if(R()<1-Math.pow(1-clamp(qs,0,.6),step)){ const sp=this.ppl.spouse; f.widow=1; f.widA=a; f.family=0; f.spInc=0; add(`평생을 함께한 ${josa(sp.n,'이','가')} 먼저 세상을 떠났다. 함께 걷던 길이 오래 생각났다.`,{j:-12,r:-6},1,'farewell'); } }
@@ -2026,7 +2082,9 @@ class Life{
       const sx=R()<.512?0:1, sur=this.sex===0?this.sur:(this.ppl.spouse?this.ppl.spouse.sur:this.sur), given=pickGiven(this,sx,'now');
       const k={given,sur,n:joinName(this.c,sur,given,sx===1),sex:sx,b:a}; this.kids.push(k); f.kid=1; if(f.kidBorn==null) f.kidBorn=a; f.lastKid=a;
       const ki=this.kids.length-1, ord=['첫째','둘째','셋째','넷째','다섯째','여섯째','일곱째'][ki];
-      add(`${ord} 아이 ${josa(k.n,'이','가')} 태어났다. 작은 손이 내 손가락을 꼭 쥐었다.`,{j:10,r:6},1,'baby',{kid:ki}); }
+      if(f.twins){ f.twins=0; const sx2=R()<.5?sx:1-sx, g2=pickGiven(this,sx2,'now'); const k2={given:g2,sur,n:joinName(this.c,sur,g2,sx2===1),sex:sx2,b:a}; this.kids.push(k2);
+        add(`쌍둥이 ${josa(k.n,'과','와')} ${josa(k2.n,'이','가')} 태어났다. 두 아이가 동시에 울 때면 정신이 하나도 없었다.`,{j:12,r:8},1,'baby',{kid:ki}); }
+      else add(`${ord} 아이 ${josa(k.n,'이','가')} 태어났다. 작은 손이 내 손가락을 꼭 쥐었다.`,{j:10,r:6},1,'baby',{kid:ki}); }
     if(this.kids.length&&!f.grandkid&&a-this.kids[0].b>=30&&R()<.3*step){ f.grandkid=1; add(`${this.kids[0].n}에게서 손주가 태어났다.`,{j:8,r:5},1,'baby'); }
     const el=[]; EVENTS.forEach((e,i)=>{ if(this.inC(e)&&a>=e.a[0]&&a<=e.a[1]&&(e.set==='*'||e.set===this.set)&&this.reqOK(e.req)&&!(e.once&&this.used[i])) el.push(i); });
     for(let i=el.length-1;i>0;i--){ const j=Math.floor(R()*(i+1)); [el[i],el[j]]=[el[j],el[i]]; }
@@ -2151,11 +2209,14 @@ function sysOf(L){ if(L._sys&&L._sys.c===L.c) return L._sys; const o=Object.assi
 // 명절이 드는 달: 이슬람 명절은 해마다 11일쯤 빨라진다
 const FEST_M=[[/춘절|설 명절|설날|뗏|새해 첫 참배|새해 명절|새해 축제|호주의 날|팀카트/,1],[/카니발|와이탕이/,2],[/노루즈|성 패트릭|봄맞이/,3],[/송끄란|띤잔|삐마이|벵골 새해|부활절|유월절|왕의 날|물 축제|물 뿌리기|성주간/,4],
   [/하지|쿠팔라|성 요한|여름맞이/,6],[/나담|혁명 기념일|캐나다의 날|노래 축제/,7],[/8월 축제|홈오워/,8],[/추석|9월 축제|수확 축제/,9],[/디왈리|다사인|체추/,10],[/추수감사절|죽은 자의 날|모닥불의 밤/,11],[/크리스마스|정카누/,12]];
+function eidMonth(yr){ return new Date(Date.UTC(2026,2,20)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1; }
 function festMonth(L,yr){ const f=L.C.fest||''; if(/이드|르바란|하리 라야|라마단 명절/.test(f)) return new Date(Date.UTC(2026,2,20)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1;
   if(/타바스키/.test(f)) return new Date(Date.UTC(2026,4,27)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1; for(const [re,m] of FEST_M) if(re.test(f)) return m; return null; }
 const mOf=(sy,k)=>((sy.st-1+k)%12+12)%12+1;        // 새 학년 시작에서 k달 뒤
 
 /* ---------- [데이터] 과목 · 동아리 · 대학 학과 ---------- */
+const HOBBIES=['축구','그림 그리기','기타 연주','텃밭 가꾸기','뜨개질','독서','요리','사진 찍기','낚시','체스','춤','등산','노래','코딩','별 보기','수영','농구','달리기','피아노','글쓰기','배드민턴','종이접기','새 관찰','목공','자전거 타기','바둑','배구','크리켓','연날리기','탁구'];
+const HOB_OK={크리켓:['IN','PK','BD','LK','GB','AU','NZ','ZA','AF'],바둑:['KR','CN','JP','TW'],'코딩':null};
 const SUBJ_E=['국어','수학','사회','과학','영어'], SUBJ_M=['국어','수학','영어','과학','사회','역사','기술·가정','정보'];
 const CLUBS=['수학 탐구반','방송부','밴드부','과학 실험반','농구부','댄스부','도서부','사진반','로봇 코딩반','영어 회화반','미술부','합창단','토론반','축구부'];
 const MAJORS_U=['컴퓨터공학과','경영학과','간호학과','수학교육과','기계공학과','국어국문학과','생명과학과','심리학과','건축학과','경제학과','화학공학과','사회복지학과','디자인학과','물리학과','법학과','의예과'];
@@ -2233,6 +2294,12 @@ const CALRUN={
   invest:{post:(L,ok,oi)=>{ if(oi!==1) return null; const up=R()<.55, v=up?Math.round(8+R()*25):-Math.round(8+R()*22); return {t:up?`주가가 올라 모은 돈이 ${v}% 늘었다.`:`주가가 떨어져 모은 돈이 ${-v}% 줄었다.`,fx:{'%':v,j:up?2:-3}}; }},
   scholar:{post:(L,ok)=>ok&&L.ac>52?{t:'성적 장학금을 받았다! 등록금의 절반을 아꼈다.',fx:{'@':3,j:3}}:{t:'아깝게 장학금 기준에 못 미쳤다.'}},
   exch:{post:(L,ok,oi)=>oi===0&&ok&&R()<.6?{t:`교환학생에 뽑혀 ${pickOne(['독일 베를린','미국 보스턴','일본 교토','프랑스 리옹','캐나다 밴쿠버','호주 멜버른','싱가포르'])}에서 한 학기를 보냈다.`,fx:{k:4,j:4,r:2},big:1}:oi===0?{t:'이번에는 뽑히지 못했다.'}:null},
+  petGet:{post:(L,ok,oi,v)=>{ if(oi!==0) return null; L.f.pet={n:v.petN,sp:v.petSp,a:L.age,life:v.petSp==='강아지'?11+Math.floor(R()*6):13+Math.floor(R()*6)}; return null; }},
+  petDie:{post:L=>{ if(L.f.pet) L.f.pet.dA=L.age; return null; }},
+  hobPick:{post:(L,ok,oi,v)=>{ const n=[v.hobA,v.hobB,v.hobC][oi]; if(!n) return null; L.f.hob=(L.f.hob||[]).concat([{n,lv:1,a:L.age}]); return null; }},
+  hobUp:{post:(L,ok,oi,v)=>{ const h=(L.f.hob||[]).find(x=>x.n===v.hob); if(!h) return null; h.lv+=1+(R()<.3?1:0); return {t:`(${h.n} Lv.${h.lv})`}; }},
+  hobShow:{post:(L,ok,oi,v)=>{ if(oi!==0) return null; const h=(L.f.hob||[]).find(x=>x.n===v.hob); const lv=h?h.lv:1; return ok&&lv>=6&&R()<.5?{t:'상을 받았다! 사람들이 실력을 알아보기 시작했다.',fx:{j:3}}:{t:'상은 못 받았지만 다음이 기대된다.'}; }},
+  twins:{post:L=>{ L.f.twins=1; L.f.kWant=Math.max(L.f.kWant||0,(L.kids||[]).length+2); return null; }},
   parentMtg:{post:L=>L.acInit()>=60?{t:'“늘 성실하고, 질문을 잘 하는 학생입니다.” 돌아오는 길에 부모님이 웃으셨다.',fx:{j:2,r:1}}:L.ac<40?{t:'“조금만 더 집중하면 충분히 잘할 수 있어요.” 그날 저녁 가족회의가 열렸다.',fx:{k:1}}:{t:'“친구들과 잘 지내는 밝은 학생입니다.” 부모님이 어깨를 토닥여 주셨다.',fx:{r:1}}},
   intern:{post:(L,ok)=>ok&&R()<.6?{t:`${L.c==='KR'?pickOne(['한빛전자','미래금융','다온소프트','세움건설','푸른제약']):L.C.city+' '+pickOne(['무역','은행','통신','방송국'])}에서 인턴으로 일하게 되었다.`,fx:{k:3,j:2}}:{t:'모두 떨어졌다. 다음 기회를 노린다.',fx:{j:-2}}}
 };
@@ -2248,7 +2315,8 @@ Object.assign(Life.prototype,{
   // 사건 하나의 조건을 따진다. 맞으면 그 사건에 쓸 값(ctx)을, 아니면 null
   calCtx(ev,st,sy){ const f=this.f, a=this.age, C=this.C, ctx={st}; let g=null;
     for(const tk of ev.c){ let ok=true;
-      if(tk==='e'||tk==='m'||tk==='h'||tk==='u'||tk==='rt'||tk==='ns') ok=st===tk;
+      if(tk.includes('|')&&!/^(rg:|hz:|jk:|jn:|rel:|!?[A-Z]{2}\|)/.test(tk)) ok=tk.split('|').some(t=>this.calCtx({c:[t]},st,sy)!=null);
+      else if(tk==='e'||tk==='m'||tk==='h'||tk==='u'||tk==='rt'||tk==='ns') ok=st===tk;
       else if(tk==='s') ok=/^[emh]$/.test(st);
       else if(tk==='hg') ok=f.hs==='gen'; else if(tk==='hv') ok=f.hs==='voc'; else if(tk==='pre') ok=a<7;
       else if(tk==='w') ok=!!f.job&&!f.school&&!this._army; else if(tk==='nj') ok=this.reqOK('nojob'); else if(tk==='ret') ok=!!f.retired;
@@ -2267,6 +2335,16 @@ Object.assign(Life.prototype,{
       else if(tk.startsWith('jk:')){ const j=this.job; ok=!!j&&tk.slice(3).split('|').includes(j.kind); }
       else if(tk.startsWith('jn:')){ const j=this.job; ok=!!j&&new RegExp(tk.slice(3)).test(j.n); }
       else if(tk.startsWith('rg:')) ok=tk.slice(3).split('|').includes(C.rg);
+      else if(tk.startsWith('hz:')) ok=tk.slice(3).split('|').some(h=>C.hz.includes(h));
+      else if(tk==='coast') ok=/^(wt|cs)$/.test(C.lt); else if(tk==='inland') ok=!/^(wt|cs)$/.test(C.lt);
+      else if(tk.startsWith('yr:')){ const Y=+tk.slice(3), y0=this.by+a; ok=Y>=y0&&Y<y0+this.step; if(ok) ctx.yo=Y-y0; }
+      else if(tk.startsWith('rel:')){ const r=this.fam&&this.fam.rel||''; ok=tk.slice(4).split('|').some(x=>r.includes(x)); }
+      else if(tk==='sec') ok=!!f.sec;
+      else if(tk==='gpal') ok=!this.fam||this.fam.gp.some(g=>g.al); else if(tk==='nogp') ok=!!this.fam&&!this.fam.gp.some(g=>g.al);
+      else if(tk==='pet') ok=!!(f.pet&&!f.pet.dA); else if(tk==='petOld') ok=!!(f.pet&&!f.pet.dA&&a-f.pet.a>=Math.max(10,f.pet.life||13));
+      else if(tk==='noedu') ok=!f.sec&&a>=19; else if(tk==='gpdead') ok=!!(this.fam&&this.fam.gp.some(g=>!g.al&&g.dA!=null)); else if(tk==='pardead') ok=!!(this.fam&&(!this.fam.mom.al||!this.fam.dad.al));
+      else if(tk==='hob') ok=!!(f.hob&&f.hob.length);
+      else if(tk==='kidOld') ok=(this.kids||[]).length>0; else if(tk==='mar') ok=!!f.family||!!f.widow;
       else if(/^g[=<>]\d+$/.test(tk)){ if(g==null) g=this.gradeOf(st); const n=+tk.slice(2), op=tk[1]; ok=op==='='?g===n:op==='>'?g>n:g<n; }
       else if(/^![A-Z]{2}(\|[A-Z]{2})*$/.test(tk)) ok=!tk.slice(1).split('|').includes(this.c);
       else if(/^[A-Z]{2}(\|[A-Z]{2})*$/.test(tk)) ok=tk.split('|').includes(this.c);
@@ -2279,7 +2357,7 @@ Object.assign(Life.prototype,{
     if(spec==='x1') return sy.x1?sy.x1.m:null; if(spec==='x2') return sy.x2?sy.x2.m:null;
     if(spec[0]==='s') return mOf(sy,+spec.slice(1)); return +spec||null; },
   // 올해의 달력을 짠다: 해마다 돌아오는 일(같은 묶음에서 하나씩) + 그 해만의 일, 모두 열 가지 안팎
-  planCal(){ const a=this.age, f=this.f; if(f.dying||this.dead) return [];
+  planCal(){ const a=this.age, f=this.f; if(f.dying||this.dead||this.lite) return [];
     const st=this.stageOf(), sy=sysOf(this), used=this.calUsed||(this.calUsed={}), two=this.step>1;
     this._army=this.c==='KR'&&this.sex===0&&a>=19&&a<=20&&!f.army&&!f.retry&&!f.univ;   // 군 복무 중에는 일터의 일이 없다
     const N=a<1?3:a<3?2:a<7?4:a<13?10:a<19?11:a>=80?5:a>=70?7:10;
@@ -2293,9 +2371,13 @@ Object.assign(Life.prototype,{
     // 달 정하기: 정해진 달이 있으면 그 달, 없으면 덜 붐비는 달에
     const cnt={}, span=two?24:12, out=[];
     const fm=festMonth(this,this.by+a);
-    sel.forEach(x=>{ let m=/\{fest\}/.test(x.ev.txt+(x.ev.opts?x.ev.opts.map(o=>o.res).join(''):''))&&fm&&(x.ev.mon==='*'||x.ev.mon==='wv')?fm:this.calMonth(x.ev.mon,sy); if(m!=null&&two&&(x.ev.y2||(x.ev.k&&x.ev.k.startsWith('army')&&f.univ))) m+=12; else if(m!=null&&two&&!x.ev.fix&&!(x.ev.k&&x.ev.k.startsWith('army'))&&R()<.5) m+=12; x.m=m; if(m!=null) cnt[m]=(cnt[m]||0)+1; });
+    sel.forEach(x=>{ if(x.ctx.yo!=null){ x.m=(this.calMonth(x.ev.mon,sy)||1+Math.floor(R()*12))+12*x.ctx.yo; if(x.m!=null) cnt[x.m]=(cnt[x.m]||0)+1; return; } let m=/\{fest\}/.test(x.ev.txt+(x.ev.opts?x.ev.opts.map(o=>o.res).join(''):''))&&fm&&(x.ev.mon==='*'||x.ev.mon==='wv')?fm:this.calMonth(x.ev.mon,sy); if(m!=null&&two&&(x.ev.y2||(x.ev.k&&x.ev.k.startsWith('army')&&f.univ))) m+=12; else if(m!=null&&two&&!x.ev.fix&&!(x.ev.k&&x.ev.k.startsWith('army'))&&R()<.5) m+=12; x.m=m; if(m!=null) cnt[m]=(cnt[m]||0)+1; });
     sel.filter(x=>x.m==null).forEach(x=>{ let best=null, bc=99; for(let t=0;t<8;t++){ const m=1+Math.floor(R()*span); const c=cnt[m]||0; if(c<bc){ bc=c; best=m; } } x.m=best; cnt[best]=(cnt[best]||0)+1; });
-    sel.sort((p,q)=>p.m-q.m||(p.ev.k?0:1)-(q.ev.k?0:1)).forEach(x=>out.push({id:x.ev.id,m:x.m,ctx:x.ctx,done:0}));
+    sel.forEach(x=>out.push({id:x.ev.id,m:x.m,ctx:x.ctx,done:0,k:x.ev.k?0:1}));
+    // 가족 이야기도 같은 달력에 (해마다 한두 가지에서 여러 가지까지)
+    this.famPlan().concat(this.compPlan()).forEach(x=>{ let m=x.m; if(m==null){ let best=1, bc=99; for(let t=0;t<6;t++){ const mm=1+Math.floor(R()*12); if((cnt[mm]||0)<bc){ bc=cnt[mm]||0; best=mm; } } m=best; }
+      if(two&&(x.dyn.y===1||(x.dyn.y==null&&R()<.5))) m+=12; cnt[m]=(cnt[m]||0)+1; out.push({dyn:x.dyn,m,ctx:{st},done:0,k:1}); });
+    out.sort((p,q)=>p.m-q.m||p.k-q.k);
     // 학생이면 올해의 담임·반·친구
     if(/^[emh]$/.test(st)){ const P=this.ppl||{}, sex=this.sex, c=this.c, nm=sx=>joinName(c,pickSur(this),pickGiven(this,sx,'now'),sx===1);
       this.cur.yr={cls:1+Math.floor(R()*(c==='KR'?(this.set==='U'?9:3):5)),hr:joinName(c,pickSur(this),pickGiven(this,R()<(st==='e'?.75:.55)?1:0,'mid'),true),mate:nm(sex),mate2:nm(R()<.5?0:1),crush:nm(1-sex),n:Math.round(sy.n*(this.set==='R'?.7:1)*(.85+R()*.3))}; }
@@ -2304,7 +2386,8 @@ Object.assign(Life.prototype,{
   calVars(ev,it){ if(it.v) return it.v; const f=this.f, P=this.ppl||{}, sch=this.sch||{}, st=it.ctx.st, sy=sysOf(this), yr=this.cur&&this.cur.yr||{}, c=this.c, KR=c==='KR';
     if(!P.coll||P.coll.co!==f.co){ const nm=sx=>joinName(c,pickSur(this),pickGiven(this,sx,'mid'),sx===1); P.coll={n:nm(R()<.5?0:1),co:f.co}; P.boss={n:nm(R()<.7?0:1)}; P.coll2={n:joinName(c,pickSur(this),pickGiven(this,R()<.5?0:1,'now'),false)}; }
     const kd=it.ctx.ki!=null?this.kids[it.ctx.ki]:null, ka=it.ctx.ka;
-    const v={g:this.gradeOf(st),G:st==='e'?sch.elem:st==='m'?sch.mid:st==='h'?(f.hs==='voc'?sch.voc:sch.high):st==='u'?sch.univ:'학교',cls:yr.cls||1,N:yr.n||sy.n,hr:yr.hr||(P.teacher?P.teacher.n:'담임'),
+    const hs=this.f.hob||[], hp=HOBBIES.filter(h=>!hs.some(x=>x.n===h)&&(!HOB_OK[h]||HOB_OK[h].includes(this.c))&&!(h==='코딩'&&this.C.tier<=1)).sort(()=>R()-.5);
+    const pt=this.f.pet, sp=pickOne(['강아지','고양이']); const v={petSp:sp,petN:pickOne(sp==='강아지'?['초코','보리','두부','콩이','맥스','토토','해피','바둑이']:['나비','루나','치즈','모모','까미','레오','코코','달이']),pet:pt?pt.n:'반려동물',petAge:pt?this.age-pt.a+1:1,hobA:hp[0],hobB:hp[1],hobC:hp[2],hob:hs.length?pickOne(hs).n:'취미',g:this.gradeOf(st),G:st==='e'?sch.elem:st==='m'?sch.mid:st==='h'?(f.hs==='voc'?sch.voc:sch.high):st==='u'?sch.univ:'학교',cls:yr.cls||1,N:yr.n||sy.n,hr:yr.hr||(P.teacher?P.teacher.n:'담임'),
       mate:yr.mate||'짝꿍',mate2:yr.mate2||'반 친구',crush:yr.crush||'그 친구',sub:pickOne(st==='e'?SUBJ_E:SUBJ_M),club:pickOne(CLUBS),x1:sy.x1?sy.x1.n:'졸업 시험',x2:sy.x2?sy.x2.n:'대학 입학시험',
       coll:P.coll.n,coll2:P.coll2.n,boss:KR?P.boss.n:P.boss.n,bff:P.friend?P.friend.n:'친구',kn:kd?kd.n:'아이',kg:ka!=null?Math.max(1,ka-6):1,major:f.major||pickOne(MAJORS_U),voc:sch.voc||'직업학교',
       trip:pickOne(['국립중앙과학관','에버랜드','국립중앙박물관','서울대공원 동물원','롯데월드','독립기념관','국립생태원','경주 불국사']),kTrip:pickOne(['경주','제주도','강원도 설악산','전주 한옥마을','부산','안동 하회마을']),
@@ -2330,24 +2413,25 @@ Object.assign(Life.prototype,{
     if(kind==='cert') return {p,t:p>.35?'합격! 자격증이 생겼다.':'아쉽게 떨어졌다. 다음 회차에 다시 도전한다.'};
     return {p,t:''}; },
   // 달력의 사건 하나를 일으킨다 (oi: 고른 선택지, 그냥 일어나는 일은 없음)
-  calDo(k,oi){ const it=this.cur&&this.cur.cal&&this.cur.cal[k]; if(!it||it.done) return null; const ev=CAL[it.id]; if(!ev){ it.done=1; return null; }
+  calEv(it){ return it.dyn||CAL[it.id]; },
+  calDo(k,oi){ const it=this.cur&&this.cur.cal&&this.cur.cal[k]; if(!it||it.done) return null; const ev=this.calEv(it); if(!ev){ it.done=1; return null; }
     const v=this.calVars(ev,it), run=ev.run&&CALRUN[ev.run];
     const q=this.fillV(ev.txt,v); let t, fx={}, ok=true, p=null, tr=null, bonus=0, o=null;
     if(ev.opts){ o=ev.opts[oi==null?0:oi]||ev.opts[0]; p=this.calOptP(o); ok=p==null||R()<p; this.n++;
       if(ok){ fx=Object.assign({},o.fx); t=this.fillV(o.res,v); if(o.tr){ this.tr[o.tr]++; tr=o.tr; } bonus=(o.fx.k||0)*1.5+3; }
-      else { for(const key in o.fx) if(o.fx[key]<0) fx[key]=o.fx[key]; t=o.fail?this.fillV(o.fail,v):ev.ex?pickOne(['긴장해서 아는 문제도 몇 개 틀렸다.','시간이 모자라 마지막 문제들을 서둘러 풀었다.','계획한 만큼 공부하지는 못했다.']):`마음먹은 대로(‘${this.fillV(o.l,v)}’) 되지는 않았다.`; this.fail++; bonus=-4; } }
+      else { for(const key in o.fx) if(o.fx[key]<0) fx[key]=o.fx[key]; t=o.fail?this.fillV(o.fail,v):ev.ex?pickOne(['긴장해서 아는 문제도 몇 개 틀렸다.','시간이 모자라 마지막 문제들을 서둘러 풀었다.','계획한 만큼 공부하지는 못했다.']):failTx(this.fillV(o.l,v)); this.fail++; bonus=-4; } }
     else { fx=Object.assign({},ev.fx); t=q; bonus=this.cur.study||0; }
     if(ev.opts&&ev.ex) this.cur.study=ok?bonus*.5:-2;
     let big=!!ev.big;
     if(ev.ex){ const r=this.exam(ev.ex,bonus,v); if(r.t) t+=' '+r.t; }
     if(run&&run.post){ const r=run.post(this,ok,oi==null?0:oi,v); if(r){ if(r.t) t+=(t?' ':'')+r.t; if(r.fx) for(const key in r.fx) fx[key]=(fx[key]||0)+r.fx[key]; if(r.big) big=true; } }
-    this.apply(fx); this.calUsed[ev.id]=this.age; it.done=1; it.t=t; it.ok=ok; it.q=ev.opts?q:null; it.fx=fx; delete it.v;
+    this.apply(fx); if(it.dyn) this.famAct(ev.act); else this.calUsed[ev.id]=this.age; it.done=1; it.t=t; it.ok=ok; it.q=ev.opts?q:null; it.fx=fx; delete it.v;
     const age=this.age+(it.m>12?1:0), sc=ev.sc||sceneKindOf(t);
     this.mem.push({a:age,t:ev.opts?t:t,big:big?1:0,sc,cal:1}); if(this.mem.length>320) this.mem.splice(this.mem.findIndex(m=>!m.big),1);
-    return {t,q:ev.opts?q:null,fx,p,ok,tr,big,sc,label:o?this.fillV(o.l,v):null,m:it.m}; },
+    return {t,q:ev.opts?q:null,fx,p,ok,tr,big,sc,label:o?this.fillV(o.l,v):null,m:it.m,nt:ev.nt||null,fam:!!it.dyn}; },
   // 아직 일어나지 않은 달력의 일을 마저 정한다 (해가 끝날 때). 고르는 일은 확률이 가장 높은 선택으로
   calAuto(){ const out=[]; if(!this.cur||!this.cur.cal) return out;
-    this.cur.cal.forEach((it,k)=>{ if(it.done) return; const ev=CAL[it.id]; let bi=null; if(ev&&ev.opts){ let bp=-1; bi=0; ev.opts.forEach((o,i)=>{ const p=this.calOptP(o); const pp=p==null?.5:p; if(pp>bp){ bp=pp; bi=i; } }); }
+    this.cur.cal.forEach((it,k)=>{ if(it.done) return; const ev=this.calEv(it); let bi=null; if(ev&&ev.opts){ let bp=-1; bi=0; ev.opts.forEach((o,i)=>{ const p=this.calOptP(o); const pp=p==null?.5:p; if(pp>bp){ bp=pp; bi=i; } }); }
       const r=this.calDo(k,bi); if(r) out.push(r); });
     return out; },
   ensureCal(){ if(this.cur&&!this.cur.cal&&!this.pending) this.cur.cal=this.planCal(); return this.cur&&this.cur.cal; },
@@ -2409,7 +2493,8 @@ Y(7,12,'e !KR t3','sv','긴 방학이다.',[['가족과 여행을 간다','j3 r2
 Y(7,12,'e t2','sv','방학 동안 집안일을 도왔다.',[['{chore}을(를) 거든다','r2 h1 D','어른들 곁에서 일을 배웠다. 손에 굳은살이 생겼다.'],['동생들을 돌본다','r3 K','동생들을 씻기고 먹이며 방학을 보냈다.'],['틈틈이 교과서를 읽는다','k2','일을 마치고 등잔 아래서 교과서를 읽었다.']],{k:'vacS'});
 Y(7,12,'e KR','11','학예회를 준비한다.',[['연극 주인공에 지원한다','j2 B','주인공을 맡아 대사를 외웠다.'],['합창에서 화음을 맞춘다','r2 D','친구들과 화음을 맞췄다.'],['무대 뒤에서 소품을 만든다','k1 C','종이로 왕관과 나무를 만들었다.']],{k:'autumn',sc:'stage'});
 Y(7,12,'e !KR','s3','학교 발표회 날이다. 반마다 노래와 춤을 준비했다.',[['앞에 나가 발표한다','j2 B','떨렸지만 끝까지 발표했다.'],['친구 발표를 돕는다','r2 K','친구 발표 자료를 함께 들고 서 있었다.']],{k:'autumn',sc:'stage'});
-Y(7,12,'e KR','1','설날이다. 할아버지, 할머니께 세배를 드리고 세뱃돈을 받았다.','j3 r2',{k:'holiday',sc:'fest'});
+Y(7,12,'e KR gpal','1','설날이다. 할아버지, 할머니께 세배를 드리고 세뱃돈을 받았다.','j3 r2',{k:'holiday',sc:'fest'});
+Y(7,12,'e KR nogp','1','설날 아침, 차례를 지내고 온 가족이 떡국을 먹었다. 친척 어른들께 세뱃돈을 받았다.','j3 r2',{k:'holiday',sc:'fest'});
 Y(7,12,'e !KR','wv','{fest} 날이 다가왔다. 온 가족이 모여 {food}을(를) 나눠 먹었다.','j3 r2',{k:'holiday',sc:'fest'});
 Y(7,12,'e KR','12','통지표를 받았다. {commentQ} 적혀 있었다.','k1',{k:'sem2',sc:'school'});
 // ── 초등학교: 그 해만의 일
@@ -2605,7 +2690,7 @@ Y(19,40,'sgl','*','친구의 결혼식에 갔다.','r2 @-1',{cd:2,sc:'wedding'})
 Y(19,45,'sgl','*','{coll}이(가) 좋은 사람을 소개해 주겠다고 한다.',[['만나 본다','B r2','만나서 이야기를 나눴다. 좋은 사람이었다.'],['지금은 괜찮다고 한다','j1','지금은 혼자가 편하다고 말했다.']],{cd:4,sc:'friend'});
 Y(19,60,'par','*','부모님 생신이다.',[['직접 찾아뵙는다','r4 K','찾아뵙고 미역국을 끓여 드렸다.','@-1'],['선물과 전화로 대신한다','r1','선물을 보내고 전화를 드렸다.','@-1']],{cd:2});
 Y(40,65,'par','*','아빠가 병원에 입원하셨다.',[['휴가를 내고 곁을 지킨다','r4 K','휴가를 내고 병실을 지켰다.','@-1'],['형제들과 돌아가며 돌본다','r2 D','형제들과 돌아가며 돌봤다.']],{once:1,sc:'hosp'});
-Y(25,60,'','*','고등학교 동창회에 갔다. {bff}은(는) 여전히 그대로였다.','r3 j2',{cd:5,sc:'friend'});
+Y(25,60,'sec','*','고등학교 동창회에 갔다. {bff}은(는) 여전히 그대로였다.','r3 j2',{cd:5,sc:'friend'});
 // ── 아이 키우기
 Y(19,60,'kb','*','아이가 밤새 울어 한숨도 못 잤다. 새벽에야 둘 다 잠들었다.','h-2 r2',{k:'kid0'});
 Y(19,60,'kb','*','{kn}이(가) 첫걸음을 뗐다. 휴대폰 영상으로 몇 번이나 돌려 보았다.','j5 r3',{once:1,sc:'baby'});
@@ -2709,6 +2794,532 @@ Y(9,18,'ns R','*','우리 집 염소(소)가 새끼를 낳았다. 밤새 곁을 
 Y(10,18,'ns','*','{bff}이(가) 도시로 일하러 떠났다. 마을 어귀까지 배웅했다.','r1 j-2',{once:1,sc:'travel'});
 Y(9,18,'ns','*','마을 대항 {sport} 대회가 열렸다.',[['선수로 뛴다','h3 B','온 마을이 응원하는 앞에서 뛰었다.'],['응원을 이끈다','r3 K','북을 치며 응원을 이끌었다.']],{cd:2,sc:'sport'});
 Y(12,18,'ns','*','가족이 아파 모아 둔 품삯을 병원비에 보탰다.','r3 j-1',{once:1,sc:'hosp'});
+
+/* ---------- [데이터] 사건사고 · 특이한 경험 · 나라마다의 삶 (Y 함수의 설명은 months.js) ----------
+   nt: 그 일과 관련된 실제 통계 한 줄 (출처를 함께 적었다) */
+
+// ── 사건사고: 다치고, 잃어버리고, 놀라고, 가까스로 피하는 일
+Y(1,5,'t2','*','부엌의 뜨거운 냄비에 손을 데었다. 엄마가 찬물에 오래 손을 담가 주었다.','h-3',{once:1,sc:'sick',nt:'화상으로 해마다 약 18만 명이 숨지며, 대부분 소득이 낮은 나라에서 일어납니다 (WHO)'});
+Y(2,6,'','*','시장에서 엄마 손을 놓쳐 한참 길을 잃었다. 울고 있는데 가게 아주머니가 엄마를 찾아 주었다.','j-2 r1',{once:1});
+Y(3,8,'','*','높은 곳에서 뛰어내리다 이마가 찢어져 세 바늘을 꿰맸다.','h-2 B',{once:1,sc:'hosp'});
+Y(6,14,'','*','자전거를 타다 내리막에서 넘어졌다. 무릎과 팔꿈치가 다 까졌다.','h-2',{cd:4,sc:'sick'});
+Y(7,16,'','*','계단에서 미끄러져 팔이 부러졌다. 한 달 동안 깁스를 했다. 친구들이 깁스에 낙서를 해 주었다.','h-4 r2',{once:1,sc:'hosp'});
+Y(5,16,'coast|R','*','물놀이를 하다 깊은 곳에 빠졌다. 근처에 있던 어른이 끌어내 주었다.',[['그 뒤로 수영을 배운다','h3 D','수영 강습에 다니기 시작했다.'],['한동안 물가에 가지 않는다','j-1','한동안 물가에 가지 않았다.']],{once:1,sc:'sea',nt:'물에 빠져 해마다 약 23만 6천 명이 숨지고, 특히 어린이·청소년에게 많습니다 (WHO)'});
+Y(4,14,'t2','*','동네 개에게 다리를 물렸다. 보건소에서 광견병 주사를 여러 번 맞았다.','h-3',{once:1,sc:'hosp',nt:'광견병으로 해마다 약 5만 9천 명이 숨지며, 거의 모두 개에게 물린 경우입니다 (WHO)'});
+Y(8,60,'R rg:AF|SA|SE|LA','*','밭으로 가는 길에 뱀에게 물렸다. 마을 사람들이 오토바이로 보건소까지 데려다주었다.','h-6',{once:1,sc:'hosp',nt:'뱀에게 물려 해마다 8만~14만 명이 숨지고, 그 세 배쯤이 장애를 얻습니다 (WHO)'});
+Y(13,75,'U','*','붐비는 버스(지하철)에서 지갑(휴대폰)을 소매치기당했다.','j-3 @-1',{once:1,sc:'money'});
+Y(19,85,'','*','길에서 지갑을 주웠다. 안에 현금과 신분증이 들어 있다.',[['주인을 찾아 돌려준다','K r2','경찰서에 맡겼다. 며칠 뒤 주인이 고맙다며 연락해 왔다.'],['못 본 척 지나간다','j-1','그냥 지나쳤다. 마음이 한동안 찜찜했다.']],{once:1});
+Y(30,90,'t3','*','“택배 주소가 잘못되었습니다”라는 문자가 왔다. 링크가 걸려 있다.',[['누르지 않고 지운다','D k1','수상해서 지웠다. 나중에 뉴스에서 같은 문자 사기를 보았다.'],['무심코 누른다','j-3 @-2','눌렀다가 개인정보가 빠져나가 돈을 잃었다.']],{once:1,sc:'money',nt:'전화·문자를 이용한 사기 피해는 해마다 늘고 있어, 모르는 링크는 누르지 않는 것이 가장 좋은 예방입니다'});
+Y(19,85,'','*','집을 비운 사이 도둑이 들었다. 서랍이 모두 열려 있었다.','j-4 @-2',{once:1,sc:'house'});
+Y(5,80,'t2','*','등잔(가스) 불이 커튼에 옮겨붙었다. 온 가족이 물을 퍼 날라 겨우 껐다.','h-1 j-3',{once:1,sc:'fire'});
+Y(5,80,'','*','상한 음식을 먹고 밤새 배앓이를 했다.','h-2',{cd:6,sc:'sick'});
+Y(1,12,'t2','*','홍역이 동네에 돌았다. 열꽃이 온몸에 피어 열흘을 앓았다.','h-5',{once:1,sc:'sick',nt:'홍역은 백신 두 번으로 막을 수 있지만, 2023년에도 약 10만 명 넘게 홍역으로 숨졌습니다 (WHO)'});
+Y(1,60,'rg:AF','*','모기에 물린 뒤 말라리아에 걸렸다. 열이 오르내리며 일주일을 앓았다.','h-6',{cd:5,sc:'sick',nt:'2022년 말라리아로 약 60만 8천 명이 숨졌고, 그 대부분이 아프리카의 다섯 살 미만 어린이였습니다 (WHO 세계 말라리아 보고서 2023)'});
+Y(5,70,'rg:SE|SA|LA','*','뎅기열에 걸려 열이 펄펄 끓었다. 며칠 동안 혈소판 수치를 재며 입원했다.','h-5',{once:1,sc:'hosp',nt:'뎅기열은 세계 인구의 절반가량이 걸릴 위험이 있는 곳에 살고, 2023년 보고된 환자 수가 역대 가장 많았습니다 (WHO)'});
+Y(5,70,'t2 rg:AF|SA','*','마을에 콜레라가 돌았다. 우물물을 반드시 끓여 마시라는 안내가 돌았다.',[['물을 꼭 끓여 마신다','D h2','끓인 물만 마셨다. 가족 모두 무사히 지나갔다.'],['괜찮겠지 하고 그냥 마신다','h-4','며칠 동안 심한 설사로 고생했다.']],{once:1,sc:'sick',nt:'안전한 식수를 쓰지 못하는 사람이 2022년 약 22억 명입니다 (WHO·UNICEF JMP)'});
+Y(15,65,'w jk:factory|part','*','일하던 곳에서 떨어지는 자재에 다칠 뻔했다.',[['그 뒤로 안전모를 꼭 쓴다','D h1','동료들에게도 안전모를 쓰자고 했다.'],['운이 좋았다며 넘긴다','','별일 없었다며 넘겼다.']],{once:1,sc:'job',nt:'일하다 다치거나 일 때문에 얻은 병으로 해마다 약 290만 명이 숨집니다 (ILO 2023)'});
+Y(16,75,'car','*','교차로에서 신호를 어긴 차와 부딪힐 뻔했다. 한참 동안 손이 떨렸다.','j-2',{once:1,sc:'travel',nt:'교통사고로 해마다 약 119만 명이 숨지고, 5~29세 사망 원인 1위입니다 (WHO 2023)'});
+Y(15,60,'rg:SE|AF|SA|LA','*','오토바이(오토바이 택시)를 타고 가다 빗길에 넘어졌다. 다리에 큰 상처가 났다.','h-4',{once:1,sc:'hosp',nt:'교통사고 사망자의 절반 넘게가 보행자·자전거·오토바이를 탄 사람입니다 (WHO 2023)'});
+Y(19,80,'','*','교통사고를 당했다.',[['병원에서 끝까지 치료받는다','h-2 D','석 달 동안 재활 치료를 받았다.','@-2'],['일 때문에 대충 치료하고 나간다','h-5','허리가 오래 아팠다.']],{once:1,w:.6,sc:'hosp',nt:'교통사고로 해마다 2천만~5천만 명이 다칩니다 (WHO)'});
+Y(5,80,'t2','*','며칠째 전기가 들어오지 않았다. 밤에는 촛불(휴대폰 손전등)을 켜고 지냈다.','j-1',{cd:3,nt:'2022년 전 세계 약 6억 8,500만 명이 전기 없이 살았고, 그 80%가 사하라 이남 아프리카에 삽니다 (IEA·세계은행 SDG7 보고서 2024)'});
+Y(5,80,'t2','*','마을 수도가 끊겨 사흘 동안 먼 곳까지 물을 길으러 다녔다.','h-1 j-1',{cd:4});
+Y(13,18,'s','*','시험 시간에 옆자리 친구가 답을 보여 달라고 한다.',[['거절한다','D B','거절했다. 친구는 서운해했지만 나중에 이해했다.'],['보여 준다','r1 j-2','보여 줬다. 둘 다 들킬까 봐 시험 내내 조마조마했다.']],{once:1,sc:'school'});
+Y(12,18,'s t3','*','누군가 내 사진을 우스꽝스럽게 바꿔 단체 채팅방에 올렸다.',[['선생님과 부모님께 알린다','B r1','어른들이 나서서 사진이 지워지고 사과를 받았다.'],['아무렇지 않은 척한다','j-4','아무렇지 않은 척했지만 며칠 밤잠을 설쳤다.']],{once:1,sc:'friend',nt:'괴롭힘을 겪으면 혼자 견디지 않아도 돼요. 한국 117(학교폭력 신고·상담) · 청소년상담 1388'});
+Y(10,80,'hz:quake','*','한밤중에 땅이 크게 흔들렸다. 가족이 모두 이불을 뒤집어쓰고 밖으로 뛰어나갔다.','j-3 h-1',{cd:6,sc:'quake'});
+Y(5,80,'hz:storm','[7,8,9]','태풍이 지나가며 지붕 한쪽이 날아갔다. 이웃들과 함께 고쳤다.','j-2 r2 @-1',{cd:3,sc:'storm'});
+Y(5,80,'hz:flood','*','큰비로 집 안까지 물이 찼다. 가구를 높은 곳으로 옮기며 밤을 새웠다.','j-3 @-1',{cd:3,sc:'flood',nt:'2000~2019년 홍수는 기후 관련 재해 가운데 가장 잦았고, 피해를 입은 사람이 16억 명이 넘습니다 (UNDRR 2020)'});
+Y(5,80,'hz:drought','*','몇 달째 비가 오지 않아 우물이 말랐다. 물 한 통을 아껴 썼다.','j-3 h-1',{cd:3,sc:'drought'});
+Y(5,80,'hz:heat','[6,7,8]','기온이 45도 가까이 오르는 폭염이 이어졌다. 낮에는 밖에 나가지 않았다.','h-2',{cd:3,sc:'heat',nt:'2000~2019년 폭염 관련 사망은 해마다 약 49만 명으로 추정됩니다 (Lancet Planetary Health 2021)'});
+Y(5,80,'hz:fire','*','근처 산에서 난 불의 연기가 며칠 동안 마을을 덮었다.','h-2 j-1',{cd:4,sc:'fire'});
+Y(5,80,'hz:cold','[12,1,2]','영하 30도 가까운 추위가 이어졌다. 수도관이 얼어 터졌다.','h-1 @-1',{cd:3,sc:'cold'});
+Y(3,80,'hz:unrest','*','총소리가 가까워져 가족이 짐을 싸 이웃 마을 친척 집으로 피난을 갔다. 몇 주 뒤에야 돌아왔다.','j-6 h-2 r2',{cd:6,sc:'travel',nt:'2024년 전쟁·박해·폭력으로 집을 떠난 사람은 1억 2천만 명을 넘었습니다 (UNHCR)'});
+Y(3,80,'hz:volcano','*','화산이 연기를 내뿜어 하늘이 잿빛이 되었다. 마스크를 쓰고 다녔다.','h-1 j-1',{cd:6,sc:'volcano'});
+
+// ── 특이한 경험: 자주 오지는 않지만, 오면 평생 이야기하는 일
+Y(5,90,'EG|ES|MA|DZ|TN|LY|SA|YE|SO yr:2027','8','8월 2일 낮, 해가 달에 완전히 가려지는 개기일식을 보았다. 대낮에 별이 보였다.','j5 k3 C',{w:60,sc:'travel',nt:'2027년 8월 2일 개기일식은 이집트 룩소르 부근에서 6분 넘게 이어져, 21세기 육지에서 볼 수 있는 가장 긴 개기일식 가운데 하나입니다'});
+Y(5,90,'AU|NZ yr:2028','7','7월 22일, 하늘이 갑자기 어두워지는 개기일식을 가족과 함께 보았다.','j5 k3 C',{w:60,sc:'travel'});
+Y(5,90,'ZA|BW|NA|AU yr:2030','11','11월 25일, 개기일식이 지나갔다. 해가 검은 고리로 변하는 순간 모두 탄성을 질렀다.','j5 k3 C',{w:60,sc:'travel'});
+Y(5,90,'NG|CM|TD|SD|EG|SA|IR|AF|PK|IN|CN yr:2034','3','3월 20일, 개기일식이 하늘을 가로질렀다. 학교 운동장에서 일식 안경을 쓰고 다 함께 올려다보았다.','j5 k3 C',{w:60,sc:'travel'});
+Y(5,90,'CN|KP|JP yr:2035','9','9월 2일 아침, 개기일식으로 하늘이 몇 분 동안 밤처럼 어두워졌다.','j5 k3 C',{w:60,sc:'travel'});
+Y(5,90,'US yr:2045','8','8월 12일, 미국을 서쪽에서 동쪽으로 가로지르는 개기일식을 보았다. 사람들이 길에 차를 세우고 하늘을 보았다.','j5 k3 C',{w:60,sc:'travel'});
+Y(20,90,'yr:2061','[7,8]','76년 만에 돌아온 핼리 혜성을 보았다. 다음에 돌아오는 2134년에는 이 세상에 없겠지 싶어 오래 바라보았다.','j5 k3 C',{w:60,nt:'핼리 혜성은 약 76년마다 태양 가까이 돌아오며, 2061년 여름에 다시 가까워집니다'});
+Y(4,90,'MA|ES|PT yr:2030','[6,7]','우리나라가 함께 여는 월드컵이 열렸다. 온 동네가 경기 날마다 들썩였다.','j4 r2',{w:60,sc:'sport'});
+Y(4,90,'UY|AR|PY yr:2030','6','월드컵 100주년을 기념해 개막 경기가 우리나라에서 열렸다. 거리마다 국기가 걸렸다.','j4 r2',{w:60,sc:'sport'});
+Y(4,90,'SA yr:2034','*','우리나라에서 월드컵이 열렸다. 새로 지은 경기장에 가족과 함께 갔다.','j4 r2',{w:60,sc:'sport'});
+Y(2,90,'US yr:2028','[7,8]','로스앤젤레스 올림픽이 열렸다. 텔레비전 앞에서 온 가족이 응원했다.','j3 r2',{w:60,sc:'sport'});
+Y(4,90,'AU yr:2032','[7,8]','브리즈번 올림픽이 열렸다. 학교에서 단체로 경기를 보러 갔다.','j4 r2',{w:60,sc:'sport'});
+Y(4,90,'FR yr:2030','2','프랑스 알프스에서 겨울 올림픽이 열렸다. 스키 점프를 처음 보았다.','j3',{w:60,sc:'sport'});
+Y(4,90,'US yr:2034','2','솔트레이크시티에서 겨울 올림픽이 열렸다. 하키 결승전을 끝까지 보았다.','j3',{w:60,sc:'sport'});
+Y(8,90,'t3','*','처음으로 비행기를 탔다. 구름 위에서 내려다본 땅이 장난감 같았다.','j4 k2 C',{once:1,w:.8,sc:'travel'});
+Y(19,90,'t2','*','처음으로 비행기를 탔다. 일자리를 찾아 먼 도시로 가는 길이었다. 창문에 얼굴을 붙이고 한참 내려다보았다.','j3 k2 C',{once:1,w:.4,sc:'travel'});
+Y(6,90,'inland','*','난생처음 바다를 보았다. 끝이 보이지 않았다. 바닷물이 정말 짰다.','j5 k2 C',{once:1,sc:'sea'});
+Y(10,90,'rg:AF|SE|SA|LA|ME','*','다른 나라에 갔다가 태어나서 처음으로 눈을 보았다. 손바닥 위에서 금세 녹아 버렸다.','j5 C',{once:1,w:.4,sc:'cold'});
+Y(6,90,'NO|SE|FI|IS|CA|RU','[12,1,2]','밤하늘에 초록빛 오로라가 커튼처럼 일렁였다. 모두 말없이 올려다보았다.','j5 C',{once:1,w:.8});
+Y(6,90,'','*','지역 방송국 기자가 길에서 인터뷰를 요청했다. 그날 저녁 뉴스에 내 얼굴이 3초 나왔다.','j4 B',{once:1,w:.4,sc:'stage'});
+Y(18,90,'','*','장난삼아 산 복권이 작은 금액에 당첨되었다.','j3 @1',{once:1,w:.4,sc:'money'});
+Y(10,90,'','*','{sport} 국가대표 선수를 우연히 만나 사인을 받았다.','j4',{once:1,w:.4,sc:'sport'});
+Y(14,80,'','*','물에 빠진 아이를 보고 뛰어들어 건져 냈다. 마을 사람들이 나를 칭찬했다.','r5 j4 B',{once:1,w:.2,sc:'sea'});
+Y(18,70,'','*','헌혈을 처음 했다. 내 피가 누군가에게 간다고 생각하니 뿌듯했다.','K j2',{once:1,w:.7,sc:'hosp'});
+Y(20,70,'t3','*','42.195킬로미터 마라톤을 완주했다. 결승선에서 다리가 풀렸다.','h4 j4 D',{once:1,w:.4,sc:'sport'});
+Y(15,75,'','*','가장 높은 산에 올랐다. 정상에서 본 해돋이를 평생 잊지 못할 것 같다.','h3 j4 B',{once:1,w:.6,sc:'travel'});
+Y(25,90,'','*','오래전에 연락이 끊겼던 먼 친척이 수소문 끝에 찾아왔다. 할머니의 옛 사진을 가져왔다.','r4 j3',{once:1,w:.4});
+Y(12,80,'t3','*','장난처럼 올린 짧은 영상이 갑자기 수십만 번 재생되었다. 며칠 동안 모르는 사람들이 알아보았다.','j3 r1',{once:1,w:.3});
+Y(25,90,'t3','*','다른 나라에서 길을 잃었다. 말이 통하지 않았지만 낯선 사람이 목적지까지 데려다주었다.','j3 k2 C',{once:1,w:.4,sc:'travel'});
+Y(30,90,'','*','오래된 상자에서 할아버지가 쓴 편지 묶음을 발견했다. 처음 알게 된 가족의 이야기가 있었다.','k2 r3',{once:1,w:.5,sc:'farewell'});
+Y(8,70,'','*','밤하늘에 유성우가 쏟아졌다. 한 시간 동안 별똥별을 서른 개 넘게 세었다.','j3 C',{once:1,w:.5});
+Y(10,80,'KE|TZ|UG|IN|NP|LK|BW|ZA|ZW|ZM|NA','*','들판에 코끼리 무리가 나타났다. 멀리서 숨죽이고 지켜보았다.','j3 C',{once:1,w:.6});
+Y(30,90,'','*','우연히 들른 시골 장터에서 어린 시절 단짝 {bff}을(를) 수십 년 만에 다시 만났다.','r4 j4',{once:1,w:.5,sc:'friend'});
+Y(25,42,'fam','*','쌍둥이를 가졌다는 소식을 들었다.',[['두 배로 기뻐한다','j4 r2','두 배로 바빠질 앞날을 그려 보았다.'],['걱정부터 앞선다','j1 D','살림을 다시 계산해 보았다.']],{once:1,w:.15,sc:'baby',run:'twins'});
+Y(25,80,'t3','*','지역 신문에 내가 쓴 글이 실렸다. 오려서 냉장고에 붙여 두었다.','j3 k2',{once:1,w:.4});
+Y(19,80,'','*','길에서 쓰러진 사람에게 심폐소생술을 했다. 구급차가 올 때까지 멈추지 않았다.','K B r3',{once:1,w:.2,sc:'hosp'});
+Y(30,90,'','*','이웃 할머니께 스마트폰 사용법을 가르쳐 드렸다. 손주와 처음 영상 통화가 되자 눈물을 보이셨다.','K r3',{once:1,w:.5});
+Y(20,85,'','*','다른 나라에서 온 사람들과 한 달 동안 함께 지내며 일했다. 서로의 나라 요리를 해 먹었다.','k3 r3 C',{once:1,w:.4,sc:'travel'});
+
+// ── 세계의 일 (같은 해에 태어난 사람 모두가 함께 겪는 가상의 미래 사건)
+Y(5,90,'yr:2033','*','세계 경기가 크게 가라앉았다. 뉴스마다 일자리가 줄어든다는 소식이었다.','j-2',{w:40,sc:'money',nt:'(이 게임 속 가상의 미래) 실제로 지난 60년 동안 선진국 경제는 대략 10년에 한 번꼴로 침체를 겪었습니다 (IMF)'});
+Y(5,90,'yr:2041','*','새로운 감염병이 세계로 퍼졌다. 몇 달 동안 학교와 일터가 문을 닫고 사람들이 집에 머물렀다.','j-3 h-1 r-1',{w:40,sc:'sick',nt:'(이 게임 속 가상의 미래) 실제로 2020년 코로나19 때 한때 16억 명 넘는 학생이 학교에 가지 못했습니다 (UNESCO)'});
+Y(10,90,'yr:2048','*','기계가 사람 대신 하는 일이 크게 늘었다. 많은 사람이 새 일을 배우러 다시 학교에 갔다.','k2 j-1',{w:40,sc:'job',nt:'(이 게임 속 가상의 미래)'});
+Y(10,90,'yr:2055','*','기록적인 더위가 지구 곳곳을 덮친 해였다. 바닷가 마을들이 높은 둑을 쌓기 시작했다.','h-1 j-1',{w:40,sc:'heat',nt:'(이 게임 속 가상의 미래) 실제로 2024년은 관측 이래 가장 더운 해였습니다 (WMO)'});
+
+// ── 나라마다의 삶
+// 인도
+Y(6,80,'IN','*','기차 침대칸을 타고 이틀 동안 달려 친척 집에 갔다. 역마다 짜이를 파는 소리가 들렸다.','j3 r2',{cd:4,sc:'travel'});
+Y(8,80,'IN','[3,4,5]','동네 공터에서 크리켓 시합이 열렸다. 해가 질 때까지 공을 던졌다.','h2 j3 r2',{cd:2,sc:'sport'});
+Y(10,80,'IN','*','사촌의 결혼식이 사흘 동안 이어졌다. 손에 헤나 무늬를 그리고 밤새 춤을 췄다.','j4 r3',{cd:3,sc:'wedding'});
+Y(5,80,'IN','[6,7,8]','몬순 비가 쏟아졌다. 골목이 무릎까지 잠겨 바지를 걷고 다녔다.','j-1',{cd:2,sc:'flood'});
+Y(12,80,'IN U','*','가족과 극장에서 세 시간짜리 볼리우드 영화를 보았다. 중간 휴식 시간에 사모사를 먹었다.','j3 r2',{cd:3,sc:'stage'});
+Y(8,80,'IN','*','길 한가운데 소가 누워 있어 오토릭샤가 한참 멈춰 섰다.','j1',{once:1,sc:'travel'});
+Y(19,80,'IN','*','시장 노점에서도 휴대폰 QR 코드로 돈을 냈다. 할머니는 아직도 신기해하셨다.','k1',{once:1,sc:'money',nt:'인도의 휴대폰 즉시 결제(UPI)는 2024년 한 해 거래가 1,300억 건을 넘었습니다 (인도결제공사 NPCI)'});
+Y(5,40,'IN U','[11,12,1]','겨울 스모그가 도시를 뒤덮었다. 학교가 며칠 문을 닫았다.','h-2',{cd:3,sc:'cold',nt:'세계 인구의 99%가 WHO 권고 기준보다 나쁜 공기를 마시며 삽니다 (WHO 2022)'});
+Y(14,30,'IN','*','명절에 친척 어른들이 결혼 상대 이야기를 꺼냈다.',[['아직은 공부(일)가 먼저라고 말한다','B','공부를 먼저 하겠다고 말씀드렸다.'],['어른들 뜻을 듣는다','r2','조용히 들었다.']],{once:1,sc:'wedding'});
+Y(25,80,'IN','*','조리용 가스 실린더가 떨어져 배달을 기다리며 이웃집 불을 빌렸다.','r2',{once:1});
+// 중국
+Y(6,80,'CN','[1,2]','춘절 귀성 기차표를 구하느라 온 가족이 휴대폰 앞에 매달렸다. 스무 시간 넘게 기차를 타고 고향에 갔다.','r3 j1',{cd:2,sc:'travel',nt:'춘절 무렵 40일 동안 중국에서는 연인원 90억 회 넘는 이동이 일어납니다 (중국 교통운수부 2024)'});
+Y(3,80,'CN','[1,2]','춘절에 어른들이 빨간 봉투(홍바오)에 세뱃돈을 넣어 주셨다. 요즘은 휴대폰으로도 보낸다.','j3 r2',{cd:2,sc:'fest'});
+Y(55,90,'CN','*','저녁마다 광장에서 이웃들과 음악에 맞춰 춤(광장무)을 춘다.','h3 r3 j2',{once:1,sc:'friend'});
+Y(22,45,'CN U','*','아침 아홉 시부터 밤 아홉 시까지, 일주일에 엿새 일하는 날이 이어졌다.',[['버틴다','D h-3','버텼다. 보너스가 나왔다.','@1'],['일을 줄이자고 말한다','B','팀장과 이야기해 근무를 조금 줄였다.']],{once:1,sc:'job'});
+Y(19,80,'CN','11','11월 11일 쇼핑 축제 날, 장바구니에 담아 둔 물건이 반값이 되었다.','j2 @-1',{cd:3,sc:'money'});
+Y(19,80,'CN','*','시속 300킬로미터 고속철을 타고 출장을 갔다. 창밖 풍경이 그림처럼 흘러갔다.','j2',{once:1,sc:'travel'});
+Y(25,45,'CN kb','*','아이를 시골의 할머니·할아버지께 맡기고 도시에서 일했다. 영상 통화로 아이 얼굴을 보았다.','j-3 @1',{once:1,w:.6});
+Y(5,30,'CN U','*','공유 자전거를 타고 동네를 한 바퀴 돌았다.','h2',{once:1});
+// 나이지리아
+Y(3,80,'NG','*','몇 시간째 전기가 나가 발전기를 돌렸다. 기름값이 걱정이었다.','j-1 @-1',{cd:2,nt:'나이지리아 사람 열에 넷가량은 전기를 쓰지 못합니다 (세계은행·IEA SDG7 보고서)'});
+Y(10,70,'NG U','*','오카다(오토바이 택시) 뒷자리에 타고 꽉 막힌 길을 비집고 지나갔다.','j1',{once:1,sc:'travel'});
+Y(10,80,'NG','*','결혼식에 온 가족이 같은 천으로 맞춘 옷(아소에비)을 입고 갔다.','j3 r3',{cd:3,sc:'wedding'});
+Y(20,26,'NG u','*','대학 교수들의 파업으로 몇 달 동안 수업이 멈췄다. 졸업이 한 해 늦어질지도 모른다.','j-3',{once:1,sc:'school',nt:'나이지리아 대학 교수 노조의 파업은 2022년에 8개월 동안 이어졌습니다'});
+Y(22,45,'NG','*','친구들이 하나둘 외국으로 떠난다. 나도 떠나야 할까?',[['남아서 여기서 길을 찾는다','r2 D','남기로 했다.'],['외국 일자리를 알아본다','C B','외국 일자리와 비자를 알아보기 시작했다.']],{once:1,sc:'travel'});
+Y(10,80,'NG','*','동네 졸로프 라이스 요리 대결에서 엄마의 냄비가 제일 먼저 비었다.','j3 r2',{once:1});
+Y(19,80,'NG','*','기름값이 갑자기 두 배로 올라 버스 요금도 따라 올랐다.','j-2 @-1',{once:1,sc:'money'});
+// 파키스탄
+Y(5,80,'PK','*','하루에 몇 시간씩 정해 놓고 전기가 끊기는 날이 이어졌다(로드셰딩).','j-1',{cd:3});
+Y(8,80,'PK','*','파키스탄과 인도의 크리켓 경기가 열리는 날, 거리가 텅 비었다. 모두 텔레비전 앞에 모였다.','j3 r2',{cd:3,sc:'sport'});
+Y(5,80,'PK','*','이드를 앞두고 아빠와 가축 시장에 가서 양을 골랐다.','j3 r2',{cd:3});
+Y(5,80,'PK hz:flood','[7,8]','큰 홍수로 마을이 물에 잠겼다. 학교 건물이 임시 대피소가 되었다.','j-4 h-2',{cd:6,sc:'flood',nt:'2022년 파키스탄 홍수로 약 3,300만 명이 피해를 입었습니다 (UN)'});
+Y(10,80,'PK','*','화려한 그림으로 꾸민 트럭들이 줄지어 지나갔다. 그림 속 새와 꽃을 하나하나 세어 보았다.','j1 C',{once:1});
+// 인도네시아
+Y(5,80,'ID','*','르바란을 앞두고 온 가족이 고향으로 귀성(무딕)을 떠났다. 배와 버스를 갈아타며 하루를 꼬박 갔다.','r3 j2',{cd:2,sc:'travel'});
+Y(15,70,'ID U','*','앱으로 부른 오토바이 택시(오젝)를 타고 학교(일터)에 갔다.','j1',{once:1,sc:'travel'});
+Y(6,80,'ID hz:quake','*','학교에서 지진·쓰나미 대피 훈련을 했다. 높은 곳으로 달리는 길을 외웠다.','k2',{cd:4,sc:'school'});
+Y(10,80,'ID','*','금요일마다 바틱 무늬 옷을 입고 학교(일터)에 간다.','j1',{once:1});
+Y(5,80,'ID','*','동네 와룽(작은 식당)에서 나시고렝을 먹었다. 주인아주머니가 한 숟갈 더 얹어 주셨다.','j2 r1',{once:1});
+Y(5,80,'ID hz:volcano','*','화산재가 날려 비행기가 뜨지 못했다. 마당에 잿빛 가루가 쌓였다.','h-1',{once:1,sc:'volcano'});
+// 콩고민주공화국
+Y(6,80,'CD','*','콩고강을 따라 큰 배를 타고 며칠 동안 갔다. 배 위에 시장이 열렸다.','j2 k2',{once:1,sc:'sea'});
+Y(5,80,'CD','*','라디오에서 콩고 룸바가 흘러나오자 온 가족이 일어나 춤을 췄다.','j3 r2',{cd:3,sc:'stage'});
+Y(10,40,'CD','*','동네 형들이 광산에서 일하러 떠났다. 나도 따라갈까 하는 생각이 들었다.',[['학교(지금 일)에 남는다','k1 D','남기로 했다.'],['따라간다','h-4 @1','광산에서 몇 달 일했다. 기침이 오래 갔다.']],{once:1,sc:'job',nt:'콩고민주공화국은 전 세계 코발트의 약 70%를 생산합니다 (미국 지질조사국 2024)'});
+Y(5,80,'CD','*','우기에 도로가 진흙탕이 되어 트럭이 며칠씩 멈춰 섰다. 시장의 물건값이 올랐다.','j-1',{cd:3});
+// 에티오피아
+Y(5,80,'ET','*','엄마가 커피콩을 볶아 커피 세레모니(분나)를 열었다. 이웃이 모여 세 잔을 다 마셨다.','r3 j2',{cd:2});
+Y(6,80,'ET','9','9월 에티오피아 새해(엔쿠타타시)가 왔다. 들판에 노란 꽃이 가득 피었다.','j3',{cd:2,sc:'fest',nt:'에티오피아 달력은 열세 달이고, 그레고리력보다 7~8년 늦게 셉니다'});
+Y(8,40,'ET','*','이른 아침 고원의 흙길을 친구들과 달렸다. 언젠가 마라톤 선수가 되고 싶다.','h4 j2 D',{once:1,sc:'sport'});
+Y(5,80,'ET','*','엄마가 구운 인제라를 가족이 한 쟁반에 둘러앉아 손으로 나눠 먹었다.','r2 j2',{once:1});
+// 미국
+Y(6,80,'US','*','가족과 며칠 동안 차를 몰고 몇 개 주를 지나는 여행을 했다. 휴게소마다 다른 간식을 샀다.','j4 r2',{cd:4,sc:'travel'});
+Y(6,18,'US','10','핼러윈 밤, 직접 만든 옷을 입고 이웃집을 돌며 사탕을 받았다.','j3 r1',{cd:2,sc:'fest'});
+Y(10,80,'US','2','슈퍼볼 경기가 있는 날, 친구 집에 모여 피자를 먹으며 응원했다.','j3 r2',{cd:2,sc:'sport'});
+Y(20,80,'US','*','병원비 청구서를 받고 깜짝 놀랐다. 보험이 다 내 주지 않았다.','j-3 @-2',{once:1,sc:'money'});
+Y(22,40,'US','*','다달이 학자금 대출을 갚는다. 다 갚으려면 아직 십 년이 남았다.','j-2 @-1',{once:1,sc:'money'});
+Y(5,80,'US','[4,5]','토네이도 경보가 울려 가족이 지하실로 내려가 기다렸다.','j-2',{cd:4,sc:'storm'});
+Y(19,40,'US','*','일 때문에 다른 주로 이사를 했다. 짐을 트럭 한 대에 다 실었다.','k1 r-2',{once:1,sc:'house'});
+// 방글라데시
+Y(5,80,'BD','*','사이클론 경보가 울려 마을 대피소로 갔다. 다음 날 돌아오니 지붕이 날아가 있었다.','j-3 @-1',{cd:4,sc:'storm',nt:'방글라데시의 사이클론 대피소와 조기 경보 덕분에 사이클론 사망자는 1970년 이후 크게 줄었습니다'});
+Y(6,80,'BD','*','우기에는 배를 타고 학교(장터)에 간다.','j1',{cd:3,sc:'sea'});
+Y(16,40,'BD U','*','의류 공장에서 일을 시작했다. 내가 만든 셔츠가 먼 나라로 간다고 한다.','k1 @1',{once:1,sc:'job',nt:'방글라데시는 세계에서 손꼽히는 의류 수출국이고, 수출의 80% 이상이 옷입니다'});
+Y(5,80,'BD','4','벵골 새해(포헬라 보이샤크)에 빨간색·흰색 옷을 입고 거리 행진에 나갔다.','j3 r2',{cd:2,sc:'fest'});
+Y(10,70,'BD U','*','다카의 꽉 막힌 길을 사이클 릭샤를 타고 지나갔다. 종소리가 쉴 새 없이 울렸다.','j1',{once:1,sc:'travel'});
+// 브라질
+Y(5,80,'BR','2','카니발이다. 동네 거리 행렬(블로코)을 따라 밤새 삼바를 추었다.','j4 r3',{cd:2,sc:'fest'});
+Y(6,80,'BR','*','동네 공터에서 맨발로 축구를 했다. 언젠가 국가대표가 될 거라고 말했다.','h2 j3',{cd:2,sc:'sport'});
+Y(10,80,'BR coast','*','주말에 해변에서 가족과 아사이를 먹으며 하루를 보냈다.','j3 r2',{cd:3,sc:'sea'});
+Y(15,80,'BR U','*','버스에서 강도를 만났다. 다행히 다친 사람은 없었다.','j-4 @-1',{once:1,w:.6});
+Y(5,80,'BR','12','성탄 전야에 온 가족이 모여 밤 열두 시까지 기다렸다가 함께 밥을 먹었다.','r3 j2',{cd:2,sc:'fest'});
+// 이집트
+Y(5,80,'EG','*','라마단 저녁마다 거리에 걸린 등불(파누스)이 반짝였다.','j2',{cd:2,sc:'fest'});
+Y(8,80,'EG','*','가족과 나일강에서 작은 돛배(펠루카)를 탔다.','j3 r2',{once:1,sc:'sea'});
+Y(8,80,'EG','*','학교에서 기자의 피라미드로 견학을 갔다. 생각보다 훨씬 거대했다.','k3 j3',{once:1,sc:'travel'});
+Y(19,80,'EG','*','빵과 기름값이 한 해 사이 크게 올랐다.','j-2 @-1',{cd:4,sc:'money'});
+// 탄자니아 · 케냐 · 우간다
+Y(16,80,'TZ|KE|UG','*','휴대폰 송금(모바일 머니)으로 고향의 부모님께 돈을 보냈다. 몇 초면 도착한다.','r2',{once:1,sc:'money',nt:'케냐 성인의 대부분이 휴대폰 송금 서비스를 씁니다 (케냐 중앙은행)'});
+Y(10,70,'KE|TZ|UG','*','화려하게 꾸민 미니버스(마타투·달라달라)에 빽빽하게 끼어 탔다. 음악이 쿵쿵 울렸다.','j1',{once:1,sc:'travel'});
+Y(8,40,'KE','*','고원의 아침 공기를 마시며 친구들과 달리기를 했다. 동네 형은 마라톤 대회에 나간다고 한다.','h4 D',{once:1,sc:'sport'});
+Y(10,80,'TZ','*','멀리 킬리만자로의 눈 덮인 봉우리가 구름 사이로 보였다.','j2',{once:1});
+// 필리핀
+Y(5,80,'PH','*','지프니를 타고 학교(일터)에 갔다. 요금을 앞사람에게 건네며 운전석까지 전달했다.','j1 r1',{once:1,sc:'travel'});
+Y(6,80,'PH','*','동네 농구 코트에서 해가 질 때까지 시합을 했다.','h2 j3',{cd:2,sc:'sport'});
+Y(5,80,'PH','*','외국에서 일하는 친척(OFW)이 커다란 선물 상자(발릭바얀 박스)를 보내왔다.','j3 r2',{cd:3,nt:'필리핀은 해외 노동자가 보내는 송금이 GDP의 약 9%를 차지합니다 (필리핀 중앙은행)'});
+Y(5,80,'PH','*','동네 피에스타 날, 집집마다 음식을 차려 놓고 지나가는 사람을 불러 먹였다.','j3 r3',{cd:2,sc:'fest'});
+Y(10,80,'PH','*','가족 모임에서 노래방 기계로 밤늦게까지 노래를 불렀다.','j3 r2',{cd:2,sc:'stage'});
+Y(5,80,'PH','9','9월부터 크리스마스 노래가 거리에 흘러나오기 시작했다.','j2',{cd:3,sc:'fest'});
+// 멕시코
+Y(3,80,'MX','11','죽은 자의 날, 제단에 금잔화와 할머니 사진을 올려 두고 가족이 모였다.','r3 j2',{cd:2,sc:'fest'});
+Y(15,15,'MX f1','*','열다섯 살 생일에 킨세아녜라 잔치를 열었다. 드레스를 입고 아빠와 첫 춤을 추었다.','j5 r3',{once:1,sc:'wedding'});
+Y(5,80,'MX U','*','지진 경보 사이렌이 울려 모두 건물 밖으로 나갔다.','j-1 k1',{cd:3,sc:'quake'});
+Y(18,40,'MX','*','친척 몇 명이 일자리를 찾아 북쪽 국경을 넘어갔다.',[['나도 떠날 준비를 한다','B','국경 너머의 일자리를 알아보았다.'],['여기에 남는다','r2','고향에 남기로 했다.']],{once:1,sc:'travel'});
+Y(5,80,'MX','*','길모퉁이 타코 노점에서 가족과 늦은 저녁을 먹었다.','j2 r2',{once:1});
+// 베트남
+Y(5,80,'VN','*','오토바이 한 대에 온 가족 넷이 타고 시장에 갔다.','j2 r1',{once:1,sc:'travel'});
+Y(5,80,'VN','[8,9]','중추절 밤, 별 모양 등불을 들고 골목을 돌았다. 월병을 나눠 먹었다.','j3 r2',{cd:2,sc:'fest'});
+Y(5,80,'VN','*','아침마다 길가의 작은 의자에 앉아 쌀국수를 먹는다.','j2',{once:1});
+// 러시아 · 동유럽
+Y(5,80,'RU|UA|BY','[6,7,8]','여름 내내 시골 다차(별장 텃밭)에서 감자를 캐고 강에서 수영했다.','h2 j3 r2',{cd:2,sc:'garden'});
+Y(6,80,'RU','5','5월 9일, 할아버지 사진을 들고 거리 행진에 함께 나섰다.','r2',{cd:3,sc:'fest'});
+Y(10,80,'RU|FI|EE','[1,2]','친구들과 바냐(사우나)에서 몸을 데운 뒤 눈밭에 뛰어들었다.','h2 j3',{cd:3,sc:'cold'});
+// 일본
+Y(6,80,'JP','9','9월 1일 방재의 날, 학교에서 지진 대피 훈련을 했다. 방석 같은 두건을 머리에 썼다.','k1',{cd:3,sc:'school'});
+Y(20,20,'JP','1','성인식 날, 정장(기모노)을 입고 동창들과 다시 만났다.','j4 r3',{once:1,sc:'fest'});
+Y(5,80,'JP','8','오봉 연휴에 조부모님 댁에 가서 마을의 본오도리 춤을 추었다.','r3 j2',{cd:2,sc:'fest'});
+Y(16,18,'JP','8','고시엔(고교 야구 대회)을 텔레비전으로 보며 우리 지역 학교를 응원했다.','j2',{cd:2,sc:'sport'});
+Y(22,45,'JP','*','막차를 놓쳐 회사 근처에서 밤을 보냈다.','h-2 j-2',{once:1,sc:'job'});
+// 한국
+Y(8,80,'KR','11','온 가족이 모여 김장을 했다. 손이 빨갛게 얼었지만 막 버무린 김치에 수육을 싸 먹었다.','r3 j2',{cd:2,sc:'fest'});
+Y(25,70,'KR U','*','윗집 발소리가 밤늦게까지 쿵쿵 울렸다.',[['쪽지를 정중하게 써 붙인다','D r1','다음 날 윗집에서 귤 한 봉지와 사과 쪽지가 왔다.'],['참는다','j-2','참았다. 잠을 설쳤다.']],{once:1,sc:'house'});
+Y(5,80,'KR','[1,9]','명절 귀성길에 고속도로가 주차장처럼 막혔다. 휴게소 호두과자가 꿀맛이었다.','r2 j1',{cd:3,sc:'travel'});
+Y(10,80,'KR','*','여름밤, 동네 치킨집에서 가족과 축구 국가대표 경기를 보며 소리를 질렀다.','j3 r2',{cd:3,sc:'sport'});
+// 튀르키예 · 이란 · 중동
+Y(5,80,'TR','*','하루에도 몇 번씩 작은 유리잔에 차이를 마신다. 손님이 오면 늘 차부터 낸다.','r2',{once:1});
+Y(5,80,'IR|AF|TJ|AZ|TR|IQ','3','노루즈(봄 새해)를 맞아 식탁에 일곱 가지 상징물(하프트 신)을 차리고 친척 집을 돌았다.','j3 r3',{cd:2,sc:'fest'});
+Y(19,80,'IR','*','물가가 한 해 사이 크게 올라 장바구니가 가벼워졌다.','j-2 @-1',{cd:4,sc:'money'});
+Y(6,40,'AF','[3,4]','언덕 위에서 연날리기 시합을 했다. 친구의 연줄을 끊었다.','j3 h1',{cd:2,sc:'play'});
+Y(5,80,'SA|AE|QA|KW|OM|BH','*','한낮 기온이 50도 가까이 오르자 사람들이 해가 진 뒤에야 쇼핑몰과 공원으로 나왔다.','j1',{cd:3,sc:'heat'});
+// 유럽
+Y(5,80,'DE|AT|CZ','12','크리스마스 마켓에서 따뜻한 음료를 마시며 회전목마를 탔다.','j3 r2',{cd:2,sc:'fest'});
+Y(5,80,'FR|IT|ES','8','8월 한 달 동안 가족이 바닷가로 긴 휴가를 떠났다. 도시가 텅 비었다.','j4 r2',{cd:2,sc:'sea'});
+Y(15,80,'GB|IE','*','동네 펍의 퀴즈 대회에 친구들과 팀을 짜서 나갔다.','r3 j2',{cd:3,sc:'friend'});
+Y(16,30,'DE|AT|CH','*','학교와 회사를 오가며 기술을 배우는 직업 훈련(아우스빌둥)을 시작했다.','k3 @1',{once:1,w:.6,sc:'job'});
+Y(18,80,'NL|DK','*','비가 와도 자전거를 타고 출근(등교)한다. 자전거 도로가 자동차 길보다 넓다.','h2',{once:1,sc:'travel'});
+// 남아프리카 · 남부 아프리카
+Y(5,80,'ZA','*','계획 정전(로드셰딩) 시간표를 보고 그 전에 밥을 지었다.','j-1',{cd:2});
+Y(5,80,'ZA','9','유산의 날, 이웃들이 모여 고기를 굽는 브라이를 열었다.','j3 r3',{cd:2,sc:'fest'});
+// 서아프리카 (사헬)
+Y(5,80,'NE|ML|BF|TD|SN|MR','*','모래바람(하르마탄)이 불어 하늘이 누렇게 변했다. 천으로 입과 코를 가렸다.','h-1',{cd:2,sc:'drought'});
+Y(5,80,'NE|ML|BF|TD|SN|GN','*','타바스키(희생제) 날, 새 옷을 입고 이웃에게 고기를 나눠 주었다.','j3 r3',{cd:2,sc:'fest'});
+// 라틴아메리카
+Y(5,80,'rg:LA','*','동네 성당 축일에 거리 행진과 불꽃놀이가 밤늦게까지 이어졌다.','j3 r2',{cd:3,sc:'fest'});
+Y(8,80,'rg:LA','*','온 동네가 모여 축구 국가대표 경기를 보았다. 골이 들어가자 냄비를 두드렸다.','j3 r2',{cd:3,sc:'sport'});
+Y(15,40,'rg:LA','*','물가가 너무 올라 월급날 바로 장을 봐 두었다.','j-1',{cd:4,sc:'money'});
+// 태평양 섬나라
+Y(5,80,'rg:OC !AU !NZ','*','해수면이 높아져 바닷물이 밭까지 들어왔다. 어른들이 마을을 옮길지 의논했다.','j-2',{cd:5,sc:'sea',nt:'태평양 섬나라들은 해수면 상승에 가장 먼저 영향을 받는 곳 가운데 하나입니다 (IPCC)'});
+Y(5,80,'AU|NZ','12','크리스마스에 해변에서 바비큐를 했다. 한여름의 성탄절이다.','j3 r2',{cd:2,sc:'sea'});
+// 동남아시아
+Y(5,80,'TH|MM|LA|KH','4','물 축제(송끄란) 날, 거리에서 모르는 사람과도 물을 뿌리며 웃었다.','j4 r2',{cd:2,sc:'fest'});
+Y(5,80,'MY|SG|BN','*','이웃의 명절마다 서로 집을 열어 손님을 맞는 ‘오픈 하우스’에 다녀왔다.','r3 j2',{cd:3,sc:'fest'});
+// 중앙아시아
+Y(5,80,'KZ|KG|UZ|TJ|TM|MN','*','넓은 초원에서 말을 타고 달렸다. 바람이 얼굴을 세게 때렸다.','h2 j3',{cd:3});
+Y(19,45,'UZ|TJ|KG','*','일자리를 찾아 러시아로 떠나는 기차에 올랐다.',[['떠난다','B @2 r-2','몇 해 동안 러시아 공사장에서 일하며 집에 돈을 보냈다.'],['남는다','r2','고향에 남았다.']],{once:1,w:.7,sc:'travel'});
+// ── 취미: 한번 시작하면 해마다 조금씩 늘고, 사람도 만나게 된다
+Y(7,40,'','*','시간이 날 때 무엇을 해 볼까?',[['{hobA}','j2 C','{hobA}을(를) 시작했다. 생각보다 재미있다.'],['{hobB}','j2 h1','{hobB}을(를) 시작했다. 주말이 기다려졌다.'],['{hobC}','j2 r1','{hobC}을(를) 시작했다. 같이 하는 친구가 생겼다.']],{once:1,w:3,run:'hobPick'});
+Y(8,95,'hob','*','{hob} 실력이 조금 늘었다.','j2',{cd:2,w:2,run:'hobUp'});
+Y(10,90,'hob','*','{hob} 모임에서 오래 갈 친구를 사귀었다.','r4 j2',{once:1,sc:'friend'});
+Y(10,80,'hob','*','동네 {hob} 대회(발표회)에 나가 볼까?',[['나간다','B j2','떨렸지만 끝까지 해냈다.'],['구경만 한다','j1','다른 사람들의 실력을 구경했다.']],{cd:5,run:'hobShow'});
+Y(30,90,'hob','*','{hob}을(를) 하는 동안은 걱정이 다 사라졌다. 이 시간이 있어 버틸 수 있었다.','j3 h1',{cd:6});
+// ── 배우자와 함께 사는 날들
+Y(22,80,'fam','*','{spouse}와(과) 오랜만에 둘이서 동네를 천천히 걸었다. 별말 없이도 좋았다.','r3 j2',{cd:3,sc:'friend'});
+Y(22,70,'fam','*','{spouse}이(가) 다니던 일자리를 잃었다.',[['내가 더 일해 버틴다','D h-2','한동안 일을 더 맡아 살림을 버텼다.','@1'],['함께 새 일을 찾는다','K r3','함께 구인 공고를 뒤졌다. 몇 달 뒤 새 일을 찾았다.']],{once:1,w:.7,sc:'jobloss'});
+Y(22,70,'fam','*','{spouse}이(가) 내 취미에 재미를 붙여 둘이 함께하는 날이 늘었다.','r3 j3',{once:1,w:.6});
+Y(22,60,'fam','*','{spouse}의 생일에 깜짝 상을 차렸다.','r3 j2',{cd:4});
+Y(22,45,'fam rg:SA|ME','*','결혼한 뒤 몇 해 동안 시부모님(대가족)과 한집에 살았다.',[['어른들께 맞춰 지낸다','r3 j-1','어른들께 살림을 배우며 지냈다.'],['우리 식구끼리 따로 나가 살자고 한다','B j2 r-1','몇 해 뒤 우리 식구끼리 살림을 차렸다.']],{once:1,sc:'house'});
+Y(22,70,'fam t2','*','집안의 땅에 {spouse}와(과) 함께 우리 집을 짓기 시작했다. 친척들이 일손을 보탰다.','r3 j3 @-2',{once:1,w:.6,sc:'house'});
+Y(30,85,'fam','*','{spouse}이(가) 크게 아파 몇 주 동안 병원에 있었다. 밤마다 곁을 지켰다.','r4 j-3 @-1',{once:1,w:.6,sc:'hosp'});
+Y(45,90,'fam','*','{spouse}와(과) 젊은 날 처음 만났던 곳에 다시 가 보았다.','r3 j3',{once:1,w:.6});
+// ── 아이를 키우는 날들 (아이 이름과 나이에 맞춰)
+Y(19,60,'kb','*','{kn}이(가) 처음으로 “엄마(아빠)”라고 불렀다. 그날 하루 종일 웃음이 났다.','j5 r3',{once:1,sc:'baby'});
+Y(19,60,'kb','*','{kn}이(가) 밤새 열이 나 응급실에 다녀왔다. 새벽에야 열이 내렸다.','h-1 r2 @-1',{once:1,sc:'hosp'});
+Y(19,60,'kp','*','{kn}이(가) 그려 준 가족 그림을 벽에 붙였다. 모두 활짝 웃고 있었다.','j4 r3',{once:1});
+Y(19,60,'kp','*','{kn}이(가) 잠들기 전에 “사랑해”라고 속삭였다.','j5 r3',{once:1});
+Y(19,60,'kp|ke','*','{kn}을(를) 데리고 장날(놀이공원) 구경을 갔다. 솜사탕 하나에 세상을 다 가진 얼굴이었다.','j3 r3 @-1',{cd:3});
+Y(19,60,'ke','*','{kn}이(가) 학교에서 크게 혼나고 왔다.',[['먼저 이야기를 들어 준다','K r3','이야기를 들어 보니 친구를 감싸 주다 생긴 일이었다.'],['따끔하게 꾸짖는다','D r-1','따끔하게 꾸짖었다. {kn}이(가) 한동안 말이 없었다.']],{cd:4,sc:'school'});
+Y(19,60,'ke|km','*','{kn}이(가) 학원(과외)을 그만두고 싶다고 한다.',[['원하는 대로 해 준다','K j1','그 시간에 {kn}은(는) 그림을 그리기 시작했다.'],['조금만 더 해 보자고 한다','D','조금 더 다니기로 했다.']],{once:1,sc:'school'});
+Y(19,65,'km|kh','*','{kn}이(가) 친구 문제로 며칠째 방에서 나오지 않는다.',[['문 앞에 좋아하는 간식을 두고 기다린다','K r3','사흘째 되던 밤, {kn}이(가) 먼저 말을 걸어왔다.'],['억지로 문을 열고 이야기한다','B r-2','이야기는 했지만 서로 상처가 남았다.']],{once:1});
+Y(19,70,'kh','*','{kn}이(가) 원하는 진로가 내 생각과 다르다.',[['아이의 꿈을 믿어 준다','K r4','{kn}이(가) 고맙다며 울었다.'],['안정적인 길을 권한다','D r-2','{kn}은(는) 내 말을 따랐지만 한동안 말수가 줄었다.']],{once:1,sc:'school'});
+Y(19,70,'ku','*','{kn}이(가) 첫 월급으로 부모님 선물을 사 왔다.','j5 r3',{once:1});
+Y(40,90,'ka','*','{kn}이(가) 손주를 데리고 왔다. 집 안이 오랜만에 시끌벅적했다.','j5 r3',{cd:3,sc:'baby'});
+Y(45,90,'ka','*','{kn}이(가) 일하는 도시로 이사를 가게 되었다. 공항(터미널)까지 배웅했다.','j-2 r1',{once:1,sc:'travel'});
+// ── 나이 들어 감
+Y(27,45,'','*','거울 속에서 첫 흰머리를 발견했다.','j-1',{once:1});
+Y(40,60,'','*','계단을 오르다 숨이 차 잠깐 쉬었다. 예전 같지 않다는 생각이 들었다.','h-1',{once:1});
+Y(50,80,'','*','어린 시절 살던 동네에 가 보았다. 다니던 학교 자리에 큰 건물이 서 있었다.','j1 r1',{once:1,w:.7});
+Y(60,95,'','*','손때 묻은 앨범을 넘기며 아이들(조카들)에게 옛날이야기를 들려주었다.','r3 j2',{cd:6});
+Y(70,95,'','*','기억이 깜빡깜빡한다. 안경을 쓴 채로 안경을 찾았다.','j-1',{once:1});
+// ── 살림과 물건
+Y(20,60,'w t3','*','자동차를 살까?',[['할부로 산다','j3 @-4','차를 샀다. 출퇴근 시간이 크게 줄었다.'],['대중교통으로 버틴다','D @1','버스와 지하철로 다니며 돈을 모았다.']],{once:1,w:.8,sc:'travel'});
+Y(20,60,'w t2','*','오토바이를 한 대 장만할까?',[['돈을 모아 산다','j3 @-2','오토바이를 샀다. 장에 가기도, 일하러 가기도 한결 쉬워졌다.'],['걸어 다닌다','h2','계속 걸어 다녔다.']],{once:1,w:.8,sc:'travel'});
+Y(15,40,'t2|t3','*','처음으로 내 돈으로 휴대폰(컴퓨터)을 샀다.','j3 k1 @-1',{once:1,w:.8});
+Y(25,70,'','*','친척 장례식에 부조금을 냈다.','r2 @-1',{cd:4,sc:'farewell'});
+Y(25,70,'rent','*','집세가 올라 생활비가 빠듯해졌다.','j-2 @-1',{cd:4,sc:'money'});
+Y(25,80,'','*','마을(동네) 모임에서 어려운 이웃을 돌보는 일을 맡게 되었다.','r4 K',{once:1,w:.7});
+// ── 반려동물: 함께 자라고, 먼저 떠난다
+Y(6,70,'t3|U','*','동물 보호소에서 눈이 마주친 {petSp}을(를) 데려올까?',[['데려와 “{petN}”라고 이름 짓는다','j4 K','{petN}이(가) 우리 가족이 되었다.'],['아직은 돌볼 자신이 없다','D','다음에 꼭 오겠다고 약속했다.']],{once:1,w:1.5,sc:'pet',run:'petGet'});
+Y(7,95,'pet','*','{pet}이(가) 내가 집에 오면 꼬리를 흔들며(골골거리며) 맞아 준다. 하루의 피로가 풀렸다.','j3',{cd:3,sc:'pet'});
+Y(7,95,'pet','*','{pet}이(가) 아파 동물병원에 다녀왔다.','j-2 @-1',{cd:5,sc:'pet'});
+Y(7,95,'petOld','*','{pet}이(가) {petAge}살로 무지개다리를 건넜다. 늘 앉던 창가 자리가 오래 비어 있었다.','j-6',{w:20,sc:'pet',run:'petDie'});
+// ── 다시 배우는 사람들
+Y(20,60,'noedu','*','어릴 때 다니지 못한 학교 공부를 다시 해 볼까?',[['야간 학교에 다닌다','k5 D j2','일을 마치고 밤마다 공부했다. 이제 신문을 읽을 수 있다.'],['지금 일에 집중한다','','지금 하는 일에 집중했다.']],{once:1,w:1.2,sc:'school'});
+Y(19,60,'kp|ke','*','{kn}이(가) 다닐 학교를 정해야 한다.',[['가까운 공립학교에 보낸다','r1','집 가까운 학교에 보냈다. 동네 친구가 많이 생겼다.'],['돈이 들어도 사립학교에 보낸다','@-2 k1','사립학교에 보냈다. 학비 때문에 허리띠를 졸라맸다.']],{once:1,sc:'school'});
+Y(19,60,'kb','*','일하는 동안 {kn}을(를) 누가 돌볼까?',[['할머니·할아버지께 부탁한다','r2','부모님이 손주를 맡아 주셨다.'],['어린이집(돌보미)에 맡긴다','@-1','어린이집에 맡기고 다시 일을 나갔다.'],['일을 쉬고 직접 키운다','r3 @-2','한동안 일을 쉬고 아이 곁에 있었다.']],{once:1,sc:'baby'});
+Y(15,60,'','*','오랜 친구와 크게 다투고 한동안 연락을 끊었다.',[['먼저 연락해 사과한다','r3 K B','먼저 연락했다. 몇 달 만에 다시 웃으며 만났다.'],['시간이 지나길 기다린다','r-2','결국 몇 해 동안 연락이 끊겼다.']],{once:1,sc:'friend'});
+Y(20,90,'gpdead|pardead','*','돌아가신 분의 기일에 가족이 모여 옛이야기를 나눴다.','r3 j1',{cd:3,sc:'farewell',nt:'사별을 겪은 사람 가운데 다수는 깊은 슬픔 속에서도 한두 해 사이에 일상을 되찾아 갑니다 (Bonanno 2004)'});
+
+/* =====================================================================
+   [가족] 부모님 · 형제자매 · 조부모 · 가족의 종교 · 가족에게 일어나는 일
+   - 태어날 때: 부모님의 나이와 일, 위아래 형제자매(그 나라 출산율에 맞춰), 네 분의 조부모, 가족의 종교
+   - 해마다: 동생이 태어나고, 형제자매가 학교에 가고 결혼해 집을 떠나고, 조부모·부모님이 나이 들어 떠나신다
+   ===================================================================== */
+// 가족의 종교 (대략의 비율 · Pew Research Center 2020, 각국 인구조사 등)
+const RELG={
+  KR:[['종교 없음',51],['개신교',20],['불교',17],['가톨릭',11]], KP:[['종교 없음',100]], JP:[['종교 없음',62],['불교',33],['기독교',2]],
+  CN:[['종교 없음',52],['민간 신앙',22],['불교',18],['기독교',5],['이슬람',2]], TW:[['민간 신앙',44],['불교',21],['종교 없음',24],['기독교',6]], MN:[['불교',53],['종교 없음',39],['이슬람',3]],
+  IN:[['힌두교',79],['이슬람',15],['기독교',2],['시크교',2],['불교',1]], PK:[['이슬람',96],['힌두교',2],['기독교',2]], BD:[['이슬람',91],['힌두교',8]], NP:[['힌두교',81],['불교',9],['이슬람',5]], LK:[['불교',70],['힌두교',13],['이슬람',10],['기독교',7]], AF:[['이슬람',100]],
+  ID:[['이슬람',87],['개신교',7],['가톨릭',3],['힌두교',2]], PH:[['가톨릭',79],['개신교',10],['이슬람',6]], VN:[['종교 없음',73],['불교',15],['가톨릭',7]], TH:[['불교',93],['이슬람',5]], MM:[['불교',88],['기독교',6],['이슬람',4]], MY:[['이슬람',63],['불교',19],['기독교',9],['힌두교',6]], KH:[['불교',97]],
+  NG:[['이슬람',50],['기독교',48],['전통 신앙',2]], ET:[['에티오피아 정교회',43],['이슬람',34],['개신교',19],['전통 신앙',3]], CD:[['개신교',45],['가톨릭',30],['기독교',20],['이슬람',2]],
+  TZ:[['기독교',63],['이슬람',34]], KE:[['개신교',60],['가톨릭',20],['이슬람',11]], UG:[['개신교',45],['가톨릭',39],['이슬람',14]], ZA:[['기독교',80],['전통 신앙',10],['종교 없음',8]], GH:[['기독교',71],['이슬람',20],['전통 신앙',5]],
+  SD:[['이슬람',97],['기독교',3]], SS:[['기독교',60],['전통 신앙',33],['이슬람',6]], EG:[['이슬람',90],['콥트 정교회',10]], MZ:[['기독교',59],['이슬람',19],['전통 신앙',18]], AO:[['가톨릭',41],['개신교',38],['전통 신앙',10]],
+  CM:[['기독교',70],['이슬람',25]], CI:[['이슬람',42],['기독교',39],['전통 신앙',12]], MG:[['기독교',85],['전통 신앙',5]], ER:[['이슬람',50],['에리트레아 정교회',40]],
+  US:[['개신교',40],['종교 없음',28],['가톨릭',20],['유대교',2],['이슬람',1]], CA:[['가톨릭',30],['종교 없음',35],['개신교',20],['이슬람',5]], MX:[['가톨릭',78],['개신교',11],['종교 없음',8]],
+  BR:[['가톨릭',50],['개신교',31],['종교 없음',10]], AR:[['가톨릭',63],['종교 없음',19],['개신교',15]], CO:[['가톨릭',70],['개신교',17],['종교 없음',10]],
+  RU:[['러시아 정교회',63],['종교 없음',20],['이슬람',10]], UA:[['우크라이나 정교회',75],['종교 없음',12],['가톨릭',9]], TR:[['이슬람',97]], IR:[['이슬람',99]], IQ:[['이슬람',98]], SA:[['이슬람',100]], IL:[['유대교',74],['이슬람',18],['기독교',2]],
+  DE:[['종교 없음',45],['가톨릭',24],['개신교',22],['이슬람',6]], FR:[['가톨릭',47],['종교 없음',40],['이슬람',8]], GB:[['기독교',46],['종교 없음',37],['이슬람',6]], IT:[['가톨릭',80],['종교 없음',15]], ES:[['가톨릭',60],['종교 없음',36]], PL:[['가톨릭',85],['종교 없음',8]]
+};
+const RELG_RG={EA:[['종교 없음',60],['불교',25],['기독교',10]],SE:[['불교',35],['이슬람',35],['가톨릭',20],['개신교',10]],SA:[['이슬람',65],['힌두교',25],['불교',10]],CA:[['이슬람',85],['정교회',10],['종교 없음',5]],
+  ME:[['이슬람',95],['기독교',4]],AF:[['기독교',50],['이슬람',40],['전통 신앙',10]],EU:[['가톨릭',40],['종교 없음',35],['개신교',15],['정교회',5]],EE:[['정교회',60],['종교 없음',20],['가톨릭',15],['이슬람',5]],
+  NA:[['개신교',40],['종교 없음',28],['가톨릭',20]],LA:[['가톨릭',60],['개신교',25],['종교 없음',12]],OC:[['기독교',70],['종교 없음',25]]};
+const pickW=arr=>{ let r=R()*arr.reduce((t,x)=>t+x[1],0); for(const x of arr){ r-=x[1]; if(r<0) return x[0]; } return arr[0][0]; };
+// 부모님 일: 사는 곳 · 형편에 따라 (넉넉 · 보통 · 어려움)
+const PJOB={R:[['농장 경영','정미소 주인','마을 가게 주인','교사','가축 농장 주인'],['농부','어부','목수','마을 가게 주인','버스 운전기사','대장장이'],['소농','농장 일꾼','날품팔이','목동','소작농','벽돌 굽는 일']],
+  U:[['사업가','의사','엔지니어','회사 관리자','변호사','대학교수'],['회사원','교사','공무원','간호사','자영업자','택시 기사','공장 기술자'],['건설 노동자','시장 상인','공장 노동자','경비원','청소 노동자','배달 일','오토바이 택시 기사']]};
+const MJOB={R:[['교사','가게 주인','보건소 간호사'],['농부','시장 상인','삯바느질','양계'],['농장 일꾼','시장 상인','날품팔이','물 긷는 일']],U:[['약사','교사','회사원','디자이너','의사'],['회사원','간호사','미용사','교사','가게 점원','은행원'],['가사 도우미','시장 상인','공장 노동자','식당 일','길거리 음식 장사']]};
+// 아이가 자라는 동안 부모님이 헤어질 확률(대략, 나라별 이혼율을 바탕으로 한 추정)
+const DIV={US:.3,RU:.35,UA:.3,BY:.3,KZ:.25,KR:.12,JP:.15,CN:.1,BR:.2,MX:.12,AR:.2,CO:.15,CL:.15,CA:.25,AU:.25,NZ:.25,GB:.25,FR:.28,DE:.25,ES:.25,IT:.15,PL:.18,SE:.3,DK:.3,FI:.3,NO:.28,PH:.01,IN:.015,PK:.03,BD:.04,AF:.01,IR:.08,TR:.08,EG:.08,SA:.08,ID:.06,VN:.05,TH:.1,NG:.05,ET:.08,CD:.05,KE:.06,ZA:.12};
+const DIV_RG={EA:.1,SE:.06,SA:.02,CA:.12,ME:.06,AF:.06,EU:.25,EE:.3,NA:.25,LA:.18,OC:.2};
+// 마흔 이후, 한 해 동안 세상을 떠날 확률 (그 나라의 수명 기준에 맞춘 곰페르츠 곡선)
+const qAge=(C,x,k)=>x<40?.0015+C.u5/60000:clamp((.0005+.05*Math.exp(.095*(x-C.ref)))*(k||1),0,.85);
+function aliveTo(C,x){ for(let y=Math.max(18,x-60);y<x;y++) if(R()<qAge(C,y,.95)) return false; return true; }
+// 형제자매를 부르는 말 (나를 기준으로)
+function sibTerm(L,s){ const fam=L.fam, me=L.sex, same=fam.sibs.filter(t=>t.al!==0&&t.born&&(t.d<0)===(s.d<0)&&t.sx===s.sx), base=s.d<0?(me===0?(s.sx===0?'형':'누나'):(s.sx===0?'오빠':'언니')):(s.sx===0?'남동생':'여동생');
+  if(same.length<2) return base; const i=same.sort((x,y)=>x.d-y.d).indexOf(s), n=same.length;
+  if(s.d<0) return (i===0?'큰':n===2?'작은':['','둘째 ','셋째 ','넷째 ','다섯째 '][i]||'')+base;
+  return (i===n-1&&n>1?'막내 ':i===0?'큰 ':['','둘째 ','셋째 ','넷째 '][i]||'')+base; }
+function initFamily(L,o){ const C=L.C, c=L.c, P=L.ppl, U=L.set==='U', w=L.famI, ord=nameOrder(c);
+  const rel=pickW(RELG[c]||RELG_RG[C.rg]||[['종교 없음',1]]);
+  // 가족의 종교에 맞는 이름 (인도의 무슬림·시크교 가정, 나이지리아·에티오피아의 무슬림 가정)
+  const np=c==='IN'&&rel==='이슬람'?'IN_MUS':c==='IN'&&rel==='시크교'?'IN_SIKH':c==='NG'&&rel==='이슬람'?'NG_MUS':c==='NG'?'NG_CHR':c==='ET'&&rel==='이슬람'?'ET_MUS':null;
+  if(np&&!(o&&o.keep)){ L.npool=np; L.sur=pickSur(L); const ms=ord==='kr'?pickSur(L,L.sur):L.sur; P.dad={n:joinName(c,L.sur,pickGiven(L,0,'mid'))}; P.mom={n:joinName(c,ms,pickGiven(L,1,'mid'),1)}; if(P.gran) P.gran={n:joinName(c,L.sur,pickGiven(L,1,'old'),1)}; }
+  const sur=L.sur, momSur=ord==='kr'?String(P.mom.n).slice(0,1):pickSur(L,sur);
+  const mMean=c==='KR'?33.5:c==='JP'?31.5:c==='CN'?28:[24,25.5,27.5,30.5][C.tier-1];
+  const ma=Math.round(clamp(mMean+gauss()*4.5,17,44)), da=Math.round(clamp(ma+2.5+gauss()*3,ma-2,ma+14));
+  const PJ=C.tier>=3&&U&&w===2?['건설 노동자','택배 기사','공장 노동자','경비원','청소 노동자','식당 일','대리운전 기사']:PJOB[L.set][w], dj=(!U&&C.tier<=2&&R()<.35)?C.work:pickOne(PJ), mWork=R()<clamp((C.flfp||.5)*(U?1.05:.9),.05,.95), mj=mWork?pickOne(MJOB[L.set][w]):'집안일';
+  // 형제자매: 한 집의 아이 수(나 포함)는 그 나라 출산율을 따른다
+  let n=1+poisson(Math.max(.25,(C.tfr||2.2)-.6)); if(o&&o.sib===true) n=Math.max(n,2); if(o&&o.sib===false) n=1; n=Math.min(n,9);
+  let older=Math.floor(R()*n); if(o&&o.sib===true&&older===n-1&&R()<.5) older=Math.max(0,n-2);
+  const sibs=[]; let d=0;
+  for(let i=0;i<older;i++){ d-=Math.max(1,Math.round(1.5+R()*2.5)); if(ma+d<17) break; sibs.push({d}); }
+  d=0; for(let i=0;i<n-1-older;i++){ d+=Math.max(1,Math.round(1.5+R()*2.5)); if(ma+d>43) break; sibs.push({d}); }
+  sibs.forEach(s=>{ s.sx=R()<.51?0:1; s.g=pickGiven(L,s.sx,'now'); s.n=joinName(c,sur,s.g,s.sx===1); s.born=s.d<=0?1:0; s.al=1; });
+  // 조부모 네 분
+  // 성: 친할아버지는 나와 같은 성, 외할아버지는 엄마의 본래 성. 한국·중국처럼 결혼해도 성을 바꾸지 않는 곳에서는 할머니들의 성이 따로 있다
+  const gsur={친할아버지:sur,친할머니:ord==='kr'?pickSur(L,sur):sur,외할아버지:momSur,외할머니:ord==='kr'?pickSur(L,momSur):momSur};
+  const gp=[['친할아버지',0,da],['친할머니',1,da],['외할아버지',0,ma],['외할머니',1,ma]].map(([k,sx,pa])=>{ const ag=Math.round(pa+(sx===0?27:24)+gauss()*4);
+    return {k,sx,a0:ag,n:joinName(c,gsur[k],pickGiven(L,sx,'old'),sx===1),al:aliveTo(C,ag)?1:0}; });
+  if(L.gran){ const g=gp.find(x=>x.sx===1&&x.al&&x.k==='친할머니')||gp.find(x=>x.sx===1&&x.al)||gp[1]; g.al=1; g.home=1; P.gran={n:g.n}; }
+  L.fam={mom:{n:P.mom.n,a0:ma,job:mj,al:1},dad:{n:P.dad.n,a0:da,job:dj,al:1},sibs,gp,rel,home:w===0||(!U&&R()<.8)?'자가':R()<.5?'자가':'셋집'};
+  const ab0={LA:.18,AF:.12,NA:.12,EE:.1,EU:.07,OC:.08}[C.rg]||.03; if(!(o&&o.dad)&&R()<ab0*(w===2?1.4:w===0?.5:1)) { L.f.div='dad'; L.f.dad0=1; }
+  L.sib=sibs.some(s=>s.born); L.refreshSib(); }
+
+Object.assign(Life.prototype,{
+  // 지금 집에서 함께 지내는 형제자매 (나이가 가장 가까운 사람)
+  homeSibs(){ const f=this.fam; if(!f) return []; return f.sibs.filter(s=>s.born&&s.al&&!s.away&&!s.mar&&this.age-s.d<30); },
+  refreshSib(){ const f=this.fam; if(!f) return; const hs=this.homeSibs().sort((x,y)=>Math.abs(x.d)-Math.abs(y.d)); const s=hs[0]; if(s){ this.ppl.sib={n:s.n,sex:s.sx,d:s.d}; this.sib=true; } else { this.sib=false; } },
+  sibAge(s){ return this.age-s.d; },
+  famAge(p){ return p.a0+this.age; },
+  sibName(s){ return sibTerm(this,s)+' '+(s.g||s.n); },
+  // 가족 이야기: 이 기간(한 해 또는 두 해)에 가족에게 일어날 일들을 미리 정한다. 달력의 다른 일과 함께 달마다 찾아온다
+  famPlan(){ const out=[], f=this.fam, a=this.age, step=this.step, C=this.C, L=this; if(!f||this.f.dying) return out;
+    const add=(d)=>out.push({dyn:Object.assign({sc:'life'},d),m:d.m||null,done:0});
+    const dadT=()=>this.f.step2&&f.step?'새아빠':'아빠';
+    // 동생이 태어난다
+    f.sibs.forEach((s,i)=>{ if(!s.born&&s.d>=a&&s.d<a+step) add({txt:`${s.sx?'여동생':'남동생'} ${josa(s.g,'이','가')} 태어났다. ${a<4?'작은 손가락을 만져 보았다.':a<13?'처음 안아 본 동생은 생각보다 무거웠다.':'나와는 '+s.d+'살 차이다. 이제 동생을 업어 줄 수 있다.'}`,fx:{j:4,r:3},big:i===f.sibs.findIndex(x=>x.d>0),sc:'baby',act:'born:'+i,y:s.d-a}); });
+    // 조부모님
+    f.gp.forEach((g,i)=>{ if(!g.al) return; for(let y=0;y<step;y++){ const ga=g.a0+a+y; if(R()<qAge(C,ga,1)){ add({txt:`${g.k}께서 ${ga}세로 세상을 떠나셨다.${g.home?' 늘 곁에 계시던 분이라 집이 텅 빈 것 같았다.':a<13?' 장례식에서 어른들이 우는 모습을 처음 보았다.':' 마지막으로 찾아뵌 날이 자꾸 떠올랐다.'}`,fx:{j:g.home?-10:-5,r:1},big:!!g.home||a<20,sc:'farewell',act:'gp:'+i,y}); break; } } });
+    // 부모님: 나이에 따라 세상을 떠나시기도 한다 (어릴 때 잃는 일은 드물지만, 형편이 어려운 나라일수록 잦다)
+    ['dad','mom'].forEach(k=>{ const p=f[k]; if(!p.al) return; for(let y=0;y<step;y++){ const pa=p.a0+a+y; let q=qAge(C,pa,k==='dad'?1.15:.9); if(pa<45) q+=C.tier<=2?.002:.0005; if(R()<q){
+      const kid=a+y<19, other=f[k==='dad'?'mom':'dad'];
+      add({txt:kid?`${k==='dad'?'아빠':'엄마'}가 ${pa}세에 갑자기 세상을 떠나셨다. ${other.al?`이제 ${k==='dad'?'엄마':'아빠'} 혼자 우리를 키우신다.`:'가족이 모두 흩어질 위기였다.'} 집안 형편이 크게 어려워졌다.`:`${k==='dad'?'아버지':'어머니'}께서 ${pa}세로 세상을 떠나셨다.${(this.f.pv||0)>=6?' 함께 보낸 시간이 많아 슬픔 속에도 고마움이 컸다.':' 더 자주 찾아뵐걸 하는 마음이 오래 남았다.'}`,
+        fx:kid?{j:-14,h:-2}:{j:-8},big:true,sc:'farewell',act:'par:'+k,y,nt:kid&&C.tier<=2?'전 세계 1억 4천만 명 넘는 아이가 부모 중 한 사람 이상을 잃은 채 자랍니다 (UNICEF)':null}); break; } } });
+    // 부모님이 헤어지신다 · 다시 가정을 꾸리신다
+    if(a>=1&&a<=16&&f.mom.al&&f.dad.al&&!this.f.div&&R()<(DIV[this.c]!=null?DIV[this.c]:DIV_RG[C.rg]||.1)/16*step){ const withMom=R()<.85;
+      add({txt:`부모님이 이혼하셨다. ${withMom?'엄마':'아빠'}와 함께 살게 되었다. ${a<6?'왜 '+(withMom?'아빠':'엄마')+'가 집에 오지 않는지 한동안 매일 물었다.':(withMom?'아빠':'엄마')+'는 한 달에 한두 번 만난다.'}`,fx:{j:-10,r:-3},big:true,sc:'house',act:withMom?'div:dad':'div:mom'}); }
+    if(this.f.div&&!this.f.remar&&a<=17&&R()<.12*step){ const sx=this.f.div==='dad'?0:1, nm=joinName(this.c,pickSur(this,this.sur),pickGiven(this,sx,'mid'),sx===1);
+      add({txt:`${sx?'아빠':'엄마'}가 ${josa(nm,'과','와')} 재혼했다. 새${sx?'엄마':'아빠'}와 한집에 살게 되었다. 처음엔 어색했지만 조금씩 익숙해졌다.`,fx:{j:-1,r:2},big:true,sc:'wedding',act:'remar:'+nm}); }
+    // 형제자매가 자라고, 결혼하고, 떠난다
+    f.sibs.forEach((s,i)=>{ if(!s.born||!s.al) return; const sa=this.sibAge(s), T=sibTerm(this,s);
+      if(sa>=7&&sa<7+step&&s.d>0) add({txt:`${T} ${josa(s.g,'이','가')} 초등학교에 들어갔다. 내가 쓰던 가방을 물려주었다.`,fx:{r:2},act:''});
+      if(sa>=19&&sa<19+step&&!s.away&&!s.job){ const ur=this.c==='KR'?.7:[.05,.15,.35,.5][C.tier-1]+(this.famI===0?.15:this.famI===2?-.08:0);
+        if(R()<ur){ s.job='대학생'; add({txt:`${T} ${josa(s.g,'이','가')} ${C.city}의 대학에 합격했다. 온 가족이 축하 저녁을 먹었다.`,fx:{j:3,r:1},sc:'grad',act:'away:'+i+':0'}); }
+        else { s.job=pickOne(PJOB[this.set][Math.min(2,this.famI+ (R()<.5?0:1))]); add({txt:`${T} ${josa(s.g,'이','가')} ${s.job} 일을 시작했다. 첫 품삯으로 ${a<13?'내게 과자를 사 주었다':'부모님께 선물을 사 드렸다'}.`,fx:{r:2},sc:'job'}); } }
+      if(!s.mar&&sa>=Math.max(18,(C.mar?C.mar[s.sx]:26)-3)&&sa<=45&&R()<(C.marP||.7)*.17*step){ const sp=joinName(this.c,pickSur(this,this.sur),pickGiven(this,1-s.sx,'now'),s.sx===0);
+        add({txt:`${T} ${josa(s.g,'이','가')} ${josa(sp,'과','와')} 결혼했다.`,opts:[{l:'결혼식에서 축사를 한다',fx:{r:3,j:2},tr:'B',res:`떨리는 목소리로 축사를 했다. ${T}${josa(T,'이','가').slice(T.length)} 울면서 웃었다.`,fail:'축사 도중 목이 메어 말을 잇지 못했다. 그래도 하객들이 큰 박수를 쳐 주었다.'},{l:'뒤에서 조용히 일손을 돕는다',fx:{r:2},tr:'K',res:'하객 안내와 뒷정리를 도맡았다. 가족들이 고마워했다.'}],sc:'wedding',act:'sibmar:'+i+':'+sp}); }
+      if(!s.away&&sa>=17&&sa<=30&&R()<(C.tier<=2?.07:.05)*step){ const ab=R()<(C.tier<=2?.35:.15), dest=ab?pickOne(ABROAD[this.c]||ABROAD['@'+C.rg]||['외국']):C.city;
+        add({txt:`${T} ${josa(s.g,'이','가')} 일자리를 찾아 ${dest}(으)로 떠났다.${ab?' 공항(버스 정류장)에서 손을 오래 흔들었다.':' 명절에만 집에 온다.'}`.replace('(으)로',josa(dest,'으로','로').slice(dest.length)),fx:{j:-2,r:-1},sc:'travel',act:'away:'+i+':'+(ab?1:0)}); }
+      if(s.away===2&&R()<.25*step) add({txt:`외국에서 일하는 ${T}${josa(T,'이','가').slice(T.length)} 번 돈을 집에 보내왔다. 그 돈으로 ${pickOne(['지붕을 고쳤다','동생 학비를 냈다','부모님 약값을 마련했다'])}.`,fx:{'@':a>=19?1:0,j:2},sc:'money',nt:'2023년 저소득·중간소득 나라로 보내진 해외 송금은 약 6,560억 달러로, 많은 가정의 큰 버팀목입니다 (세계은행)'});
+      if(s.mar&&!s.kid&&R()<.3*step){ const sx=R()<.5?0:1; add({txt:`${T}에게 ${sx?'딸':'아들'}이 태어났다. 내게 ${sx?'조카딸':'조카'}이 생겼다.`,fx:{j:3,r:2},sc:'baby',act:'sibkid:'+i}); }
+      if(s.d>0&&sa<5&&R()<C.u5/1000*.35*step) add({txt:`${T} ${josa(s.g,'이','가')} 열병을 앓다 세상을 떠났다. 작은 신발이 오래 문 앞에 놓여 있었다.`,fx:{j:-12,r:-2},big:true,sc:'farewell',act:'sibdie:'+i,nt:'2023년 전 세계에서 약 480만 명의 아이가 다섯 살 생일을 맞지 못했습니다 (UN IGME 2024)'});
+      if(sa>=40&&R()<.02*step) add({txt:`${T} ${josa(s.g,'이','가')} 크게 아파 입원했다. 형제자매가 돌아가며 병실을 지켰다.`,fx:{r:3,j:-3},sc:'hosp'});
+    });
+    // 아이일 때: 부모님의 일과 살림
+    if(a>=3&&a<=17){
+      const pj=f.dad.al&&this.f.div!=='dad'?f.dad.job:f.mom.job, farm=/농|목동|소작|일꾼|어부/.test(pj), lastB=this.f.badY;
+      if((lastB==null||a-lastB>=5)&&R()<.06*step){ this.f.badY=a; add({txt:farm?`가뭄으로 농사가 잘 안돼 ${pj} 일로 버는 돈이 반으로 줄었다. 한동안 밥상이 조용했다.`:`${dadT()}가 다니던 일터가 문을 닫았다. 새 일을 구할 때까지 한동안 저녁 밥상이 조용했다.`,fx:{j:-4},sc:farm?'drought':'jobloss',act:'poorer'}); }
+      else if(R()<.05*step) add({txt:`${f.mom.job==='집안일'?'아빠':pickOne(['엄마','아빠'])}의 일이 잘되어 집안 형편이 조금 나아졌다.`,fx:{j:3},sc:'money',act:'richer'});
+      if(R()<.06*step) add({txt:`${pickOne(['엄마','아빠'])}가 몸이 안 좋아 며칠 입원하셨다. ${a<10?'할머니(이웃)가 대신 밥을 챙겨 주셨다.':'동생들 밥을 내가 챙겼다.'}`,fx:{r:2,j:-2},sc:'hosp'});
+      const hs=this.homeSibs(); if(hs.length&&R()<.15*step){ const T=sibTerm(this,pickOne(hs)), W=josa(T,'과','와'); add({txt:pickOne(a<6?[`${W} 이불 속에서 술래잡기를 하다 엄마한테 혼났다.`,`${T}가 업어 줘서 동네 한 바퀴를 돌았다.`.replace(T+'가',josa(T,'이','가'))]:[`${W} 밤늦게까지 이불 속에서 이야기를 나눴다.`,`${W} 리모컨 때문에 크게 싸웠다가 저녁에 슬쩍 화해했다.`,`${W} 함께 부모님 몰래 깜짝 생일상을 차렸다.`,`${T}에게 고민을 털어놓았다. 생각보다 진지하게 들어 주었다.`]),fx:{r:2,j:2},sc:'life'}); }
+    }
+    // 어른이 되어: 부모님이 나이 드시고, 돌봐 드려야 할 때가 온다
+    if(a>=19){ ['dad','mom'].forEach(k=>{ const p=f[k]; if(!p.al) return; const pa=p.a0+a;
+      if(pa>=58&&pa<58+step&&p.job!=='집안일') add({txt:`${k==='dad'?'아버지':'어머니'}께서 평생 하던 일(${p.job})을 내려놓으셨다. 작은 퇴임 잔치를 열어 드렸다.`,fx:{r:2,j:1},sc:'job'});
+      if(pa>=75&&!p.care&&R()<.25*step) add({txt:`${k==='dad'?'아버지':'어머니'}께서 ${pa}세가 되시면서 혼자 지내기 어려워지셨다.`,opts:[{l:'모시고 함께 산다',fx:{r:5,j:-2,'@':-2},tr:'K',res:'방 하나를 비워 모셨다. 저녁마다 옛이야기를 들었다.'},{l:'가까이 살며 자주 찾아뵌다',fx:{r:3,'@':-1},tr:'D',res:'주말마다 찾아뵙고 장을 봐 드렸다.'},{l:C.tier>=3?'돌봄 시설에 모시고 자주 찾아간다':'형제자매와 돌아가며 모신다',fx:{r:1,j:1,'@':-1},res:C.tier>=3?'좋은 시설을 찾아 모셨다. 찾아갈 때마다 손을 오래 잡아 드렸다.':'형제자매와 돌아가며 모셨다.'}],sc:'life',act:'care:'+k,nt:C.tier>=3?'2050년이면 세계 인구 여섯 명 중 한 명이 65세 이상이 됩니다 (UN 세계인구전망 2022)':null}); });
+      if(this.f.family&&!this.f.inlaw){ const me=this.sex; add({txt:`처음으로 ${me===0?'처가':'시댁'}에 인사를 갔다. ${me===0?'장모님이':'시어머니가'} 차려 주신 {food}을(를) 두 그릇이나 먹었다.`,fx:{r:2,j:1},sc:'wedding',act:'inlaw'}); }
+      if(f.sibs.some(s=>s.born&&s.al&&(s.away||s.mar))&&R()<.25*step) add({txt:pickOne(['명절에 흩어져 살던 형제자매가 모두 모였다.'+(f.sibs.some(s=>s.kid)?' 조카들이 집 안을 뛰어다녔다.':''),'형제자매 단체 대화방에 어릴 적 사진이 올라왔다. 한참 웃었다.'].concat(!this.f.pgone?['형제자매가 부모님 생신 선물 비용을 나눠 냈다.']:['형제자매가 모여 부모님 산소(묘소)를 함께 찾아갔다.'])),fx:{r:3,j:2},sc:'life'});
+      if(this.f.pgone&&f.sibs.filter(s=>s.al&&s.born).length>=2&&!this.f.inh2&&R()<.2){ add({txt:'부모님이 남기신 집을 두고 형제자매 사이에 의견이 갈렸다.',opts:[{l:'양보한다',fx:{r:3,j:-1},tr:'K',res:'내 몫을 양보했다. 형제자매와의 사이는 지켰다.'},{l:'공평하게 나누자고 한다',fx:{r:-1,'@':3},tr:'B',res:'공평하게 나누기로 했다. 한동안 서먹했다.'}],sc:'house',act:'inh2'}); }
+    }
+    // 가족의 종교와 명절
+    const rf=RELF[f.rel], ru=this.f.relU||(this.f.relU={}), cf=C.fest||''; if(rf&&R()<.55){ const dup=x=>(x[2]==='eid'&&/이드|라마단|르바란|하리 라야|타바스키/.test(cf))||(/크리스마스|성탄/.test(x[1])&&/크리스마스/.test(cf))||(/디왈리/.test(x[1])&&/디왈리/.test(cf))||(/부활절/.test(x[1])&&/부활절/.test(cf)); const ok=rf.map((x,i)=>[x,i]).filter(([x,i])=>a>=x[0]&&!dup(x)&&(ru[i]==null||(!x[3]&&a-ru[i]>=4))); if(ok.length){ const [e,i]=pickOne(ok); ru[i]=a; add({txt:e[1],fx:{r:2,j:2},sc:'fest',m:e[2]==='eid'?eidMonth(this.by+a):e[2]||null}); } }
+    return out; },
+  // 가족 이야기가 실제로 일어날 때 상태를 바꾼다
+  famAct(act){ if(!act) return; const f=this.fam, [k,x,y]=act.split(':');
+    if(k==='born'){ const s=f.sibs[+x]; if(s){ s.born=1; this.refreshSib(); } }
+    else if(k==='gp'){ const g=f.gp[+x]; if(g){ g.al=0; g.dA=this.age; if(g.home) this.f.ggone=1; } }
+    else if(k==='par'){ const p=f[x]; p.al=0; p.dA=this.age; if(!f.mom.al&&!f.dad.al){ this.f.pgone=1; const inh=this.age>=25?this.C.med*[80,15,0][this.famI]*(this.C.tier>=3?1:.5):0; if(inh>0){ this.cash+=inh; this.mEv+=inh; this.mem.push({a:this.age,t:`부모님이 남겨 주신 ${fmtWon(inh)}을 물려받았다.`,ev:1}); } }
+      if(this.age<19){ this.famI=Math.min(2,this.famI+1); this.w=clamp(this.w-.12,0,1); } }
+    else if(k==='div'){ this.f.div=x; }
+    else if(k==='remar'){ this.f.remar=1; this.f.step2=1; f.step={n:x+(y?':'+y:''),sx:this.f.div==='dad'?0:1}; }
+    else if(k==='sibmar'){ const s=f.sibs[+x]; if(s){ s.mar=act.split(':').slice(2).join(':'); s.cb=(s.cb||0)+6; this.refreshSib(); } }
+    else if(k==='away'){ const s=f.sibs[+x]; if(s){ s.away=y==='1'?2:1; this.refreshSib(); } }
+    else if(k==='sibkid'){ const s=f.sibs[+x]; if(s) s.kid=(s.kid||0)+1; }
+    else if(k==='sibdie'){ const s=f.sibs[+x]; if(s){ s.al=0; s.dA=this.age; this.refreshSib(); } }
+    else if(k==='poorer'){ this.w=clamp(this.w-.06,0,1); }
+    else if(k==='richer'){ this.w=clamp(this.w+.06,0,1); }
+    else if(k==='care'){ f[x].care=1; f[x].cb=(f[x].cb||0)+12; }
+    else if(k==='inlaw'){ this.f.inlaw=1; }
+    else if(k==='inh2'){ this.f.inh2=1; } },
+  // 내 정보의 가족 목록
+  // 가까운 정도: 함께 보낸 시간과 나의 관계 수치가 만든다
+  closeTo(p,isPar){ const base=isPar?55+(this.f.pv||0)*3:50; const v=base+(this.s.r-50)*.45+(p.cb||0); return v>=68?'가까운 사이':v>=45?'무난한 사이':'서먹한 사이'; },
+  famList(){ const f=this.fam, a=this.age, out=[]; if(!f) return out;
+    const st=p=>p.al?`${p.a0+a}세 · ${this.closeTo(p,1)}`:`${p.dA}살 때 세상을 떠나심`;
+    if(f.dad) out.push([this.f.step2&&f.step&&f.step.sx===0?'아빠(따로 지냄)':'아빠',f.dad.n,`${st(f.dad)}${f.dad.al?' · '+f.dad.job:''}${this.f.div==='dad'&&f.dad.al?' · 따로 지냄':''}`]);
+    if(f.mom) out.push(['엄마',f.mom.n,`${st(f.mom)}${f.mom.al?' · '+f.mom.job:''}${this.f.div==='mom'&&f.mom.al?' · 따로 지냄':''}`]);
+    if(f.step) out.push([f.step.sx===0?'새아빠':'새엄마',f.step.n.split(':')[0],'함께 사는 가족']);
+    f.sibs.filter(s=>s.born).sort((x,y)=>x.d-y.d).forEach(s=>out.push([sibTerm(this,s),s.n,s.al?`${a-s.d}세 · ${this.closeTo(s)}${s.mar?' · 결혼함':''}${s.away===2?' · 외국에서 일함':s.away?' · 집을 떠나 지냄':''}${s.kid?' · 아이 '+s.kid+'명':''}`:`${s.dA}살 때 세상을 떠남`]));
+    const un=f.sibs.filter(s=>!s.born).length; if(un&&a<14) out.push(['','','']);
+    f.gp.forEach(g=>out.push([g.k,g.n,g.al?`${g.a0+a}세${g.home?' · 함께 삶':''}`:g.dA!=null?`${g.dA}살 때 세상을 떠나심`:'내가 태어나기 전에 돌아가심']));
+    return out.filter(r=>r[0]); }
+});
+// 형제자매가 일하러 떠나는 곳
+const ABROAD={IN:['아랍에미리트 두바이','사우디아라비아','카타르'],PK:['사우디아라비아','아랍에미리트','영국'],BD:['사우디아라비아','말레이시아','카타르'],NP:['카타르','말레이시아','한국'],PH:['사우디아라비아','홍콩','싱가포르'],
+  MX:['미국'],GT:['미국'],HN:['미국'],SV:['미국'],ID:['말레이시아','사우디아라비아','대만'],VN:['한국','일본','대만'],NG:['영국','캐나다','미국'],GH:['영국','미국'],ET:['사우디아라비아','레바논'],KE:['사우디아라비아','카타르','영국'],
+  EG:['사우디아라비아','쿠웨이트'],MA:['스페인','프랑스'],DZ:['프랑스'],TR:['독일'],UA:['폴란드','독일'],UZ:['러시아','한국'],TJ:['러시아'],KG:['러시아'],KR:['미국','호주'],CN:['미국','캐나다'],
+  AF:['파키스탄','이란','튀르키예'],SA:['카타르'],'@SA':['사우디아라비아','아랍에미리트'],'@SE':['말레이시아','싱가포르'],'@AF':['남아프리카공화국','사우디아라비아','프랑스'],'@LA':['미국','스페인'],'@EE':['독일','폴란드'],'@EU':['영국','독일'],'@ME':['카타르','아랍에미리트'],'@CA':['러시아','카자흐스탄'],'@OC':['호주','뉴질랜드'],'@EA':['미국','일본'],'@NA':['미국']};
+// 가족의 종교가 지내는 날 [몇 살부터, 문장, 달]
+const RELF={
+  '이슬람':[[0,'라마단이 끝나는 이드 알피트르 날, 새 옷을 입고 친척 집을 돌며 인사했다. 어른들이 용돈을 주셨다.','eid'],[12,'라마단 한 달 동안 해가 떠 있는 동안 금식했다. 해 질 녘 대추야자 한 알이 그렇게 달 수 없었다.','eid'],[0,'이드 알아드하(희생제) 날, 고기를 이웃과 형편이 어려운 집에 나눠 주었다.',null],[5,'금요일 낮, 아빠를 따라 모스크에 갔다. 수많은 사람이 나란히 엎드려 기도했다.',null],[6,'저녁마다 이웃 선생님께 쿠란 읽는 법을 배웠다.',null,1]],
+  '힌두교':[[0,'디왈리 밤, 집 안팎에 등불을 밝히고 이웃과 단 과자를 나눠 먹었다.',10],[0,'홀리 축제 날, 동네 사람들과 색 가루를 뒤집어쓰고 웃었다.',3],[6,'가족과 함께 사원에 가서 기도를 드렸다. 종소리가 오래 귀에 남았다.',null],[4,'락샤 반단 날, 형제자매끼리 손목에 실팔찌를 묶어 주며 서로를 지켜 주기로 약속했다.',8],[8,'나브라트리 아흐레 동안 밤마다 동네 사람들과 원을 그리며 춤을 췄다.',10]],
+  '기독교':[[0,'크리스마스 예배에 가족과 함께 갔다. 성탄 노래를 목청껏 불렀다.',12],[0,'부활절 아침, 가족과 교회에 다녀와 함께 밥을 먹었다.',4],[8,'교회 성가대에서 노래를 불렀다. 처음으로 독창을 맡았다.',null,1]],
+  '개신교':[[0,'크리스마스 예배에 가족과 함께 갔다. 성탄 노래를 목청껏 불렀다.',12],[6,'교회 여름 수련회에 갔다. 밤마다 친구들과 노래를 불렀다.',7],[0,'추수감사 예배에 집에서 키운 곡식과 과일을 가져갔다.',11]],
+  '가톨릭':[[0,'성탄 미사에 가족과 함께 갔다. 촛불이 성당을 환하게 밝혔다.',12],[8,'첫영성체를 받았다. 하얀 옷을 입고 가족과 사진을 찍었다.',5,1],[0,'마을 수호성인 축일에 성당 앞 광장에서 행렬과 잔치가 열렸다.',null],[0,'부활절 아침, 성당 종이 크게 울렸다.',4]],
+  '에티오피아 정교회':[[0,'팀카트(주님 세례 축일)에 하얀 옷을 입고 행렬을 따라 걸었다.',1],[0,'메스켈 축일에 큰 모닥불이 타오르는 것을 온 마을이 함께 지켜보았다.',9],[6,'부활절 전 오십 일 넘는 금식 기간에는 고기와 우유 없이 지냈다.',3]],
+  '러시아 정교회':[[0,'1월 7일 정교회 성탄절, 가족과 함께 교회에 촛불을 켜러 갔다.',1],[0,'부활절에 색칠한 달걀을 두드려 깨뜨리는 놀이를 했다.',4]],
+  '우크라이나 정교회':[[0,'1월 정교회 성탄절, 가족이 모여 열두 가지 음식을 차렸다.',1],[0,'부활절에 바구니에 빵과 달걀을 담아 축복을 받으러 갔다.',4]],
+  '불교':[[0,'부처님 오신 날, 가족과 절에 가서 연등을 달았다.',5],[8,'절에서 하룻밤을 지내며 마음을 가라앉히는 법을 배웠다.',null,1],[0,'새벽에 집 앞을 지나는 스님들께 밥을 공양했다.',null]],
+  '시크교':[[0,'바이사키 축제 날, 구루드와라(사원)에서 모두가 나란히 앉아 무료 음식(랑가르)을 함께 먹었다.',4],[6,'구루드와라 부엌에서 자원봉사로 짜파티를 수백 장 구웠다.',null],[0,'구루 나나크 탄생일, 밤새 사원에 불이 켜져 있었다.',11]],
+  '유대교':[[0,'유월절 저녁, 가족이 둘러앉아 오래된 이야기를 함께 읽었다.',4],[0,'하누카 여드레 동안 밤마다 촛불을 하나씩 더 켰다.',12]],
+  '콥트 정교회':[[0,'1월 7일 콥트 성탄절, 가족과 함께 밤 예배에 다녀왔다.',1],[0,'부활절 다음 날 샴 엘나심, 온 가족이 강가로 소풍을 갔다.',4]],
+  '민간 신앙':[[0,'설에 조상께 차례를 지내고 온 가족이 모여 앉았다.',1],[0,'청명에 조상의 묘를 찾아 풀을 뽑고 절을 올렸다.',4]],
+  '전통 신앙':[[0,'마을 어른들이 조상께 올리는 의식에 처음으로 함께했다. 북소리가 밤늦게까지 이어졌다.',null,1]]
+};
+
+
+/* =====================================================================
+   [같은 1초에 태어난 사람들] 같은 순간 지구 곳곳에서 태어난 네 사람의 삶이 나란히 흘러간다
+   [마지막 기록] 무엇으로 세상을 떠났는지, 같은 해 태어난 사람들 가운데 얼마나 살았는지
+   ===================================================================== */
+// 세상을 떠난 까닭: 나이 · 나라의 형편 · 지역에 따라 흔한 원인이 다르다 (WHO 세계 사망 원인 통계를 바탕으로 한 단순화)
+const CAUSE={
+  pneu:['폐렴(하기도 감염)','하기도 감염(폐렴 등)은 전 세계 사망 원인 4위이고, 다섯 살 미만 아이를 가장 많이 앗아 가는 감염병입니다 (WHO)'],
+  diar:['설사병','설사병은 다섯 살 미만 어린이 사망의 주요 원인 가운데 하나이며, 깨끗한 물과 경구수분보충염(ORS)으로 대부분 막을 수 있습니다 (WHO)'],
+  mal:['말라리아','2022년 말라리아로 약 60만 8천 명이 숨졌고, 그 대부분이 아프리카의 다섯 살 미만 어린이였습니다 (WHO)'],
+  neo:['조산·출생 합병증','신생아 질환(조산·출생 시 질식 등)은 2019년 약 200만 명의 목숨을 앗아 간, 세계 사망 원인 5위입니다 (WHO)'],
+  malnu:['영양실조','2023년 세계 약 7억 명이 굶주림을 겪었습니다 (FAO 2024)'],
+  measles:['홍역','홍역은 백신으로 막을 수 있지만 2023년에도 10만 명 넘게 홍역으로 숨졌습니다 (WHO)'],
+  congen:['선천성 질환','태어날 때부터 지닌 질환은 신생아 사망의 큰 원인 가운데 하나입니다 (WHO)'],
+  road:['교통사고','교통사고로 해마다 약 119만 명이 숨지고, 5~29세 사망 원인 1위입니다 (WHO 2023)'],
+  drown:['익사','물에 빠져 해마다 약 23만 6천 명이 숨집니다 (WHO)'],
+  fall:['추락 사고','떨어지는 사고는 의도하지 않은 부상 사망 원인 가운데 두 번째로 많습니다 (WHO)'],
+  violence:['분쟁·폭력','2024년 분쟁과 폭력으로 집을 떠난 사람은 1억 2천만 명을 넘었습니다 (UNHCR)'],
+  tb:['결핵','결핵으로 2022년 약 130만 명이 숨졌고, 감염병 가운데 가장 많은 목숨을 앗아 갑니다 (WHO 2023)'],
+  hiv:['에이즈(HIV 관련 질환)','2023년 HIV 관련 질환으로 약 63만 명이 숨졌습니다 (UNAIDS 2024)'],
+  matern:['출산 합병증','2020년 임신·출산과 관련해 약 28만 7천 명의 여성이 숨졌고, 그 약 70%가 사하라 이남 아프리카였습니다 (WHO 2023)'],
+  ihd:['심장병(허혈성 심장 질환)','허혈성 심장 질환은 전 세계 사망 원인 1위로, 모든 사망의 약 16%를 차지합니다 (WHO)'],
+  stroke:['뇌졸중','뇌졸중은 전 세계 사망 원인 2위로, 모든 사망의 약 11%를 차지합니다 (WHO)'],
+  copd:['만성 폐쇄성 폐질환','만성 폐쇄성 폐질환은 전 세계 사망 원인 3위입니다 (WHO)'],
+  cancer:['암','암은 세계 사망 원인 가운데 큰 부분을 차지하며, 2022년 약 970만 명이 암으로 숨졌습니다 (IARC)'],
+  diab:['당뇨병 합병증','당뇨병으로 2019년 약 150만 명이 숨졌습니다 (WHO)'],
+  kidney:['신장 질환','신장 질환은 2019년 세계 사망 원인 10위였습니다 (WHO)'],
+  dement:['치매(알츠하이머병 등)','치매는 세계 사망 원인 7위이고, 고령 인구가 늘며 계속 늘고 있습니다 (WHO)'],
+  liver:['간 질환','간경변 등 간 질환은 중년층 사망의 주요 원인 가운데 하나입니다 (WHO)'],
+  old:['노환','나이가 들어 몸의 여러 기능이 함께 약해졌습니다'],
+  leuk:['소아암(백혈병 등)','해마다 약 40만 명의 어린이·청소년이 암 진단을 받습니다 (WHO)']
+};
+const CANCER_OF={KR:'폐암',JP:'폐암',CN:'폐암',US:'폐암',IN:'구강암',NG:'유방암',BR:'폐암',RU:'폐암',GB:'폐암',DE:'폐암',EG:'간암',MN:'간암',VN:'간암',TH:'간암',ID:'폐암',PK:'유방암',BD:'폐암',ET:'유방암',ZA:'폐암',MX:'전립선암'};
+const pickWC=o=>{ const ks=Object.keys(o).filter(k=>o[k]>0); let r=R()*ks.reduce((t,k)=>t+o[k],0); for(const k of ks){ r-=o[k]; if(r<0) return k; } return ks[0]; };
+function causeOf(L){ if(L.cz) return L.cz; const a=L.lifespan||L.age, C=L.C, t=C.tier, af=C.rg==='AF', sudden=L.cause==='sudden', hz=C.hz||[];
+  let w;
+  if(a<1) w={neo:t<=2?.45:.55,pneu:t<=2?.25:.08,diar:t<=2?.12:0,mal:af?.1:0,congen:t<=2?.06:.3,malnu:t<=1?.06:0};
+  else if(a<5) w={pneu:.3,diar:t<=2?.2:.03,mal:af?.25:0,malnu:t<=2?.12:0,measles:t<=2?.06:0,drown:.06,road:.06,congen:t>=3?.2:.03};
+  else if(a<15) w={road:.25,drown:.14,mal:af?.15:0,leuk:.14,fall:.06,pneu:.08,diar:t<=2?.06:0,violence:hz.includes('unrest')?.15:0};
+  else if(sudden&&a<50) w={road:.45,drown:.08,fall:.08,violence:hz.includes('unrest')?.25:.04,ihd:a>35?.12:.03};
+  else if(a<50) w={tb:t<=2?.18:.02,hiv:/^(ZA|BW|LS|SZ|MZ|ZW|ZM|MW|NA|UG|KE|TZ)$/.test(L.c)?.25:af?.08:.01,matern:L.sex===1&&a<45&&t<=2?.12:0,cancer:.2,ihd:.12,liver:.08,road:.12,mal:af?.06:0};
+  else if(a<75) w={ihd:.24,stroke:.17,cancer:.24,copd:.08,diab:.06,kidney:.04,tb:t<=2?.05:0,liver:.05,pneu:.04};
+  else w={ihd:.22,stroke:.16,cancer:.12,dement:a>=80?.14:.06,copd:.08,pneu:.1,diab:.04,kidney:.04,old:a>=88?.2:.06};
+  const k=pickWC(w), c=CAUSE[k]; let n=c[0]; if(k==='cancer'&&CANCER_OF[L.c]){ n=CANCER_OF[L.c]; if(n==='전립선암'&&L.sex===1) n='유방암'; if(n==='유방암'&&L.sex===0) n='폐암'; }
+  return L.cz={k,n,nt:c[1]}; }
+// 같은 해 이 나라에서 태어난 사람 가운데 몇 %가 그 나이를 넘겨 사는가 (이 게임의 사망 확률 모형으로 계산)
+function survTo(C,age){ let S=1; for(let a=0;a<age;a++){ const q=a<5?C.u5/1000*(a===0?.6:.1):a<40?.0002+C.u5/60000+(C.hz.includes('unrest')?.0015:0):(.0005+.05*Math.exp(.095*(a-C.ref))); S*=1-clamp(q,0,.95); } return S; }
+
+Object.assign(Life.prototype,{
+  // 같은 1초에 태어난 네 사람 (실제 출생 비율대로 나라가 정해진다)
+  makeComps(){ if(this.comps) return this.comps; const out=[];
+    for(let i=0;i<4;i++){ let X; try{ X=new Life({lite:1}); X.lite=1; X.runAuto(); }catch(e){ continue; }
+      const cz=causeOf(X), ms=X.mem.filter(m=>m.big).map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,70)]).slice(0,40);
+      out.push({n:X.name,c:X.c,cn:X.C.n,sex:X.sex,set:X.set,town:X.town,fam:FAM[X.famI].n,ls:X.lifespan,cause:cz.n,jobs:(X.jobs||[]).map(j=>[j.a,j.n]),marA:X.ppl&&X.ppl.spouse?(X.f.marA||null):null,kb:(X.kids||[]).map(k=>k.b),ed:[X.f.elem?1:0,X.f.sec?1:0,X.f.hs?1:0,X.f.univ?1:0],uA:X.f.univA||19,ret:X.f.retired?1:0}); }
+    return this.comps=out; },
+  // 그 사람의 지금(내 나이 때) 모습
+  compNow(p,a){ if(p.ls<a) return `${p.ls}세에 세상을 떠남 (${p.cause})`; if(a<3) return '아기'; if(a<7) return '어린 시절'; const ed=p.ed||[0,0,0,0];
+    let st; if(a<=12) st=ed[0]?'초등학교에 다니는 중':'학교 대신 집안일을 돕는 중'; else if(a<=15) st=ed[1]?'중학교에 다니는 중':'일을 돕는 중'; else if(a<=18) st=ed[2]?'고등학교에 다니는 중':'일하는 중';
+    else if(ed[3]&&a<(p.uA||19)+4) st='대학생'; else { const j=(p.jobs||[]).filter(x=>x[0]<=a).slice(-1)[0]; st=j?`${j[1]}(으)로 일하는 중`.replace('(으)로',josa(j[1],'으로','로').slice(j[1].length)):'일자리를 찾는 중'; if(a>=70) st='일을 내려놓고 지내는 중'; }
+    const k=(p.kb||[]).filter(b=>b<=a).length; return st+(p.marA&&p.marA<=a?' · 결혼함':'')+(k?` · 아이 ${k}명`:''); },
+  compPlan(){ const out=[]; if(!this.comps||this.lite) return out; const a=this.age, step=this.step;
+    this.comps.forEach(p=>{ if(p.ls>=a&&p.ls<a+step) out.push({dyn:{txt:`같은 1초에 태어난 ${p.cn}의 ${josa(p.n,'이','가')} ${p.ls}세에 세상을 떠났다. (${p.cause})`,fx:{},sc:'farewell',y:p.ls-a,nt:null},m:null,done:0}); });
+    return out; }
+});
 </script>
 
 <!-- =====================================================================
@@ -3364,7 +3975,7 @@ function stageAt(age){ return age<2?'baby':age<13?'kid':age>=62?'elder':'adult';
 function npcBuild(map){
   const L=G.life, list=[], P=(o)=>list.push(Object.assign({kind:'p',dir:0,fr:0,wt:R()*2,tx:null,spd:1.2,r:1.4,moving:false},o));
   if(map==='home'){ const a=L.age, male=L.sex===0;
-    const ages={mom:a+28,dad:a+30,gran:a+60,sib:a-3,spouse:a,kid:L.kidHome()?a-(L.f.kidBorn||a):5};
+    const fm=L.fam, hg=fm&&fm.gp.find(g=>g.home), ages={mom:fm?fm.mom.a0+a:a+28,dad:fm?fm.dad.a0+a:a+30,gran:hg?hg.a0+a:a+60,sib:L.ppl.sib&&L.ppl.sib.d!=null?a-L.ppl.sib.d:a-3,spouse:a,kid:L.kidHome()?a-(L.f.kidBorn||a):5};
     PERSON_KEYS.forEach(k=>{ if(!L.spotOK(k)) return; const p=HOME.s[k], lk=famLook(k), age=k==='kid'&&!L.kidHome()?6:ages[k];
       P({key:k,x:p[0],y:p[1],ax:p[0],ay:p[1],look:lk,st:stageAt(Math.max(0,age)),long:k==='mom'||k==='gran'||(k==='spouse'&&male)||(k==='sib'&&lk.si%2===0)||(k==='kid'&&lk.si%2===1),r:k==='gran'?1:1.6,spd:k==='gran'?.7:1.1}); });
     // 아이가 여럿이면 둘째·셋째도 집 안을 돌아다닌다
@@ -3425,7 +4036,8 @@ function startGame(){
 const caughtUp=()=>G.room&&G.roomPi!=null&&G.life.pi>=G.roomPi;
 const seasonOf=L=>L.C.seasons[L.pi%4];
 function beginPeriod(first){
-  const L=G.life, cur=L.startPeriod(); if(cur.t==null) cur.t=G.sec; if(cur.mt==null) cur.mt=Math.min(12,G.sec*.2); if(cur.qt==null) cur.qt=9;
+  const L=G.life; if(!L.comps){ try{ L.makeComps(); }catch(e){} }
+  const cur=L.startPeriod(); if(cur.t==null) cur.t=G.sec; if(cur.mt==null) cur.mt=Math.min(12,G.sec*.2); if(cur.qt==null) cur.qt=9;
   NPCMAP={}; G.sickT=0;
   toast(`${L.by+L.age}년 · ${L.age}살 · ${seasonOf(L)}`,'year');
   const news=L.news||[]; L.news=[];
@@ -3492,7 +4104,7 @@ function chips(fx,tr){ let h=''; if(fx) for(const k in fx){ const v=fx[k]; if(!v
 function sceneHTML(kind){ return kind?`<canvas class="scene" width="160" height="80" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[kind]||'삶'} —</div>`:''; }
 function animScenes(){ const cs=[...$('sheetBox').querySelectorAll('canvas.scene')]; if(!cs.length) return; const t0=performance.now();
   const step=()=>{ if($('sheet').hidden) return; let alive=false; cs.forEach(c=>{ if(!c.isConnected) return; alive=true; const x=c.getContext('2d'); x.imageSmoothingEnabled=false; x.clearRect(0,0,160,80); drawScene(x,c.dataset.sc,(performance.now()-t0)/1000,G.life); }); if(alive) requestAnimationFrame(step); }; step(); }
-function popup(tag,txt,fx,after,cls,sc){ sheet(`${sceneHTML(sc)}<div class="place">${esc(tag)}</div><p class="evt">${esc(txt)}</p>${chips(fx)}<button class="btn primary" id="btnOk">확인 ▶</button>`,'event '+(cls||'')); renderHud(); $('btnOk').onclick=()=>{ closeSheet(); if(after) after(); }; }
+function popup(tag,txt,fx,after,cls,sc,nt){ sheet(`${sceneHTML(sc)}<div class="place">${esc(tag)}</div><p class="evt">${esc(txt)}</p>${nt?`<p class="nt">${esc(nt)}</p>`:''}${chips(fx)}<button class="btn primary" id="btnOk">확인 ▶</button>`,'event '+(cls||'')); renderHud(); $('btnOk').onclick=()=>{ closeSheet(); if(after) after(); }; }
 function flash(place,t,fx,tr,bad){ const f=$('flash'); f.className='gbox'+(bad?' bad':''); f.innerHTML=`<div class="place">${esc(place)}</div><p>${esc(t)}</p>${chips(fx,tr)}`; f.hidden=false; f.style.animation='none'; void f.offsetWidth; f.style.animation=''; clearTimeout(flash.t); flash.t=setTimeout(()=>f.hidden=true,2600); }
 function sheet(html,cls){ $('sheetBox').className='box gbox '+(cls||''); $('sheetBox').innerHTML=html; $('sheet').hidden=false; paused=true; IN.jx=IN.jy=0; IN.id=null; animScenes(); }
 function closeSheet(){ $('sheet').hidden=true; paused=false; lastT=performance.now(); }
@@ -3546,18 +4158,18 @@ function monthNow(){ const L=G.life; if(!L||!L.cur) return 1; return Math.min(ca
 function ymOf(m){ const L=G.life; return {y:L.by+L.age+(m>12?1:0),m:m>12?m-12:m}; }
 function calTag(){ const L=G.life, st=L.stageOf(), sch=L.sch||{}; return st==='e'?sch.elem:st==='m'?sch.mid:st==='h'?(L.f.hs==='voc'?sch.voc:sch.high):st==='u'?sch.univ:st==='rt'?'다시 도전하는 한 해':L.f.job?(L.f.co||'일터'):L.age<7?'우리 집':'우리 동네'; }
 function renderMon(){ const L=G.life, el=$('hMon'); if(!L||!el) return; const cal=L.cur&&L.cur.cal, ym=ymOf(monthNow()); el.textContent=`${ym.m}월${cal&&cal.length?` · 올해의 일 ${cal.filter(x=>x.done).length}/${cal.length}`:''}`; }
-function calToast(m,t,fx){ const d=document.createElement('div'); d.className='toast cal'; d.innerHTML=`<b class="mb">${m}월</b>${esc(t)}${chips(fx)}`; $('toasts').appendChild(d);
-  while($('toasts').children.length>3) $('toasts').firstChild.remove(); setTimeout(()=>d.remove(),5200); }
-function fireCal(k){ const L=G.life, it=L.cur.cal[k], ev=CAL[it.id], ym=ymOf(it.m), head=`${ym.y}년 ${ym.m}월 · ${calTag()}`;
+function calToast(m,t,fx,nt,fam){ const d=document.createElement('div'); d.className='toast cal'+(fam?' fam':''); d.innerHTML=`<b class="mb">${m}월${fam?' · 가족':''}</b>${esc(t)}${nt?`<small class="nt">${esc(nt)}</small>`:''}${chips(fx)}`; $('toasts').appendChild(d);
+  while($('toasts').children.length>3) $('toasts').firstChild.remove(); setTimeout(()=>d.remove(),nt?7000:5200); }
+function fireCal(k){ const L=G.life, it=L.cur.cal[k], ev=L.calEv(it), ym=ymOf(it.m), head=`${ym.y}년 ${ym.m}월 · ${it.dyn?'가족':calTag()}`;
   if(!ev){ it.done=1; return; }
   if(ev.opts){ const v=L.calVars(ev,it), q=L.fillV(ev.txt,v);
     sheet(`<div class="place calp">${esc(head)}</div><h2>${esc(q)}</h2><div class="opts">${ev.opts.map((o,i)=>`<button data-i="${i}">${esc(L.fillV(o.l,v))}${pct(L.calOptP(o))}</button>`).join('')}</div>`,'calq');
     onOpts(i=>{ const r=L.calDo(k,i); closeSheet(); renderMon(); persist(); if(!r) return;
-      if(r.big||ev.ex) popup(`${head} · ${r.label||''}${r.p!=null?(r.ok?' · 잘됨':' · 뜻대로 되지 않음'):''}`,r.t,r.fx,()=>{ renderHud(); },r.ok?'':'bad',r.sc);
+      if(r.big||ev.ex) popup(`${head} · ${r.label||''}${r.p!=null?(r.ok?' · 잘됨':' · 뜻대로 되지 않음'):''}`,r.t,r.fx,()=>{ renderHud(); },r.ok?'':'bad',r.sc,r.nt);
       else flash(`${ym.m}월 · ${r.p==null?'나의 선택':r.ok?'나의 선택':'뜻대로 되지 않음'}`,r.t,r.fx,r.tr,!r.ok); });
     return; }
   const r=L.calDo(k); renderMon(); persist(); if(!r) return;
-  if(r.big) popup(`${head} · 삶의 중요한 순간`,r.t,r.fx,()=>renderHud(),'',r.sc); else calToast(ym.m,r.t,r.fx); }
+  if(r.big) popup(`${head} · ${it.dyn?'가족 소식':'삶의 중요한 순간'}`,r.t,r.fx,()=>renderHud(),'',r.sc,r.nt); else calToast(ym.m,r.t,r.fx,r.nt,it.dyn); }
 // 올해의 달력 보기
 function openCal(){ const L=G.life; if(!L||!L.cur||!$('sheet').hidden) return; const cal=L.ensureCal()||[], now=monthNow(), y0=L.by+L.age;
   sheet(`<div class="place">${y0}년${L.step>1?`~${y0+1}년`:''} · ${esc(calTag())}</div><h2>올해의 일 ${cal.filter(x=>x.done).length}/${cal.length}</h2>
@@ -3585,10 +4197,12 @@ $('btnInfo').onclick=()=>{
   const lastM=L.money&&L.money.length?L.money[L.money.length-1]:null, adult=a>=19||f.univ;
   const money=adult?`<dt>가진 돈</dt><dd><b class="${L.cash<0?'neg':''}">${fmtWon(L.cash)}</b>${L.cash<0?' (빚)':''}${L.house?`<br>집 ${fmtWon(L.house)} · 모두 합하면 ${fmtWon(L.nw)}`:'<br><span class="sub">아직 내 집이 없어요</span>'}${lastM?`<br><span class="sub">지난 ${lastM.step>1?lastM.step+'년':'해'}: 번 돈 ${fmtWon(lastM.inc)} · 쓴 돈 ${fmtWon(lastM.spend)} · 이자 ${lastM.int>=0?'+':''}${fmtWon(lastM.int)}${lastM.ev?` · 큰일 ${lastM.ev>0?'+':''}${fmtWon(lastM.ev)}`:''}</span>`:''}${moneySvg(L)}</dd>`:'';
   sheet(`<div class="place">내 정보</div><h2>${esc(L.name)} · ${a}살 (${stageOf(a)}) · ${L.by+a}년</h2>
-    <dl class="info"><dt>사는 곳</dt><dd>${C.n} · ${esc(L.town||'')} (${SETN[L.set]})</dd><dt>태어난 가정</dt><dd>${FAM[L.famI].n} · 지금 살림은 ${wtxt}</dd><dt>함께 사는 사람</dt><dd>${fam.length?fam.join(' · '):'혼자 살아요'}</dd>
-    <dt>학교</dt><dd>${school}</dd><dt>하는 일</dt><dd>${job}</dd>${money}${L.jobs&&L.jobs.length?`<dt>거쳐 온 일</dt><dd>${L.jobs.map(x=>x.n+'('+x.a+'살)').join(' → ')}</dd>`:''}<dt>가족</dt><dd>${f.widow&&P.spouse?`${esc(P.spouse.n)}과(와)는 ${f.widA}살에 사별했어요`.replace('과(와)',josa(P.spouse.n,'과','와').slice(P.spouse.n.length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:''):f.family?`${esc(P.spouse?P.spouse.n:'')}과(와) 가정을 꾸렸어요`.replace('과(와)',josa(P.spouse?P.spouse.n:'배우자','과','와').slice((P.spouse?P.spouse.n:'배우자').length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:'')+(f.grandkid?' · 손주 있음':''):'아직 가정을 꾸리지 않았어요'}</dd><dt>친구</dt><dd>${esc(P.friend?P.friend.n:'')}</dd>
+    <dl class="info"><dt>사는 곳</dt><dd>${C.n} · ${esc(L.town||'')} (${SETN[L.set]})</dd><dt>태어난 가정</dt><dd>${FAM[L.famI].n} · 지금 살림은 ${wtxt}${L.fam&&L.fam.rel?` · 가족의 종교: ${esc(L.fam.rel)}`:''}</dd><dt>함께 사는 사람</dt><dd>${fam.length?fam.join(' · '):'혼자 살아요'}</dd>
+    <dt>학교</dt><dd>${school}</dd><dt>하는 일</dt><dd>${job}</dd>${money}${L.jobs&&L.jobs.length?`<dt>거쳐 온 일</dt><dd>${L.jobs.map(x=>x.n+'('+x.a+'살)').join(' → ')}</dd>`:''}<dt>가족</dt><dd>${f.widow&&P.spouse?`${esc(P.spouse.n)}과(와)는 ${f.widA}살에 사별했어요`.replace('과(와)',josa(P.spouse.n,'과','와').slice(P.spouse.n.length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:''):f.family?`${esc(P.spouse?P.spouse.n:'')}과(와) 가정을 꾸렸어요`.replace('과(와)',josa(P.spouse?P.spouse.n:'배우자','과','와').slice((P.spouse?P.spouse.n:'배우자').length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:'')+(f.grandkid?' · 손주 있음':''):'아직 가정을 꾸리지 않았어요'}</dd><dt>친구</dt><dd>${esc(P.friend?P.friend.n:'')}</dd>${L.f.pet?`<dt>반려동물</dt><dd>${esc(L.f.pet.n)} (${esc(L.f.pet.sp)}${L.f.pet.dA!=null?`, ${L.f.pet.dA}살 때 무지개다리를 건넘`:`, 함께한 지 ${a-L.f.pet.a}년`})</dd>`:''}${L.f.hob&&L.f.hob.length?`<dt>취미</dt><dd>${L.f.hob.map(h=>esc(h.n)+' Lv.'+h.lv).join(' · ')}</dd>`:''}
     <dt>갈 수 있는 곳</dt><dd>${places.join(' → ')}</dd><dt>성향</dt><dd>${tot?Object.keys(TRAIT).map(k=>TRAIT[k]+' '+L.tr[k]).join(' · ')+`<br><span class="sub">지금까지는 '${TRAIT[top]}'이 가장 많아요</span>`:'아직 쌓인 것이 없어요'}</dd>
     <dt>지금까지</dt><dd>선택 ${L.n}번 · 뜻대로 안 된 일 ${L.fail||0}번 · 놓친 순간 ${L.miss}번</dd>${G.room?`<dt>학급 방</dt><dd>${esc(G.room)}</dd>`:''}</dl>
+    ${L.comps&&L.comps.length?`<div class="stack-s"><b style="font-weight:400">같은 1초에 태어난 사람들 · 지금 ${a}살 무렵</b><table class="famtbl">${L.comps.map(p=>`<tr><th>${esc(p.n)}</th><td>${esc(p.cn)} · ${p.sex?'여':'남'}</td><td>${esc(L.compNow(p,a))}</td></tr>`).join('')}</table></div>`:''}
+    ${L.fam?`<div class="stack-s"><b style="font-weight:400">우리 가족</b><table class="famtbl">${L.famList().map(r=>`<tr><th>${esc(r[0])}</th><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('')}</table></div>`:''}
     <div class="kpi">${Object.keys(STAT).map(k=>`<div><b class="num">${Math.round(L.s[k])}</b><span>${STAT[k]}</span></div>`).join('')}</div>
     <div class="stack-s"><b style="font-weight:400">지금 내 행복을 만드는 것</b>${bars}<p class="small sub">돈(살림)만이 아니라 곁의 사람들, 작은 일에도 감사하는 마음, 함께 웃는 문화가 행복을 크게 바꿉니다.</p></div>
     <p class="small sub">${esc(C.fact)} 물가가 나라마다 달라서 같은 돈으로 살 수 있는 것도 다릅니다.</p><button class="btn" id="btnOk">닫기</button>`);
@@ -4239,6 +4853,7 @@ function finishLife(){
   const steps=[
     `<p class="soft">${by+a}년 · ${a}살 · ${seasonOf(L)}</p><p class="big">${esc(L.name)}(${by}~${by+a})${josa(L.name,'은','는').slice(L.name.length)} 조용히 눈을 감았습니다.</p><p>${esc(who)} ${how}</p>`,
     `<p class="soft">눈을 감자, 기억들이 사진처럼 스쳐 갑니다.</p>${photosHTML(mems)}`,
+    deathRecord(L),
     lifeStory(L),
     moneyStep(L),
     `<p class="soft">${esc(L.name)}의 삶에는 선택이 ${L.n}번 있었습니다.</p>${Object.keys(TRAIT).map(k=>`<div class="tbar"><span>${TRAIT[k]}</span><i style="width:${Math.max(3,L.tr[k]/Math.max(...Object.values(L.tr),1)*100)}%"></i><span class="num">${L.tr[k]}번</span></div>`).join('')}<p class="big">${esc(josa(L.name,'은','는'))} ${say1}으로 기억됩니다.</p>`,
@@ -4249,9 +4864,10 @@ function finishLife(){
   ];
   if(a<15){ const C=L.C;   // 어린 나이에 마친 삶: 남겨진 사람들의 말 대신 이 나라의 현실을 조용히 전한다
     const few=L.mem.filter(m=>m.a>0||!m.big).slice(-5);
-    steps.splice(0,7,
+    steps.splice(0,8,
       `<p class="soft">${by+a}년 · ${a}살 · ${seasonOf(L)}</p><p class="big">${esc(L.name)}(${by}~${by+a})${josa(L.name,'은','는').slice(L.name.length)} 짧은 삶을 마쳤습니다.</p><p>엄마 ${esc(P.mom?P.mom.n:'')}와 아빠 ${esc(P.dad?P.dad.n:'')}가 곁을 지키고 있었습니다.</p>`,
       `<p class="soft">짧았지만, 분명히 있었던 날들</p>${few.length?photosHTML(few):'<p>엄마 품에서 방긋 웃던 날이 있었습니다.</p>'}`,
+      deathRecord(L),
       `<p>${C.n}에서는 아이 1000명 가운데 약 ${C.u5}명이 다섯 살이 되기 전에 삶을 마칩니다. 대한민국은 약 ${COUNTRIES.KR.u5}명입니다.</p><p class="big">어디에서 태어났는가가 얼마나 오래 사는가를 바꾸기도 합니다.</p><p class="soft">${esc(L.name)}의 삶은 짧았지만, 가족에게는 전부였습니다.</p>`); }
   let i=0; show('end');
   const render=()=>{ $('endIn').innerHTML=`<div class="step">${steps[i]}${i<steps.length-1?'<div><button class="btn" id="btnStep">다음</button></div>':''}</div>`; $('s-end').scrollTo(0,0);
@@ -4264,12 +4880,22 @@ function finishLife(){
   if(!G.teacher){ G.data.save=null; }
   render();
 }
+// 마지막 기록: 무엇으로, 같은 해 태어난 사람들 가운데 얼마나, 누가 배웅했는지, 같은 1초에 태어난 사람들은
+function deathRecord(L){ const C=L.C, a=L.lifespan, cz=causeOf(L), sv=survTo(C,a+1), longer=Math.round((1-sv)*100), P=L.ppl||{}, fm=L.fam;
+  const hp=(L.hist||[]).reduce((b,x)=>x.j>(b?b.j:-1)?x:b,null);
+  const see=[]; if(P.spouse&&!L.f.widow) see.push((L.sex?'남편 ':'아내 ')+P.spouse.n); (L.kids||[]).slice(0,4).forEach(k=>see.push((k.sex?'딸 ':'아들 ')+k.n)); if(fm) fm.sibs.filter(x=>x.born&&x.al).slice(0,3).forEach(x=>see.push(sibTerm(L,x)+' '+x.n)); if(a<19&&fm){ if(fm.mom.al) see.push('엄마'); if(fm.dad.al&&L.f.div!=='dad') see.push('아빠'); } if(!see.length&&P.friend) see.push('친구 '+P.friend.n);
+  const rows=[['사인',esc(cz.n)],['향년',`${a}세 · ${C.n} 기대수명 약 ${C.le}세`],['같은 해 태어난 사람들 가운데',`약 ${longer}%보다 오래 살았습니다`],['마지막 길을 배웅한 사람',see.length?see.map(esc).join(', '):'이웃들'],['가장 행복했던 해',hp?`${(L.by||2026)+hp.a}년 · ${hp.a}살`:'—']];
+  const comps=L.comps&&L.comps.length?`<p class="soft" style="margin-top:14px">같은 1초에 태어난 사람들</p><dl class="whoami">${L.comps.map(p=>`<dt>${esc(p.n)}</dt><dd>${esc(p.cn)} · ${p.sex?'여':'남'} · ${p.ls}세까지 (${esc(p.cause)})</dd>`).join('')}</dl><p class="note">같은 순간에 태어나도 어디서 태어났는지에 따라 삶의 길이와 모양이 달랐습니다.</p>`:'';
+  return `<p class="soft">사망 기록</p><dl class="whoami">${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl><p class="note">${esc(cz.nt)}</p>${comps}`; }
 // 이 사람의 이야기: 이름 · 가족 · 학교 · 일 · 함께한 사람들
 function lifeStory(L){ const P=L.ppl||{}, sc=L.sch||{}, f=L.f, by=L.by||2026, rows=[];
   rows.push(['이름',`${esc(L.name)} (${by}~${by+L.lifespan})`]);
   rows.push(['태어난 곳',`${L.C.n} · ${esc(L.town||'')} · ${FAM[L.famI].n}`]);
-  rows.push(['부모님',`아빠 ${esc(P.dad?P.dad.n:'')} · 엄마 ${esc(P.mom?P.mom.n:'')}`]);
-  if(P.sib||P.gran) rows.push(['함께 자란 가족',[P.gran?`할머니 ${esc(P.gran.n)}`:'',P.sib?`동생 ${esc(P.sib.n)}`:''].filter(Boolean).join(' · ')]);
+  const fm=L.fam;
+  if(fm){ rows.push(['부모님',`아빠 ${esc(fm.dad.n)} (${esc(fm.dad.job)}${fm.dad.al?'':`, 내가 ${fm.dad.dA}살 때 떠나심`}) · 엄마 ${esc(fm.mom.n)} (${esc(fm.mom.job)}${fm.mom.al?'':`, 내가 ${fm.mom.dA}살 때 떠나심`})${L.f.div?' · 부모님은 따로 사셨습니다':''}`]);
+    const sb=fm.sibs.filter(x=>x.born); rows.push(['형제자매',sb.length?sb.sort((x,y)=>x.d-y.d).map(x=>`${sibTerm(L,x)} ${esc(x.n)}${x.al?(x.away===2?' (외국에서 일함)':x.mar?' (결혼)':''):` (${x.dA}살 때 먼저 떠남)`}`).join('<br>'):'외동으로 자랐습니다']);
+    if(fm.rel&&fm.rel!=='종교 없음') rows.push(['가족의 종교',esc(fm.rel)]); }
+  else { rows.push(['부모님',`아빠 ${esc(P.dad?P.dad.n:'')} · 엄마 ${esc(P.mom?P.mom.n:'')}`]); if(P.sib||P.gran) rows.push(['함께 자란 가족',[P.gran?`할머니 ${esc(P.gran.n)}`:'',P.sib?`동생 ${esc(P.sib.n)}`:''].filter(Boolean).join(' · ')]); }
   const schs=[f.elem&&sc.elem,f.sec&&sc.mid,f.hs&&(f.hs==='voc'?sc.voc:sc.high),f.univ&&sc.univ].filter(Boolean);
   rows.push(['다닌 학교',schs.length?schs.map(esc).join(' → '):'학교에 다니지 못했습니다']);
   if(f.elem&&P.teacher) rows.push(['첫 담임',`${esc(P.teacher.n)} 선생님`]);
@@ -4277,6 +4903,7 @@ function lifeStory(L){ const P=L.ppl||{}, sc=L.sch||{}, f=L.f, by=L.by||2026, ro
   rows.push(['함께한 사람',P.spouse?`${esc(P.spouse.n)} (${L.f.marA||''}살에 결혼${L.f.widow?` · ${L.f.widA}살에 사별`:''})`:'가정을 꾸리지 않았습니다']);
   if(L.kids&&L.kids.length) rows.push(['아이',L.kids.map(k=>`${k.sex?'딸':'아들'} ${esc(k.n)} (${by+k.b}년생)`).join('<br>')]);
   if(P.friend) rows.push(['평생 친구',esc(P.friend.n)]);
+  if(L.f.hob&&L.f.hob.length) rows.push(['취미',L.f.hob.map(h=>`${esc(h.n)} (Lv.${h.lv}, ${h.a}살부터)`).join(' · ')]);
   return `<p class="soft">이 사람의 이야기</p><dl class="whoami">${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl><p class="note">대학은 실제 대학 이름이고, 사람·회사·가게 이름은 그 나라에 있을 법한 가상의 이름입니다.</p>`; }
 // 돈 이야기
 function moneyStep(L){ const C=L.C, h=(L.money||[]), nw=L.nw, yr=C.med*12;
