@@ -14,9 +14,9 @@ for it in L:
             if im.width > 640: im = im.resize((640, round(im.height * 640 / im.width)), Image.LANCZOS)
             im.save(p, 'JPEG', quality=80, optimize=True, progressive=True); ok += 1; break
         except Exception as e:
-            err = str(e); time.sleep(2 + t * 3)
+            err = str(e); time.sleep((30 if '429' in err else 2) + t * 15)
     else:
         bad += 1; out.append(f"{it['id']} {it['url']} {err}")
-    time.sleep(0.25)
+    time.sleep(1.5)
 open('ph/report.txt', 'w').write(f"ok {ok} skip {skip} bad {bad}\n" + "\n".join(out))
 print(ok, skip, bad)
