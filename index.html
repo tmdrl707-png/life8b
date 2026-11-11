@@ -191,6 +191,16 @@ h3{font-size:1rem;margin:0} p{margin:0}
 #s-end input{border:1px solid #4A5C6B;border-radius:10px;padding:.7rem .8rem;background:#1F2D3A;color:#fff;width:100%}
 #s-end .btn{background:transparent;color:#fff;border-color:#6B7E8D}
 #s-end .btn.primary{background:var(--fox);border-color:var(--fox)}
+#s-end .cardnews{display:flex;flex-direction:column;gap:1.4rem}
+#s-end .ncard{background:#F6F2EA;color:#2A2622;border-radius:16px;overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,.5);animation:slow 1.2s ease both}
+#s-end .nimg{position:relative;background:#3A4450}
+#s-end .nimg canvas{display:block;width:100%;height:auto;aspect-ratio:4/3}
+#s-end .nage{position:absolute;left:12px;top:12px;background:rgba(20,24,30,.78);color:#FFC9A8;font-weight:700;font-size:.85rem;padding:.25rem .7rem;border-radius:99px}
+#s-end .nno{position:absolute;right:12px;top:12px;background:rgba(20,24,30,.6);color:#fff;font-size:.75rem;padding:.25rem .6rem;border-radius:99px}
+#s-end .nbody{padding:1rem 1.1rem 1rem}
+#s-end .nbody p{margin:0;font-size:1.15rem;line-height:1.55;font-weight:700;word-break:keep-all}
+#s-end .nbody .cr{display:block;margin-top:.6rem;font-size:.62rem;color:#7A7068;word-break:break-all}
+#s-end .nbody .cr a{color:inherit;text-decoration:none}
 #s-end .photos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1.3rem}
 #s-end .photos li{display:grid;grid-template-columns:minmax(0,9.5rem) minmax(0,1fr);gap:.9rem;align-items:center;animation:slow 1.4s ease both}
 #s-end .photos li:nth-child(even){grid-template-columns:minmax(0,1fr) minmax(0,9.5rem)}
@@ -6510,7 +6520,7 @@ const PHOTO_GEN={"baby":[["The_newborn_baby_in_men.jpg","4/4d","Kimberly Vardema
 /* ========== 추억 사진: 그 일이 있었던 날의 한 장면을 필름 사진처럼 그린다 ==========
    실제 사진이 아니라 그림이다. 배경은 흐리게(얕은 심도), 사람은 또렷하게 그린 뒤
    빛 번짐 · 필름 입자 · 주변부 어두움 · 바랜 색 · 필름 카메라 날짜 표시를 더해 '그날 찍은 사진'처럼 보이게 한다. */
-const PH_W=320, PH_H=240;
+let PH_W=320, PH_H=240;
 function phRng(seed){ let a=seed>>>0; return ()=>{ a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 function phC(w,h){ const c=document.createElement('canvas'); c.width=w||PH_W; c.height=h||PH_H; return c; }
 // 줄였다 키우기를 거듭해 부드럽게 흐린다 (모든 브라우저에서 같은 결과)
@@ -6609,7 +6619,21 @@ function phBadge(x,cx,cy,rot,co,name,col){ x.save(); x.translate(cx,cy); x.rotat
   phRR(x,-46,-62,92,120,6); x.fillStyle='#FBFBF8'; x.fill(); x.fillStyle=col||'#2858A8'; x.fillRect(-46,-62,92,22); phRR(x,-30,-30,34,40,2); x.fillStyle='#C8D0D8'; x.fill();
   phText(x,co,0,-51,9,'#FFFFFF',null,86); phText(x,name,10,24,11,'#1E2B37',null,80); x.fillStyle='#9AA4AE'; x.fillRect(8,-24,30,3); x.fillRect(8,-16,24,3); x.restore(); }
 // 장면 고르기: 기억의 종류와 그 삶의 나라·계절·나이
-function photoKind(m){ if(m.sc) return m.sc; const k=sceneKindOf(m.t); if(k!=='life') return k; return m.a>=6&&/친구|같이|함께|이웃/.test(m.t)?'friend':m.a>=19&&/여행|바다|산|길/.test(m.t)?'travel':'life'; }
+// 기억 한 줄을 읽고 어떤 장면의 사진이 어울릴지 고른다. 글에 나온 구체적인 말을 먼저 보고, 그래도 모르면 기억에 붙은 종류를 쓴다.
+const CARD_RULES=[
+  [/홍수|물에 잠|강물이 넘|큰비|몬순/,'flood'],[/지진|땅이 크게 흔들/,'quake'],[/폭풍|태풍|허리케인|지붕이 날|큰바람|토네이도/,'storm'],[/가뭄|비가 오지 않|우물이 말|물이 귀/,'drought'],[/폭염|무더위|열대야/,'heat'],[/한파|눈보라|큰 눈|난방이|꽁꽁/,'cold'],[/산불|숲에 큰불|불이 나|화재/,'fire'],[/화산|용암/,'volcano'],
+  [/태어났|출산|갓난|아기가 |첫걸음|돌잔치|동생이 태어/,'baby'],[/떠나보|세상을 떠|돌아가셨|장례|먼 길을/,'farewell'],[/결혼|혼례|웨딩|혼인|가정을 꾸/,'wedding'],
+  [/입원|수술|병원|진료|응급실|주사/,'hosp'],[/아파|열이|앓|돌림병|말라리아|콜레라|감기|독감|진단/,'sick'],[/졸업/,'grad'],[/집을 샀|집을 짓|새 집|입주|집이 생|새 아파트/,'house'],
+  [/일자리를 잃|해고|사람을 줄|문을 닫|실직|파산/,'jobloss'],
+  [/달리기|결승|운동회|체육|경기|대회|선수|축구|농구|야구|줄다리기|넘어져|계주|이어달리기/,'sport'],
+  [/무대|발표회|재롱|공연|연주|합창|콘서트|대본/,'stage'],
+  [/축제|명절|잔치|행사|제사|설날|추석/,'fest'],
+  [/시험|입학|수업|교실|성적|수능|공부|합격|숙제|선생님|학교/,'school'],
+  [/일으켜|도와|손을 잡|짝꿍|친구|고백|좋아하는|함께 웃|같이 놀|이웃/,'friend'],
+  [/출근|퇴근|야근|회사|직장|면접|공장|농사|농장|논밭|어장|그물|광산|일터|일자리|손님|장사|납품/,'job'],
+  [/돈|월급|빚|물가|살림|저금|통장|사업|가게/,'money'],[/바다|파도|해변|배를|물고기/,'sea'],[/이사|도시로|떠난다|다른 나라|여행|기차|버스|공항|고향/,'travel'],[/강아지|고양이|동물|반려/,'pet']];
+function cardKind(t){ t=String(t||''); for(const [re,k] of CARD_RULES) if(re.test(t)) return k; return null; }
+function photoKind(m){ const k=cardKind(m.t); if(k) return k; if(m.sc&&m.sc!=='job'&&m.sc!=='money'&&m.sc!=='life') return m.sc; return m.a>=6&&/친구|같이|함께|이웃/.test(m.t)?'friend':m.a>=19&&/여행|바다|산|길/.test(m.t)?'travel':'life'; }
 function drawPhoto(cv,m,L,idx){
   if(!L.look) L.look=randLook(L.C.rg);
   const seed=Math.floor(hashStr(m.t+m.a+L.name)*1e9)+idx*7919, r=phRng(seed), C=L.C, kind=photoKind(m), a=m.a, U=L.set==='U';
@@ -6842,8 +6866,11 @@ function finishFilm(x,r,o){ const W=PH_W,H=PH_H;
    PHOTO_WIKI: 도시·명소·음식·축제·동물·대학 이름 → [파일 이름, 썸네일 경로, 저작자, 라이선스]
    PHOTO_GEN: 장면 종류 → 같은 형식의 사진 몇 장 (사람 얼굴이 드러나지 않는 사진 위주로 골랐다) */
 const PH_BASE='https://upload.wikimedia.org/wikipedia/commons/';
+// 사람이 나오는 장면이나 분위기 사진은 사건과 어긋나기 쉽다. 글과 확실히 맞는 종류만 실제 사진을 쓰고, 나머지는 그 장면을 그림으로 그린다.
+const GEN_ALWAYS=new Set(['baby','home_baby','toy','hosp','wedding','grad','flood','quake','storm','drought','heat','cold','fire','volcano','harvest','harvest_a','sea','farewell','house','job_office','job_factory','job_farm','job_fish','job_hosp','job_shop','job_mine','job_herd','job_dream','job_school','job_part','job_drive']);
+const GEN_NEED={play:/놀이터|그네|미끄럼|연날리기|연을/,bike:/자전거/,coffee:/커피|카페/,study:/공부|숙제|필기|노트|연필/,school:/수업|교실|선생님/,money:/돈|월급|통장|저금|빚|물가/,sick:/아파|열이|감기|앓|독감/,pet:/강아지|고양이|동물/,sport:/달리기|운동|체육|경기|대회|결승|계주|트랙/,library:/도서관/,bag:/가방|책가방/};
 function photoSrc(m,L,idx){ const C=L.C, t=String(m.t||''), kind=photoKind(m), sch=L.sch||{}, n=Math.floor(hashStr(t+'|'+m.a)*97);
-  const W=k=>k&&PHOTO_WIKI[k]?{p:PHOTO_WIKI[k],place:k}:null, GN=k=>{ const a=PHOTO_GEN[k]; return a&&a.length?{p:a[n%a.length]}:null; };
+  const W=k=>k&&PHOTO_WIKI[k]?{p:PHOTO_WIKI[k],place:k}:null, GN=k=>{ const a=PHOTO_GEN[k]; if(!a||!a.length) return null; if(!GEN_ALWAYS.has(k)&&!(GEN_NEED[k]&&GEN_NEED[k].test(t))) return null; return {p:a[n%a.length]}; };
   // 그 무렵 하던 일의 일터 사진 (운전은 차, 관광 일은 그 나라 명소, 날품팔이·건설은 공사장)
   const jobPh=j=>{ const n=j?j.n:(L.job&&L.job.n)||'', jk=j?(j.k||jobKindOf(j.n)):((L.job&&L.job.kind)||'office');
     if(/운전|택시|버스|화물/.test(n)) return GN('job_drive'); if(jk==='tour') return W(C.landmark)||GN('travel');
@@ -6855,11 +6882,10 @@ function photoSrc(m,L,idx){ const C=L.C, t=String(m.t||''), kind=photoKind(m), s
   // 작은 장면(놀이터·책상·시장 같은 곳)의 기억: 그 장소에 어울리는 사진
   if(m.sp&&!m.big&&!/^(sick|hosp|farewell|fest|travel|sea)$/.test(kind)){ const sp=m.sp, a=m.a;
     if(a<3&&/^(mom|dad|gran|sib|kid|yard|table|tv)$/.test(sp)) return GN('home_baby');
-    const map={play:'play',yard:U?'park':(asia?'village_a':'garden'),nature:U?'park':(asia?'village_a':'village'),market:'job_shop',shop:'job_shop',hall:'school',elem:a<10?'school':'bag',mid:'bag',desk:a>=15?'library':'study',study:a>=15?'library':'study',cafe:'coffee',friend:a<13?'play':'friend',mom:'home',dad:'home',gran:'home',sib:'home',spouse:'home',kid:a<45?'toy':'home',tv:'home',hosp:'hosp',sea:'sea',far:'travel',mount:'travel',bus:'travel',station:L.c==='KR'?'station_kr':'travel'};
     if(sp==='table') return W(C.food)||GN('home');
     if(sp==='work') return jobPh((L.jobs||[]).filter(x=>x.a<=a).pop());
     if((sp==='far'||sp==='mount')&&C.landmark) return W(C.landmark)||GN('travel');
-    const g=map[sp]&&GN(map[sp]); if(g) return g; }
+  }
   if(sch.univ&&t.includes(sch.univ)) return W(sch.univ)||GN('grad');
   if(C.landmark&&t.includes(C.landmark)) return W(C.landmark)||GN('travel');
   if(C.food&&t.includes(C.food)) return W(C.food)||GN('life');
@@ -6868,12 +6894,12 @@ function photoSrc(m,L,idx){ const C=L.C, t=String(m.t||''), kind=photoKind(m), s
   if(/도시|큰 거리/.test(t)&&t.includes(C.city)) return W(C.city);
   switch(kind){
     case 'town': return home();
-    case 'travel': return W(C.landmark)||GN('travel');
+    case 'travel': return /여행|명소|구경|관광|소풍|나들이/.test(t)?(W(C.landmark)||GN('travel')):null;
     case 'sea': return /^(wt|cs)$/.test(C.lt)?(W(C.landmark)||GN('sea')):GN('sea');
     case 'fest': return W(C.fest)||GN('fest');
-    case 'job': case 'jobloss': { const js=L.jobs||[]; return jobPh(js.find(x=>x.co&&t.includes(x.co))||js.filter(x=>x.a<=m.a).pop()); }
+    case 'job': case 'jobloss': { if(!/출근|퇴근|야근|회사|직장|면접|공장|농사|농장|논밭|어장|광산|일터|일자리|해고|실직/.test(t)) return null; const js=L.jobs||[]; return jobPh(js.find(x=>x.co&&t.includes(x.co))||js.filter(x=>x.a<=m.a).pop()); }
     case 'harvest': return GN(asia?'harvest_a':'harvest');
-    case 'life': return m.a<3?GN('home_baby'):/먹|밥|음식|요리|맛/.test(t)?(W(C.food)||GN('life')):m.a<13?GN('play'):GN('home')||W(C.food);
+    case 'life': return m.a<3?GN('home_baby'):/먹|밥|음식|요리|맛/.test(t)?(W(C.food)||GN('life')):null;
     default: return GN(kind);
   } }
 const jobKindOf=n=>{ for(const id in JOBS){ if(G.life&&G.life.tx(JOBS[id].n)===n) return JOBS[id].kind; } return sigKind(n); };
@@ -6882,7 +6908,8 @@ const mwEnc=f=>encodeURIComponent(f).replace(/'/g,'%27').replace(/%3B/gi,';').re
 function phURL(p){ const f=mwEnc(p[0]), h=p[1]; return h.endsWith('!')?`${PH_BASE}${h.slice(0,-1)}/${f}`:`${PH_BASE}thumb/${h}/${f}/500px-${f}`; }
 function phLoad(src){ return new Promise((ok,no)=>{ const i=new Image(); i.crossOrigin='anonymous'; const tm=setTimeout(()=>no('timeout'),9000); i.onload=()=>{ clearTimeout(tm); ok(i); }; i.onerror=()=>{ clearTimeout(tm); no('err'); }; i.src=src; }); }
 // 실제 사진을 필름 사진처럼: 살짝 기울고 당겨 찍은 구도 + 바랜 색 · 입자 · 날짜
-function drawRealPhoto(cv,img,m,L,idx){ const r=phRng(Math.floor(hashStr(m.t+'|'+m.a)*1e9)), x=cv.getContext('2d'); cv.width=PH_W; cv.height=PH_H;
+function drawRealPhoto(cv,img,m,L,idx){ const w0=PH_W,h0=PH_H; PH_W=480; PH_H=360; try{ drawRealPhoto0(cv,img,m,L,idx); } finally{ PH_W=w0; PH_H=h0; } }
+function drawRealPhoto0(cv,img,m,L,idx){ const r=phRng(Math.floor(hashStr(m.t+'|'+m.a)*1e9)), x=cv.getContext('2d'); cv.width=PH_W; cv.height=PH_H;
   const s=Math.max(PH_W/img.naturalWidth,PH_H/img.naturalHeight)*(1.04+r()*.1), w=img.naturalWidth*s, h=img.naturalHeight*s;
   x.save(); x.translate(PH_W/2,PH_H/2); x.rotate((r()-.5)*.03); x.imageSmoothingQuality='high'; x.drawImage(img,-w/2+(r()-.5)*(w-PH_W)*.5,-h/2+(r()-.5)*(h-PH_H)*.4,w,h); x.restore();
   const kind=photoKind(m), night=/fest|stage|farewell|life/.test(kind);
@@ -6910,7 +6937,7 @@ function finishLife(){
   if(sp&&!L.f.widow) voices.push([`${L.sex?'남편':'아내'} ${sp.n}`,L.s.r>=55?'함께여서 다행이었어요. 다음에도 꼭 다시 만나요.':'더 많이 웃게 해 주지 못해 미안해요. 고마웠어요.']);
   const lastCo=(L.jobs||[]).filter(j=>j.co).slice(-1)[0];
   voices.push(L.s.k>=60&&lastCo?[`${lastCo.co}에서 함께 일한 후배`,'모르는 걸 물으면 한 번도 귀찮아하지 않으셨어요.']:['이웃','길에서 마주치면 늘 먼저 인사해 주던 분이었어요.']);
-  const photosHTML=arr=>`<ul class="photos">${arr.map((m,i)=>`<li style="animation-delay:${i*.5}s"><figure class="pf" style="margin:0"><canvas data-mi="${L.mem.indexOf(m)}" width="320" height="240"></canvas><figcaption>${by+m.a}년 · ${m.a}살</figcaption><small class="cr"></small></figure><div><b>${m.a}살 · ${by+m.a}년</b><p>${esc(m.t)}</p></div></li>`).join('')}</ul><p class="note">사진은 위키백과·위키미디어 공용에 자유 이용으로 공개된 실제 사진입니다(사진 아래에 찍은 사람과 라이선스 표시). 그 사람이 사는 도시·고향·명소·음식·대학은 그곳의 실제 사진이고, 결혼·졸업 같은 장면은 비슷한 실제 사진입니다. 사진을 불러오지 못하면 그림으로 대신합니다.</p>`;
+  const photosHTML=arr=>`<div class="cardnews">${arr.map((m,i)=>`<article class="ncard"><div class="nimg"><canvas data-mi="${L.mem.indexOf(m)}" width="480" height="360"></canvas><span class="nage">${m.a}살 · ${by+m.a}년</span><span class="nno">${i+1} / ${arr.length}</span></div><div class="nbody"><p>${esc(m.t)}</p><small class="cr"></small></div></article>`).join('')}</div><p class="note">사진은 위키백과·위키미디어 공용에 자유 이용으로 공개된 실제 사진입니다(카드 아래에 찍은 사람과 라이선스 표시). 그 사람이 사는 도시·고향·명소·음식·대학, 그리고 재난·병원·결혼·졸업처럼 장면이 분명한 기억은 실제 사진을 쓰고, 나머지는 그 장면을 그림으로 그립니다.</p>`;
   const steps=[
     `<p class="soft">${by+a}년 · ${a}살 · ${seasonOf(L)}</p><p class="big">${esc(L.name)}(${by}~${by+a})${josa(L.name,'은','는').slice(L.name.length)} 조용히 눈을 감았습니다.</p><p>${esc(who)} ${how}</p>`,
     `<p class="soft">눈을 감자, 기억들이 사진처럼 스쳐 갑니다.</p>${photosHTML(mems)}`,
