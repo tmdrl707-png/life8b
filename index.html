@@ -4917,6 +4917,9 @@ function furnSprite(type,w,h,kind){
       case 'sofa': P(0,0,w,h,'#7C93B8'); P(2,h-6,w-4,5,'#9FB3D3'); P(0,0,w,3,'#5A6E90'); P(0,0,3,h,'#5A6E90'); P(w-3,0,3,h,'#5A6E90'); break;
       case 'tv': P(0,0,w,h,'#22303B'); P(2,1,w-4,h-3,'#5E9BD1'); P(3,2,4,1,'#A8D0F0'); break;
       case 'bed': P(0,0,w,h,'#E5C7D2'); P(2,2,8,h-4,'#FFFFFF'); P(12,0,w-12,h,'#D48AA8'); P(12,h-3,w-12,3,'#B86A88'); break;
+      case 'mat': P(0,0,w,h,'#D8B878'); for(let i=2;i<w;i+=4) P(i,0,1,h,'#B8985A'); for(let j=2;j<h;j+=4) P(0,j,w,1,'#C8A868'); P(0,0,w,1,'#A8884A'); P(0,h-1,w,1,'#A8884A'); break;
+      case 'radio': P(Math.round(w/2)-6,h-3,12,3,wD); P(Math.round(w/2)-5,1,10,h-4,'#6A4A2E'); P(Math.round(w/2)-4,2,4,4,'#3A3A3A'); P(Math.round(w/2)+1,2,3,1,'#E8C040'); P(Math.round(w/2)+1,4,3,1,'#E8C040'); P(Math.round(w/2)+4,-2,1,4,'#888888'); break;
+      case 'hearth': P(0,h-4,w,4,'#9A8A78'); P(3,2,10,h-6,'#5A5048'); P(5,1,6,2,'#E87030'); P(6,0,4,1,'#F8C040'); P(w-16,2,8,h-6,'#4A6A8A'); P(w-15,1,6,2,'#6A8AAA'); P(w-6,4,4,h-8,'#C89048'); break;
       case 'piano': P(0,0,w,h,'#2B2B2B'); for(let i=2;i<w-2;i+=3) P(i,h-5,2,4,'#F8F8F8'); break;
       case 'board':
         if(kind==='office'){ P(0,0,w,h,'#F8F8F8'); P(0,h-1,w,1,'#A8B0B8'); P(6,2,20,1,'#3870D0'); P(40,3,24,1,'#E05050'); P(70,2,14,2,'#40A048'); }
@@ -5408,7 +5411,7 @@ function label(txt,x,y,size,bg,fg,bd){ g.font=`${size}px ${LABEL_FONT}`; const w
 
 /* ---------- 땅 지도 만들기 ---------- */
 const TCOL={g:'#88C860',t:'#58A040',f:'#A8D878',p:'#E8D4A0',k:'#D8D8D0',r:'#6E767E',d:'#C8A878',h:'#585E68',w:'#3C90E0',s:'#F0DCA0',z:'#E8D0A0',c:'#B8A060'};
-function terrain(){ const L=G.life, key=['T',L.set,L.C.rg,L.C.lt,L.C.tier<=1?1:0].join('|'); if(terrain.k===key) return terrain.v;
+function terrain(){ const L=G.life, key=['T',L.set,L.C.rg,L.C.lt,L.C.tier<=1?1:L.C.tier>=3?3:L.C.gni<2?2.5:2].join('|'); if(terrain.k===key) return terrain.v;
   const U=L.set==='U', T=[], poor=L.C.tier<=1;   // 살림이 어려운 나라의 도시는 흙길이 많다
   for(let y=0;y<OUT.h;y++){ const row=[]; for(let x=0;x<OUT.w;x++){ const cx=x+.5, cy=y+.5; let t='g';
     if(hash(x,y)<.035) t='f'; else if(!U&&hash(y,x+40)<.03) t='t';
@@ -5417,9 +5420,9 @@ function terrain(){ const L=G.life, key=['T',L.set,L.C.rg,L.C.lt,L.C.tier<=1?1:0
     if(inRect(cx,cy,OUT.patch.nature)) t=U?(hash(x,y)<.3?'f':'g'):(inRect(cx,cy,[1.6,20.6,4.8,3.8])?'w':'s');
     if(inRect(cx,cy,OUT.patch.mount)) t=L.C.lt==='ds'?'z':L.C.lt==='fr'?'t':'g';
     if(inRect(cx,cy,OUT.patch.sea)) t='w'; else if(inRect(cx,cy,OUT.patch.sand)) t='s';
-    if(onRoad(cx,cy,0)) t=(U&&!poor)||x>=46?'r':'d';
+    if(onRoad(cx,cy,0)) t=(U&&!poor)||L.C.tier>=3||x>=46?'r':'d';
     if(inRect(cx,cy,OUT.hw)) t='h';
-    if(U&&!poor&&t!=='r'&&t!=='h'&&x<46&&onRoad(cx,cy,1.05)&&!inRect(cx,cy,OUT.patch.nature)) t='k';
+    if(U&&!poor&&t!=='r'&&t!=='h'&&x<46&&onRoad(cx,cy,1.05)&&!inRect(cx,cy,OUT.patch.nature)) t=L.C.tier===2&&L.C.gni<2?'p':'k';   // 살림이 빠듯한 나라의 도시: 길가는 흙
     row.push(t); } T.push(row); }
   // 건물과 나무 밑에는 꽃을 두지 않는다 (꽃은 살랑거리며 다시 그려지므로)
   for(let y=0;y<OUT.h;y++) for(let x=0;x<OUT.w;x++){ if(T[y][x]!=='f') continue; const cx=x+.5, cy=y+.5;
@@ -5435,7 +5438,7 @@ function worldLayer(){ const L=G.life, key=worldKey(); if(worldLayer.k===key) re
     if(t==='c'){ const tile=cached(['CROP',sp].join('|'),16,16,(cx)=>{ const P=(X,Y,Wd,H,cc)=>pr(cx,X,Y,Wd,H,cc); P(0,0,16,16,'#9A7048'); for(let r=0;r<4;r++){ P(0,r*4+3,16,1,'#7A5030'); if(sp!==3) for(let q=0;q<4;q++){ P(q*4+1,r*4,2,3,sp===2?'#E8C040':'#58A040'); P(q*4+2,r*4-1,1,1,sp===2?'#F8E070':'#78C060'); } } }); x.drawImage(tile,i*PX,y*PX+oy); }
     else x.drawImage(groundTile(t==='w'?'w':t,sp,(i*7+y*3)%4,0),i*PX,y*PX+oy); }
   // 큰길 가운데 선
-  for(let i=0;i<OUT.w;i+=2){ if(i>=15&&i<=17||i>=30&&i<=32||(i>=46&&i<=50)) continue; if((L.set==='U'&&L.C.tier>1)||i>=50) pr(x,i*PX+4,12*PX+oy-1,8,2,'#F0F0E8'); }
+  for(let i=0;i<OUT.w;i+=2){ if(i>=15&&i<=17||i>=30&&i<=32||(i>=46&&i<=50)) continue; if((L.set==='U'&&L.C.tier>1)||L.C.tier>=3||i>=50) pr(x,i*PX+4,12*PX+oy-1,8,2,'#F0F0E8'); }
   for(let y=0;y<OUT.h;y+=2){ pr(x,48*PX-1,y*PX+oy+4,2,8,'#F2C14E'); }
   // 먼 곳의 명소
   const lt=L.C.lt, mp=OUT.patch.mount;
@@ -5454,18 +5457,29 @@ function worldLayer(){ const L=G.life, key=worldKey(); if(worldLayer.k===key) re
   if(lt==='fr') for(let i=0;i<7;i++) x.drawImage(treeSprite(treeTypeFor(L.C.rg,i+3),sp,1),(mp[0]+.2+(i%4)*1.3)*PX,(mp[1]+.5+Math.floor(i/4)*2.6)*PX+oy);
   if(lt==='ds') for(let i=0;i<3;i++) x.drawImage(treeSprite('cactus',sp,1),(mp[0]+.6+i*1.6)*PX,(mp[1]+4.6)*PX+oy);
   worldLayer.k=key; worldLayer.c=c; return c; }
-function kindOf(key){ const L=G.life, U=L.set==='U', rg=L.C.rg, poor=L.C.tier<=1, tin=(rg==='AF'||rg==='SA'||rg==='SE'||rg==='OC'||rg==='LA')&&L.C.tier<=2;
-  const code=L.C.code;
+function kindOf(key){ const L=G.life, U=L.set==='U', C=L.C, rg=C.rg, code=C.code, T=C.tier, poor=T<=1, R2=!U&&T<=2,
+    tin=['AF','SA','SE','OC','LA'].includes(rg)&&T<=2, mud=C.arid||['AF','YE','SY'].includes(code), soviet=['EA','CA','EE'].includes(rg);
   switch(key){ case 'home': case 'friend':
       if(code==='MN'||(!U&&['KZ','KG'].includes(code))) return 'ger';
-      if(!U&&(rg==='SE'||rg==='OC')&&L.C.tier<=3) return 'stilt';
-      if(!U&&L.C.arid&&L.C.tier<=3) return 'adobe';
-      if(poor) return U?'tinS':rg==='LA'?'tin':'thatch';
-      return L.C.home[U?0:1];
-    case 'elem': case 'mid': return poor?'schoolS':'school'; case 'shop': return (tin&&!U)||poor?'tin':'shop'; case 'study': return U&&!poor?'office':'hall'; case 'market': return 'market';
-    case 'work': { const j=L.job, k=j?j.kind:'part'; return {office:'office',factory:'factory',farm:'barn',herd:'barn',shop:'shop',school:'school',hosp:'hospital',dream:'studio',fish:'port',mine:'mine',tour:'kiosk',part:U&&!poor?'office':'tin'}[k]||'shop'; }
-    case 'cafe': return poor?'kiosk':'cafe'; case 'hosp': return poor?'clinic':'hospital'; case 'hall': return rg==='ME'||rg==='CA'?'dome':'hall'; case 'station': return 'station'; case 'far': return U?(poor?'tin':L.C.home[1]):'office'; }
+      if(code==='KP') return U?'apt':'hanok';
+      if(T>=4) return rg==='OC'?'house':code==='SG'&&U?'apt':C.home[U?0:1];   // 넉넉한 나라: 그 지역의 보통 집 (싱가포르 도시는 공공 아파트)
+      if(!U&&(rg==='SE'||rg==='OC')) return 'stilt';                            // 동남아·태평양 시골: 기둥 위의 집
+      if(!U&&(mud||['BO','PE'].includes(code))) return 'adobe';                 // 사막·건조한 산지의 시골: 흙벽돌 집
+      if(poor) return U?(mud?'adobe':soviet?'apt':'tinS'):rg==='LA'?'tin':'thatch';   // 가장 가난한 나라
+      if(!U&&rg==='AF'&&T>=3) return 'flat';                                  // 아프리카에서 살림이 나은 나라의 시골: 시멘트 집
+      if(!U&&rg==='LA'&&T<=2) return 'tin';
+      return C.home[U?0:1];
+    case 'elem': case 'mid': return poor||R2?'schoolS':'school';
+    case 'shop': return (tin&&!U)||poor?'tin':'shop';
+    case 'study': return U&&T>=2&&!(T===2&&C.gni<2)?'office':'hall';
+    case 'market': return 'market';
+    case 'work': { const j=L.job, k=j?j.kind:'part'; return {office:'office',factory:'factory',farm:'barn',herd:'barn',shop:poor?'tin':'shop',school:poor||R2?'schoolS':'school',hosp:poor||R2?'clinic':'hospital',dream:'studio',fish:'port',mine:'mine',tour:'kiosk',part:U&&!poor?(T===2&&C.gni<2?'tin':'office'):T>=3?'barn':'tin'}[k]||'shop'; }
+    case 'cafe': return poor||R2?'kiosk':'cafe'; case 'hosp': return poor||R2?'clinic':'hospital'; case 'hall': return rg==='ME'||rg==='CA'?'dome':'hall'; case 'station': return 'station';
+    case 'far': return U?(poor?(mud?'adobe':'tinS'):C.home[1]):'office'; }
   return 'house'; }
+// 살림이 어려운 집 안: 소파·텔레비전 대신 돗자리·라디오, 부엌은 숯불 화덕
+function poorHome(L){ return L.C.tier<=1||(L.C.tier===2&&L.famI===2&&L.set==='R'); }
+const FURN_POOR={sofa:'mat',tv:'radio',counter:'hearth'};
 function landmarkSprite(lt,sp){ return cached(['LM',lt,sp].join('|'),88,96,(x,c)=>{ const P=(X,Y,Wd,H,cc)=>pr(x,X,Y,Wd,H,cc);
   if(lt==='mt'){ for(let i=0;i<70;i++){ const w=Math.round(i*1.15)+2; P(44-w/2,10+i,w/2,1,'#8A9A88'); P(44,10+i,w/2,1,'#6A7A68'); if(i<16){ P(44-w/2,10+i,w,1,sp===1&&i>10?'#8A9A88':'#F4F8FC'); } } P(20,60,12,6,'#58A040'); P(60,62,14,6,'#58A040'); }
   else if(lt==='tp'){ for(let k=0;k<4;k++){ const w=76-k*16, y=70-k*14; P(44-w/2,y,w,14,k%2?'#D8C090':'#C8A870'); P(44-w/2,y,w,2,'#E8D8A8'); } P(38,22,12,8,'#C04040'); P(36,18,16,5,'#8A3030'); P(40,62,8,22,'#4A3828'); }
@@ -5473,16 +5487,16 @@ function landmarkSprite(lt,sp){ return cached(['LM',lt,sp].join('|'),88,96,(x,c)
   else if(lt==='ds'){ for(let k=0;k<3;k++){ for(let i=0;i<18;i++){ const w=Math.round(Math.sin(i/18*Math.PI)*40); P(8+k*24+20-w/2,58+i,w,1,i<3?'#F8E8B8':'#E8D098'); } } }
   else { P(10,40,68,50,'#4A8A40'); }
   outline(c); }); }
-function roomLayer(map){ const L=G.life, kind=intKind(map), key=['R',map,kind,L.famI,L.C.rg].join('|'); if(roomLayer.k===key) return roomLayer.c;
+function roomLayer(map){ const L=G.life, kind=intKind(map), ph=map==='home'&&poorHome(L), key=['R',map,kind,L.famI,L.C.rg,ph?1:0].join('|'); if(roomLayer.k===key) return roomLayer.c;
   const c=mk(IW*PX,IH*PX+LAYER_TOP), x=c.getContext('2d'), oy=LAYER_TOP; x.imageSmoothingEnabled=false;
-  const fk=map!=='home'?kind:L.C.code==='JP'?'tatami':(['ME','CA'].includes(L.C.rg)||['AF','IR','PK','IN'].includes(L.C.code))?'carpet':(L.set==='R'&&L.C.tier<=1)?'earth':'home';   // 집 바닥도 나라마다
+  const fk=map!=='home'?kind:L.C.code==='JP'?'tatami':(['ME','CA'].includes(L.C.rg)||['AF','IR','PK','IN'].includes(L.C.code))?'carpet':L.C.tier<=1||(L.set==='R'&&poorHome(L))?'earth':'home';   // 집 바닥도 나라마다
   for(let y=0;y<IH;y++) for(let i=0;i<IW;i++) x.drawImage(floorTile(fk,(i+y)%2),i*PX,y*PX+oy);
   // 벽과 창문
   const wall={home:['#F0E4C8','#D8C8A0'],school:['#E8EEDC','#C8D4B8'],office:['#DCE4EC','#B8C4D0'],factory:['#C8CCD0','#A8ACB0'],farm:['#C8A070','#A88050'],herd:['#C8A070','#A88050'],shop:['#F8ECD8','#E0CCB0'],hosp:['#F4F8FC','#D8E4EC'],mine:['#7A6A58','#5A4A38'],fish:['#C8D8E0','#A8B8C8'],tour:['#F8ECD8','#E0CCB0'],dream:['#EDE0F0','#D0C0D8']}[kind]||['#F0E4C8','#D8C8A0'];
   pr(x,0,oy-LAYER_TOP+4,IW*PX,PX*1.3+LAYER_TOP-4,wall[0]); pr(x,0,oy+PX*1.15,IW*PX,3,wall[1]); for(let i=0;i<3;i++){ const wx=(1.4+i*4.4)*PX; pr(x,wx,oy-6,22,14,'#5A6878'); pr(x,wx+2,oy-4,18,10,'#9ED0F0'); pr(x,wx+2,oy-4,8,2,'#E0F4FF'); }
   pr(x,0,oy-LAYER_TOP+4,IW*PX,2,'#283038'); pr(x,IDOOR[0]*PX-12,oy+IH*PX-8,24,8,'#B08968'); pr(x,IDOOR[0]*PX-10,oy+IH*PX-6,20,2,'#D8B080');
   const fl=map==='home'?HOME.f:INT.f;
-  fl.forEach(f=>x.drawImage(furnSprite(f[0],Math.round(f[3]*PX),Math.round(f[4]*PX),kind),Math.round(f[1]*PX)-1,Math.round(f[2]*PX)+oy-1));
+  fl.forEach(f=>x.drawImage(furnSprite(ph&&FURN_POOR[f[0]]||f[0],Math.round(f[3]*PX),Math.round(f[4]*PX),kind),Math.round(f[1]*PX)-1,Math.round(f[2]*PX)+oy-1));
   if(map==='home'){ if(L.famI===0) x.drawImage(furnSprite('piano',24,11),12*PX-1,4.2*PX+oy-1);
     pr(x,10.8*PX,5.6*PX+oy,2.8*PX,3.4*PX,L.set==='U'?'#D5E3EA':GRASS[spOf(L)][1]); x.drawImage(treeSprite(L.set==='U'?'bush':treeTypeFor(L.C.rg,3),spOf(L),1),12.2*PX-8,5.9*PX+oy);
     pr(x,4.4*PX,4*PX+oy,5*PX,2.6*PX,'#C86A5A'); pr(x,4.6*PX,4.2*PX+oy,4.6*PX,2.2*PX,'#E08A70'); }
