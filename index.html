@@ -237,10 +237,12 @@ h3{font-size:1rem;margin:0} p{margin:0}
 #s-end .rbox{background:#FAF8F2;border-radius:16px;padding:10px 8px 6px;color:#2A2622}
 #s-end .rbox .lgd{color:#4A5560}
 #s-end .res .rbar{color:#E7EEF4}#s-end .res .rbar .rt{background:rgba(255,255,255,.14)}#s-end .res .rbar .rv small{color:#AFC0CD}
+.lchart2{width:100%;display:block;margin:4px 0}.lchart2 .lgrid{stroke:#E1E7EC;stroke-width:1}.lchart2 .ltick{font-size:11px;fill:#6A7784}.lchart2 .lmark{stroke:#E2703A;stroke-width:1.5;stroke-dasharray:3 3}.lchart2 .lmk{fill:#E2703A;font-weight:700}
+#s-end .rbox .rcap{margin:2px 6px 0;font-size:.82rem;color:#7A6A5A;font-weight:700}#s-end .rbox+.rbox{margin-top:10px}
 /* ----- 엔딩 슬라이드쇼 ----- */
 #s-end .slideshow{position:relative;z-index:2;display:flex;flex-direction:column;gap:14px;min-height:calc(100dvh - 3rem)}
-#s-end .sbar{height:4px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden}
-#s-end .sbar i{display:block;height:100%;background:#FFC9A8;transition:width .35s ease}
+#s-end .sprog{height:4px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden}
+#s-end .sprog i{display:block;height:100%;background:#FFC9A8}
 #s-end .shead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:.8rem;color:#AFC0CD}
 #s-end .shead .kick{color:#FFC9A8;font-weight:700;letter-spacing:.03em}
 #s-end .slide{flex:1;animation:slideIn .45s ease both}
@@ -5975,12 +5977,12 @@ function specText(L,s){ const E=SPEC[s]; if(!E) return s; const g=specGroup(L); 
 STAT.t='기술'; STAT.e='경험';
 const AXES=['j','k','t','e','r'];                       // 오각형: 행복이 맨 위, 시계 방향
 const AX_N={j:'행복',k:'지식',t:'기술',e:'경험',r:'관계'};
-const REL_N={mom:'엄마',dad:'아빠',gran:'할머니',sib:'형제자매',friend:'친구',spouse:'배우자',kids:'아이들',coll:'동료',nb:'이웃'};
-const REL_FADE={mom:.35,dad:.35,gran:.45,sib:.55,friend:1.3,spouse:.25,kids:.25,coll:1.8,nb:.9};
+const REL_N={kin:'친척',mom:'엄마',dad:'아빠',gran:'할머니',sib:'형제자매',friend:'친구',spouse:'배우자',kids:'아이들',coll:'동료',nb:'이웃'};
+const REL_FADE={kin:.5,mom:.6,dad:.6,gran:.6,sib:.8,friend:1.6,spouse:.7,kids:.6,coll:2,nb:1.1};
 const REL_RX=[['spouse',/\{spouse\}|\{lover\}|배우자|남편|아내|연인|애인|신랑|신부|결혼/],['kids',/\{kid\}|아이가|아이를|아이와|아이의|딸|아들|손주|육아/],['friend',/\{friend\}|\{bff\}|친구|단짝|짝꿍|동창/],
   ['coll',/\{coll\d?\}|동료|후배|선배|팀장|사장|상사|직원|손님/],['mom',/엄마|어머니|\{mom\}|부모님/],['dad',/아빠|아버지|\{dad\}|부모님/],['gran',/할머니|할아버지|조부모/],['sib',/동생|언니|오빠|누나|형이|형과|형제|자매|\{sib\}/],['nb',/이웃|마을|동네|주민/]];
 // 원래의 사망률 식은 예전 건강 눈금에 맞춰져 있어, 그 계산을 할 때만 예전 눈금으로 바꿔 넣는다 (기대수명이 나라 통계와 맞도록)
-const H_OFF=15;
+const H_OFF=15, AUTO_K=.35;
 function hMaxAt(a){ return a<30?100:Math.max(38,100-(a-30)*.72); }
 // 경험의 갈래: 처음이면 크게, 다시 하면 조금
 const EXP_CATS=[['abroad',/외국|해외|다른 나라|비행기|공항|여권/],['travel',/여행|관광|구경을 갔|가 보았|명소|소풍|나들이/],['move',/이사|도시로 떠|이주|새 동네|고향을 떠/],['sea',/바다|해변|파도/],['mount',/산에 올|등산|정상|오름/],
@@ -6000,8 +6002,8 @@ Life.prototype.relInit=function(){ const P=this.ppl||{}, f=this.f, fm=this.fam, 
   this.rel=R; };
 Life.prototype.relAgg=function(){ const v=Object.values(this.rel||{}).sort((a,b)=>b-a); const top=(v[0]||0)+(v[1]||0), rest=(v[2]||0)+(v[3]||0)+(v[4]||0); return clamp(.6*top/2+.4*rest/3,0,100); };
 Life.prototype.relAdd=function(d,txt){ const R=this.rel||(this.rel={}); let keys=[]; for(const [k,re] of REL_RX) if(re.test(txt||'')&&k in R) keys.push(k);
-  const tg=keys.length?keys:Object.keys(R), m=keys.length?1.5/Math.sqrt(keys.length):.45;
-  tg.forEach(k=>{ let dd=d*m; if(dd>0) dd*=Math.min(1,(104-R[k])/60); R[k]=Math.round(clamp(R[k]+dd,0,100)*10)/10; }); };
+  const tg=keys.length?keys:Object.keys(R), m=keys.length?1.1/Math.sqrt(keys.length):.35;
+  tg.forEach(k=>{ let dd=d*m; if(dd>0) dd*=Math.max(.06,1-Math.pow(R[k]/105,2)); R[k]=Math.round(clamp(R[k]+dd,0,100)*10)/10; }); };
 Life.prototype.expAdd=function(t){ const c=expCat(t); if(!c) return 0; const X=this.xc||(this.xc={}), n=(X[c]=(X[c]||0)+1); const s=this.s;
   const d=(n===1?1.5:.3/n)*Math.max(.2,1-s.e/100); s.e=clamp(s.e+d,0,100); return d; };
 // 저장된 옛 삶을 새 체계로 한 번 바꾼다 (지식·건강·행복은 그대로, 기술·경험·사람별 친밀도는 기록에서 다시 계산)
@@ -6023,21 +6025,27 @@ Life.prototype.spendable=function(){ return this.cash-this.C.med*3; };
 const RX_HARD=/등산|마라톤|철인|밤새|밤샘|야간|밤일|철야|원정|배낭|오지|장거리|멀리 떠|무리해서|격하게|산에 오른|대회에 나|전력으로|뛰어든다|헤엄쳐/, RX_WORK=/더 일한다|야근|부업|잔업|두 가지 일|밤늦게까지 일/;
 Life.prototype.optCost=function(fx){ if(!fx) return 0; let c=0; if(fx['@']<0) c+=-fx['@']*this.C.med; if(fx.H>0&&!this.house) c+=this.housePrice()*fx.H/100; return c; };
 Life.prototype.optBlocked=function(o,kind){ if(!o) return ''; const fx=kind==='m'?o.okFx:kind==='ch'?(o.ok&&o.ok[1]):o.fx, lab=String(o.l||o.label||''), s=this.s, a=this.age;
-  if(a>=8&&s.h<60&&RX_HARD.test(lab)) return '건강이 좋지 않아요';
+  if(a>=8&&s.h<66&&RX_HARD.test(lab)) return '건강이 좋지 않아요';
   if(a>=19&&s.h<38&&RX_WORK.test(lab)) return '몸이 버티기 어려워요';
-  const c=this.optCost(fx); if(c>0&&a>=16){ const after=this.cash-c+(fx&&fx.H>0?this.housePrice()*fx.H/100*.7:0); if(after< -this.debtLimit()) return '돈이 부족해요'; }
+  const c=this.optCost(fx); if(c>0&&a>=16){ const after=this.cash-c+(fx&&fx.H>0?this.housePrice()*fx.H/100*.7:0); if(after< -this.debtLimit()*(c>=this.C.med*2?1:1.8)) return '돈이 부족해요'; }   // 작은 돈은 빚을 조금 더 지고라도 쓸 수 있다
   return ''; };
 (function(){ const P=Life.prototype;
   const _apply=P.apply; P.apply=function(fx){ if(!fx) return; ensureV2(this); const g=Object.assign({},fx), s=this.s;
+    if(this._auto) for(const k of ['j','k','t','e','r']) if(g[k]>0) g[k]*=AUTO_K;
     if(g.r){ this.relAdd(g.r,this._why||''); delete g.r; }
-    if(this._ctx==='cal'||this._ctx==='scene'){ if(g.j) g.j*=.6; if(g.k>0) g.k*=.5; }
+    // 직접 고르지 않고 저절로 지나간 일은 얻는 것이 적다 (돌아다니며 직접 고를수록 삶의 모양이 커진다): 위의 AUTO_K
+    if(this._ctx==='cal'||this._ctx==='scene'){ if(g.j) g.j*=.5; if(g.k>0) g.k*=.4; }
+    // 높이 올라갈수록 더 오르기 어렵다 (만점은 드물게)
+    for(const k of ['k','t','e']) if(g[k]>0&&s[k]!=null) g[k]*=Math.max(.08,1-Math.pow(s[k]/108,2));
+
     if(g.h<0) g.h=Math.max(g.h,-25);
     const j0=s.j; _apply.call(this,g); if(this._inEnd) this._dj=(this._dj||0)+(s.j-j0);
     if(fx.h<0&&!this.dead) s.h=Math.min(s.h,hMaxAt(this.age));
     s.r=this.relAgg(); };
   const ctxWrap=(name,ctx)=>{ const o=P[name]; P[name]=function(){ const prev=this._ctx; this._ctx=ctx; try{ return o.apply(this,arguments); } finally{ this._ctx=prev; } }; };
   ctxWrap('calDo','cal'); ctxWrap('doScene','scene'); ctxWrap('chooseMajor','maj'); ctxWrap('choose','maj'); ctxWrap('questEnd','cal');
-  const _rem=P.remember; P.remember=function(o){ const r=_rem.call(this,o); if(o&&o.a>0&&!this._noExp){ ensureV2(this); this.expAdd([o.t,o.q,o.l].filter(Boolean).join(' ')); } return r; };
+  const _rem=P.remember; P.remember=function(o){ const r=_rem.call(this,o); if(o&&o.a>0&&!this._noExp){ ensureV2(this); const e0=this.s.e, d=this.expAdd([o.t,o.q,o.l].filter(Boolean).join(' ')); if(this._auto&&d) this.s.e=e0+d*AUTO_K; } return r; };
+  const _ar=P.autoResolve; P.autoResolve=function(){ const a=this._auto; this._auto=1; try{ return _ar.apply(this,arguments); } finally{ this._auto=a; } };
   // 사건의 조건에 지금 능력치를 쓸 수 있게: v:h<50, v:r>65, v:cash<-10 (돈은 보통 한 달 벌이의 몇 배)
   const _cc=P.calCtx; P.calCtx=function(ev,st,sy){ const c=ev&&ev.c; if(c&&c.some(t=>t.startsWith('v:'))){ for(const t of c){ if(!t.startsWith('v:')) continue; const m=t.match(/^v:(\w+)([<>])(-?[\d.]+)$/); if(!m) continue; const v=m[1]==='cash'?this.cash/this.C.med:this.s[m[1]]; if(v==null||!(m[2]==='<'?v<+m[3]:v>+m[3])) return null; }
       return _cc.call(this,Object.assign({},ev,{c:c.filter(t=>!t.startsWith('v:'))}),st,sy); } return _cc.call(this,ev,st,sy); };
@@ -6061,12 +6069,13 @@ Life.prototype.optBlocked=function(o,kind){ if(!o) return ''; const fx=kind==='m
     if(f.widow) delete R.spouse; if(f.ggone||a>=45) delete R.gran;
     if(this.age>=7&&R.friend==null) R.friend=48; if(this.age>=6&&R.nb==null) R.nb=34;
     if(f.job&&R.coll==null) R.coll=38; if(!f.job&&R.coll!=null&&R.coll<12) delete R.coll;
-    if(f.family&&P.spouse&&!f.widow&&R.spouse==null) R.spouse=76; if(this.kids.length&&R.kids==null) R.kids=78;
+    if(f.family&&P.spouse&&!f.widow&&R.spouse==null) R.spouse=62; if(this.kids.length&&R.kids==null) R.kids=64;
+    if(this.age<19&&R.mom==null&&R.dad==null&&R.kin==null) R.kin=45;   // 부모를 잃은 아이는 친척이 맡아 기른다
     s.r=this.relAgg();
     // 건강: 나이가 들면 최대치가 내려가고, 크게 다치거나 앓은 뒤에는 조금씩 회복한다
     const hm=hMaxAt(this.age); const hT=Math.min(hm,this.C.hb+H_OFF+6); if(!f.dying&&!this.dead&&s.h<hT-4) s.h+=Math.min(hT-4-s.h,1.8*step); s.h=Math.min(s.h,hm);
     // 행복: 목표값 = 건강 25% · 관계 25% · 돈 걱정 없음 15% · 일·꿈 20% · 경험 15%. 해마다 30%씩 다가간다
-    s.j=clamp(jPre+(this._dj||0),0,100); const tg=clamp(50+3*(this.joyTarget()-58),2,98); s.j+=(1-Math.pow(.7,step))*(tg-s.j);
+    s.j=clamp(jPre+(this._dj||0),0,100); const tg=clamp(50+2.2*(this.joyTarget()-60),2,98); s.j+=(1-Math.pow(.7,step))*(tg-s.j);
     for(const k of ['h','j','k','r','t','e']) s[k]=clamp(s[k],0,100);
     if(this.dead) s.h=0;
     const H=this.hist[this.hist.length-1]; if(H&&H.a===a) Object.assign(H,{h:Math.round(this.dead?0:s.h),j:Math.round(s.j),k:Math.round(s.k),r:Math.round(s.r),t:Math.round(s.t),e:Math.round(s.e)});
@@ -8200,7 +8209,7 @@ function finishLife(){
   let i=0; const keep={}; show('end');
   const go=d=>{ const j=i+d; if(j<0||j>=slides.length) return; $('endIn').querySelectorAll('input,textarea').forEach(e=>keep[e.id]=e.value); i=j; render(); };
   const render=()=>{ const sl=slides[i];
-    $('endIn').innerHTML=`<div class="slideshow"><div class="sbar" aria-hidden="true"><i style="width:${((i+1)/slides.length*100).toFixed(1)}%"></i></div><div class="shead"><span class="kick">${esc(sl.k)}${sl.t?` · ${sl.t}`:''}</span><span class="snum">${i+1} / ${slides.length}</span></div><div class="step slide">${sl.b}</div><div class="snav">${i>0?'<button class="btn" id="btnPrev">← 이전</button>':'<span></span>'}${i<slides.length-1?'<button class="btn primary" id="btnStep">다음 →</button>':''}</div></div>`;
+    $('endIn').innerHTML=`<div class="slideshow"><div class="sprog" aria-hidden="true"><i style="width:${((i+1)/slides.length*100).toFixed(1)}%"></i></div><div class="shead"><span class="kick">${esc(sl.k)}${sl.t?` · ${sl.t}`:''}</span><span class="snum">${i+1} / ${slides.length}</span></div><div class="step slide">${sl.b}</div><div class="snav">${i>0?'<button class="btn" id="btnPrev">← 이전</button>':'<span></span>'}${i<slides.length-1?'<button class="btn primary" id="btnStep">다음 →</button>':''}</div></div>`;
     $('s-end').scrollTo(0,0);
     $('endIn').querySelectorAll('input,textarea').forEach(e=>{ if(keep[e.id]!=null) e.value=keep[e.id]; });
     $('endIn').querySelectorAll('canvas[data-k]').forEach(c=>{ const p=pre[+c.dataset.k]; if(!p) return; const paint=()=>{ c.width=p.c.width; c.height=p.c.height; c.getContext('2d').drawImage(p.c,0,0); }; paint();
@@ -8323,7 +8332,7 @@ function radarSVG(v,ov,o){ o=o||{}; const W=340, H=300, cx=170, cy=158, R=104, n
   let g=''; [25,50,75].forEach(l=>g+=`<polygon points="${poly(Object.fromEntries(AXES.map(k=>[k,l])))}" class="rg"/>`);
   g+=`<polygon points="${poly(Object.fromEntries(AXES.map(k=>[k,100])))}" class="rfull"/>`;
   AXES.forEach((k,i)=>{ const p=pt(i,100); g+=`<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" class="rax"/>`; });
-  (ov||[]).forEach(x=>{ g+=`<polygon points="${poly(x.v)}" fill="none" stroke="${OV_COL[x.a]||'#999'}" stroke-width="2" stroke-dasharray="5 4"/>`; });
+  (ov||[]).forEach(x=>{ g+=`<polygon points="${poly(x.v)}" fill="none" stroke="${OV_COL[x.a]||'#7C8A96'}" stroke-width="2" stroke-dasharray="5 4"/>`; });
   g+=`<polygon points="${poly(v)}" class="rnow"/>`;
   AXES.forEach((k,i)=>{ const p=pt(i,clamp(v[k]||0,0,100)); g+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.6" fill="${AX_COL[k]}"/>`;
     const q=pt(i,126), anc=Math.abs(q[0]-cx)<8?'middle':q[0]<cx?'end':'start';
@@ -8346,6 +8355,7 @@ statPanel=function(L){ const v=L.s, ov=radarOverlays(L,L.age), H=(L.hist||[]).fi
   return `<div class="chart"><h3>삶의 모양 <span class="sub small">(0~100 · 꽉 찬 정오각형이 만점)</span></h3>${radarSVG(v,ov)}${radarLegend(ov)}
     <div class="axrow">${AXES.map(k=>{ const d=prev?Math.round(v[k])-prev[k]:0; return `<span><b style="color:${AX_COL[k]}">${AX_N[k]}</b> ${Math.round(v[k])}${d?` <small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:''}</span>`; }).join('')}</div>
     <p class="small sub">행복은 건강·관계·돈 걱정·일과 꿈·경험에서 해마다 조금씩 만들어집니다. 다섯 가지를 한꺼번에 키우기는 어려워요. 시간과 힘은 한정되어 있으니까요.</p>
+    ${lineChartSVG(L)}
     <h3>건강과 재산</h3>${resBars(L)}
     ${rel.length?`<h3>가까운 사람들 <span class="sub small">(친밀도)</span></h3><div class="rels">${rel.map(([k,x])=>`<div class="rbar"><span class="rl">${REL_N[k]||k}</span><div class="rt"><i class="rel" style="width:${Math.round(x)}%"></i></div><span class="rv">${Math.round(x)}</span></div>`).join('')}</div><p class="small sub">가족은 천천히, 친구와 동료는 연락이 없으면 빨리 멀어집니다.</p>`:''}</div>`; };
 statLine=()=> '';
@@ -8365,11 +8375,26 @@ onOpts=function(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e
 function shapeLine(L,v){ const ks=AXES.slice().sort((a,b)=>v[b]-v[a]), top=ks[0], low=ks[ks.length-1], sp=v[top]-v[low];
   const say={j:'스스로 느끼는 만족',k:'배움',t:'손에 익힌 기술',e:'여러 가지를 겪어 본 경험',r:'곁의 사람들과의 관계'};
   return sp<12?`${josa(L.name,'은','는')} 다섯 가지를 고르게 키운, 둥근 모양의 삶을 살았습니다.`:`${josa(L.name,'이','가')} 가장 많이 키운 것은 ${say[top]}이었습니다. 오각형은 ${AX_N[top]} 쪽으로 가장 길게 뻗어 있습니다.`; }
-function shapeHTML(L){ const last=(L.hist||[]).filter(h=>h.t!=null).slice(-1)[0]||L.s, v={}; AXES.forEach(k=>v[k]=last[k]); const ov=radarOverlays(L,L.lifespan||L.age);
-  const hp=(L.hist||[]).reduce((m,h)=>Math.max(m,h.h||0),0);
-  return `<p class="big">${esc(shapeLine(L,v))}</p><div class="rbox">${radarSVG(v,ov)}${radarLegend(ov,'마지막 해')}</div>
-    <p class="soft">건강은 삶을 이어 가는 힘, 재산은 삶을 버티는 자원이라 오각형 밖에 따로 둡니다. 마지막 해 건강 0은 삶이 끝난 뒤의 표시입니다.</p>${resBars(Object.assign(Object.create(Object.getPrototypeOf(L)),L,{s:Object.assign({},L.s,{h:0})}))}
-    <p class="note">오각형이 크다고 더 좋은 삶은 아닙니다. 모양이 저마다 다를 뿐입니다. ${L.limN?`살면서 돈이나 건강 때문에 고를 수 없던 선택이 ${L.limN}번 있었습니다.`:''}</p>`; }
+// 오각형의 넓이(다섯 축 값이 만드는 정오각형 모양의 면적)가 가장 컸던 해
+function pentArea(h){ const v=AXES.map(k=>h[k]||0); let s=0; for(let i=0;i<5;i++) s+=v[i]*v[(i+1)%5]; return s*.5*Math.sin(2*Math.PI/5); }
+function peakOf(L){ const H=(L.hist||[]).filter(h=>h.t!=null); let pk=null; H.forEach(h=>{ if(!pk||pentArea(h)>pentArea(pk)) pk=h; }); return pk; }
+// 나이에 따른 다섯 축과 건강의 꺾은선
+function lineChartSVG(L,mark){ const H=(L.hist||[]).filter(h=>h.t!=null); if(H.length<2) return ''; const W=640, Hh=250, pl=34, pr=12, pt=12, pb=28, A0=H[0].a, A1=Math.max(H[H.length-1].a,A0+1);
+  const X=a=>pl+(a-A0)/(A1-A0)*(W-pl-pr), Y=v=>pt+(100-clamp(v,0,100))/100*(Hh-pt-pb);
+  let g=''; [0,25,50,75,100].forEach(v=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" class="lgrid"/><text x="${pl-6}" y="${Y(v)+4}" text-anchor="end" class="ltick">${v}</text>`; });
+  const step=A1-A0>60?20:10; for(let a=Math.ceil(A0/step)*step;a<=A1;a+=step) g+=`<text x="${X(a)}" y="${Hh-8}" text-anchor="middle" class="ltick">${a}살</text>`;
+  if(mark!=null) g+=`<line x1="${X(mark)}" x2="${X(mark)}" y1="${pt}" y2="${Hh-pb}" class="lmark"/><text x="${X(mark)+4}" y="${pt+11}" class="ltick lmk">가장 넓던 때</text>`;
+  const ser=[...AXES.map(k=>[k,AX_COL[k],'']),['h','#5A8F4A','5 4']];
+  ser.forEach(([k,c,d])=>{ g+=`<polyline fill="none" stroke="${c}" stroke-width="${k==='h'?2:2.4}" ${d?`stroke-dasharray="${d}"`:''} stroke-linejoin="round" points="${H.map(h=>`${X(h.a).toFixed(1)},${Y(h[k]).toFixed(1)}`).join(' ')}"/>`; });
+  return `<svg class="lchart2" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="나이에 따른 행복·지식·기술·경험·관계·건강의 변화">${g}</svg><div class="lgd">${ser.map(([k,c,d])=>`<span><i style="background:${c}${d?';opacity:.7':''}"></i>${k==='h'?'건강':AX_N[k]}</span>`).join('')}</div>`; }
+function shapeHTML(L){ const pk=peakOf(L)||L.s, v={}; AXES.forEach(k=>v[k]=pk[k]); const H=(L.hist||[]).filter(h=>h.t!=null), last=H.filter(h=>h.a<(L.lifespan||L.age)).slice(-1)[0];
+  const ov=last&&pk&&last.a!==pk.a?[{a:'last',v:last}]:[];
+  const sudden=last&&last.h>=60, cause=typeof causeOf==='function'?causeOf(L).n:'';
+  return `<p class="big">${esc(shapeLine(L,v))}</p>
+    <div class="rbox"><p class="rcap">오각형이 가장 넓었던 때 · ${pk.a!=null?pk.a+'살 무렵':''}</p>${radarSVG(v,ov.map(x=>({a:'last',v:x.v})))}<div class="lgd rlgd"><span><i style="background:#E2703A"></i>가장 넓었던 때${pk.a!=null?` (${pk.a}살)`:''}</span>${ov.length?`<span><i class="dash" style="border-color:#7C8A96"></i>마지막 해 (${last.a}살)</span>`:''}</div></div>
+    <div class="rbox"><p class="rcap">나이에 따라 달라진 것들</p>${lineChartSVG(L,pk.a)}</div>
+    <p class="soft">${sudden?`건강이 ${last.h}로 나쁘지 않았지만, 삶은 ${cause?esc(cause)+'(으)로 ':''}갑자기 끝났습니다. 건강이 좋아도 사고나 병은 예고 없이 찾아옵니다.`:'건강은 삶을 이어 가는 힘, 재산은 삶을 버티는 자원이라 오각형 밖에 따로 둡니다. 마지막 해 건강 0은 삶이 끝난 뒤의 표시입니다.'}</p>${resBars(Object.assign(Object.create(Object.getPrototypeOf(L)),L,{s:Object.assign({},L.s,{h:0})}))}
+    <p class="note">오각형이 크다고 더 좋은 삶은 아닙니다. 모양이 저마다 다를 뿐입니다. 직접 고르며 산 해에는 오각형이 커지고, 그냥 지나간 해에는 조금만 자랍니다.${L.limN?` 살면서 돈이나 건강 때문에 고를 수 없던 선택이 ${L.limN}번 있었습니다.`:''}</p>`; }
 
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
