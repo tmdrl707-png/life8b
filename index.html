@@ -6588,8 +6588,8 @@ function dropShadow(c,x,y,w){ x=Math.round(x); y=Math.round(y); c.fillStyle=SHAD
    포켓몬·스타듀밸리 같은 인디 도트 게임처럼, 머리와 몸통을 또렷하게 그리고 다리는 짧게 줄였다.
    나이에 따라 몸의 비율이 달라진다: 걸음마(2~5살) · 어린이(6~12살) · 어른 · 노인. */
 function personDims(st){
-  if(st==='tod') return {HW:8,HH:7,TW:6,tH:3,lH:2,LW:2};
-  if(st==='kid') return {HW:8,HH:8,TW:6,tH:4,lH:3,LW:2};
+  if(st==='tod') return {HW:8,HH:7,TW:6,tH:3,lH:1,LW:2};
+  if(st==='kid') return {HW:8,HH:8,TW:6,tH:4,lH:2,LW:2};
   if(st==='elder') return {HW:10,HH:9,TW:8,tH:6,lH:4,LW:3};
   return {HW:10,HH:9,TW:8,tH:6,lH:5,LW:3};
 }
@@ -7522,8 +7522,8 @@ const PH_HAIR=['#1B1512','#2A1E17','#3B2A1E','#5A3E2A','#7A5634','#B08A58','#D8C
 // 사람: 머리·몸·팔·다리를 둥근 모양으로, 왼쪽 위에서 빛이 드는 것처럼 음영을 준다
 function phHuman(x,o){
   const cx=o.cx, by=o.by, h=o.h, kind=o.kind||'adult', kid=kind==='kid', teen=kind==='teen', elder=kind==='elder';
-  const hr=h*(kid?.1:teen?.078:.068), sw=h*(kid?.22:.24)*(o.male?1.1:1), skin=o.skin||'#D8A07A', hair=elder?'#C8C6C0':(o.hair||'#1B1512');
-  const top=o.top||'#2F3E5C', bot=o.bot||'#2B3445', headCY=by-h+hr*1.05, shY=headCY+hr*1.45, hipY=by-h*(kid?.43:.47);
+  const hr=h*(kid?.118:teen?.078:.068), sw=h*(kid?.27:.24)*(o.male?1.1:1), skin=o.skin||'#D8A07A', hair=elder?'#C8C6C0':(o.hair||'#1B1512');
+  const top=o.top||'#2F3E5C', bot=o.bot||'#2B3445', headCY=by-h+hr*1.05, shY=headCY+hr*1.45, hipY=by-h*(kid?.3:.47);
   x.save(); const tl=o.tilt!=null?o.tilt:Math.sin(cx*12.9898+by*78.233)*.035; x.translate(cx,by); x.rotate(tl); x.translate(-cx,-by);
   // 그림자 (발밑이 땅에 닿아 보이도록)
   phEl(x,cx,by+1,sw*.95,h*.035,'rgba(20,15,10,.32)'); phEl(x,cx,by,sw*.55,h*.015,'rgba(10,8,6,.4)');
