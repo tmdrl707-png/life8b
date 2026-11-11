@@ -3328,6 +3328,7 @@ function drawPhoto(cv,m,L,idx){
       phEl(fx,190,170,60,26,sk); for(let i=0;i<4;i++) phFinger(fx,210,160+i*9,262,168+i*8,10,sk); fx.fillStyle='#FFFFFF'; fx.fillRect(160,160,24,20); fx.strokeStyle='rgba(200,220,235,.9)'; fx.lineWidth=2; fx.beginPath(); fx.moveTo(172,166); fx.quadraticCurveTo(120,100,80,92); fx.stroke();
       if((L.f.family&&L.ppl.spouse)||a<30){ const hs=(L.looks&&L.looks.spouse&&L.looks.spouse.skin)||(L.looks&&L.looks.mom&&L.looks.mom.skin)||sk; phEl(fx,250,196,50,22,hs); for(let i=0;i<4;i++) phFinger(fx,230,190+i*8,190,180+i*7,9,hs); }
       lx.fillStyle=phRad(lx,260,40,0,200,[[0,'rgba(255,250,235,.4)'],[1,'rgba(255,250,235,0)']]); lx.fillRect(0,0,PH_W,PH_H); tone='#C8D8E4'; toneA=.28; blurBg=3; break; } else { done=false; break; }
+    case 'school': return m.a>=19?GN('library'):m.a>=13?GN(n%2?'school':'bag'):GN('school');
     case 'friend': { // 해 질 녘 벤치의 두 사람 (역광)
       const hz=160; phSunset(bx,lx,r,hz,sunX,hz-26); phHills(bx,r,hz,'#5A5048',12); ground(hz,'#4E4A40'); phTree(bx,30,hz+8,90,'#3E4A34',r); fx.fillStyle='#3A2C22'; fx.fillRect(70,216,190,7); fx.fillRect(80,222,5,18); fx.fillRect(244,222,5,18);
       phFig(fx,me({cx:130,by:276,h:a<13?150:196,kind:myKind,pose:'link',sil:.6,back:true}),sunX); phFig(fx,P('friend',{cx:192,by:278,h:a<13?146:192,kind:myKind,long:L.sex===1,pose:'link',sil:.6,back:true}),sunX); tone='#F8B878'; toneA=.32; break; }
