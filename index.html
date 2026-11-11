@@ -19,7 +19,7 @@
 }
 *{box-sizing:border-box}
 html{font-size:16px} html.big{font-size:20px}
-body{margin:0;background:#D8E4D0 repeating-linear-gradient(0deg,transparent 0 15px,rgba(40,48,56,.04) 15px 16px),repeating-linear-gradient(90deg,transparent 0 15px,rgba(40,48,56,.04) 15px 16px);color:var(--ink);font-family:var(--font);line-height:1.55;-webkit-text-size-adjust:100%}
+body{margin:0;background:#D8E4D0 repeating-linear-gradient(0deg,transparent 0 15px,rgba(40,48,56,.04) 15px 16px),repeating-linear-gradient(90deg,transparent 0 15px,rgba(40,48,56,.04) 15px 16px);color:var(--ink);font-family:var(--font);line-height:1.55;-webkit-text-size-adjust:100%;word-break:keep-all;overflow-wrap:break-word}
 [hidden]{display:none!important}
 button,input,select{font:inherit;color:inherit} button{cursor:pointer}
 :focus-visible{outline:3px solid var(--sea);outline-offset:2px}
@@ -1832,8 +1832,8 @@ class Life{
     const map={food:C.food,fest:C.fest,sport:C.sport,city:C.city,landmark:C.landmark,work:C.work,animal:C.animal,music:C.music,country:C.n,job:job?job.n:'일',
       me:this.name, mom:P.mom?P.mom.n:'엄마', dad:P.dad?P.dad.n:'아빠', gran:P.gran?P.gran.n:'할머니', sib:P.sib?P.sib.n:'동생', friend:P.friend?P.friend.n:'친구', teacher:P.teacher?P.teacher.n:'선생님',
       spouse:P.spouse?P.spouse.n:'배우자', kid:k?k.n:'아이', town:this.town||C.city, elem:sch.elem||'초등학교', mid:sch.mid||'중학교', high:(this.f.hs==='voc'?sch.voc:sch.high)||'고등학교', univ:sch.univ||'대학교', co:this.f.co||'일터', veh:C.veh.n};
-    return String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로)?/g,(m,k,p)=>{ const w=map[k]; if(w==null) return m; if(!p) return w;
-      const pair={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로']}[p]; return josa(w,pair[0],pair[1]); }).split(C.fest+' 날').join(/(날|일)$/.test(C.fest)?C.fest:C.fest+' 날'); }
+    return String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|과\(와\)|를\(을\)|가\(이\)|는\(은\))?/g,(m,k,p)=>{ const w=map[k]; if(w==null) return m; if(!p) return w;
+      const pair={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로'],'과(와)':['과','와'],'를(을)':['을','를'],'가(이)':['이','가'],'는(은)':['은','는']}[p]; return josa(w,pair[0],pair[1]); }).split(C.fest+' 날').join(/(날|일)$/.test(C.fest)?C.fest:C.fest+' 날'); }
   static load(o){ const L=Object.assign(Object.create(Life.prototype),o); L.pending=null;
     if(!L.c){ L.c='KR'; L.f.elem=L.age>=7?1:0; L.f.sec=L.age>=13?1:0; }
     if(!COUNTRIES[L.c]) L.c='KR';
@@ -1933,7 +1933,13 @@ class Life{
       o('일을 바꿔 새로 도전한다',null,['새로운 일을 찾아보기로 했다.',{k:2},()=>{f.needJob=2}]),
       o('건강을 챙긴다',null,['몸을 돌보는 일을 가장 먼저 두기로 했다.',{h:10}]),
       o('가족·친구와 시간을 보낸다',null,['소중한 사람들과 보내는 시간을 늘렸다.',{r:10,j:5}]) ]};
-    if(a===61) return {q:'예순을 넘겼다. 남은 시간을 어떻게 쓸까?',opts:[
+    const ra=retAgeOf(this);
+    if(f.job&&!f.inf&&!f.school&&!f.retCh&&ra&&a+this.step>ra&&a<70&&f.job!=='abroad'){ f.retCh=1; const I=instOf(this), pn=I.pen||'연금';
+      return {q:`이 나라의 정년(${ra}세)이 다가왔다. ${f.co||'일터'}에서 일한 날들을 정리할 때다.`,opts:[
+        o(`정년퇴직하고 ${josa(pn,'을','를')} 받으며 쉰다`,null,[`${f.co||'일터'}에서 정년퇴직했다. 동료들이 꽃다발을 안겨 주었다. 이제 다달이 ${josa(pn,'이','가')} 들어온다.`,{j:6,h:3},()=>{this.retire()}]),
+        o('계약직으로 다시 일한다 (월급은 줄어든다)',null,['정년 뒤에도 같은 일터에서 계약직으로 일을 이어 갔다. 월급은 줄었지만 아침에 나갈 곳이 있었다.',{k:2,j:2},()=>{ this.inc=this.payClamp(this.inc*.62); f.inf=1; }]),
+        o('그동안 모은 돈으로 작은 가게를 연다',.55+this.s.r/400,['작은 가게를 열었다. 평생 처음 내 가게의 문을 여는 아침이었다.',{j:6},()=>{ setJob(this,'shopown'); f.inf=1; }],['가게를 알아보다 마땅한 곳을 찾지 못해 그냥 쉬기로 했다.',{j:-2},()=>{this.retire()}]) ]}; }
+    if(a===61&&!f.retired&&!f.retCh) return {q:'예순을 넘겼다. 남은 시간을 어떻게 쓸까?',opts:[
       o('하던 일을 계속한다',null,['익숙한 일을 계속 이어 갔다.',{j:2,h:-3,k:2}]),
       o('일을 내려놓고 하고 싶던 것을 한다',null,['일을 내려놓고 미뤄 둔 것들을 시작했다.',{j:8,h:3},()=>{this.retire()}]),
       o('이웃과 아이들을 돕는다',null,['이웃과 아이들을 돌보며 지냈다.',{r:10,j:5},()=>{this.retire()}]) ]};
@@ -2024,7 +2030,7 @@ class Life{
       el.push(i); w.push((m.c?2.2:1)*(m.hz?1.6:1)*(m.req&&/^(jk:|sig)/.test(m.req)?1.5:1)*(m.money||1)); });   // 그 나라·지역에만 있는 일, 재해, 하는 일·돈과 관련된 일이 더 자주
     if(!el.length) return null; const s=w.reduce((x,y)=>x+y,0); let x=R()*s; for(let i=0;i<el.length;i++){ x-=w[i]; if(x<0) return this.cur.m=el[i]; } return this.cur.m=el[0]; }
   chooseMajor(oi){ const i=this.cur.m, m=MAJORS[i], o=m.opts[oi], p=this.majorP(o), ok=R()<p, fx=ok?o.okFx:o.failFx;
-    this.usedM[i]=this.age; this.cur.m=null; this.cur.mDone++;
+    this.usedM[i]=this.age; this.cur.m=null; this.cur.mDone++; if(ok&&m.rk&&this.f.job) this.rankUp();
     this._mScale=m.medical?this.C.medCost:1; this.apply(fx); this._mScale=1;
     const t=this.tx(ok?o.ok:o.fail); this.n++; if(!ok) this.fail++; if(o.tr) this.tr[o.tr]++;
     const sc=m.sc||m.hz||sceneKindOf(m.txt), sick=(sc==='sick'||sc==='hosp')&&!ok||(fx.h||0)<=-8; this.mem.push({a:this.age,t,big:1,sc}); return {t,fx,p,ok,label:o.l,sc,sick}; }
@@ -2093,6 +2099,7 @@ class Life{
     if(a<30) s.h+=(C.hb-s.h)*.03; if(a>40) s.h-=.4*step; if(a>60) s.h-=.5*step; if(a>75) s.h-=.6*step; if(f.dying) s.h-=6;
     // 살림: 어릴 때는 가족의 형편, 어른이 되면 내가 버는 돈과 모은 돈이 그 나라 보통 벌이에 비해 어떤지
     if(a>=19&&!f.school){
+      if(f.job&&!f.inf) f.frmY=(f.frmY||0)+step;
       if(f.job){ const j=this.job; this.inc*=1+(.012+(C.tier>=3?.006:.012))*step+gauss()*(['farm','fish','herd','shop','dream','tour'].includes(j.kind)?.06:.025); this.inc=this.payClamp(this.inc); this.maxInc=Math.max(this.maxInc,this.inc); }
       else if(f.retired) this.inc=pension(this); else this.inc=C.med*.25;
       if(a>=70&&f.job){ this.retire(); add('나이가 들어 일을 내려놓았다.',{j:2},1,'job'); }
@@ -2268,7 +2275,8 @@ const EXF={
    결과: 'k2 j1' 같은 변화(그냥 일어나는 일) 또는 [[선택지, 변화, 결과 문장], …] (고르는 일. 확률은 수치와 성향이 만든다)
    덧붙임: k 해마다 하나씩만 고르는 묶음 · once 평생 한 번 · cd n 다시 일어나기까지 n년 · w 뽑힐 무게 · ex 시험 결과 종류 · big 중요한 기억 · sc 사진 종류 · run 결과에 따른 처리 */
 const CAL=[];
-function Y(a0,a1,cond,mon,txt,res,x){ const o=Object.assign({a:[a0,a1],c:cond?cond.split(' '):[],mon,txt},x||{});
+const pickV=s=>typeof s==='string'&&s.includes('||')?pickOne(s.split('||')):s;   // 여러 문장 가운데 하나
+function Y(a0,a1,cond,mon,txt,res,x){ const o=Object.assign({a:[a0,a1],c:cond?cond.split(' '):[],mon,txt},x||{}); if(typeof txt==='string'&&txt.includes('||')){ o.txts=txt.split('||'); o.txt=o.txts[0]; }
   const isFx=x=>typeof x==='string'&&/^([@$%hjkrHVMx]-?\d+\s*)+$/.test(x.trim());
   if(Array.isArray(res)) o.opts=res.map(r=>{ const p=parseFx(r[1]); if(isFx(r[3])) Object.assign(p.fx,parseFx(r[3]).fx); return {l:r[0],res:r[2],fail:isFx(r[3])?(r[4]||null):(r[3]||null),...p}; }); else { const p=parseFx(res||''); o.fx=p.fx; o.tr=p.tr; }
   o.id=CAL.length; CAL.push(o); }
@@ -2315,7 +2323,8 @@ Object.assign(Life.prototype,{
   // 사건 하나의 조건을 따진다. 맞으면 그 사건에 쓸 값(ctx)을, 아니면 null
   calCtx(ev,st,sy){ const f=this.f, a=this.age, C=this.C, ctx={st}; let g=null;
     for(const tk of ev.c){ let ok=true;
-      if(tk.includes('|')&&!/^(rg:|hz:|jk:|jn:|rel:|!?[A-Z]{2}\|)/.test(tk)) ok=tk.split('|').some(t=>this.calCtx({c:[t]},st,sy)!=null);
+      if(tk[0]==='!'&&!/^!([A-Z]{2}|fl:)/.test(tk)) ok=this.calCtx({c:[tk.slice(1)]},st,sy)==null;
+      else if(tk.includes('|')&&!/^(rg:|hz:|jk:|jn:|rel:|!?fl:|!?[A-Z]{2}\|)/.test(tk)) ok=tk.split('|').some(t=>this.calCtx({c:[t]},st,sy)!=null);
       else if(tk==='e'||tk==='m'||tk==='h'||tk==='u'||tk==='rt'||tk==='ns') ok=st===tk;
       else if(tk==='s') ok=/^[emh]$/.test(st);
       else if(tk==='hg') ok=f.hs==='gen'; else if(tk==='hv') ok=f.hs==='voc'; else if(tk==='pre') ok=a<7;
@@ -2344,6 +2353,14 @@ Object.assign(Life.prototype,{
       else if(tk==='pet') ok=!!(f.pet&&!f.pet.dA); else if(tk==='petOld') ok=!!(f.pet&&!f.pet.dA&&a-f.pet.a>=Math.max(10,f.pet.life||13));
       else if(tk==='noedu') ok=!f.sec&&a>=19; else if(tk==='gpdead') ok=!!(this.fam&&this.fam.gp.some(g=>!g.al&&g.dA!=null)); else if(tk==='pardead') ok=!!(this.fam&&(!this.fam.mom.al||!this.fam.dad.al));
       else if(tk==='hob') ok=!!(f.hob&&f.hob.length);
+      else if(tk.startsWith('fl:')||tk.startsWith('!fl:')){ const neg=tk[0]==='!', m=tk.slice(neg?4:3).match(/^(\w+)([<>])?(\d+)?$/), ch=f.ch||{}, v=m&&ch[m[1]]; let r=v!=null; if(r&&m[2]) r=m[2]==='>'?a-v>=+m[3]:a-v<+m[3]; ok=neg?!r:r; }
+      else if(tk==='w+') ok=this.w>=.62; else if(tk==='w-') ok=this.w<.36; else if(tk==='p0') ok=this.famI===0; else if(tk==='p2') ok=this.famI===2;
+      else if(tk==='inf') ok=!!f.job&&!!f.inf&&!f.school; else if(tk==='frm') ok=!!f.job&&!f.inf&&!f.school;
+      else if(tk==='cs') ok=csOK(this); else if(tk.startsWith('cs:')) ok=csFlag(this,tk.slice(3)); else if(tk==='uniS') ok=!!(f.univ&&f.school); else if(tk==='svc') ok=!!this._army; else if(tk==='svcL') ok=!!(f.svc&&a+this.step>=f.svc[1]); else if(tk==='mig') ok=f.job==='abroad'&&!f.school;
+      else if(/^rk[<>=]\d$/.test(tk)){ const r=f.rk||0, n=+tk[3]; ok=!!f.job&&(tk[2]==='>'?r>n:tk[2]==='<'?r<n:r===n); } else if(tk==='rkUp') ok=!!f.job&&rankCan(this);
+      else if(tk==='oop+') ok=instOf(this).oop>=45; else if(tk==='oop-') ok=instOf(this).oop<25; else if(tk==='hi') ok=!!instOf(this).hi;
+      else if(tk==='sp'){ const sp=instOf(this).sp; ok=!!sp&&a>=sp[0]; } else if(tk==='ros') ok=!!instOf(this).ros; else if(tk==='mm') ok=!!instOf(this).mm;
+      else if(tk==='kid') ok=(this.kids||[]).length>0; else if(tk==='nokid') ok=!(this.kids||[]).length; else if(tk==='univD') ok=!!f.univDone; else if(tk==='abrS') ok=!!f.abrS;
       else if(tk==='kidOld') ok=(this.kids||[]).length>0; else if(tk==='mar') ok=!!f.family||!!f.widow;
       else if(/^g[=<>]\d+$/.test(tk)){ if(g==null) g=this.gradeOf(st); const n=+tk.slice(2), op=tk[1]; ok=op==='='?g===n:op==='>'?g>n:g<n; }
       else if(/^![A-Z]{2}(\|[A-Z]{2})*$/.test(tk)) ok=!tk.slice(1).split('|').includes(this.c);
@@ -2358,8 +2375,11 @@ Object.assign(Life.prototype,{
     if(spec[0]==='s') return mOf(sy,+spec.slice(1)); return +spec||null; },
   // 올해의 달력을 짠다: 해마다 돌아오는 일(같은 묶음에서 하나씩) + 그 해만의 일, 모두 열 가지 안팎
   planCal(){ const a=this.age, f=this.f; if(f.dying||this.dead||this.lite) return [];
+    if(f.svc&&a>=f.svc[1]){ f.svcDone=1; f.svc=null; }
+    if(f.svc&&f.univ&&f.school){ f.svcLeft=Math.max(1,f.svc[1]-Math.max(a,f.svc[0])); f.svc=null; }      // 대학에 들어가면 남은 복무는 졸업 뒤로
+    if(f.svcLeft&&!f.school&&f.univDone){ f.svc=[a,a+f.svcLeft]; f.svcLeft=0; }
     const st=this.stageOf(), sy=sysOf(this), used=this.calUsed||(this.calUsed={}), two=this.step>1;
-    this._army=this.c==='KR'&&this.sex===0&&a>=19&&a<=20&&!f.army&&!f.retry&&!f.univ;   // 군 복무 중에는 일터의 일이 없다
+    this._army=(this.c==='KR'&&this.sex===0&&a>=19&&a<=20&&!f.army&&!f.retry&&!f.univ)||!!(f.svc&&a>=f.svc[0]&&a<f.svc[1]);   // 군 복무 중에는 일터의 일이 없다
     const N=a<1?3:a<3?2:a<7?4:a<13?10:a<19?11:a>=80?5:a>=70?7:10;
     const byK={}, pool=[];
     CAL.forEach(ev=>{ if(a<ev.a[0]||a>ev.a[1]) return; const u=used[ev.id]; if(u!=null&&(ev.once||(ev.cd&&a-u<ev.cd))) return;
@@ -2394,9 +2414,10 @@ Object.assign(Life.prototype,{
       kTrip2:pickOne(['제주도','경주','부산','강릉','전주','일본 오사카','베트남 다낭']),comment:pickOne(['친구들과 사이좋게 지내며 맡은 일을 책임감 있게 해냄','수업 시간에 질문이 많고 탐구심이 뛰어남','발표할 때 자신감이 넘치고 목소리가 또렷함','어려운 문제도 끝까지 해결하려는 끈기가 있음','어려움을 겪는 친구를 먼저 돕는 따뜻한 마음을 지님','독서를 즐기며 생각을 글로 잘 표현함']),
       chore:/농부/.test(this.C.work)?this.C.work.replace(/농부$/,'농사'):/어부|양식/.test(this.C.work)?'고기잡이':/목동|양치기|가우초|목장/.test(this.C.work)?'가축 돌보기':this.set==='R'?'밭일':'집안일',jobT:pickOne(['소방관','바리스타','방송 PD','간호사','로봇 공학자','요리사','기자','수의사','웹툰 작가']),crushRes:''};
     v.commentQ=`“${v.comment}”${josa(v.comment,'1','0').slice(-1)==='1'?'이라고':'라고'}`;
+    Object.assign(v,instVars(this)); v.__t=ev.txts?pickOne(ev.txts):ev.txt;
     const run=ev.run&&CALRUN[ev.run]; if(run&&run.pre) run.pre(this,v); it.v=v; return v; },
   calOptP(o){ let pos=0; for(const k in o.fx) if(o.fx[k]>0&&k in this.s) pos+=o.fx[k]; return pos>3?this.optP(o):null; },
-  fillV(s,v){ if(!s) return s; return this.tx(String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로)?/g,(m,k,p)=>{ const w=v[k]; if(w==null) return m; if(!p) return w; const pr={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로']}[p]; return josa(w,pr[0],pr[1]); })); },
+  fillV(s,v){ if(!s) return s; return this.tx(String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|과\(와\)|를\(을\)|가\(이\)|는\(은\))?/g,(m,k,p)=>{ const w=v[k]; if(w==null) return m; if(!p) return w; const pr={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로'],'과(와)':['과','와'],'를(을)':['을','를'],'가(이)':['이','가'],'는(은)':['은','는']}[p]; return josa(w,pr[0],pr[1]); })); },
   // 시험 결과: 실력(ac) + 준비(bonus) + 그날의 운
   exam(kind,bonus,v){ const f=this.f, sy=sysOf(this), KR=this.c==='KR'; this.acInit();
     const perf=this.ac+bonus+gauss()*7, p=clamp(Phi((perf-50)/17),.003,.997);
@@ -2416,15 +2437,18 @@ Object.assign(Life.prototype,{
   calEv(it){ return it.dyn||CAL[it.id]; },
   calDo(k,oi){ const it=this.cur&&this.cur.cal&&this.cur.cal[k]; if(!it||it.done) return null; const ev=this.calEv(it); if(!ev){ it.done=1; return null; }
     const v=this.calVars(ev,it), run=ev.run&&CALRUN[ev.run];
-    const q=this.fillV(ev.txt,v); let t, fx={}, ok=true, p=null, tr=null, bonus=0, o=null;
+    const q=this.fillV(v.__t||ev.txt,v); let t, fx={}, ok=true, p=null, tr=null, bonus=0, o=null;
     if(ev.opts){ o=ev.opts[oi==null?0:oi]||ev.opts[0]; p=this.calOptP(o); ok=p==null||R()<p; this.n++;
-      if(ok){ fx=Object.assign({},o.fx); t=this.fillV(o.res,v); if(o.tr){ this.tr[o.tr]++; tr=o.tr; } bonus=(o.fx.k||0)*1.5+3; }
-      else { for(const key in o.fx) if(o.fx[key]<0) fx[key]=o.fx[key]; t=o.fail?this.fillV(o.fail,v):ev.ex?pickOne(['긴장해서 아는 문제도 몇 개 틀렸다.','시간이 모자라 마지막 문제들을 서둘러 풀었다.','계획한 만큼 공부하지는 못했다.']):failTx(this.fillV(o.l,v)); this.fail++; bonus=-4; } }
+      if(ok){ fx=Object.assign({},o.fx); t=this.fillV(pickV(o.res),v); if(o.tr){ this.tr[o.tr]++; tr=o.tr; } bonus=(o.fx.k||0)*1.5+3; }
+      else { for(const key in o.fx) if(o.fx[key]<0) fx[key]=o.fx[key]; t=o.fail?this.fillV(pickV(o.fail),v):ev.ex?pickOne(['긴장해서 아는 문제도 몇 개 틀렸다.','시간이 모자라 마지막 문제들을 서둘러 풀었다.','계획한 만큼 공부하지는 못했다.']):failTx(this.fillV(o.l,v)); this.fail++; bonus=-4; } }
     else { fx=Object.assign({},ev.fx); t=q; bonus=this.cur.study||0; }
     if(ev.opts&&ev.ex) this.cur.study=ok?bonus*.5:-2;
     let big=!!ev.big;
     if(ev.ex){ const r=this.exam(ev.ex,bonus,v); if(r.t) t+=' '+r.t; }
-    if(run&&run.post){ const r=run.post(this,ok,oi==null?0:oi,v); if(r){ if(r.t) t+=(t?' ':'')+r.t; if(r.fx) for(const key in r.fx) fx[key]=(fx[key]||0)+r.fx[key]; if(r.big) big=true; } }
+    if(run&&run.post){ const r=run.post(this,ok,oi==null?0:oi,v); if(r){ if(r.t) t+=(t?' ':'')+this.fillV(r.t,v); if(r.fx) for(const key in r.fx) fx[key]=(fx[key]||0)+r.fx[key]; if(r.big) big=true; } }
+    const chA=this.age+(it.m>12?1:0), setF=nm=>{ if(nm) (f0.ch||(f0.ch={}))[nm]=chA; }, f0=this.f, oi0=oi==null?0:oi;
+    if(ev.set) setF(typeof ev.set==='string'?ev.set:ev.set[oi0]); if(ev.setOK&&ok) setF(typeof ev.setOK==='string'?ev.setOK:ev.setOK[oi0]);
+    if(ev.clr&&f0.ch) ev.clr.split(' ').forEach(n=>delete f0.ch[n]);
     this.apply(fx); if(it.dyn) this.famAct(ev.act); else this.calUsed[ev.id]=this.age; it.done=1; it.t=t; it.ok=ok; it.q=ev.opts?q:null; it.fx=fx; delete it.v;
     const age=this.age+(it.m>12?1:0), sc=ev.sc||sceneKindOf(t);
     this.mem.push({a:age,t:ev.opts?t:t,big:big?1:0,sc,cal:1}); if(this.mem.length>320) this.mem.splice(this.mem.findIndex(m=>!m.big),1);
@@ -2438,11 +2462,11 @@ Object.assign(Life.prototype,{
   // 올해의 큰 사건을 미리 정해 둔다 (교사용 '중요 사건' 수가 정확하도록)
   planMajors(n){ const a=this.age, C=this.C, el=[], w=[];
     MAJORS.forEach((m,i)=>{ const u=this.usedM[i]; if(!this.inC(m)||a<m.a[0]||a>m.a[1]||(m.set!=='*'&&m.set!==this.set)||!this.reqOK(m.req)) return;
-      if(m.hz&&!C.hz.includes(m.hz)) return; if(m.maxTier&&C.tier>m.maxTier) return; if(m.minTier&&C.tier<m.minTier) return; if(u!=null&&(!m.rep||a-u<6)) return;
+      if(m.hz&&!C.hz.includes(m.hz)) return; if(m.maxTier&&C.tier>m.maxTier) return; if(m.minTier&&C.tier<m.minTier) return; if(u!=null&&(!m.rep||a-u<(m.repY||6))) return;
       el.push(i); w.push((m.c?2.2:1)*(m.hz?1.6:1)*(m.req&&/^(jk:|sig)/.test(m.req)?1.5:1)*(m.money||1)); });
     const out=[]; while(out.length<n&&el.length){ let r=R()*w.reduce((s,y)=>s+y,0), i=0; for(;i<el.length-1;i++){ r-=w[i]; if(r<0) break; } out.push(el.splice(i,1)[0]); w.splice(i,1); }
     return out; },
-  majorOK(i){ const m=MAJORS[i], a=this.age, u=this.usedM[i]; return !!m&&a>=m.a[0]&&a<=m.a[1]&&this.reqOK(m.req)&&!(u!=null&&(!m.rep||a-u<6)); }
+  majorOK(i){ const m=MAJORS[i], a=this.age, u=this.usedM[i]; return !!m&&a>=m.a[0]&&a<=m.a[1]&&this.reqOK(m.req)&&!(u!=null&&(!m.rep||a-u<(m.repY||6))); }
 });
 // 대학 고르기: 시험 성적(q, 0~1)이 높을수록 이름난 대학
 function pickUnivQ(L,q){ const UN=UNIV[L.c]; if(!UN) return `${L.C.city} 대학교`; const top=q>=.93||(q>=.8&&R()<(q-.75)*2.5); return pickOne(top?UN[0]:UN[1]); }
@@ -3180,7 +3204,7 @@ Object.assign(Life.prototype,{
       if(!s.away&&sa>=17&&sa<=30&&R()<(C.tier<=2?.07:.05)*step){ const ab=R()<(C.tier<=2?.35:.15), dest=ab?pickOne(ABROAD[this.c]||ABROAD['@'+C.rg]||['외국']):C.city;
         add({txt:`${T} ${josa(s.g,'이','가')} 일자리를 찾아 ${dest}(으)로 떠났다.${ab?' 공항(버스 정류장)에서 손을 오래 흔들었다.':' 명절에만 집에 온다.'}`.replace('(으)로',josa(dest,'으로','로').slice(dest.length)),fx:{j:-2,r:-1},sc:'travel',act:'away:'+i+':'+(ab?1:0)}); }
       if(s.away===2&&R()<.25*step) add({txt:`외국에서 일하는 ${T}${josa(T,'이','가').slice(T.length)} 번 돈을 집에 보내왔다. 그 돈으로 ${pickOne(['지붕을 고쳤다','동생 학비를 냈다','부모님 약값을 마련했다'])}.`,fx:{'@':a>=19?1:0,j:2},sc:'money',nt:'2023년 저소득·중간소득 나라로 보내진 해외 송금은 약 6,560억 달러로, 많은 가정의 큰 버팀목입니다 (세계은행)'});
-      if(s.mar&&!s.kid&&R()<.3*step){ const sx=R()<.5?0:1; add({txt:`${T}에게 ${sx?'딸':'아들'}이 태어났다. 내게 ${sx?'조카딸':'조카'}이 생겼다.`,fx:{j:3,r:2},sc:'baby',act:'sibkid:'+i}); }
+      if(s.mar&&!s.kid&&R()<.3*step){ const sx=R()<.5?0:1; add({txt:`${T}에게 ${sx?'딸':'아들'}이 태어났다. 내게 ${sx?'조카딸이':'조카가'} 생겼다.`,fx:{j:3,r:2},sc:'baby',act:'sibkid:'+i}); }
       if(s.d>0&&sa<5&&R()<C.u5/1000*.35*step) add({txt:`${T} ${josa(s.g,'이','가')} 열병을 앓다 세상을 떠났다. 작은 신발이 오래 문 앞에 놓여 있었다.`,fx:{j:-12,r:-2},big:true,sc:'farewell',act:'sibdie:'+i,nt:'2023년 전 세계에서 약 480만 명의 아이가 다섯 살 생일을 맞지 못했습니다 (UN IGME 2024)'});
       if(sa>=40&&R()<.02*step) add({txt:`${T} ${josa(s.g,'이','가')} 크게 아파 입원했다. 형제자매가 돌아가며 병실을 지켰다.`,fx:{r:3,j:-3},sc:'hosp'});
     });
@@ -3320,6 +3344,1090 @@ Object.assign(Life.prototype,{
     this.comps.forEach(p=>{ if(p.ls>=a&&p.ls<a+step) out.push({dyn:{txt:`같은 1초에 태어난 ${p.cn}의 ${josa(p.n,'이','가')} ${p.ls}세에 세상을 떠났다. (${p.cause})`,fx:{},sc:'farewell',y:p.ls-a,nt:null},m:null,done:0}); });
     return out; }
 });
+
+/* =====================================================================
+   [나라의 제도] 군 복무 · 정년과 연금 · 의료보험 · 공식/비공식 일자리 · 직급 · 해외 취업 · 계모임 · 모바일 결제
+   - 제도는 2026년 무렵의 모습을 바탕으로 한다 (태어난 아이가 어른이 될 무렵에는 바뀌어 있을 수 있다)
+   - oop: 병원비 가운데 내 주머니에서 직접 내는 몫(%) — WHO 세계보건지출 자료(2019, IndexMundi 정리)
+   - inf: 일하는 사람 가운데 비공식 일자리(계약서·사회보험 없음)의 비율(%) — ILO 자료(위키백과 목록 정리, 2014~2025)
+   - cs: 군 복무 [개월, 시작 나이, 대상(0 남자 · 2 남녀 모두), 특징]  특징: lot 추첨 · buy 돈을 내고 면제 · univ 대학생은 미룰 수 있음 · sel 일부만 소집 · sat 주말 훈련 · q 설문·검사만
+   - ra: 정년(연금을 받기 시작하는 나이) [남, 여] — 위키백과 Retirement age 등
+   - hi 의료보험(제도 이름) · pen 일하며 붓는 연금 · sp [나이, 이름] 보험료를 내지 않아도 받는 노인 수당
+   - ros 동네 저축 모임 · mm 휴대폰 결제 · mig 일하러 많이 떠나는 나라 · ns 대학 졸업 뒤 나라 봉사 제도
+   ===================================================================== */
+const INST={
+  KR:{cs:[18,19,0,'univ'],ra:[60,60],oop:30,inf:27,hi:'국민건강보험',pen:'국민연금',sp:[65,'기초연금'],ros:'계모임',mm:'간편결제'},
+  KP:{cs:[96,17,2,''],oop:30,inf:60},
+  JP:{ra:[65,65],oop:13,inf:15,hi:'국민건강보험',pen:'후생연금',mm:'QR 결제'},
+  CN:{cs:[24,18,0,'sel'],ra:[63,58],oop:35,inf:55,hi:'주민 의료보험',pen:'기본 양로보험',sp:[60,'도시·농촌 주민 기초 양로금'],ros:'후이(合会)',mm:'위챗페이·알리페이'},
+  TW:{cs:[12,18,0,'univ'],ra:[65,65],oop:35,inf:20,hi:'전민건강보험',mm:'모바일 결제'},
+  MN:{cs:[12,18,0,'buy'],ra:[60,55],oop:35,inf:42,hi:'건강보험',mig:['한국','일본']},
+  IN:{ra:[60,60],oop:55,inf:88,hi:'아유시만 바라트(PM-JAY) 건강 카드',pen:'직원 적립 기금(EPF)',sp:[60,'국가 노령 연금'],ros:'치트 펀드',mm:'UPI',mig:['아랍에미리트','사우디아라비아','카타르','쿠웨이트','오만']},
+  PK:{ra:[60,60],oop:54,inf:84,hi:'세핫 사훌랏 건강 카드',pen:'EOBI 연금',ros:'커미티(돈 모으기 모임)',mm:'이지페이사',mig:['사우디아라비아','아랍에미리트','카타르','영국']},
+  BD:{ra:[59,59],oop:73,inf:84,ros:'소미티(저축 모임)',mm:'비캐시(bKash)',mig:['사우디아라비아','말레이시아','아랍에미리트','오만','카타르']},
+  NP:{ra:[58,58],oop:58,inf:82,mm:'모바일 지갑',mig:['말레이시아','카타르','아랍에미리트','사우디아라비아','한국']},
+  LK:{ra:[60,60],oop:46,inf:67,mig:['쿠웨이트','사우디아라비아','카타르']},
+  AF:{oop:79,inf:86,mig:['이란','파키스탄','튀르키예']},
+  ID:{ra:[65,65],oop:35,inf:81,hi:'BPJS 건강보험',pen:'BPJS 고용 연금',ros:'아리산',mm:'QRIS 결제',mig:['말레이시아','대만','홍콩','사우디아라비아','한국']},
+  PH:{ra:[60,60],oop:49,inf:70,hi:'필헬스(PhilHealth)',pen:'SSS 연금',sp:[60,'노인 사회 연금'],ros:'팔루와간',mm:'지캐시(GCash)',mig:['사우디아라비아','아랍에미리트','홍콩','싱가포르','대만']},
+  VN:{cs:[24,18,0,'univ'],ra:[62,60],oop:43,inf:68,hi:'건강보험(BHYT)',pen:'사회보험 연금',ros:'후이(hụi)',mm:'모모(MoMo)',mig:['일본','대만','한국']},
+  TH:{cs:[24,21,0,'lot univ'],ra:[60,60],oop:9,inf:63,hi:'30바트 보편 의료 제도',pen:'사회보장 기금',sp:[60,'노인 생활 수당'],mm:'프롬프트페이'},
+  MM:{cs:[24,18,2,''],oop:76,inf:81,mig:['태국','말레이시아']},
+  KH:{cs:[24,18,0,''],oop:64,inf:89,mig:['태국','한국']},
+  LA:{oop:42,inf:90,mig:['태국']},
+  MY:{ra:[60,60],oop:35,inf:30,hi:'공공병원 진료',pen:'직원 적립 기금(EPF)'},
+  SG:{cs:[24,18,0,''],ra:[63,63],oop:30,inf:10,hi:'메디세이브(의료 저축)',pen:'중앙 적립 기금(CPF)'},
+  UZ:{cs:[12,18,0,'buy'],ra:[60,55],oop:58,inf:60,mig:['러시아','한국','카자흐스탄']},
+  KZ:{cs:[12,18,0,''],ra:[63,61],oop:34,inf:25,hi:'의무 건강보험'},
+  TJ:{oop:71,inf:65,mig:['러시아','카자흐스탄']}, KG:{cs:[12,18,0,'buy'],oop:46,inf:59,mig:['러시아','카자흐스탄']},
+  IR:{cs:[21,18,0,'univ'],ra:[60,55],oop:39,inf:50,hi:'건강보험(살라마트)',pen:'사회보장 기금 연금'},
+  TR:{cs:[6,20,0,'buy univ'],ra:[65,65],oop:17,inf:28,hi:'일반건강보험(SGK)',pen:'SGK 연금',ros:'골드 데이(알튼 귄)'},
+  IQ:{ra:[60,60],oop:50,inf:68},
+  SA:{ra:[60,60],oop:17,inf:20,hi:'국민 무료 공공의료'},
+  AE:{cs:[11,18,0,''],oop:13,inf:15},
+  EG:{cs:[24,18,0,'univ'],ra:[60,60],oop:63,inf:71,hi:'보편적 건강보험(일부 지역부터)',pen:'사회보험 연금',ros:'가메이야',mm:'인스타페이',mig:['사우디아라비아','쿠웨이트','아랍에미리트']},
+  DZ:{cs:[12,19,0,''],ra:[60,55],oop:33,inf:45,mig:['프랑스']},
+  MA:{cs:[12,19,2,'sel'],ra:[63,63],oop:47,inf:70,ros:'다레트',mig:['스페인','프랑스','이탈리아']},
+  IL:{cs:[32,18,2,''],ra:[67,65],oop:21,inf:10,hi:'공적 건강보험(쿠파트 홀림)'},
+  YE:{oop:81,inf:77}, SY:{oop:54,inf:60}, SD:{oop:67,inf:94}, SS:{oop:60,inf:95},
+  NG:{ra:[60,60],oop:71,inf:93,hi:'국민건강보험(NHIA)',pen:'퇴직 연금 계좌(RSA)',ros:'에수수(아조)',mm:'핀테크 송금 앱',mig:['영국','캐나다','미국'],ns:'국가 청년 봉사단(NYSC)'},
+  GH:{ra:[60,60],oop:36,inf:78,hi:'국민건강보험(NHIS)',pen:'SSNIT 연금',ros:'수수',mm:'모바일 머니(MoMo)',mig:['영국','미국','캐나다'],ns:'국가 봉사(National Service)'},
+  CI:{ra:[60,60],oop:37,inf:92,ros:'톤틴',mm:'오렌지 머니'}, SN:{ra:[60,60],oop:51,inf:89,ros:'톤틴',mm:'웨이브(Wave)',mig:['프랑스','스페인','이탈리아']},
+  CM:{ra:[60,60],oop:73,inf:87,ros:'은잔기(톤틴)',mm:'MTN 모바일 머니'}, ML:{cs:[24,18,2,'sel'],oop:31,inf:95,ros:'톤틴',mig:['프랑스','코트디부아르']},
+  NE:{oop:46,inf:98}, BF:{oop:35,inf:94}, TD:{cs:[36,20,0,'sel'],oop:57,inf:97},
+  ET:{ra:[60,60],oop:38,inf:85,hi:'지역사회 건강보험(CBHI)',ros:'에쿠브',mm:'텔레비르',mig:['사우디아라비아','아랍에미리트','레바논']},
+  KE:{ra:[60,60],oop:24,inf:86,hi:'사회건강보험(SHA)',pen:'NSSF 연금',sp:[70,'이누아 잠이(노인 현금 지원)'],ros:'차마',mm:'엠페사(M-Pesa)',mig:['사우디아라비아','아랍에미리트','카타르','영국']},
+  TZ:{ra:[60,60],oop:22,inf:94,ros:'비코바(마을 저축 은행)',mm:'엠페사(M-Pesa)'},
+  UG:{ra:[60,60],oop:38,inf:95,ros:'마을 저축·대출 모임(VSLA)',mm:'MTN 모바일 머니',mig:['사우디아라비아','아랍에미리트']},
+  RW:{oop:12,inf:84,hi:'지역 건강보험(무투엘)',mm:'MTN 모바일 머니'},
+  CD:{oop:39,inf:97,ros:'리켈렘바',mm:'엠페사(M-Pesa)'},
+  AO:{cs:[24,20,0,'sel'],ra:[60,60],oop:37,inf:92},
+  MZ:{oop:10,inf:96,mm:'엠페사(M-Pesa)',mig:['남아프리카공화국']},
+  ZA:{ra:[60,60],oop:6,inf:35,hi:'공공 진료소(기본 진료 무료)',sp:[60,'노인 수당(SASSA)'],ros:'스톡벨'},
+  ZW:{oop:24,inf:88,mig:['남아프리카공화국','영국']}, MW:{oop:17,inf:87,mig:['남아프리카공화국']}, ZM:{oop:10,inf:84,mm:'MTN 모바일 머니'},
+  SO:{oop:60,inf:82,ros:'하그바드',mm:'모바일 머니'}, MG:{oop:33,inf:96},
+  ER:{cs:[18,18,2,''],oop:43,inf:90},
+  US:{ra:[67,67],oop:11,inf:18,hi:'직장 의료보험·메디케이드',pen:'사회보장 연금',mm:'모바일 송금 앱'},
+  CA:{ra:[65,65],oop:15,inf:12,hi:'공공 의료보험(메디케어)',pen:'캐나다 연금(CPP)'},
+  MX:{cs:[12,18,0,'lot sat'],ra:[65,65],oop:42,inf:56,hi:'IMSS 사회보장 의료',pen:'AFORE 개인 연금 계좌',sp:[65,'노인 복지 연금(펜시온 파라 엘 비에네스타르)'],ros:'탄다',mig:['미국']},
+  GT:{oop:56,inf:83,mig:['미국']}, HN:{oop:53,inf:83,mig:['미국']}, SV:{oop:28,inf:67,mig:['미국']}, HT:{oop:43,inf:92,ros:'솔',mig:['도미니카공화국','칠레','미국']},
+  CU:{cs:[24,17,0,''],oop:11,inf:30,hi:'무료 공공의료'},
+  CO:{cs:[18,18,0,'sel'],ra:[62,57],oop:15,inf:56,hi:'EPS 건강보험',mig:['스페인','미국']},
+  VE:{ra:[60,55],oop:18,inf:58,mig:['콜롬비아','페루','칠레','스페인']},
+  PE:{ra:[65,65],oop:28,inf:72,ros:'훈타'}, BO:{cs:[12,18,0,''],oop:24,inf:84,sp:[60,'렌타 디그니다드'],ros:'파사나쿠',mig:['아르헨티나','스페인']},
+  BR:{cs:[12,18,0,'sel'],ra:[65,62],oop:25,inf:37,hi:'SUS(통합 보건 시스템)',pen:'INSS 연금',sp:[65,'BPC 노인 수당'],mm:'픽스(Pix)'},
+  AR:{ra:[65,60],oop:28,inf:52,hi:'공공병원',sp:[65,'노인 보편 연금(PUAM)']},
+  CL:{ra:[65,60],oop:33,inf:27,sp:[65,'보편 보장 연금(PGU)']},
+  RU:{cs:[12,18,0,'univ'],ra:[65,60],oop:37,inf:19,hi:'의무건강보험(OMS)',pen:'국가 연금'},
+  UA:{ra:[60,60],oop:51,inf:20,mig:['폴란드','체코','독일']}, BY:{cs:[18,18,0,'univ'],oop:26,inf:15},
+  AZ:{cs:[18,18,0,''],oop:68,inf:60}, AM:{cs:[24,18,0,''],oop:85,inf:48}, GE:{cs:[11,18,0,''],oop:47,inf:56},
+  PL:{ra:[65,60],oop:20,inf:9,hi:'국민건강기금(NFZ)'}, LT:{cs:[9,18,0,'lot'],oop:32,inf:3}, EE:{cs:[8,18,0,''],oop:24,inf:2}, LV:{cs:[11,18,0,'sel'],oop:36,inf:2},
+  DE:{cs:[0,18,0,'q'],ra:[67,67],oop:13,inf:2,hi:'공적 건강보험',pen:'법정 연금'},
+  FR:{ra:[64,64],oop:9,inf:3,hi:'공적 건강보험(카르트 비탈)',pen:'일반 연금'},
+  GB:{ra:[68,68],oop:17,inf:7,hi:'NHS(국민보건서비스)',pen:'국가 연금'},
+  IT:{ra:[67,67],oop:23,inf:3,hi:'국가 보건 서비스(SSN)'}, ES:{ra:[67,67],oop:22,inf:2,hi:'공공 의료'},
+  GR:{cs:[12,19,0,''],ra:[67,67],oop:35,inf:4}, CY:{cs:[14,18,0,''],oop:31,inf:2},
+  AT:{cs:[6,18,0,''],ra:[65,65],oop:19,inf:1}, CH:{cs:[5,19,0,''],ra:[65,65],oop:25,inf:1},
+  FI:{cs:[6,18,0,''],ra:[65,65],oop:17,inf:2}, NO:{cs:[12,19,2,'sel'],ra:[67,67],oop:14,inf:1}, SE:{cs:[9,18,2,'sel'],ra:[67,67],oop:14,inf:3,mm:'스위시(Swish)'}, DK:{cs:[4,18,2,'lot'],ra:[67,67],oop:14,inf:3},
+  AU:{ra:[67,67],oop:16,inf:10,hi:'메디케어'}, NZ:{ra:[65,65],oop:12,inf:10}
+};
+// 소득 수준에 따른 기본값 (자료가 없는 나라)
+function instOf(L){ if(L._inst&&L._inst.c===L.c) return L._inst; const t=L.C.tier, I=INST[L.c]||{}, rgMig={SA:['걸프 지역 나라들'],SE:['말레이시아'],AF:['남아프리카공화국','걸프 지역 나라들'],LA:['미국','스페인'],EE:['독일','폴란드'],CA:['러시아'],ME:['걸프 지역 나라들'],OC:['오스트레일리아','뉴질랜드'],EA:['일본'],EU:['독일'],NA:['캐나다']}[L.C.rg];
+  const o=Object.assign({c:L.c,oop:[55,45,30,15][t-1],inf:[90,75,45,10][t-1],ra:t>=4?[65,65]:t===3?[62,60]:t===2?[60,60]:null,mig:rgMig||['이웃 나라']},I);
+  Object.defineProperty(L,'_inst',{value:o,enumerable:false,configurable:true,writable:true}); return o; }
+const retAgeOf=L=>{ const r=instOf(L).ra; return r?r[L.sex]:null; };
+// 이번 삶의 남은 군 복무가 있는가 (한국은 원래의 흐름을 따른다)
+function csOK(L){ const I=instOf(L), cs=I.cs, f=L.f; if(!cs||(!cs[0]&&!cs[3].includes('q'))||L.c==='KR'||f.svcDone||f.svc) return false; if(cs[2]!==2&&L.sex!==0) return false; if(cs[2]===2&&L.sex===1&&cs[0]>24) return false; if(cs[3].includes('univ')&&((L.age<19&&f.sec)||f.retry)) return false; if(f.svcDefA===L.age) return false; return L.age+L.step>cs[1]&&L.age<=cs[1]+10; }
+function csFlag(L,k){ const cs=instOf(L).cs; return !!cs&&cs[3].split(' ').includes(k); }
+// 빈칸 값: 그 나라 제도의 이름
+function instVars(L){ const I=instOf(L), f=L.f, cs=I.cs;
+  return {hiN:I.hi||'의료 지원 제도',penN:I.pen||'연금',spN:I.sp?I.sp[1]:'노인 수당',spA:I.sp?I.sp[0]:65,rosN:I.ros||'동네 저축 모임',mmN:I.mm||'휴대폰 송금',migTo:f.migTo||pickOne(I.mig),svcM:cs?cs[0]:18,svcY:cs?(cs[0]>=24?Math.round(cs[0]/12)+'년':cs[0]+'개월'):'',raA:retAgeOf(L)||60,oopP:I.oop,infP:I.inf,nsN:I.ns||'',
+    rank:rankName(L),rank2:rankName(L,1),abrTo:f.abrS||pickOne(['미국','영국','독일','일본','캐나다','오스트레일리아','프랑스','네덜란드']),stdTo:pickOne(L.C.tier>=3?['미국','영국','독일','캐나다','오스트레일리아']:['영국','미국','중국','말레이시아','튀르키예','러시아','독일'])}; }
+
+/* ---------- 직급: 같은 일을 오래 하면 한 계단씩 오른다 ---------- */
+const RANKS={
+  office:{KR:['사원','대리','과장','차장','부장','임원'],JP:['평사원','주임','계장','과장','부장','임원'],CN:['직원','주관','매니저','총감','부총경리','총경리'],d:['신입 직원','주임','팀장','부서장','본부장','임원']},
+  civil:{KR:['9급 주무관','8급 주무관','7급 주무관','6급 주무관','5급 사무관','4급 서기관'],d:['하급 공무원','주임 공무원','계장','과장','국장','차관보']},
+  police:{KR:['순경','경장','경사','경위','경감','경정'],d:['순경','경사','경위','경감','경정','총경']},
+  teacher:{d:['교사','부장 교사','교감','교장']}, nurse:{d:['간호사','책임 간호사','수간호사','간호부장']},
+  doctor:{KR:['인턴','전공의','전문의','교수','병원장'],d:['수련의','전공의','전문의','과장','병원장']},
+  engineer:{d:['주니어 엔지니어','엔지니어','시니어 엔지니어','수석 엔지니어','기술 이사']},
+  factory:{d:['생산직 사원','조장','반장','현장 관리자','공장장']},
+  cook:{d:['보조 요리사','요리사','수석 요리사','주방장','내 식당의 주인']}, hair:{d:['보조 미용사','미용사','실장','원장']},
+  vendor:{d:['노점 상인','가게 상인','도매 상인']}, shopown:{d:['작은 가게 주인','두 번째 가게의 주인','가게 여러 곳의 주인']},
+  driver:{d:['운전기사','고참 기사','배차 책임자','운수 회사 사장']}, builder:{d:['잡부','기능공','반장','현장 소장']},
+  artist:{d:['신인 예술가','중견 예술가','이름난 예술가','거장']}, athlete:{d:['유망주','주전 선수','국가대표','전설적인 선수']}, creator:{d:['초보 창작자','구독자 1만 명 창작자','구독자 10만 명 창작자','구독자 100만 명 창작자']},
+  farm:{d:['남의 땅을 부치는 농부','내 땅이 있는 농부','큰 농장의 주인']}, abroad:{d:['외국인 노동자','숙련 노동자','현장 반장']},
+  k_fish:{d:['선원','갑판장','선장','배 주인']}, k_herd:{d:['목동','가축 주인','큰 목장의 주인']}, k_mine:{d:['광부','숙련 광부','갱 반장']}, k_tour:{d:['안내원','숙련 안내원','관광 회사 대표']},
+  k_office:{d:['신입 직원','주임','팀장','부서장','임원']}, k_hosp:{d:['간호사','책임 간호사','수간호사']}, k_factory:{d:['생산직 사원','조장','반장','현장 관리자']}, k_shop:{d:['점원','숙련공','가게 주인']}, k_farm:{d:['일꾼','반장','농장 관리인']}
+};
+function rankList(L){ const id=L.f.job; if(!id||id==='day') return null; let R0=RANKS[id]; if(!R0&&id==='sig'){ const j=L.job; R0=j&&RANKS['k_'+j.kind]; } return R0?(R0[L.c]||R0.d):null; }
+function rankName(L,up){ const r=rankList(L); if(!r) return ''; return r[clamp((L.f.rk||0)+(up?1:0),0,r.length-1)]; }
+function rankCan(L){ const r=rankList(L), f=L.f; return !!r&&(f.rk||0)<r.length-1&&L.age-(f.rkA!=null?f.rkA:(L.jobs&&L.jobs.length?L.jobs[L.jobs.length-1].a:L.age))>=3; }
+Object.assign(Life.prototype,{
+  rankUp(n){ const r=rankList(this), f=this.f; if(!r) return null; const old=f.rk||0; f.rk=clamp(old+(n||1),0,r.length-1); if(f.rk===old) return null; f.rkA=this.age; f.rkMax=Math.max(f.rkMax||0,f.rk);
+    this.inc=this.payClamp(this.inc*1.16); this.maxInc=Math.max(this.maxInc,this.inc); f.rkTop=r[f.rk]; return r[f.rk]; }
+});
+// 일자리를 얻을 때: 직급은 처음부터, 공식(계약서·사회보험) 일자리인지가 정해진다
+const _setJob0=setJob;
+setJob=function(L,id){ const prev=L.f.job, j=_setJob0(L,id); if(prev!==id){ L.f.rk=0; L.f.rkA=L.age; }
+  const I=instOf(L), base=I.inf/100, k=j.kind, mul={office:.25,school:.2,hosp:.3,factory:.6,shop:1,dream:1,tour:.9,mine:.8,fish:1.3,herd:1.3,farm:1.3,part:1.15}[k]||1;
+  L.f.inf=['civil','police','teacher','doctor','nurse'].includes(id)?R()<base*.12:R()<clamp(base*mul,0,.98);
+  if(id==='abroad'){ L.f.migTo=pickOne(I.mig); L.f.migA=L.age; } return j; };
+
+/* ---------- 연금: 공식 일자리에서 오래 일한 사람 · 노인 수당 · 가족의 도움 ---------- */
+pension=function(L){ const C=L.C, f=L.f, I=instOf(L), t=C.tier, y=f.frmY||0;
+  let p=y>=10?C.med*[.18,.26,.36,.5][t-1]*Math.min(1.2,.6+y/50)*(1+(f.rkMax||0)*.06):0;
+  if(I.sp&&L.age>=I.sp[0]) p=Math.max(p,C.med*(t>=4?.22:.14)); else if(I.sp) p=Math.max(p,C.med*.08);
+  const kids=(L.kids||[]).length; if(p<C.med*.15) p+=C.med*Math.min(kids,3)*.06;     // 연금이 적으면 자녀들이 보태 준다
+  return Math.max(p,C.med*(t>=3?.12:.08)); };
+
+/* ---------- 달력의 결과 처리 (제도) ---------- */
+function svcStart(L,v,t,part){ const f=L.f, m=instOf(L).cs[0]; if(part){ f.svcDone=1; f.svcN=1; f.svcA=L.age; return {t,big:1}; } f.svc=[L.age+1,L.age+1+Math.max(1,Math.ceil(m/12))]; f.svcN=(f.svcN||0)+1; f.svcA=L.age; return {t,big:1}; }
+Object.assign(CALRUN,{
+  // 군 복무: 지금 간다 · 미룬다 · 돈을 내고 면제 · 추첨
+  // 군 복무 (svc 그냥 · svcU 대학생은 미룸 · svcB 돈 내고 면제 · svcLot 추첨 · svcSel 일부만 소집 · svcQ 설문)
+  svc:{post:(L,ok,oi,v)=>svcStart(L,v,`${v.svcY} 동안의 군 복무를 시작했다. 머리를 짧게 자르고 훈련소로 들어갔다.`)},
+  svcU:{post:(L,ok,oi,v)=>{ const f=L.f; if(oi===1&&f.univ&&f.school){ f.svcDef=(f.svcDef||0)+1; f.svcDefA=L.age; return {t:'졸업한 뒤에 다녀오기로 했다.'}; } return svcStart(L,v,`${v.svcY} 동안의 군 복무를 시작했다.`); }},
+  svcB:{post:(L,ok,oi,v)=>{ if(oi===1){ L.f.svcDone=1; return {t:'정해진 돈을 내고 짧은 훈련만 받았다. 모아 둔 돈이 크게 줄었다.',fx:{'@':-3}}; } return svcStart(L,v,`${v.svcY} 동안의 군 복무를 시작했다.`); }},
+  svcLot:{post:(L,ok,oi,v)=>{ const f=L.f, TH=L.c==='TH', sat=csFlag(L,'sat');
+    if(oi===2) return svcStart(L,v,TH?'먼저 지원한 덕에 복무 기간이 조금 짧아졌다.':`먼저 지원해 ${v.svcY} 동안 복무하게 되었다.`);
+    if(R()<.38) return svcStart(L,v,TH?'빨간 쪽지였다. 2년 동안 군에 가게 되었다.':`추첨에서 뽑혔다. ${v.svcY} 동안 ${sat?'토요일마다 훈련에 나가게':'복무하게'} 되었다.`,sat);
+    f.svcDone=1; return {t:TH?'검은 쪽지였다. 면제다! 함께 온 친구들과 얼싸안았다.':'추첨에서 뽑히지 않아 복무가 면제되었다.',fx:{j:4}}; }},
+  svcSel:{post:(L,ok,oi,v)=>{ if(R()<.8){ L.f.svcDone=1; return {t:'신체검사를 받았지만 소집되지는 않았다. 지원한 사람들로 자리가 대부분 채워졌다.'}; } return svcStart(L,v,`소집 명단에 이름이 올랐다. ${v.svcY} 동안 복무하게 되었다.`); }},
+  svcQ:{post:(L,ok,oi)=>{ L.f.svcDone=1; if(oi===1){ L.f.svcN=1; L.f.svcA=L.age; return {t:'설문에 답한 뒤 군에 지원했다. 몇 달 뒤 기초 훈련을 받았다.',fx:{h:2,r:2}}; } return {t:'설문에 답했다. 지금은 지원자 위주라 소집되지 않았다.'}; }},
+  svcEnd:{post:L=>{ L.f.svcDone=1; L.f.svc=null; return {big:1}; }},
+  rankUp:{post:(L,ok,oi)=>{ if(!ok) return null; const n=L.rankUp(); return n?{t:`${n}(으)로 승진했다! 월급도 함께 올랐다.`.replace('(으)로',josa(n,'으로','로').slice(n.length)),fx:{j:4},big:1}:null; }},
+  rankUp0:{post:(L,ok,oi)=>{ if(!ok||oi!==0) return null; const n=L.rankUp(); return n?{t:`${n}(으)로 승진했다!`.replace('(으)로',josa(n,'으로','로').slice(n.length)),fx:{j:3},big:1}:null; }},
+  migBack:{post:(L,ok,oi)=>{ if(oi!==0) return null; const f=L.f, sav=L.C.med*(6+R()*10); L.cash+=sav; L.mEv+=sav; f.migBack=f.migTo; if(f.ch) delete f.ch.migIn; setJob(L,L.set==='R'?'farm':'shopown'); return {t:`몇 해 동안 모은 돈을 들고 고향에 돌아왔다. 그 돈으로 ${L.set==='R'?'땅을 조금 더 사고 농사를 다시 지었다':'작은 가게를 열었다'}.`,big:1}; }},
+  abrGo:{post:(L,ok,oi,v)=>{ if(oi!==0) return null; if(R()>[.45,.6,.8,.92][L.C.tier-1]) return {t:'입학 허가는 받았지만, 학비와 생활비를 댈 수 있다는 증빙이 모자라 비자가 나오지 않았다.',fx:{j:-3}}; L.f.abrS=v.stdTo; (L.f.ch||(L.f.ch={})).abrT=L.age; return {t:`${v.stdTo}의 대학원에 입학했다. 공항에서 가족과 오래 손을 흔들었다.`,big:1,fx:{'@':-4}}; }},
+  abrDone:{post:L=>{ const f=L.f, to=f.abrS; f.abrDone=to; f.abrS=null; if(f.job){ L.inc=L.payClamp(L.inc*1.2); } else f.needJob=1; return {t:`${to}에서 대학원 공부를 마쳤다. 학위증을 받던 날, 고향 가족과 영상 통화를 했다.`,big:1,fx:{k:6,j:5}}; }},
+  rosca:{post:(L,ok,oi)=>{ if(oi!==0) return null; const turn=R(); return turn<.25?{t:'이번 달 곗돈을 탈 차례가 일찍 돌아왔다. 목돈이 생겼다.',fx:{'@':2,j:2}}:turn>.92?{t:'모임의 한 사람이 돈을 들고 사라져 손해를 보았다.',fx:{'@':-2,j:-3,r:-1}}:{t:'다달이 꼬박꼬박 돈을 넣었다. 몇 달 뒤 내 차례가 오면 목돈이 된다.',fx:{'@':1,r:1}}; }},
+  formal:{post:L=>{ L.f.inf=0; return {t:'이제 계약서가 있는 일자리다. 월급에서 연금과 건강보험료가 빠져나가기 시작했다.',fx:{j:2}}; }}
+});
+
+/* =====================================================================
+   [더 다양한 한 해] 같은 일이 되풀이되어도 문장이 달라지고, 갈림길은 셋·넷으로,
+   한 번의 선택이 몇 해 뒤의 일로 이어진다. 나라의 제도(군 복무 · 연금 · 의료보험 · 비공식 일자리)도 삶에 들어온다.
+   Y 함수의 설명은 months.js. 이 파일에서 더한 덧붙임:
+     set/setOK 이어질 이야기의 표시(선택지마다 [..] 또는 하나) · clr 표시 지우기
+     조건 fl:이름(>n|<n) · !fl:이름 · w+ 살림이 넉넉함 · w- 빠듯함 · inf 비공식 일자리 · frm 공식 일자리 · rkUp 승진할 때가 됨
+     cs 군 복무 차례 · cs:lot 추첨 · cs:buy 돈 내고 면제 · cs:univ 대학생은 미룸 · cs:q 설문 · svc 복무 중 · mig 다른 나라에서 일함
+     oop+ 병원비를 거의 내 돈으로 · oop- 의료보험이 튼튼함 · hi 의료보험 제도가 있음 · sp 노인 수당 · ros 동네 저축 모임 · mm 휴대폰 결제
+   ===================================================================== */
+function mkOpt(r){ const isFx=x=>typeof x==='string'&&/^([@$%hjkrHVMx]-?\d+\s*)+$/.test(x.trim()); const p=parseFx(r[1]); if(isFx(r[3])) Object.assign(p.fx,parseFx(r[3]).fx); return {l:r[0],res:r[2],fail:isFx(r[3])?(r[4]||null):(r[3]||null),...p}; }
+const calFind=t=>CAL.find(e=>e.txt===t);
+function calVar(t,more,x){ const e=calFind(t); if(!e){ if(typeof console!=='undefined') console.warn('calVar 없음:',t); return; } e.txts=(e.txts||[e.txt]).concat(more); if(x) Object.assign(e,x); }
+function calOpt(t,r){ const e=calFind(t); if(!e||!e.opts){ if(typeof console!=='undefined') console.warn('calOpt 없음:',t); return; } e.opts.push(mkOpt(r)); }
+
+// ── 해마다 돌아오는 일: 같은 일이라도 해마다 다른 모습으로
+(function(){ const e=calFind('올해 월급이 정해졌다.'); if(e){ e.c=['w','frm']; e.txts=['올해 월급이 정해졌다.','연봉 협상 면담을 했다. 지난 한 해 한 일을 종이 한 장에 정리해 갔다.','인사팀에서 올해 월급이 적힌 통지서가 왔다.','새해 첫 월급 명세서를 열어 보았다. 세금과 보험료가 빠진 숫자부터 눈에 들어왔다.','올해 임금 협상이 끝났다는 공지가 게시판에 붙었다.']; } })();
+Y(19,69,'w inf','*','장부를 펼쳐 지난 한 해의 벌이를 따져 보았다.||올해는 일감이 얼마나 들어올지 손가락으로 셈해 보았다.||단골과 일감을 하나하나 세어 보며 한 해 벌이를 가늠했다.||계약서 없이 일하는 터라, 벌이는 해마다 들쭉날쭉하다.','',{k:'pay',run:'pay',sc:'money'});
+CALRUN.pay={post:L=>{ const j=L.job, inf=!!L.f.inf||!!(j&&['shop','farm','fish','herd','dream','part'].includes(j.kind)), r=clamp(.3+gauss()*(inf?3:2)+(L.s.k-50)/40+(L.tr.D>20?.5:0),-6,10); L.inc=L.payClamp(L.inc*(1+r/100)); L.maxInc=Math.max(L.maxInc,L.inc);
+  const w=inf?'벌이':'월급', W=josa(w,'이','가'); const t=Math.abs(r)<.3?`${W} 그대로였다.`:r>0?`${W} ${r.toFixed(1)}% ${inf?'늘었다':'올랐다'}.`:`${inf?'일감이 줄어':'회사 사정이 어려워'} ${W} ${(-r).toFixed(1)}% 줄었다.`;
+  return {t:`${t} 이제 한 달에 약 ${josa(fmtPay(L.inc),'을','를')} ${inf?'번다':'받는다'}.`,fx:{j:r>2?2:r<0?-2:0}}; }};
+calVar('{fest} 연휴가 왔다.',['{fest}이(가) 다가왔다. 거리마다 장식이 걸렸다.','{fest} 준비로 온 동네가 들썩였다. 시장은 발 디딜 틈이 없었다.','올해도 {fest} 날이 왔다. 일터도 며칠 문을 닫는다.','{fest} 연휴, 고향으로 가는 길이 사람들로 가득했다.']);
+calVar('여름휴가다.',['드디어 휴가를 받았다.','달력에 동그라미 쳐 둔 휴가 날이 왔다.','회사에서 휴가 신청서가 받아들여졌다. 며칠을 어떻게 보낼까?']);
+calVar('건강검진을 받았다.',['건강검진 날, 아침을 굶고 병원에 갔다.','정기 건강검진 안내 문자가 왔다.','올해 건강검진을 받았다. 키가 1센티미터 줄었다는 말에 웃었다.']);
+calVar('송년회가 열렸다. {boss} 부장이 한 해 수고했다며 건배를 했다.',['올해 마지막 회식 자리. {coll}이(가) 한 해 동안 고마웠다며 잔을 채워 주었다.','한 해를 마무리하는 종무식이 열렸다. 올해의 우수 사원 이름이 불렸다.','연말 송년회 대신 동료들과 봉사활동을 다녀왔다.']);
+calVar('씨를 뿌리는 철이다. 하늘을 보며 비를 기다린다.',['밭을 갈 때가 되었다. 흙냄새가 짙어졌다.','올해는 무엇을 심을지 식구들과 의논했다.','씨앗 값이 작년보다 올랐다. 그래도 밭은 비워 둘 수 없다.']);
+calVar('수확 철이다.',['거둘 때가 되었다. 온 식구가 새벽부터 밭에 나갔다.','이웃들과 서로 일손을 빌려주며 거두어들였다.','한 해 농사의 결과가 손에 쥐어지는 계절이다.']);
+calVar('아침마다 공원을 걷는다. 같은 시간에 걷는 이웃들과 인사를 나눈다.',['아침 산책길에 처음 보는 새를 만났다.','동네 어르신들과 아침 체조를 함께했다.','오늘은 조금 더 멀리, 강가까지 걸어 보았다.','산책길 벤치에서 젊은 시절 이야기를 하다 보니 해가 높이 떴다.','비가 와서 집 안에서 몸을 풀었다. 창밖 빗소리가 좋았다.']);
+calVar('{hob} 실력이 조금 늘었다.',['{hob}에 푹 빠져 주말을 보냈다.','{hob}을(를) 함께하는 사람들과 모임을 가졌다.','{hob} 연습을 하다 새로운 요령을 깨달았다.','오랜만에 {hob}을(를) 하니 손이 굳어 있었다. 그래도 금세 감이 돌아왔다.']);
+calVar('{hob}을(를) 하는 동안은 걱정이 다 사라졌다. 이 시간이 있어 버틸 수 있었다.',['힘든 하루 끝에 {hob}을(를) 했다. 머리가 맑아졌다.','{hob} 덕분에 새 친구가 생겼다.'],{cd:4});
+calVar('퇴근길에 {coll}와(과) 한잔하며 속 이야기를 나눴다.',['점심시간에 {coll}와(과) 산책하며 고민을 털어놓았다.','{coll}이(가) 집들이에 초대했다.','야근 끝에 {coll}와(과) 국숫집에 들렀다. 피곤이 조금 풀렸다.'],{cd:3});
+calVar('{coll}의 결혼식 축의금을 냈다.',['{coll2}의 아이 돌잔치에 다녀왔다.','{coll}이(가) 결혼한다며 청첩장을 건넸다.'],{cd:4});
+calVar('물가가 많이 올랐다. 장바구니가 가벼워졌다.',['기름값이 또 올랐다. 출퇴근 비용이 늘었다.','같은 돈으로 살 수 있는 것이 해마다 줄어든다.','전기·가스 요금 고지서를 받고 한숨이 나왔다.'],{cd:5});
+calVar('{city}에서 큰 선거가 열렸다. 투표소에 가서 한 표를 행사했다.',['선거 날, 투표소 앞에 긴 줄이 섰다. 아침 일찍 한 표를 던졌다.','후보들의 토론을 끝까지 보고 나서 누구를 뽑을지 정했다.','동네 대표를 뽑는 선거가 열렸다. 이웃들과 개표 결과를 함께 기다렸다.'],{cd:5});
+calVar('차가 고장 나 정비소에 맡겼다.',['{veh}의 바퀴가 펑크 났다. 길가에서 한참을 씨름했다.','{veh}을(를) 오래 타다 보니 여기저기 고칠 곳이 생겼다.'],{cd:5});
+calVar('모아 둔 돈을 어떻게 굴릴까?',['통장에 쌓인 돈을 보며 고민했다. 그냥 두어도 될까?','은행 직원이 새 상품을 권했다.']);
+calOpt('모아 둔 돈을 어떻게 굴릴까?',['{rosN}에 넣는다','r2 K','이웃들과 함께 {rosN}에 돈을 넣었다. 내 차례가 오면 목돈이 된다.','%3']);
+calVar('{fest} 날, 마을 사람들과 함께 {music}을(를) 들으며 밤늦게까지 어울렸다.',['{fest} 밤, 광장에 불이 켜지고 {music} 소리가 퍼졌다.','올해 {fest}에는 우리 동네가 행사 준비를 맡았다. 하루 종일 바빴다.'],{cd:5});
+calVar('돌아가신 분의 기일에 가족이 모여 옛이야기를 나눴다.',['기일을 맞아 산소(묘소)를 찾았다. 풀을 뽑고 오래 앉아 있었다.','돌아가신 분이 좋아하시던 음식을 차려 놓고 가족끼리 둘러앉았다.'],{cd:3});
+calVar('친척 장례식에 부조금을 냈다.',['먼 친척 어른의 부고를 들었다. 하루 일을 쉬고 조문을 다녀왔다.','어릴 때 자주 업어 주시던 친척 어른이 세상을 떠나셨다.'],{cd:4});
+calVar('몇 년 만에 독감에 걸렸다. 일주일을 앓았다.',['환절기 감기가 오래갔다. 기침이 한 달 내내 떨어지지 않았다.','열이 펄펄 끓어 며칠 꼼짝 못 했다.','계절이 바뀌며 온 식구가 돌아가며 감기를 앓았다.'],{cd:5});
+calVar('상한 음식을 먹고 밤새 배앓이를 했다.',['더운 날 길에서 사 먹은 음식 때문에 탈이 났다.','물이 맞지 않았는지 며칠 배가 아팠다.'],{cd:6});
+calVar('몇 년 만에 혼자만의 여행을 떠났다.',['혼자 기차를 타고 낯선 도시에 가 보았다.','휴대폰을 꺼 두고 하루 동안 바닷가에 앉아 있었다.'],{cd:5});
+calOpt('봉사활동을 할까?',['배운 기술로 재능 기부를 한다','k2 r2 C','내가 잘하는 일로 이웃을 도왔다. 생각보다 큰 보람이었다.']);
+calVar('이웃집에 큰일이 생겼다.',['옆집 어르신이 쓰러지셨다는 소식을 들었다.','이웃 가게에 불이 나 하루아침에 가게를 잃었다.'],{cd:6});
+calVar('{fest} 날이 왔다. 온 가족이 모여 {food}을(를) 나눠 먹고 밤늦게까지 이야기꽃을 피웠다.',['{fest} 아침, 새 옷을 입고 어른들께 인사를 드렸다.','{fest}을(를) 맞아 집 안 대청소를 했다. 가장 높은 선반은 내 차지였다.','{fest}에 사촌들과 밤늦게까지 놀았다. 어른들이 일찍 자라고 여러 번 말했다.','올해 {fest}에는 내가 {food} 만드는 일을 거들었다.']);
+calVar('추석이다. 송편을 빚다가 모양이 이상하다고 다 같이 웃었다.',['추석 연휴, 큰집에서 사촌들과 윷놀이를 했다.','추석 보름달을 보며 소원을 빌었다. 비밀이다.','추석에 할머니 댁 가는 길이 일곱 시간이나 걸렸다.']);
+calVar('감기 몸살로 사흘을 앓았다. 엄마가 끓여 준 죽이 유난히 맛있었다.',['목감기에 걸려 목소리가 나오지 않았다. 친구들이 수첩으로 대화했다.','열이 나서 학교에 못 갔다. 하루 종일 누워 천장만 보았다.','장염에 걸려 이틀 동안 흰죽만 먹었다.'],{cd:4});
+calVar('온 가족이 둘러앉아 {food}을(를) 먹었다. 오랜만에 다 같이 크게 웃었다.',['저녁 식탁에서 오늘 있었던 일을 하나씩 이야기했다.','처음으로 내가 저녁 준비를 거들었다. 조금 짰지만 다들 맛있게 먹었다.'],{cd:3});
+calVar('텃밭에 상추와 고추를 심었다.',['텃밭의 토마토가 빨갛게 익었다. 이웃에게 한 바구니 나눠 주었다.','올해는 텃밭에 처음 보는 채소를 심어 보았다.'],{cd:3});
+calVar('병원 정기 검진 날이다. 의사가 혈압을 조심하라고 했다.',['정기 검진 날. 수치가 지난번보다 좋아졌다는 말을 들었다.','약 봉투가 하나 더 늘었다. 아침마다 약을 챙기는 일이 일과가 되었다.'],{cd:3});
+calVar('연금(가족의 도움)이 들어오는 날, 손주 용돈부터 챙겼다.',['{penN}이(가) 들어오는 날, 시장에 가서 좋아하는 과일을 샀다.','자녀들이 보내 준 돈으로 한 달 살림을 꾸렸다. 고마운 마음과 미안한 마음이 함께였다.'],{cd:4});
+calVar('오랜 친구의 장례식에 다녀왔다. 돌아오는 길이 유난히 길었다.',['젊은 날 함께 일하던 동료가 세상을 떠났다는 소식이 왔다.'],{cd:5});
+// 학교의 한 해 (같은 시험이라도 해마다 다른 장면)
+calVar('2학기 {sub} 시험을 보았다.',['2학기 {sub} 시험. 시험지를 받자마자 아는 문제부터 풀었다.','{sub} 시험 전날, {mate}와(과) 서로 문제를 내 주며 공부했다.','{sub} 시험 시간에 시계 소리가 유난히 크게 들렸다.']);
+calVar('{sub} 단원평가가 있다.',['{sub} 쪽지 시험을 본다고 한다.','{sub} 단원이 끝났다. 다음 주에 평가가 있다.','선생님이 {sub} 단원평가를 예고하셨다. 교실이 술렁였다.']);
+calVar('긴 방학이다.',['방학식 날, 통지표를 가방 깊숙이 넣었다.','방학 계획표를 동그랗게 그렸다. 지킬 수 있을까?','방학이 시작되었다. 첫날은 늦잠부터 잤다.']);
+calVar('기말고사를 보았다.',['기말고사 마지막 날, 종이 울리자 교실에 환호성이 터졌다.','기말고사 기간, 밤마다 책상 앞에서 졸았다.']);
+calVar('새 학년 첫 시험 기간이다.',['새 학년 첫 시험이 다가온다. 시험 범위가 칠판에 적혔다.']);
+calVar('새벽에 일어나 {chore}을(를) 거들었다. 해가 뜨기 전에 벌써 땀이 흘렀다.',['학교 가기 전 {chore}을(를) 마쳐야 한다. 오늘은 조금 늦었다.','어른들 틈에서 {chore}을(를) 거들었다. 손에 굳은살이 생겼다.','{chore}을(를) 마치고 나니 하늘이 붉게 물들어 있었다.']);
+calVar('방학 동안 집안일을 도왔다.',['방학 내내 동생들을 돌보며 집안일을 했다.','방학 동안 시장에서 가족의 일을 거들었다.']);
+
+// ── 더 많은 갈림길: 어린 시절 (3~12)
+Y(3,6,'','*','처음으로 두발자전거를 탄다. 뒤에서 잡아 주던 손이 언제 떨어졌는지 몰랐다.||보조 바퀴를 떼고 자전거를 타 보기로 했다.',[['넘어져도 계속 탄다','h2 B','무릎이 까졌지만 끝내 혼자 탔다!','몇 번 넘어지고 울음을 터뜨렸다. 다음에 다시 해 보기로 했다.'],['천천히 연습한다','D h1','며칠에 걸쳐 조금씩 익혔다.'],['아직은 세발자전거가 좋다','j1','세발자전거로 마당을 신나게 돌았다.']],{once:1,sc:'sport'});
+Y(3,6,'','*','예방주사를 맞는 날이다. 병원 문 앞에서 다리가 굳었다.',[['눈을 꼭 감고 참는다','B h2','따끔했지만 울지 않았다. 스티커를 받았다.','결국 울었다. 그래도 주사는 맞았다.'],['엄마(아빠) 손을 꼭 잡는다','r1 h2','손을 꼭 잡고 맞았다. 생각보다 금방 끝났다.']],{once:1,sc:'hosp',nt:'예방접종은 해마다 350만~500만 명의 목숨을 지키는 것으로 추산됩니다 (WHO)'});
+Y(4,9,'','*','앞니가 흔들리더니 쏙 빠졌다.||밥을 먹다 이가 빠졌다. 빈자리로 바람이 슝슝 들어왔다.','j2',{once:1});
+Y(4,8,'','*','시장(마트)에서 엄마를 놓쳤다. 사람들 다리만 보였다.',[['그 자리에 가만히 서 있는다','D','배운 대로 그 자리에서 기다렸다. 엄마가 금방 찾아왔다.'],['가게 주인에게 도와 달라고 한다','B r1','가게 아주머니가 방송으로 엄마를 불러 주었다.'],['울면서 찾아다닌다','j-2','한참을 헤매다 경비원 아저씨 손을 잡고 엄마를 만났다.']],{once:1});
+Y(5,9,'','*','동네 형(언니)들이 나만 빼고 놀자고 했다.',[['다른 놀이를 찾는다','C j1','혼자 개미집을 관찰하다 새 친구를 사귀었다.'],['끼워 달라고 다시 말한다','B r2','두 번째 부탁에 끼워 주었다. 술래를 맡았다.'],['집에 와서 이야기한다','r1','이야기를 들은 아빠가 같이 공을 차 주셨다.']],{cd:4});
+Y(6,12,'','*','장래 희망을 그림으로 그려 오라는 숙제를 받았다.',[['{jobT}을(를) 그린다','C k1','{jobT}이(가) 된 내 모습을 크게 그렸다.'],['부모님 일을 그린다','r2','부모님이 일하는 모습을 그렸다. 부모님이 오래 들여다보셨다.'],['아직 모르겠다고 쓴다','G','“아직 찾는 중”이라고 썼다. 선생님이 그것도 좋다고 하셨다.']],{once:1,sc:'school'});
+Y(7,12,'s','*','반에 휠체어를 타는 친구가 전학을 왔다.||반에 듣지 못하는 친구가 있다. 수어(손말)로 이야기한다고 한다.',[['먼저 다가가 인사한다','K r2','먼저 인사했다. 금세 단짝이 되었다.'],['필요한 게 있는지 물어본다','K D','“도움이 필요하면 내가 먼저 말할게.” 친구가 웃으며 답했다.'],['평소처럼 대한다','G','다른 친구들과 똑같이 대했다. 친구도 그게 편하다고 했다.']],{once:1,nt:'세계 인구의 약 16%인 13억 명이 장애와 함께 살아갑니다 (WHO 2023)'});
+Y(8,12,'s','*','반에서 한 아이가 자꾸 놀림을 받는다.',[['선생님께 알린다','D B','선생님께 알렸다. 그 뒤로 놀림이 줄었다.'],['그 아이 곁에 함께 앉는다','K B','점심시간마다 그 아이와 함께 앉았다. 놀림이 슬그머니 사라졌다.'],['모르는 척한다','j-2','모르는 척했다. 마음 한쪽이 계속 무거웠다.']],{once:1,nt:'13~15세 학생 3명 중 1명꼴로 한 달 사이 학교에서 괴롭힘을 겪습니다 (유네스코 2019)'});
+Y(8,12,'','*','용돈을 처음 받았다. 일주일에 한 번이다.||설날(명절)에 받은 돈으로 무엇을 할까?',[['저금통에 넣는다','D','차곡차곡 모았다. 저금통이 무거워질수록 뿌듯했다.'],['갖고 싶던 것을 산다','j2','갖고 싶던 것을 샀다. 이틀 만에 망가졌다.'],['반은 쓰고 반은 모은다','D j1','반은 쓰고 반은 모았다. 어른들이 칭찬하셨다.']],{once:1,sc:'money'});
+Y(9,12,'s','*','반장 선거에 나가 볼까? 친구들이 추천했다.||학급 회의에서 놀이 시간을 늘리자는 안건이 나왔다.',[['나가서 공약을 발표한다','B r2','떨리는 목소리로 공약을 말했다. 박수를 받았다.'],['친구를 도와 선거 운동을 한다','K r2','친구의 공약 포스터를 함께 그렸다.'],['조용히 지켜본다','','조용히 지켜보았다.']],{cd:3,sc:'school',run:'leader'});
+Y(9,12,'','*','친구 집에 처음 자러 갔다.',[['밤새 이야기한다','r3 j2','밤새 속닥이다 새벽에야 잠들었다.'],['밤이 되자 집 생각이 난다','r1','밤이 깊어지자 집 생각이 나서 전화를 했다. 그래도 끝까지 잤다.']],{once:1,sc:'friend'});
+Y(10,12,'s','*','학교 숙제를 하려고 처음으로 인터넷 검색을 했다. 잘못된 정보도 섞여 있었다.',[['여러 곳을 비교해 본다','k2 D','책과 여러 누리집을 비교해 바른 내용을 골랐다.'],['처음 나온 것을 베낀다','j1','처음 나온 내용을 옮겨 적었다. 선생님이 출처를 물으셨다.'],['어른에게 물어본다','r1 k1','도서관 사서 선생님께 묻자 좋은 책을 골라 주셨다.']],{once:1,sc:'school'});
+Y(7,12,'ns','*','학교에 가는 아이들을 길에서 마주쳤다. 가방이 부러웠다.||또래들이 학교에 간 사이, 나는 {chore}을(를) 했다.',[['어깨너머로 글자를 익힌다','k3 C','아이들이 버린 공책으로 글자를 익혔다.'],['동생을 돌보며 노래를 가르친다','r2 K','동생에게 아는 노래를 다 가르쳐 주었다.'],['열심히 일을 돕는다','D r1','묵묵히 일을 도왔다. 어른들이 기특해했다.']],{cd:3,nt:'2024년 세계 1억 3,800만 명의 어린이가 아동노동을 하고, 그 61%가 농사일입니다 (ILO·유니세프 2025)'});
+
+// ── 더 많은 갈림길: 10대 (13~18)
+Y(13,18,'s','*','조별 과제를 하는데 한 친구가 아무것도 하지 않는다.',[['역할을 다시 나누자고 한다','B r1','역할을 나누자 그 친구도 자기 몫을 해 왔다.'],['내가 그냥 다 한다','D h-1 k2','밤새 혼자 다 했다. 점수는 좋았지만 억울했다.'],['선생님께 사정을 말씀드린다','D','선생님이 조원마다 한 일을 따로 적어 내게 하셨다.'],['그 친구에게 이유를 물어본다','K r2','집안 사정이 어렵다는 이야기를 들었다. 함께 할 수 있는 일을 찾았다.']],{cd:3,sc:'school'});
+Y(13,18,'s','*','시험 전날, 답이 돈다는 메시지가 단체 대화방에 올라왔다.',[['열어 보지 않는다','D G','열어 보지 않았다. 다음 날 그 답은 가짜였다는 것이 밝혀졌다.'],['선생님께 알린다','B D','선생님께 알렸다. 시험지가 바뀌었다.'],['궁금해서 열어 본다','j-2','열어 보았다. 마음만 불편했고 시험도 망쳤다.']],{once:1,sc:'school'});
+Y(13,18,'','*','휴대폰을 보다 새벽 두 시가 넘었다. 요즘 아침마다 너무 피곤하다.',[['잘 때는 휴대폰을 거실에 둔다','D h3','휴대폰을 거실에 두고 잤다. 사흘 만에 아침이 가벼워졌다.'],['알림을 끄고 시간을 정한다','D h2','밤 열한 시가 되면 알림이 꺼지게 했다.'],['어차피 다들 그렇다며 넘긴다','h-2','그대로 지냈다. 수업 시간에 자꾸 졸았다.']],{cd:3});
+Y(13,18,'','*','누군가 내 사진에 기분 나쁜 댓글을 달았다.',[['캡처해 두고 어른에게 알린다','D B','어른과 함께 신고했다. 댓글이 지워졌다.'],['대꾸하지 않고 차단한다','G','차단하고 마음에서 지웠다.'],['똑같이 되갚아 준다','j-3 r-2','싸움이 커져 둘 다 상처만 남았다.']],{once:1});
+Y(14,18,'','*','처음으로 아르바이트를 해 볼까?||방학 동안 일을 해서 돈을 벌어 보기로 했다.',[['식당에서 서빙을 한다','D k1','주말마다 식당에서 일했다. 손님에게 “잘 먹었어요”라는 말을 들으면 기뻤다.','@1'],['동네 아이들 공부를 봐 준다','k2 K','동네 아이들 숙제를 봐 주며 용돈을 벌었다.','@1'],['아직은 공부와 쉬는 데 집중한다','k1 h1','지금은 공부에 집중하기로 했다.']],{once:1,sc:'job'});
+Y(13,18,'s','*','학생회 선거가 열린다.',[['후보로 나간다','B r2 k1','공약을 들고 반마다 찾아다녔다.'],['좋아하는 후보의 선거 운동을 돕는다','K r2','피켓을 들고 아침마다 교문 앞에 섰다.'],['공약을 꼼꼼히 읽고 투표만 한다','D','공약을 비교해 보고 투표했다.']],{cd:3,sc:'school',run:'leader'});
+Y(13,18,'s','*','학교 축제에서 우리 동아리({club})가 공연(전시)을 한다.',[['무대 앞에 선다','B j3','떨렸지만 끝까지 해냈다. 박수가 쏟아졌다.'],['뒤에서 준비를 맡는다','D r2','조명과 소품을 맡았다. 아무도 몰라도 뿌듯했다.'],['친구들을 데려와 응원한다','r2 j2','맨 앞줄에서 목이 쉬도록 응원했다.']],{cd:2,sc:'stage'});
+Y(14,18,'s','*','진로 체험의 날, 하고 싶은 일을 하루 체험할 수 있다.',[['{jobT} 일터에 간다','C k2','{jobT}의 하루를 따라다녔다. 생각보다 힘들고, 생각보다 멋졌다.'],['부모님 일터에 간다','r2 k1','부모님이 일하는 모습을 처음으로 오래 보았다.'],['대학 연구실에 간다','k3 C','대학 연구실에서 실험 가운을 입어 보았다.']],{once:1,sc:'job'});
+Y(13,17,'s','*','반에 다른 나라에서 온 친구가 전학을 왔다. 아직 말이 서툴다.',[['쉬운 말로 학교를 안내해 준다','K r2','학교 구석구석을 안내했다. 친구가 자기 나라 과자를 나눠 주었다.'],['그 나라 말 인사를 배워 간다','C r2','어설픈 인사말에 친구가 크게 웃었다.'],['멀리서 지켜본다','','멀리서 지켜보기만 했다.']],{once:1});
+Y(15,18,'h','*','진로를 두고 부모님과 생각이 다르다.',[['내 생각을 글로 정리해 보여 드린다','B D','편지를 읽은 부모님이 한참 말이 없으시더니 “한번 해 봐라” 하셨다.'],['부모님 뜻을 따르기로 한다','r2 G','부모님 뜻을 따르기로 했다. 마음 한쪽이 아쉬웠다.'],['선생님과 함께 이야기해 본다','D r1','담임 선생님과 셋이 이야기하며 가운데 길을 찾았다.']],{once:1,sc:'school'});
+Y(13,18,'w-','*','친구들이 놀러 가자는데, 돈이 없다.||교복(학용품)을 새로 사야 하는데 집안 사정이 넉넉하지 않다.',[['솔직하게 사정을 말한다','B r1','솔직하게 말하자 친구들이 돈 안 드는 곳으로 가자고 했다.'],['선배에게 물려받는다','G','선배에게 물려받았다. 이름표만 새로 달았다.'],['핑계를 대고 빠진다','j-2','핑계를 대고 빠졌다. 혼자 집에 있으니 쓸쓸했다.']],{cd:3,sc:'money'});
+Y(13,18,'w+','*','방학에 해외 어학연수를 가자는 이야기가 나왔다.||방학에 가족 여행으로 먼 나라에 가게 되었다.',[['간다','k2 j2 C','낯선 거리와 말에 놀라며 보름을 보냈다.','@-2'],['그 돈으로 필요한 다른 것을 한다','D','그 돈으로 정말 하고 싶던 공부를 했다.']],{once:1,sc:'travel'});
+Y(16,18,'h','*','밤늦게까지 남아 공부하는 자율 학습이 이어진다.||시험이 다가오자 학교가 밤늦게까지 불을 밝혔다.',[['끝까지 남는다','k2 D h-1','매일 밤 열 시까지 남았다.'],['집중이 잘되는 곳을 따로 찾는다','k2 C','동네 도서관에서 내 속도로 공부했다.'],['일찍 자고 새벽에 공부한다','k1 h2 D','새벽 다섯 시에 일어나 공부했다.']],{k:'h_night',sc:'school'});
+Y(15,18,'','*','처음으로 투표권이 생기는 나이가 가까워졌다. 선거 공약을 비교하는 수업이 있었다.','k2',{once:1,sc:'school'});
+
+// ── 일터의 하루: 갈림길이 셋·넷
+Y(19,69,'w jk:office','*','회의에서 {boss} 부장이 무리한 일정을 밀어붙인다.',[['근거를 들어 다른 일정을 제안한다','B k2','자료를 보여 주며 말했다. 일정이 조금 늦춰졌다.','말을 꺼냈다가 분위기만 어색해졌다.'],['일단 받아들이고 밤새 맞춘다','D h-3','밤을 새워 맞췄다.'],['동료들과 일을 다시 나눈다','K r2','동료들과 나누어 해냈다.'],['조용히 이직을 알아본다','C','이직 사이트를 슬쩍 열어 보았다.']],{cd:3,sc:'job'});
+Y(19,69,'w jk:office','*','새로 온 후배 {coll2}이(가) 같은 질문을 세 번째 한다.',[['처음처럼 친절하게 알려 준다','K r2','다시 알려 주었다. 몇 달 뒤 후배가 일을 척척 해냈다.'],['정리한 문서를 만들어 준다','D k2','아예 안내 문서를 만들었다. 다른 신입들도 그것을 썼다.'],['바쁘다며 짧게 답한다','','짧게 답하고 넘어갔다.']],{cd:4,sc:'job'});
+Y(19,69,'w jk:office|factory|hosp|school','*','회사 근처로 이사하면 출퇴근 시간이 한 시간 줄어든다.',[['월세가 올라도 이사한다','h2 j2','이사했다. 아침이 여유로워졌다.','@-2'],['지금 집에 머물며 출퇴근길에 책을 읽는다','k2 G','버스 안에서 책 한 권씩 읽었다.'],['자전거로 출퇴근해 본다','h3 B','자전거로 다니기 시작했다. 다리가 튼튼해졌다.']],{once:1});
+Y(19,69,'w jk:factory','*','안전교육 시간이다. 지난주에 옆 라인에서 사고가 날 뻔했다.||작업장 안전 점검 날이다.',[['보호 장비를 꼼꼼히 챙긴다','D h2','장비를 다시 점검했다. 귀찮아도 이것이 나를 지킨다.'],['위험한 곳을 적어 건의한다','B r2','건의한 곳에 안전 펜스가 설치되었다.'],['늘 하던 대로 일한다','','늘 하던 대로 했다.']],{cd:3,sc:'job',nt:'세계에서 해마다 약 300만 명이 일과 관련된 사고와 병으로 숨집니다 (ILO 2023)'});
+Y(19,69,'w jk:factory','*','노동조합에서 임금 인상을 요구하는 모임을 연다.',[['모임에 나가 의견을 낸다','B r2','함께 목소리를 냈다. 몇 달 뒤 월급이 조금 올랐다.','$3'],['조용히 지켜본다','D','결과를 지켜보았다.'],['회사 쪽 이야기도 들어 본다','k1 C','양쪽 이야기를 모두 들어 보았다.']],{cd:5,sc:'job'});
+Y(19,69,'w jk:farm','*','비료 값이 크게 올랐다.||농사에 쓸 물이 모자란다.',[['퇴비를 직접 만든다','D h-1','가축 분뇨와 풀로 퇴비를 만들었다. 손은 많이 갔지만 돈은 아꼈다.','@1'],['협동조합에서 함께 산다','r2 K','이웃들과 함께 사서 값을 깎았다.','@1'],['빚을 내서 산다','','빚을 내서 샀다.','@-1']],{cd:3,sc:'harvest'});
+Y(19,69,'w jk:farm','*','휴대폰으로 날씨와 작물 값을 알려 주는 서비스가 생겼다.',[['배워서 써 본다','k2 C','비 예보를 보고 씨 뿌릴 날을 정했다. 수확이 늘었다.','@1'],['하던 대로 하늘을 본다','G','늘 하던 대로 하늘을 보고 정했다.']],{once:1,sc:'harvest'});
+Y(19,69,'w jk:shop','*','손님이 계산하지 않고 물건을 들고 나갔다.',[['따라가서 정중히 말한다','B','따라가 말하자 손님이 깜빡했다며 값을 치렀다.','손님은 끝내 모른 척했다.'],['이번은 넘어간다','G','이번은 넘어가기로 했다.','@-1'],['가게에 안내문을 붙인다','D','“계산은 여기서” 안내문을 크게 붙였다.']],{cd:5,sc:'job'});
+Y(19,69,'w jk:shop','*','배달 앱에 가게를 올리면 손님이 늘지만 수수료를 내야 한다.',[['올린다','C B','주문이 늘었다. 수수료를 빼도 조금 남았다.','@1'],['단골 장사에 집중한다','r2 K','단골들에게 더 정성을 쏟았다.'],['직접 배달을 시작한다','D h-1','오토바이(자전거)로 직접 배달을 다녔다.','@1']],{once:1,sc:'money'});
+Y(19,69,'w jk:hosp','*','환자 가족이 거칠게 항의한다.',[['끝까지 차분히 설명한다','K D','차분히 설명하자 가족이 사과했다.'],['선배에게 도움을 청한다','r1','선배가 함께 나서 주었다.'],['잠깐 자리를 피해 숨을 고른다','G h1','잠시 숨을 고르고 돌아와 다시 이야기했다.']],{cd:3,sc:'hosp'});
+Y(19,69,'w jk:school','*','수업 시간에 한 학생이 엎드려 일어나지 않는다.',[['쉬는 시간에 따로 불러 이야기를 듣는다','K r2','집에 어려운 일이 있다는 이야기를 들었다. 상담 선생님과 연결해 주었다.'],['수업 방식을 바꿔 본다','C k2','모둠 활동으로 바꾸자 그 학생이 고개를 들었다.'],['깨워서 수업을 계속한다','D','깨워서 수업을 이어 갔다.']],{cd:3,sc:'school'});
+Y(19,69,'w jk:part','*','일당을 주기로 한 사람이 연락을 받지 않는다.||일을 마쳤는데 품삯을 다음에 주겠다고 한다.',[['동료들과 함께 찾아가 요구한다','B r2','함께 찾아가자 품삯을 받아 냈다.','결국 받지 못했다.'],['노동 상담소에 도움을 청한다','D k1','상담소의 도움으로 몇 달 뒤 받았다.'],['포기하고 다음 일을 찾는다','j-3','포기했다. 그달 살림이 빠듯했다.','@-1']],{cd:4,sc:'jobloss'});
+Y(19,69,'w inf','*','계약서 없이 일하다 보니 아파도 쉬면 그날 벌이가 없다.||몸살이 났지만 하루 쉬면 그날 벌이가 사라진다.',[['쉬고 몸을 회복한다','h3 G','하루를 쉬었다. 그날 벌이는 없었지만 다음 날 다시 일할 수 있었다.','@-1'],['아픈 몸으로 나간다','D h-4','아픈 몸으로 나갔다. 일주일을 더 앓았다.'],['이웃에게 일을 맡기고 쉰다','r2 K','이웃이 대신 일을 해 주었다. 다음에 갚기로 했다.']],{cd:4,sc:'sick',nt:'세계에서 일하는 사람의 약 58%가 계약서·사회보험이 없는 비공식 일자리에서 일합니다 (ILO 2024)'});
+Y(19,69,'w frm','*','월급 명세서를 꼼꼼히 들여다보았다. {penN}와(과) 건강보험료가 빠져나간다.||회사에서 {penN} 가입 안내서를 받았다.',[['나중을 위한 돈이라 생각한다','G D','지금은 아까워도 나중에 나를 지켜 줄 돈이라 생각했다.'],['개인 연금도 따로 든다','D','따로 연금 저축도 시작했다.','@-1 %1'],['당장 쓸 돈이 줄어 아쉽다','j-1','당장 쓸 돈이 줄어 조금 아쉬웠다.']],{once:1,sc:'money'});
+Y(22,62,'w rkUp','*','올해 승진 심사가 있다. {rank2} 자리를 두고 몇 사람이 겨룬다.||승진 대상자 명단에 내 이름이 올랐다.',[['그동안 낸 성과를 정리해 낸다','k2 D','그동안의 성과를 정리해 냈다.'],['동료들의 평판으로 승부한다','r2 K','함께 일한 사람들이 나를 추천해 주었다.'],['관련 자격증을 따 둔다','k3 C','밤마다 공부해 자격증을 땄다.'],['이번엔 양보한다','G r1','이번 기회는 동료에게 양보했다.']],{cd:2,sc:'job',run:'rankTry'});
+Y(30,62,'w rk>1','*','팀을 이끄는 자리에 오르니 사람 문제로 머리가 아프다.||팀원 두 사람이 서로 일을 미루며 다툰다.',[['둘을 따로 만나 이야기를 듣는다','K r2','이야기를 들어 보니 오해였다. 셋이 웃으며 일을 다시 나눴다.'],['일의 몫을 정확히 나눠 준다','D k1','몫을 분명히 나누자 다툼이 줄었다.'],['알아서 풀라고 둔다','','알아서 풀라고 두었다. 일이 한 달 늦어졌다.']],{cd:4,sc:'job'});
+Y(25,60,'w','*','일하는 틈틈이 부업을 해 볼까?',[['주말에 부업을 한다','D h-2','주말마다 부업을 했다. 통장이 조금 두꺼워졌다.','@2'],['기술을 익혀 몸값을 올린다','k3 C','밤마다 강의를 들으며 기술을 익혔다.','$4'],['주말은 가족과 쉰다','r3 h2','주말은 온전히 쉬었다.']],{cd:6,sc:'job'});
+Y(19,40,'nj','*','일자리 박람회가 열렸다.||고용센터에서 직업 훈련 과정을 안내받았다.',[['이력서를 여러 곳에 낸다','D B','이력서를 스무 곳에 냈다. 두 곳에서 연락이 왔다.'],['직업 훈련을 받는다','k3 D','석 달 동안 기술을 배웠다.'],['아는 사람의 가게를 돕는다','r2','아는 사람의 가게를 도우며 일을 배웠다.','@1']],{cd:2,sc:'job'});
+
+// ── 살림의 형편에 따라 (빠듯한 집 · 넉넉한 집)
+Y(19,69,'w-','*','이번 달 생활비가 모자란다.||월말이 되기 전에 지갑이 비었다.',[['동네 가게에 외상을 한다','r1','가게 주인이 장부에 이름을 적어 주었다.'],['가진 물건을 판다','D','안 쓰는 물건을 팔아 한 달을 버텼다.','@1'],['가족에게 도움을 청한다','r2','형제가 조금 보내 주었다.','@1'],['끼니를 줄인다','h-3 D','한 달 동안 끼니를 줄였다.']],{cd:3,sc:'money'});
+Y(19,69,'w- t2','*','전기 요금을 내지 못해 전기가 끊겼다.||집에 전기가 들어오지 않는 날이 이어졌다.',[['양초와 손전등으로 버틴다','G','촛불 아래서 가족끼리 이야기꽃을 피웠다.'],['이웃집에서 휴대폰을 충전한다','r2','이웃집 콘센트를 빌려 썼다.'],['돈을 빌려 요금을 낸다','','돈을 빌려 요금을 냈다.','@-1']],{cd:5,sc:'money',nt:'2023년 세계 6억 6,600만 명이 전기 없이 살았고, 그 85%가 사하라 이남 아프리카에 삽니다 (세계은행 등 SDG7 보고서 2025)'});
+Y(19,69,'w- t2','*','물을 길으러 먼 우물까지 다녀와야 한다.||수도가 끊겨 물을 사서 써야 했다.',[['새벽 일찍 다녀온다','D h-1','해 뜨기 전에 물을 길어 왔다.'],['이웃과 번갈아 길어 온다','r2 K','이웃과 번갈아 물을 길었다.'],['빗물을 받아 쓴다','C','지붕 빗물을 모아 썼다.']],{cd:4});
+Y(19,69,'w+','*','은행 직원이 자산 관리 상담을 받아 보라고 전화했다.||모은 돈이 꽤 늘었다. 어떻게 쓰는 게 좋을까?',[['일부를 장학금으로 기부한다','K G r2','고향 학교에 작은 장학금을 만들었다.','@-2'],['집을 넓혀 이사한다','j2','넓은 집으로 옮겼다.','@-3'],['차곡차곡 더 모은다','D','더 모으기로 했다.','%2'],['부모님 집을 고쳐 드린다','r3 K','부모님 집 지붕과 부엌을 새로 고쳐 드렸다.','@-2']],{cd:6,sc:'money'});
+Y(25,69,'w+','*','오랜만에 연락한 친척이 사업 자금을 빌려 달라고 한다.',[['차용증을 쓰고 빌려준다','D','차용증을 쓰고 빌려주었다.'],['빌려주지 않고 다른 길을 알려 준다','k1 K','은행과 지원 제도를 함께 알아봐 주었다.'],['거절한다','','정중히 거절했다.']],{once:1,set:['lendF',null,null],sc:'money'});
+Y(28,75,'fl:lendF>3','*','몇 해 전 돈을 빌려 간 친척에게서 연락이 왔다.','',{once:1,clr:'lendF',run:'lendBack',sc:'money'});
+CALRUN.lendBack={post:L=>R()<.55?{t:'사업이 자리를 잡았다며 빌려 간 돈에 고마움을 얹어 돌려주었다.',fx:{'@':3,r:3,j:3}}:{t:'사업이 기울었다며 아직은 갚기 어렵다고 했다. 돈보다 사람을 잃지 않기로 했다.',fx:{j:-3,r:1}}};
+
+// ── 이어지는 이야기 (몇 해 뒤에 결과가 돌아온다)
+Y(22,55,'','*','오래된 친구 {bff}이(가) 함께 작은 가게를 해 보자고 한다.',[['함께 시작한다','B r2','함께 가게 문을 열었다.','@-3'],['조언만 해 준다','K','가게 자리를 함께 보러 다니며 조언해 주었다.'],['지금 일에 집중한다','D','지금 하는 일에 집중하기로 했다.']],{once:1,set:['bizF',null,null],sc:'job'});
+Y(24,60,'fl:bizF>1','*','{bff}와(과) 함께 연 가게가 두 돌을 맞았다.','',{once:1,clr:'bizF',run:'bizF',sc:'job'});
+CALRUN.bizF={post:L=>{ const x=R()+(L.s.r-50)/200; return x>.6?{t:'단골이 늘어 가게가 자리를 잡았다. 둘이 번 돈을 나누는 날, 서로 어깨를 두드렸다.',fx:{'@':4,j:5,r:3},big:1}:x>.3?{t:'겨우 본전이다. 그래도 둘의 우정은 더 단단해졌다.',fx:{j:1,r:3}}:{t:'손님이 줄어 가게를 닫았다. 넣은 돈은 잃었지만 {bff}와(과)는 여전히 친구다.',fx:{'@':-2,j:-4,r:1},big:1}; }};
+Y(25,60,'w','*','저녁마다 자격증 공부를 해 볼까?||회사(일터)에서 필요한 자격증 시험이 석 달 뒤에 있다.',[['도전한다','k2 D','퇴근 뒤 책상 앞에 앉는 날이 이어졌다.'],['다음 기회에','h1','다음 기회로 미뤘다.']],{cd:8,set:['cert',null],sc:'school'});
+Y(25,62,'fl:cert>0','*','자격증 시험 날이다.',[['차분히 푼다','D k1','차분히 풀었다.'],['끝까지 포기하지 않는다','B k1','끝까지 매달렸다.']],{clr:'cert',ex:'cert',sc:'school',run:'certJob'});
+CALRUN.certJob={post:(L,ok)=>{ if(L.f.job&&R()<.5){ L.inc=L.payClamp(L.inc*1.06); return {t:'자격 수당이 붙어 월급이 조금 올랐다.'}; } return null; }};
+Y(30,65,'','*','건강검진에서 생활 습관을 바꾸라는 말을 들었다.||계단을 오르는데 숨이 찼다. 몸이 예전 같지 않다.',[['담배(술)를 끊는다','D h4','석 달을 버티고 끊었다.','끊으려 했지만 다시 손이 갔다.'],['매일 30분씩 걷는다','D h3','날마다 걸었다.'],['식단부터 바꾼다','h3 C','짜고 기름진 음식을 줄였다.'],['지금은 바쁘다며 미룬다','h-2','미뤘다.']],{once:1,set:['habit','habit','habit',null],sc:'hosp',nt:'담배는 해마다 800만 명이 넘는 사람의 목숨을 앗아 갑니다 (WHO)'});
+Y(33,70,'fl:habit>2','*','몇 해 전 바꾼 생활 습관이 몸에 배었다. 다시 검진을 받았다.','h3 j3',{once:1,clr:'habit',sc:'hosp'});
+Y(20,50,'','*','새로운 언어를 배워 볼까?',[['매일 조금씩 배운다','k2 C D','날마다 짧게라도 공부했다.'],['그 나라 친구를 사귄다','r2 C','언어 교환 친구를 사귀었다.'],['나중에','','나중으로 미뤘다.']],{once:1,set:['lang','lang',null]});
+Y(23,60,'fl:lang>2','*','몇 해 동안 배운 언어로 처음 긴 대화를 나눴다. 상대가 내 말을 다 알아들었다!','k3 j4',{once:1,clr:'lang'});
+Y(20,45,'','*','먼 도시로 옮겨 새 출발을 해 볼까? 아는 사람이 일자리를 소개해 준다고 한다.',[['떠난다','B C','짐 두 개를 들고 {city}(으)로 떠났다.','r-2'],['가족 곁에 남는다','r3','가족 곁에 남기로 했다.'],['먼저 몇 달 다녀와 본다','D C','몇 달 다녀와 보고 정하기로 했다.']],{once:1,set:['move',null,'move'],sc:'travel'});
+Y(22,50,'fl:move>1','*','{city}에서 지낸 지 몇 해, 낯설던 골목이 이제 익숙하다.||{city}에 정착한 지 몇 해가 지났다. 고향 사람 모임에도 나간다.',[['이곳에 뿌리를 내린다','r2 j2','이웃들과 친해져 이곳이 두 번째 고향이 되었다.'],['고향으로 돌아갈 날을 꿈꾼다','r1','명절마다 고향 생각이 났다.']],{once:1,clr:'move'});
+Y(28,70,'','*','동네 일을 맡아 볼 사람을 찾는다. 이웃들이 나를 추천했다.',[['맡는다','B r3 K','동네 대표를 맡아 일 년 동안 뛰어다녔다.'],['다른 사람을 돕는 자리만 맡는다','K r2','총무를 맡아 뒤에서 도왔다.'],['사양한다','','정중히 사양했다.']],{once:1,set:['lead',null,null]});
+Y(30,75,'fl:lead>1','*','동네 대표로 일하며 놀이터(우물·길)를 고치는 일을 해냈다. 아이들이 뛰노는 소리가 들린다.','r4 j4',{once:1,clr:'lead',big:1});
+Y(40,85,'','*','복권을 사 볼까? 1등에 당첨될 확률은 아주 작다.',[['한 장만 산다','j1','한 장을 샀다. 당연히 꽝이었다. 그래도 일주일 동안 즐거웠다.','@-1'],['그 돈으로 맛있는 것을 산다','j2','그 돈으로 가족과 붕어빵을 사 먹었다.'],['확률을 계산해 보고 사지 않는다','k2 D','계산해 보니 벼락 맞을 확률과 비슷했다.']],{cd:8,nt:'한국 로또 6/45의 1등 확률은 8,145,060분의 1입니다 (45개 가운데 6개를 고르는 경우의 수)'});
+
+// ── 군 복무 (징병이 있는 나라 · 한국은 원래의 흐름)
+Y(17,27,'cs !cs:lot !cs:buy !cs:q !cs:sel !uniS','*','입영 통지서가 날아왔다. {svcY} 동안 군 복무를 해야 한다.',[['날짜에 맞춰 입대한다','D r1','입대 날짜에 맞춰 짐을 쌌다.']],{once:1,k:'cs',run:'svc',big:1,sc:'job'});
+Y(17,27,'cs cs:sel !cs:lot !cs:buy','*','징병 검사 통지서가 왔다. 이 나라에서는 검사를 받은 사람 가운데 일부만 소집된다.',[['검사를 받으러 간다','D','검사장에 갔다.']],{once:1,k:'cs',run:'svcSel',sc:'job'});
+Y(17,27,'cs cs:univ uniS !cs:lot !cs:buy !cs:sel','*','입영 통지서가 날아왔다. {svcY} 동안 군 복무를 해야 한다.',[['지금 다녀온다','D r1','지금 다녀오기로 했다.'],['학업을 이유로 미룬다','k1','입대를 미루는 서류를 냈다.']],{k:'cs',run:'svcU',big:1,sc:'job'});
+Y(17,27,'cs cs:buy','*','징병 검사를 받았다. 이 나라에서는 정해진 돈을 내면 짧은 훈련만 받을 수도 있다.',[['정해진 기간을 모두 복무한다','D B','모두 복무하기로 했다.'],['돈을 내고 짧은 훈련만 받는다','','돈을 내기로 했다.']],{once:1,k:'cs',run:'svcB',big:1,sc:'job'});
+Y(20,22,'cs cs:lot TH','4','스물한 살 봄, 징병 추첨장에 섰다. 빨간 쪽지를 뽑으면 2년 동안 군에 간다.',[['추첨함에 손을 넣는다','B','두 눈을 감고 쪽지를 뽑았다.'],['기도하며 순서를 기다린다','G','순서를 기다리며 손을 모았다.'],['추첨 전에 먼저 지원한다 (복무가 짧아진다)','D','추첨 전에 먼저 지원했다.']],{once:1,k:'cs',run:'svcLot',big:1,sc:'job',nt:'태국은 해마다 4월 스물한 살 남자들이 추첨으로 징병을 정합니다. 빨간 쪽지는 복무, 검은 쪽지는 면제입니다'});
+Y(17,20,'cs cs:lot !TH','*','징병 추첨 날이다. 뽑히면 {svcY} 동안 복무해야 한다.',[['결과를 기다린다','G','결과를 기다렸다.'],['담담히 추첨에 나간다','B','담담히 나갔다.']],{once:1,k:'cs',run:'svcLot',big:1,sc:'job'});
+Y(17,19,'cs cs:q','*','군에서 설문지가 왔다. 열여덟 살 남자는 누구나 답해야 하는 설문이다.',[['답하고, 지원하지는 않는다','D','설문에 성실히 답했다.'],['설문에 답하고 군에 지원한다','B D','지원서도 함께 냈다.']],{once:1,k:'cs',run:'svcQ',sc:'job',nt:'독일은 2026년부터 열여덟 살 남자는 군 복무 설문에 꼭 답해야 하고, 2027년 7월부터 신체검사를 받습니다. 복무는 아직 지원자 위주입니다'});
+Y(17,30,'svc !KR','*','훈련소의 첫 주. 새벽 기상 나팔에 눈을 떴다.||훈련이 고되다. 발바닥에 물집이 잡혔다.||행군을 마치고 전우들과 나란히 누워 하늘을 보았다.',[['이를 악물고 버틴다','D h2','이를 악물고 버텼다. 몸이 단단해졌다.'],['동기들과 서로 돕는다','r3 K','물집 난 동기의 짐을 나눠 들었다.'],['편지로 마음을 달랜다','r2','집에 편지를 썼다. 답장이 오던 날 크게 웃었다.']],{k:'svc1',sc:'job'});
+Y(17,30,'svc !KR','*','첫 휴가를 나왔다. 집밥이 이렇게 맛있는 줄 몰랐다.||부대에서 맡은 일에 익숙해졌다. 후임이 생겼다.||휴가 날, 가족이 버스 정류장까지 마중을 나왔다.','r2 j3',{k:'svc2'});
+Y(17,35,'svcL !KR','12','전역 날이다. 부대 정문을 나서며 크게 숨을 들이쉬었다.||복무를 마쳤다. 함께 고생한 전우들과 연락처를 나눴다.','',{k:'svcE',run:'svcEnd',y2:1,sc:'job'});
+
+// ── 대학 뒤의 길: 유학 · 나라 봉사
+Y(22,30,'univD !abrS w','*','다른 나라 대학원에 가서 공부를 더 해 볼까?||외국 대학원에서 장학생을 뽑는다는 공고를 보았다.',[['지원한다','k3 B C','밤새 지원서를 썼다.'],['이곳에서 일을 계속한다','D','지금 일에 집중하기로 했다.'],['이 나라 대학원에 간다','k2 D','일하며 야간 대학원에 다니기로 했다.','@-2']],{once:1,run:'abrGo',sc:'school'});
+Y(23,32,'abrS','*','{abrTo}의 기숙사에서 혼자 끓인 라면을 먹었다. 고향 음식이 그리웠다.||{abrTo}의 연구실에서 밤을 새웠다. 지도 교수가 내 생각을 칭찬했다.||{abrTo}에서 여러 나라 친구들과 명절을 함께 보냈다.','k2 r1',{k:'abr1'});
+Y(24,36,'abrS fl:abrT>1','*','학위 논문 심사를 통과했다.||마지막 학기, 논문의 마지막 문장을 썼다.','',{k:'abr2',run:'abrDone',sc:'grad'});
+Y(21,26,'NG|GH univD','*','대학을 마치고 {nsN}에 배치되었다. 처음 가 보는 지역의 학교에서 한 해 동안 아이들을 가르친다.',[['맡은 일에 정성을 다한다','D K r2','아이들과 정이 들어 떠나는 날 모두 울었다.'],['배치된 곳에서 작은 장사를 함께 한다','B C','봉사 틈틈이 작은 장사로 생활비를 보탰다.','@1'],['그 지역 말을 배운다','C r2','그 지역 말을 배워 이웃들과 가까워졌다.']],{once:1,sc:'school',nt:'나이지리아는 대학을 마친 젊은이가 한 해 동안 다른 지역에서 나라 봉사를 하고, 2025년부터 한 달에 7만 7천 나이라를 받습니다 (NYSC)'});
+
+// ── 다른 나라에서 일하기 (일을 고를 때 '다른 나라에서 일하는 노동자'를 고른 사람)
+Y(19,60,'mig !fl:migIn','*','{migTo}에 도착했다. 숙소에는 여덟 사람이 한방을 쓴다.||{migTo}의 공항에 내리자 뜨거운 바람이 얼굴을 덮쳤다.||{migTo}에서 첫 월급을 받았다. 절반 넘게 고향에 보냈다.',[['번 돈 대부분을 고향에 보낸다','r3 K','번 돈의 대부분을 고향 가족에게 보냈다. 동생들 학비가 해결되었다.'],['조금은 나를 위해 모은다','D','조금씩 따로 모았다.','%3'],['그곳 말과 기술을 배운다','k3 C','쉬는 날마다 말과 기술을 배웠다.']],{k:'mig1',set:'migIn',sc:'travel',nt:'2024년 다른 나라에서 일하는 사람들이 가족에게 보낸 돈은 저소득·중간소득 나라로만 약 6,850억 달러입니다 (세계은행)'});
+Y(19,60,'mig','*','고향의 가족과 영상 통화를 했다. 아이(조카)가 그새 훌쩍 컸다.||타지의 명절, 같은 나라에서 온 사람들이 모여 고향 음식을 만들었다.||쉬는 날, 숙소 옥상에서 고향 쪽 하늘을 오래 보았다.','r2 j-1',{cd:3});
+Y(19,60,'mig fl:migIn','*','이번 달에도 월급날 바로 고향에 돈을 보냈다. 송금 수수료가 아까웠다.||고향 집 지붕을 새로 얹을 만큼 돈이 모였다.||같은 숙소의 동료가 고향 노래를 틀자 다들 조용히 따라 불렀다.',[['모은 돈으로 고향에 땅을 산다','D','고향에 작은 땅을 샀다.','@-2'],['동생의 학비를 댄다','K r3','동생의 대학 학비를 보냈다.','@-1'],['나를 위해 조금 쓴다','j2','오랜만에 나를 위해 새 신발을 샀다.']],{cd:4,sc:'money'});
+Y(19,60,'mig','*','한낮 기온이 45도를 넘는 날에도 공사장(일터)에 나가야 한다.||고용주가 여권을 맡아 두겠다고 한다.||계약서에 적힌 것보다 일하는 시간이 훨씬 길다.',[['동료들과 함께 바로잡아 달라고 요구한다','B r2','함께 요구하자 일하는 시간이 줄었다.','말을 꺼냈다가 미움만 샀다.'],['대사관(지원 단체)에 도움을 청한다','D','지원 단체의 도움을 받았다.'],['참고 버틴다','D h-3','참고 버텼다.']],{cd:3,sc:'job'});
+Y(23,65,'mig','*','{migTo}에서 일한 지 여러 해가 지났다. 고향으로 돌아갈까?',[['모은 돈을 들고 돌아간다','r3 j3','돌아가기로 했다.'],['조금 더 머물며 모은다','D','조금 더 머물기로 했다.'],['가족을 불러 이곳에 자리 잡을 길을 알아본다','C B','정착할 길을 알아보기 시작했다.']],{cd:4,run:'migBack',setOK:[null,null,null],sc:'travel'});
+
+// ── 병원비와 의료보험
+Y(19,85,'oop+','*','갑자기 배가 아파 병원에 갔다. 검사비를 듣고 눈앞이 캄캄했다.||가족이 크게 다쳐 병원비가 필요하다.',[['가축(물건)을 팔아 마련한다','D','가진 것을 팔아 병원비를 냈다.','@-2'],['친척과 이웃이 돈을 모아 준다','r3','온 마을이 조금씩 보태 주었다.','@-1'],['빚을 낸다','','빚을 내서 병원비를 냈다.','@-3'],['약국 약으로 버텨 본다','h-3','약국 약으로 버텼다. 낫는 데 오래 걸렸다.']],{cd:6,sc:'hosp',nt:'세계에서 10억 명 넘는 사람이 살림의 10% 넘는 돈을 병원비로 직접 냅니다 (WHO·세계은행 2023)'});
+Y(19,85,'oop- hi','*','병원에 입원했다. 퇴원하는 날 받은 계산서에는 {hiN} 덕분에 생각보다 작은 금액이 적혀 있었다.||수술을 받았다. 병원비의 대부분은 {hiN}에서 냈다.','h2 j2',{cd:8,sc:'hosp'});
+Y(19,70,'hi !oop-','*','{hiN} 가입 안내를 받았다. 다달이 보험료를 내면 병원비를 덜 낼 수 있다.',[['가입한다','D','가입했다.','@-1'],['형편이 나아지면 하겠다','','다음으로 미뤘다.']],{once:1,set:['hiIn',null],sc:'hosp'});
+
+// ── 휴대폰 결제 · 동네 저축 모임
+Y(19,69,'mm','*','{mmN}(으)로 시장에서 물건값을 냈다. 현금을 들고 다닐 일이 줄었다.||고향의 부모님께 {mmN}(으)로 돈을 보냈다. 몇 초 만에 도착했다.','k1',{once:1,sc:'money'});
+Y(19,75,'ros','*','이웃들이 함께 하는 {rosN}에 들어오라고 한다. 다달이 돈을 모아 차례로 목돈을 탄다.',[['들어간다','r2 K','모임에 들어갔다.'],['은행에 맡기는 게 낫다','D','은행 적금에 넣었다.','%1'],['형편이 나아지면','','다음으로 미뤘다.']],{cd:8,run:'rosca',sc:'money'});
+
+// ── 아이를 키우는 일과 나라의 제도
+Y(20,45,'kb KR frm','*','아이가 태어나 육아휴직을 낼 수 있다. 첫 석 달은 한 달에 최대 250만 원의 급여가 나온다.',[['육아휴직을 낸다','r4 K','아이 곁에서 첫해를 보냈다. 처음 웃던 날을 직접 보았다.','@-1'],['배우자와 번갈아 쓴다','r3 K','배우자와 번갈아 휴직했다.'],['일을 계속하며 퇴근 뒤 돌본다','D','퇴근 뒤 아이를 씻기고 재웠다.']],{once:1,sc:'baby',nt:'한국은 2025년부터 육아휴직 급여가 첫 석 달 최대 월 250만 원, 넉 달째부터 200만 원, 일곱 달째부터 160만 원입니다 (고용노동부)'});
+Y(20,45,'kb !KR frm t3','*','아이가 태어났다. 회사에 출산·육아휴가를 냈다.',[['쓸 수 있는 휴가를 모두 쓴다','r3 K','휴가를 모두 쓰고 아이 곁에 있었다.'],['짧게 쓰고 일터로 돌아간다','D','짧게 쉬고 돌아갔다.']],{once:1,sc:'baby'});
+Y(20,45,'kb inf','*','아이가 태어났지만 비공식 일자리라 쉬면 벌이가 끊긴다.',[['며칠만 쉬고 일하러 나간다','D h-2','며칠 만에 다시 일하러 나갔다.'],['가족들이 돌아가며 아이를 봐 준다','r3','할머니와 이모가 돌아가며 아이를 봐 주었다.']],{once:1,sc:'baby',nt:'세계 사람의 52.4%만이 연금·출산 급여 같은 사회보장을 하나라도 받습니다 (ILO 2024)'});
+
+// ── 나이 들어 감 · 노인 수당 · 연금
+Y(60,90,'sp','*','{spA}살이 넘어 {spN}을(를) 신청하러 동사무소(관청)에 갔다.','j2',{once:1,sc:'money'});
+Y(60,95,'ret','*','손주를 맡아 키우게 되었다. 아이들 부모는 먼 도시에서 일한다.',[['정성껏 돌본다','r4 K h-1','손주와 함께 하루가 금방 갔다.'],['이웃 할머니들과 함께 돌본다','r3','이웃과 아이들을 함께 돌보았다.']],{once:1,sc:'baby'});
+Y(62,95,'','*','휴대폰으로 은행 일을 보라는데 화면이 너무 어렵다.||가게마다 화면으로 주문하는 기계가 생겼다. 뒤에 선 사람들의 눈치가 보였다.',[['손주에게 배운다','k2 r2','손주가 천천히 알려 주었다. 이제 혼자서도 한다.'],['복지관 교실에 다닌다','k2 D','교실에 다니며 하나씩 익혔다.'],['창구가 있는 곳만 다닌다','','사람이 있는 창구만 찾아다녔다.']],{once:1});
+Y(65,95,'','*','유언장을 써 둘까?||남은 재산과 물건을 어떻게 나눌지 가족과 이야기할 때가 되었다.',[['가족을 모아 함께 이야기한다','r3 K','가족이 모여 차분히 이야기를 나눴다.'],['글로 정리해 둔다','D','차근차근 글로 정리해 두었다.'],['아직 이르다','','아직 이르다며 미뤘다.']],{once:1});
+Y(65,95,'','*','고향 마을을 수십 년 만에 찾았다. 다니던 학교는 없어지고 큰 나무만 그대로였다.','j3 r2',{once:1,sc:'travel'});
+Y(70,99,'','*','젊은 사람들에게 들려줄 이야기를 녹음해 달라는 부탁을 받았다.||마을 아이들이 옛날 이야기를 들으러 찾아왔다.','j4 r3 K',{once:1});
+
+// ── 세상의 소식 (이 삶이 만난 세상)
+Y(10,90,'','*','뉴스에서 전쟁과 분쟁으로 집을 떠난 사람이 1억 2천만 명이 넘었다는 소식을 들었다.||난민 캠프에서 자라는 아이들의 다큐멘터리를 보았다.',[['구호 단체에 작은 돈을 보낸다','K','작은 돈을 보냈다.','@-1'],['더 알아보고 친구들과 이야기한다','k2 C','자료를 찾아보고 친구들과 이야기를 나눴다.'],['마음이 무거워 채널을 돌린다','','채널을 돌렸다.']],{once:1,nt:'2024년 말 전쟁·분쟁·박해로 집을 떠난 사람은 1억 2,300만 명이 넘고, 그 가운데 수단은 1,400만 명이 넘습니다 (유엔난민기구)'});
+Y(12,80,'','*','세계 인구의 절반 가까이가 필요한 의료를 다 받지 못한다는 기사를 읽었다.','k1',{once:1,nt:'2021년 세계 45억 명은 필요한 기본 의료 서비스를 모두 누리지 못했습니다 (WHO·세계은행 2023)'});
+Y(12,80,'t2','*','이웃 마을에 처음으로 전기가 들어왔다. 밤에 불 켜진 집들을 보러 사람들이 몰려갔다.','j3',{once:1,nt:'세계에서 약 21억 명은 아직도 나무·숯·등유 같은 연료로 밥을 짓습니다 (SDG7 보고서 2025)'});
+
+// ── 큰 사건(MAJORS)에 세 번째 길을 더한다
+function majFind(t){ return MAJORS.find(m=>(Array.isArray(m.txt)?m.txt[0]:m.txt).startsWith(t)); }
+function maj3(t,o,x){ const m=majFind(t); if(!m){ if(typeof console!=='undefined') console.warn('maj3 없음:',t); return; } if(o) m.opts.push({l:o[0],deps:o[1].replace(/ /g,''),tr:(o[1].match(/[DBKCG]/)||[null])[0],ok:o[2],okFx:parseFx(o[3]).fx,fail:o[4],failFx:parseFx(o[5]).fx}); if(x) Object.assign(m,x); }
+maj3('유치원 발표회에서',['엄마 아빠를 찾아 손을 흔든다','r K','객석의 엄마 아빠를 보고 힘을 냈다.','j5 r3','엄마 아빠를 찾다가 순서를 놓쳤다. 다들 웃었다.','j-1']);
+maj3('학교 대표 달리기',['달리기 대신 응원단장을 맡는다','r G','목이 쉬도록 응원했다. 우리 반이 이겼다.','r5 j4','응원 구호가 엇박자였다.','j-1']);
+maj3('단짝 {friend}',['서로 시간을 갖는다','j G','며칠 뒤 웃으며 다시 만났다.','r3 j2','시간이 지날수록 어색해졌다.','r-3']);
+maj3('과학 발명 대회',['혼자 끝까지 파고든다','k D','혼자 만든 발명품이 장려상을 받았다.','k5 j4','완성하지 못했다.','j-3']);
+maj3('좋아하는 사람이',['편지로 마음을 전한다','r K','답장이 왔다. 둘만 아는 이야기가 생겼다.','j6 r3','답장은 오지 않았다. 그래도 후련했다.','j-2']);
+maj3('성적이 갑자기',['잠과 운동부터 챙긴다','h G','몸이 편해지자 공부도 다시 손에 잡혔다.','h4 k3','회복하는 데 시간이 걸렸다.','k-2']);
+maj3('집안 형편이 갑자기',['동생들을 돌보며 집안일을 맡는다','r K','동생들을 돌보며 부모님 짐을 덜어 드렸다.','r6 j2','지치는 날이 많았다.','h-3 j-2']);
+maj3('큰 대회에 나갈',['친구와 팀을 짜 나간다','r K','팀으로 나가 은상을 받았다.','r4 j5 k2','팀워크가 맞지 않았다.','j-2']);
+maj3('친구들이 수업을',['친구들을 설득해 수업 뒤에 놀자고 한다','r B','다 같이 수업을 마치고 신나게 놀았다.','r5 j4','친구들은 먼저 가 버렸다.','r-2']);
+maj3('처음으로 혼자 살아',['고향 집에 자주 들른다','r G','주말마다 집에 들러 반찬을 챙겨 왔다.','r4 j3','오가는 길이 고되었다.','h-2']);
+maj3('중요한 면접이',['면접 볼 회사를 미리 찾아가 본다','k C','회사를 미리 다녀온 덕에 질문에 생생하게 답했다.','k3 j4 $3','긴장해서 준비한 말을 잊었다.','j-3']);
+maj3('아는 사람이 큰돈을',['전문가에게 먼저 물어본다','k D','전문가가 사기 수법이라고 알려 주었다.','k3 j2','물어보는 사이 기회가 지나갔다.','j-1']);
+maj3('아이가 밤새 열이',['배운 대로 열을 내리며 지켜본다','k D','미지근한 물수건으로 열을 내렸다. 새벽에 열이 내렸다.','r4 h1','열이 내리지 않아 결국 병원에 갔다.','h-2']);
+maj3('먼 곳에서 일해 보지',['가족과 함께 옮긴다','r B','가족과 함께 낯선 곳에 자리를 잡았다.','r4 k3 $15','가족 모두 적응하느라 힘들었다.','j-4']);
+maj3('부모님이 편찮으셔서',['전문 돌봄 서비스를 알아본다','k D','돌봄 서비스의 도움으로 부모님도 나도 숨을 돌렸다.','h3 r3','비용이 만만치 않았다.','@-2 j-2']);
+maj3('자녀와 크게 다퉜다',['편지를 쓴다','r K','편지를 읽은 아이가 먼저 안아 왔다.','r7 j4','편지는 서랍 속에 그대로 있었다.','r-2']);
+maj3('건강에 이상 신호',['가족과 상의해 쉬는 시간을 늘린다','h r','일을 줄이고 쉬는 시간을 늘렸다.','h6 r3','일을 줄이니 살림이 빠듯했다.','$-8']);
+maj3('오래 일한 자리에서',['송별회 대신 동료들에게 편지를 남긴다','r K','편지를 읽은 후배들이 오래 기억해 주었다.','r6 j5','편지를 쓰다 마음만 복잡해졌다.','j-1']);
+maj3('배우자가 많이 아프다',['전문 간병의 도움을 받는다','k D','도움을 받으며 함께 버틸 힘을 얻었다.','h3 r4','비용이 부담되었다.','@-2']);
+maj3('오래전 다툰 친구에게서',['예전처럼 웃으며 전화한다','r G','수화기 너머 웃음소리에 수십 년이 녹았다.','r6 j5','통화가 어색하게 끝났다.','j-1']);
+maj3('남은 것들을 정리하려',['손때 묻은 물건을 아이들에게 하나씩 건넨다','r K','물건마다 얽힌 이야기를 들려주었다.','r6 j5','아이들이 바빠 다 듣지 못했다.','j-1']);
+maj3('집에 동생이 태어났다',['아기에게 노래를 불러 준다','r K','내 노래를 들으면 아기가 울음을 그쳤다.','r5 j4','아기는 더 크게 울었다.','j-1']);
+maj3('길에서 다친 강아지',['동물 보호소에 연락한다','k D','보호소에서 강아지를 데려가 치료해 주었다.','k2 j3','연락이 닿지 않았다.','j-1']);
+maj3('가장 친한 친구가 멀리',['함께 추억 앨범을 만든다','r C','둘만의 앨범을 나눠 가졌다.','r5 j3','앨범을 다 만들지 못하고 헤어졌다.','j-2']);
+maj3('모두가 보는 앞에서',['실수한 부분을 다시 연습한다','k D','다음 무대에서 완벽하게 해냈다.','k3 j5','다시 해도 떨렸다.','j-2']);
+maj3('온 동네에 돌림병이',['예방 수칙을 알리는 일을 돕는다','k K','이웃에게 수칙을 알렸다. 우리 동네는 피해가 적었다.','r5 k2','몸이 지쳐 나도 앓았다.','h-6'],{repY:12});
+maj3('오래 만난 사람과',['혼자만의 시간을 가지며 나를 돌본다','h G','여행과 운동으로 마음을 추슬렀다.','h4 j4','한동안 마음이 허전했다.','j-3']);
+maj3('일해도 살림이',['살림을 꼼꼼히 기록하며 새는 돈을 막는다','k D','가계부를 쓰자 새는 돈이 보였다.','k2 j3 @1','줄일 곳이 더는 없었다.','j-2']);
+maj3('뜻밖의 큰돈이',['배우고 싶던 것에 쓴다','k C','미뤄 둔 공부를 시작했다.','k6 j4','시작만 하고 끝내지 못했다.','j-2']);
+maj3('가까운 친구가 돈을',['돈 대신 일손을 빌려준다','r K','주말마다 친구의 일을 도왔다.','r6 j3','친구는 섭섭해했다.','r-3']);
+maj3('오랫동안 마음에 품은',['작게 시작해 본다','k D','작게 시작해 꾸준히 이어 갔다.','k4 j6','시간이 모자라 흐지부지되었다.','j-2']);
+maj3('이웃이 큰 어려움에',['필요한 도움을 기관에 연결해 준다','k D','지원 기관을 찾아 연결해 주었다.','r4 k2','도움이 늦게 닿았다.','j-1'],{repY:12});
+maj3('젊은 날의 친구들이',['영상 통화로 함께한다','r G','화면 너머로 모두와 웃었다.','r4 j3','연결이 자꾸 끊겼다.','j-1']);
+maj3('자녀가 결혼하겠다고',['상대 가족을 먼저 초대한다','r K','두 집안이 한 상에 둘러앉았다.','r6 j5','첫 만남이 어색했다.','j-1']);
+maj3('혼자 하기 어려운 일이',['돌봄 서비스를 신청한다','k D','도우미가 일주일에 세 번 찾아왔다.','h4 r2','신청 절차가 복잡했다.','j-2']);
+maj3('윗사람이 더 큰 일을',['사양하고 지금 일을 더 깊이 한다','k G','지금 일에서 손꼽히는 사람이 되었다.','k4 j3','기회를 놓친 것 같아 아쉬웠다.','j-2'],{rk:1});
+maj3('월급을 올려 달라고',['다른 곳의 제안을 받아 와 이야기한다','w B','다른 곳의 제안을 보여 주자 월급이 크게 올랐다.','j4 $15','도리어 관계가 서먹해졌다.','r-3 j-2']);
+maj3('다른 곳에서 월급을',['지금 일터와 조건을 다시 이야기한다','k B','조건을 다시 이야기해 월급이 올랐다.','j3 $10','이야기가 잘 풀리지 않았다.','j-2']);
+maj3('일터가 어려워져 사람을',['미리 다른 일을 알아 둔다','k C','미리 알아 둔 일자리로 옮겨 탈 없이 넘어갔다.','j2 $3','알아 둔 곳도 사정이 어려웠다.','j-3']);
+maj3('작은 사업을 해 보자',['주말에만 작게 해 본다','k D','주말 장사로 시장 반응을 보았다. 꽤 괜찮았다.','j4 $8','주말마저 쉬지 못해 지쳤다.','h-3']);
+maj3('일이 너무 많아 몸도',['일을 덜어 달라고 솔직히 말한다','r B','일이 조정되었다.','h4 j3','말을 꺼냈지만 바뀌지 않았다.','j-3']);
+maj3('후배가 큰 실수를',['실수를 공유하고 같은 일이 없게 규칙을 만든다','k D','새 규칙 덕분에 같은 실수가 다시는 없었다.','k4 r3','규칙이 귀찮다는 말을 들었다.','r-2']);
+maj3('오랜 꿈이던 공부를',['온라인 강의로 조금씩 공부한다','k G','밤마다 조금씩 들은 강의가 쌓여 자격이 되었다.','k5 $6','바빠서 자주 건너뛰었다.','j-1']);
+maj3('나라 경제가 크게 흔들려',['부업으로 벌이를 늘린다','h D','부업으로 버텼다.','@2 h-2','몸만 고되었다.','h-4']);
+maj3('일자리가 좀처럼',['직업 훈련 과정에 들어간다','k D','훈련을 마치고 일자리를 얻었다.','k4 j4 $8','훈련을 마쳤지만 자리가 없었다.','j-3']);
+maj3('{landmark}에 큰 행사가',['행사장에서 음식을 판다','w B','행사장 장사로 쏠쏠하게 벌었다.','@2 j3','팔 것이 금방 떨어졌다.','j-1']);
+maj3('{sport} 동네 대회에서',['작전을 바꿔 보자고 한다','k C','바꾼 작전이 통해 역전승을 거뒀다!','j8 k2','작전이 맞지 않았다.','j-2']);
+// 너무 자주 되풀이되던 큰 사건은 다시 오기까지 더 오래 걸리게
+['{fest} 행사의 큰 역할','{sport} 대회에 우리 동네'].forEach(t=>{ const m=majFind(t); if(m) m.repY=10; });
+
+CALRUN.rankTry={post:(L,ok,oi)=>{ if(oi===3) return {t:'다음 기회를 기약했다. 동료가 고맙다며 밥을 샀다.'}; const sk=oi===0?L.s.k:oi===1?L.s.r:L.s.k+5, tr=oi===0?L.tr.D:oi===1?L.tr.K:L.tr.C;
+  const p=clamp(.32+(sk-50)/120+Math.min(tr,40)*.006-(L.f.rk||0)*.05+(L.w-.5)*.1,.08,.85); if(R()<p){ const n=L.rankUp(); if(n) return {t:`심사에 통과해 ${josa(n,'으로','로')} 승진했다! 월급도 함께 올랐다.`,fx:{j:5},big:1}; }
+  return {t:'이번 심사에서는 떨어졌다. 다음을 노린다.',fx:{j:-2}}; }};
+// 한국 남자의 입대: 어디서 복무할까 (2026년 기준)
+Y(19,20,'KR m0 army','1','입영을 앞두고 복무할 곳을 골라 지원했다.',[['육군 (18개월)','D h2','육군으로 입대가 정해졌다.'],['해군 (20개월)','B C','해군에 합격했다. 바다 위 함정에서 복무한다.'],['공군 (21개월)','D k1','공군에 합격했다. 비행장을 지키는 부대로 간다.'],['해병대 (18개월)','B h3','해병대에 지원해 합격했다. 훈련이 가장 고되다고 한다.']],{once:1,k:'army0',sc:'job',nt:'2026년 병장 월급은 150만 원이고, 장병내일준비적금 지원금 55만 원을 더하면 한 달 205만 원 수준입니다 (국방부)'});
+
+/* =====================================================================
+   [어른의 날들] 서른에서 일흔 사이에 같은 일이 되풀이되지 않도록:
+   배우자 · 아이(나이별) · 나이 드는 부모님 · 친구 · 이웃과 집 · 돈과 기술 · 건강 · 여가 · 신앙 · 일터 · 마을 일
+   (Y 함수의 설명은 months.js, 덧붙임은 months_data3.js)
+   ===================================================================== */
+// ── 해마다 돌아오는 명절·월급도 삶의 자리에 따라 다르게
+Y(19,69,'w !KR kid','*','{fest}에 아이들에게 새 옷을 사 입혔다. 아이들이 거울 앞을 떠나지 않았다.||{fest} 아침, 아이들 손을 잡고 친척 어른들께 인사를 다녔다.||{fest}에 아이들과 함께 {food}을(를) 만들었다. 부엌이 엉망이 되었지만 다들 웃었다.',[['온 가족이 고향에 간다','r3 j2','고향 집 마당에 온 식구가 모였다.','@-1'],['집에서 오붓하게 보낸다','h2 j2','집에서 아이들과 느긋하게 보냈다.'],['이웃과 음식을 나눈다','r2 K','이웃집과 음식을 주고받았다.']],{k:'fest',w:1.4,sc:'fest'});
+Y(25,45,'w !KR sgl','*','{fest}에 고향 집에 갔다. 친척 어른들이 결혼은 언제 하느냐고 물었다.||{fest} 연휴, 친구들과 짧은 여행을 떠났다.',[['웃으며 넘긴다','G','웃으며 넘겼다.'],['내 삶의 계획을 차분히 말씀드린다','B','내 계획을 말씀드렸다. 어른들이 고개를 끄덕이셨다.'],['다음엔 친구들과 보내겠다고 다짐한다','j1','다음 명절 계획을 세웠다.']],{k:'fest',cd:4,sc:'fest'});
+Y(19,69,'w !KR mig','*','타지에서 맞는 {fest}. 같은 고향 사람들이 모여 {food}을(를) 흉내 내 만들었다.||{fest} 날, 고향 가족과 영상 통화를 하며 함께 밥을 먹는 시늉을 했다.','r2 j-1',{k:'fest',cd:4,sc:'fest'});
+Y(30,69,'w !KR pardead','*','부모님 없이 맞는 {fest}. 형제들이 모여 부모님 이야기를 하다 웃다 울었다.','r3 j-1',{k:'fest',w:1.2,cd:4,sc:'fest'});
+Y(45,69,'w !KR ka','*','{fest}에 다 큰 아이들이 집에 왔다. 이제는 아이들이 장을 봐 왔다.||{fest}에 아이들이 각자의 짝과 함께 왔다. 식탁이 모자랐다.','r3 j3',{k:'fest',w:1.4,sc:'fest'});
+calVar('명절 연휴다.',['명절 연휴가 다가왔다. 차례 음식 준비로 집안이 벌써 분주하다.','명절 연휴다. 고향에 갈지, 집에서 쉴지 가족회의가 열렸다.','올해는 명절 연휴가 짧다. 고향까지 가려면 하루를 꼬박 길에서 보내야 한다.']);
+Y(30,69,'w frm rk>2','*','임원(관리자) 회의에서 올해 연봉이 정해졌다.||성과 평가 면담을 이번에는 내가 후배들과 했다. 내 연봉도 정해졌다.','',{k:'pay',run:'pay',w:2,sc:'money'});
+calVar('여름휴가다.',['휴가 날짜를 두고 가족 회의가 열렸다.','휴가를 받았지만 일 걱정에 휴대폰을 자꾸 보게 된다.']);
+
+// ── 배우자와 함께
+Y(25,70,'fam','*','{spouse}와(과) 주말 계획을 두고 의견이 갈렸다.',[['내 계획을 양보한다','r2 K','{spouse}이(가) 고르는 곳에 갔다. 생각보다 즐거웠다.'],['번갈아 하자고 정한다','r2 D','이번 주는 {spouse}, 다음 주는 내 차례로 정했다.'],['각자 하루씩 보낸다','j2','토요일은 따로, 일요일은 함께 보냈다.']],{cd:5});
+Y(25,70,'fam','*','{spouse}이(가) 일터에서 힘든 일이 있었다며 말이 없다.',[['좋아하는 음식을 만든다','r3 K','좋아하는 음식을 만들어 주자 {spouse}이(가) 조금씩 이야기를 꺼냈다.'],['밤 산책을 권한다','r2 h1','둘이 동네를 한 바퀴 걸었다.'],['혼자 있을 시간을 준다','G','조용히 기다려 주었다. 다음 날 {spouse}이(가) 고맙다고 했다.']],{cd:5});
+Y(25,75,'fam','*','{spouse}의 생일이다.',[['손편지를 쓴다','r3 K','손편지를 읽은 {spouse}이(가) 한참 웃었다.'],['깜짝 잔치를 준비한다','r3 j2 B','친구들을 몰래 불렀다. {spouse}이(가) 깜짝 놀랐다.','@-1'],['둘만의 짧은 여행을 떠난다','r3 j3','둘이 바닷가 마을에 다녀왔다.','@-2']],{cd:4,sc:'wedding'});
+Y(25,60,'fam','*','{spouse}와(과) 돈 관리 방식을 두고 이야기를 나눴다.',[['통장을 하나로 합친다','r2 D','통장을 합치고 가계부를 함께 썼다.'],['생활비만 함께 낸다','D','생활비만 함께 내기로 했다.'],['큰돈 쓸 때만 의논한다','r1','큰돈을 쓸 때만 의논하기로 했다.']],{once:1,sc:'money'});
+Y(25,60,'fam','*','{spouse}의 가족 모임에 갔다. 어른들이 이것저것 물으셨다.||배우자 가족의 큰 잔치에 일손을 보태러 갔다.',[['부엌일을 거든다','r3 K','부엌에서 일을 거들며 이야기꽃을 피웠다.'],['어른들 말벗이 된다','r2','어른들의 옛이야기를 들어 드렸다.'],['아이들과 놀아 준다','r2 j2','조카들과 마당에서 놀았다.']],{cd:4});
+Y(30,70,'fam','*','{spouse}와(과) 함께 새로운 것을 배워 볼까?',[['요리 교실','r3 C','둘이 요리 교실에 다녔다. 주말 저녁은 둘의 요리 시간이 되었다.'],['춤(운동) 교실','r3 h2','춤 교실에 다녔다. 발을 자주 밟았다.'],['외국어 공부','k2 r2','둘이 함께 외국어를 공부했다.']],{once:1});
+Y(35,75,'fam','*','결혼할 때 찍은 사진을 꺼내 보았다. 둘 다 참 젊었다.','r3 j2',{once:1,sc:'wedding'});
+Y(30,70,'fam nokid','*','아이 없이 둘이 사는 삶에 대해 이야기를 나눴다.',[['둘의 삶을 더 풍성하게 꾸린다','r3 j2','둘만의 여행과 취미를 늘렸다.'],['입양에 대해 알아본다','K C','입양 기관의 설명회에 다녀왔다.'],['조카들을 더 자주 챙긴다','r3 K','조카들과 가까운 이모·삼촌이 되었다.']],{once:1});
+Y(50,85,'wid','*','배우자를 먼저 보내고 맞는 첫 명절. 식탁의 빈자리가 크게 보였다.||혼자 장을 보다 배우자가 좋아하던 과일 앞에서 오래 서 있었다.','r2 j-3',{once:1,sc:'farewell'});
+Y(50,85,'wid','*','혼자 지내는 날이 길어졌다.',[['동네 모임에 나간다','r3 j2','동네 모임에서 새 친구들을 만났다.'],['자녀들 집에 자주 들른다','r3','자녀들 집에 자주 들렀다.'],['혼자만의 일과를 만든다','D h2','아침 산책, 오후 독서, 저녁 일기를 일과로 삼았다.']],{once:1});
+
+// ── 아이를 키우는 날들 (나이마다 다른 고민)
+Y(19,60,'kp','*','{kn}이(가) 어린이집(유치원)에서 친구를 물었다는 연락을 받았다.||{kn}이(가) 친구 장난감을 빼앗았다고 선생님이 전화하셨다.',[['친구 부모님께 함께 사과하러 간다','D K','{kn}과(와) 함께 사과했다. 두 아이가 다시 손을 잡았다.'],['집에서 왜 그랬는지 차분히 묻는다','K r2','{kn}이(가) 속상했던 일을 털어놓았다.'],['선생님과 상담한다','D','선생님과 함께 방법을 찾았다.']],{once:1});
+Y(19,60,'kp','*','{kn}이(가) 밤마다 방에 괴물이 나온다며 무서워한다.',[['함께 “괴물 쫓는 주문”을 만든다','r3 C','둘이 만든 주문을 외우자 {kn}이(가) 금세 잠들었다.'],['작은 불을 켜 둔다','r1','작은 등을 켜 두었다.'],['잠들 때까지 곁에 있는다','r3 K','잠들 때까지 이야기를 들려주었다.']],{once:1});
+Y(19,60,'kp','*','{kn}이(가) “왜?”를 하루에 백 번 묻는다.','r2 k1',{once:1});
+Y(19,65,'ke','*','{kn}이(가) 학교에서 상장을 받아 왔다. 냉장고 가장 잘 보이는 곳에 붙였다.||{kn}이(가) 받아쓰기 100점을 받았다며 현관에서부터 소리쳤다.','j4 r2',{cd:4,sc:'school'});
+Y(19,65,'ke','*','{kn}이(가) 휴대폰을 사 달라고 조른다. 반에서 자기만 없다고 한다.',[['약속을 정하고 사 준다','D r1','하루 사용 시간을 함께 정하고 사 주었다.','@-1'],['중학생이 되면 사 주기로 한다','D','중학생이 되면 사 주기로 약속했다.'],['가족 공용 태블릿을 함께 쓴다','r2','가족 공용 태블릿을 함께 쓰기로 했다.']],{once:1,sc:'money'});
+Y(19,65,'ke','*','주말에 {kn}과(와) 자전거를 탔다. {kn}이(가) 처음으로 나를 앞질렀다.||{kn}과(와) 함께 종이비행기를 접어 공원에서 날렸다.','r3 j3 h1',{cd:4});
+Y(19,65,'ke w-','*','{kn}의 신발과 교복이 작아졌다. 살림이 빠듯하다.',[['이웃에게 물려받는다','r2 G','이웃 아이에게 물려받았다.'],['조금 큰 것으로 새로 산다','D','한 치수 큰 것으로 샀다.','@-1'],['내 것을 줄이고 산다','K','내 것을 줄이고 아이 것을 샀다.','@-1']],{cd:4,sc:'money'});
+Y(19,65,'km','*','{kn}이(가) 친구 문제로 학교에 가기 싫다고 한다.',[['담임 선생님을 만난다','D','선생님과 함께 상황을 살폈다.'],['{kn}의 이야기를 끝까지 들어 준다','K r3','{kn}이(가) 한참을 울더니 조금 편해 보였다.'],['며칠 쉬게 한다','h1','며칠 쉬고 다시 학교에 갔다.']],{once:1});
+Y(19,65,'km','*','{kn}이(가) 밤늦게까지 게임과 영상에 빠져 있다.',[['함께 규칙을 정한다','D r2','함께 정한 규칙을 냉장고에 붙였다.'],['함께 게임을 해 본다','r3 C','같이 해 보니 {kn}이(가) 왜 좋아하는지 알 것 같았다.'],['휴대폰을 거둬 간다','r-2','휴대폰을 거둬 갔다. 며칠 동안 집안 공기가 냉랭했다.']],{once:1});
+Y(19,70,'kh','*','{kn}이(가) 진로를 두고 고민한다. 내가 바라는 길과 다르다.',[['{kn}의 선택을 믿어 준다','K r3','“네가 하고 싶은 걸 해.” {kn}의 눈이 반짝였다.'],['내 경험을 솔직히 들려준다','r2 D','내가 걸어온 길을 들려주었다.'],['함께 그 일을 하는 사람을 만나러 간다','C r2','그 일을 하는 사람을 함께 찾아가 이야기를 들었다.']],{once:1});
+Y(19,70,'ku','*','{kn}의 대학 등록금 고지서가 왔다.',[['모아 둔 돈으로 낸다','D','모아 둔 돈으로 냈다.','@-3'],['학자금 대출을 함께 알아본다','D','학자금 대출을 받기로 했다.','@-1'],['{kn}이(가) 아르바이트로 보태기로 한다','r1','{kn}이(가) 아르바이트로 생활비를 보태기로 했다.','@-2']],{once:1,sc:'money'});
+Y(40,85,'ka','*','{kn}이(가) 첫 직장에 들어갔다며 전화를 했다. 목소리가 들떠 있었다.','j4 r2',{once:1});
+Y(40,85,'ka','*','{kn}이(가) 먼 도시(다른 나라)에서 살겠다고 한다.',[['기꺼이 보내 준다','K G','공항(터미널)에서 오래 손을 흔들었다.'],['가까운 곳을 권해 본다','r1','가까운 곳도 알아보자고 했다.'],['자주 연락하자고 약속한다','r2','일주일에 한 번 영상 통화를 하기로 약속했다.']],{once:1,sc:'travel'});
+Y(19,60,'kb','*','{kn}의 예방접종 날이다. 주사를 맞고 우는 {kn}을(를) 오래 안아 주었다.','r2 h1',{once:1,sc:'hosp'});
+
+// ── 나이 드는 부모님
+Y(40,70,'par','*','부모님이 같은 이야기를 자꾸 되풀이하신다.',[['병원에 모시고 가 검사를 받는다','D K','검사를 받았다. 일찍 알게 되어 다행이었다.'],['더 자주 찾아뵙는다','r3 K','주말마다 찾아뵈었다.'],['형제들과 돌봄 계획을 세운다','D r2','형제들과 돌아가며 들르기로 했다.']],{once:1,sc:'hosp',nt:'치매는 세계 사망 원인 7위이고, 고령 인구가 늘며 계속 늘고 있습니다 (WHO)'});
+Y(35,70,'par','*','부모님이 휴대폰 사기 문자에 속을 뻔하셨다.',[['수법을 알기 쉽게 정리해 드린다','K D','큰 글씨로 정리해 냉장고에 붙여 드렸다.'],['모르는 번호는 받지 마시라고 한다','D','모르는 번호는 받지 않기로 약속하셨다.'],['휴대폰 설정을 바꿔 드린다','k1','스팸 차단 설정을 해 드렸다.']],{once:1});
+Y(40,70,'par','*','부모님 결혼기념일에 형제들이 모여 작은 잔치를 열었다.||부모님의 오래된 집을 함께 고쳐 드렸다.','r4 j3',{once:1,sc:'wedding'});
+Y(45,75,'par','*','부모님이 우리 집 가까이로 이사 오셨다.','r3',{once:1,w:.6,sc:'house'});
+
+// ── 친구
+Y(25,60,'','*','오랜 친구가 결혼한다며 축사를 부탁했다.',[['밤새 원고를 쓴다','r3 D','떨리는 목소리로 축사를 마쳤다. 신랑 신부가 울었다.'],['짧고 유쾌하게 한다','r2 j2','짧고 유쾌한 축사에 하객들이 웃었다.'],['노래로 대신한다','B r3','축가를 불렀다. 음이 조금 떨렸다.']],{once:1,sc:'wedding'});
+Y(30,70,'','*','친구가 힘든 일을 겪었다며 늦은 밤 연락해 왔다.',[['당장 만나러 간다','K r3','밤늦게 달려가 이야기를 들었다.'],['통화로 오래 들어 준다','K r2','한 시간 넘게 이야기를 들었다.'],['다음 날 밥을 사겠다고 한다','r2','다음 날 따뜻한 밥을 샀다.']],{cd:6});
+Y(30,80,'','*','학창 시절 짝꿍을 우연히 길에서 만났다. 서로를 단번에 알아보았다.||수십 년 만에 옛 친구에게서 연락이 왔다.','r3 j3',{once:1,sc:'friend'});
+Y(25,65,'','*','친구와 사소한 일로 오해가 생겼다.',[['먼저 연락한다','B r3','먼저 연락했다. 둘 다 웃으며 풀었다.'],['시간이 풀어 주길 기다린다','G','몇 달 뒤 자연스럽게 풀렸다.','몇 해가 지나도록 연락하지 못했다.'],['다른 친구에게 다리를 놓아 달라고 한다','r2','다른 친구가 셋이 만나는 자리를 만들어 주었다.']],{cd:7});
+Y(25,65,'','*','친구가 가게(사무실)를 새로 열었다. 개업식에 갔다.','r2 @-1',{cd:6});
+
+// ── 이웃과 집
+Y(25,75,'','*','이웃이 소음(주차·마당) 문제로 항의했다.',[['사과하고 조심한다','K r1','사과하고 더 조심했다. 이웃이 과일을 들고 왔다.'],['서로 사정을 이야기한다','r2 D','서로의 사정을 이야기하고 규칙을 정했다.'],['그냥 넘긴다','r-2','그냥 넘겼다. 마주칠 때마다 어색했다.']],{cd:7});
+Y(25,75,'','*','동네 모임에서 놀이터(길) 공사 비용을 두고 의견이 갈렸다.',[['아이들 의견을 들어 보자고 한다','C r2','아이들의 그림을 보고 모두 마음을 모았다.'],['조금씩 더 내자고 한다','K','조금씩 더 내기로 했다.','@-1'],['다수의 결정을 따른다','G','다수의 결정을 따랐다.']],{cd:8});
+Y(25,75,'','*','집 수도관이 터져 바닥이 물바다가 되었다.',[['직접 고쳐 본다','B k1','유튜브 영상을 보며 직접 고쳤다.','고치다 일이 더 커졌다. 결국 사람을 불렀다.'],['기술자를 부른다','','기술자를 불렀다.','@-1'],['이웃 아저씨에게 도움을 청한다','r2','이웃 아저씨가 공구를 들고 와 주었다.']],{cd:8,sc:'house'});
+Y(25,75,'','*','여름밤, 정전으로 동네가 깜깜해졌다. 이웃들이 골목에 나와 부채질을 하며 이야기를 나눴다.','r2 j1',{cd:6});
+Y(15,85,'','*','동네에 새 도서관이 생겼다. 창가 자리가 마음에 들었다.','k2 j2',{once:1});
+Y(25,65,'rent','*','집주인이 집을 판다며 몇 달 안에 나가 달라고 한다.',[['서둘러 새 집을 구한다','D','몇 주 동안 집을 보러 다녔다.','@-1'],['계약 기간을 지켜 달라고 한다','B','법에 정해진 계약 기간을 말하자 집주인이 물러섰다.'],['가족·친구 집에 잠시 머문다','r2','형제 집에 잠시 머물렀다.']],{cd:8,sc:'house'});
+Y(30,70,'house','*','집 대출 금리가 내렸다. 다달이 내는 이자가 조금 줄었다.','j2 @1',{cd:6,sc:'money'});
+
+// ── 돈 · 기술 · 생활
+Y(25,85,'','*','은행을 사칭한 전화가 왔다. 계좌가 위험하니 돈을 안전한 곳으로 옮기라고 한다.',[['끊고 은행에 직접 전화한다','D k1','은행에 확인하니 사기 전화였다.'],['경찰에 신고한다','B D','경찰에 신고했다. 같은 번호로 피해를 본 사람이 많았다.'],['급한 마음에 시키는 대로 한다','j-6','시키는 대로 했다가 돈을 잃었다.','@-3']],{once:1,sc:'money'});
+Y(19,80,'','*','휴대폰이 고장 나 새로 사야 한다.',[['최신 모델을 할부로 산다','j2','최신 모델을 샀다. 다달이 할부금이 나간다.','@-2'],['중고폰을 산다','D','상태 좋은 중고폰을 샀다.','@-1'],['고쳐서 더 쓴다','G','수리점에서 고쳐 더 쓰기로 했다.']],{cd:7,sc:'money'});
+Y(19,75,'','*','인터넷으로 산 물건이 사진과 전혀 달랐다.',[['환불을 끝까지 요구한다','B D','끈질긴 요구 끝에 환불을 받았다.'],['후기를 솔직히 남긴다','D','다른 사람들을 위해 후기를 남겼다.'],['그냥 쓴다','G','그냥 쓰기로 했다.']],{cd:8});
+Y(22,75,'','*','인공지능 도우미에게 일을 맡겨 보았다.',[['꼼꼼히 확인하며 쓴다','k2 D','결과를 하나하나 확인하며 썼다. 틀린 곳이 몇 군데 있었다.'],['새 쓰임새를 찾아본다','k2 C','생각지 못한 쓰임새를 찾아냈다.'],['아직은 내 손으로 한다','D','아직은 내 손으로 하기로 했다.']],{once:1,sc:'job'});
+Y(25,70,'t3','*','보험 설계사가 보험 가입을 권한다.',[['꼭 필요한 것만 든다','D','꼭 필요한 보험 하나만 들었다.','@-1'],['여러 곳을 비교해 본다','k2 D','여러 상품을 비교했다.'],['지금은 괜찮다고 한다','','지금은 괜찮다고 했다.']],{cd:8,sc:'money'});
+Y(25,70,'t3 w','*','이번 달 카드값이 생각보다 많이 나왔다.',[['가계부를 쓰기 시작한다','D k1','가계부를 쓰자 새는 돈이 보였다.'],['구독 서비스를 정리한다','D','쓰지 않던 구독 서비스를 몇 개 끊었다.','@1'],['다음 달에 아끼면 된다','','다음 달에 아끼기로 했다.']],{cd:6,sc:'money'});
+Y(19,80,'mm','*','휴대폰으로 공과금을 냈다. 줄을 서지 않아도 되었다.||휴대폰 결제를 하다 실수로 돈을 엉뚱한 번호로 보냈다. 통신사에 연락해 겨우 되찾았다.','k1',{cd:8,sc:'money'});
+
+// ── 건강
+Y(19,80,'','*','이가 시려서 치과에 갔다. 충치가 생겼다고 한다.',[['바로 치료한다','h2','치료를 받았다.','@-1'],['양치 습관부터 바꾼다','D h1','하루 세 번, 3분씩 양치했다.'],['참을 만하다며 미룬다','h-2','미뤘다. 몇 달 뒤 더 아팠다.']],{cd:8,sc:'hosp'});
+Y(45,85,'','*','무릎이 아파 계단 오르기가 힘들다.',[['물리치료를 받는다','h3','몇 주 치료를 받았다.','@-1'],['수영(걷기)으로 근육을 키운다','h3 D','물속 걷기를 시작했다.'],['지팡이를 장만한다','G','지팡이를 샀다. 생각보다 편했다.']],{once:1,sc:'hosp'});
+Y(25,80,'','*','잠이 잘 오지 않는 날이 이어진다.',[['잠들기 전 휴대폰을 멀리한다','D h2','휴대폰을 멀리하니 조금씩 잠이 왔다.'],['낮에 몸을 더 움직인다','h3','낮에 많이 걸었다.'],['고민을 누군가에게 털어놓는다','r2 h1','친구에게 털어놓으니 마음이 가벼워졌다.']],{cd:8});
+Y(10,70,'rg:SE|SA|LA|AF','*','모기에 물린 뒤 고열과 몸살이 났다. 뎅기열이라고 한다.','h-4',{cd:8,sc:'sick',nt:'뎅기열은 모기가 옮기는 병으로, 2024년 세계에서 1,400만 건 넘게 보고되어 역대 가장 많았습니다 (WHO)'});
+Y(18,70,'','*','헌혈을 했다. 작은 초코파이와 주스를 받았다.||헌혈 버스가 회사(학교) 앞에 왔다.','K h-1',{cd:6,sc:'hosp'});
+Y(25,70,'','*','스트레스 때문인지 속이 자주 쓰리다.',[['병원에 가 본다','h2','위염 약을 받았다.','@-1'],['커피와 술을 줄인다','h3 D','커피와 술을 줄였다.'],['일을 조금 덜어 낸다','h2 B','일을 조금 덜어 달라고 말했다.']],{cd:8,sc:'hosp'});
+Y(15,65,'','*','운동하다 발목을 삐었다. 깁스를 하고 한 달을 지냈다.','h-3 j-1',{cd:9,sc:'hosp'});
+Y(25,70,'','*','동네 걷기(달리기) 대회에 나가 볼까?',[['완주를 목표로 나간다','h3 D','끝까지 걸어(달려) 완주 메달을 받았다.'],['가족과 함께 걷는다','r3 h2','가족 모두 손을 잡고 결승선을 넘었다.'],['응원만 한다','r1','길가에서 응원했다.']],{cd:6,sc:'sport'});
+
+// ── 여가와 문화
+Y(15,70,'t3|w+','*','오래 기다린 공연 표를 구했다.',[['맨 앞자리에서 목이 쉬도록 노래한다','j5','맨 앞에서 모든 노래를 따라 불렀다.','@-1'],['친구와 함께 간다','r3 j3','친구와 함께 갔다.','@-1'],['혼자 조용히 즐긴다','j3 G','혼자 가서 오롯이 즐겼다.','@-1']],{cd:6,sc:'stage'});
+Y(12,90,'','*','책 한 권이 마음에 오래 남았다. 밑줄 그은 문장을 공책에 옮겨 적었다.||도서관에서 우연히 집어 든 책을 밤새 다 읽었다.','k2 j2',{cd:5});
+Y(8,75,'','*','가족과 캠핑을 갔다. 밤하늘에 별이 쏟아졌다.||강가에서 가족과 고기를 구워 먹었다.','r3 j3',{cd:5,sc:'travel'});
+Y(8,85,'','*','박물관(미술관)에 갔다. 오래된 물건 하나 앞에서 한참을 서 있었다.','k2 j2',{cd:6,sc:'travel'});
+Y(19,75,'','*','동네 노래방(가라오케)에서 친구들과 목이 쉬도록 노래했다.','r2 j3',{cd:5,sc:'stage'});
+Y(25,85,'','*','무지개가 떴다. 길 가던 사람들이 모두 걸음을 멈추고 하늘을 보았다.','j2',{cd:8});
+Y(15,85,'','*','우박이 쏟아져 지붕(차)이 움푹 팼다.','j-1',{cd:10});
+Y(10,85,'','*','큰 뇌우가 지나간 다음 날, 동네 큰 나무가 번개에 맞아 쓰러져 있었다.','k1',{once:1});
+
+// ── 신앙과 함께하는 삶 (집안의 종교에 따라)
+Y(12,85,'rel:이슬람','*','라마단 한 달 동안 해가 떠 있는 동안 금식했다. 해 질 녘 대추야자 한 알이 그렇게 달았다.||라마단 마지막 열흘, 밤마다 모스크에 가서 기도했다.','G h-1 r2',{cd:3,sc:'fest'});
+Y(30,85,'rel:이슬람','*','평생 한 번은 메카 순례(하지)를 가고 싶다.',[['조금씩 돈을 모은다','D G','순례를 위해 돈을 모으기 시작했다.','%2'],['부모님을 먼저 보내 드린다','K r3','부모님의 순례 비용을 보태 드렸다.','@-3'],['형편이 될 때를 기다린다','G','형편이 될 때를 기다리기로 했다.']],{once:1,set:['hajj','hajj',null]});
+Y(35,85,'fl:hajj>3','*','드디어 메카 순례(하지)를 다녀왔다. 수백만 명이 같은 옷을 입고 함께 걸었다.','G j6 r3',{once:1,clr:'hajj',big:1,sc:'travel'});
+Y(10,85,'rel:가톨릭|개신교|기독교','*','교회(성당) 성가대에서 노래를 불렀다.||교회(성당) 바자회에서 음식을 팔아 이웃 돕기 기금을 모았다.','r2 j2 G',{cd:4,sc:'stage'});
+Y(10,85,'rel:불교','*','부처님 오신 날, 절에 연등을 달고 가족의 건강을 빌었다.||절에서 하룻밤 머물며(템플스테이) 새벽 예불에 함께했다.','G j2',{cd:4,sc:'fest'});
+Y(10,85,'rel:힌두교','*','사원 축제에서 신상을 실은 수레를 함께 끌었다.||집 안 작은 제단에 꽃과 등잔을 올리고 아침 기도를 드렸다.','G r2',{cd:4,sc:'fest'});
+Y(12,85,'rel:시크교','*','구르드와라(시크교 사원)의 공동 부엌(랑가르)에서 누구에게나 무료로 밥을 나르는 봉사를 했다.','K r3',{cd:4});
+Y(10,85,'rel:유대교','*','안식일 저녁, 촛불을 켜고 온 가족이 둘러앉았다.','r3 G',{cd:4,sc:'fest'});
+
+// ── 일터 (일의 종류 · 직급에 따라)
+Y(22,62,'w jk:office','*','재택근무를 하게 되었다.',[['출퇴근 시간에 운동을 한다','h3','아낀 출퇴근 시간에 운동을 했다.'],['집중이 잘되는 공간을 만든다','k2 D','방 한쪽에 작은 책상을 마련했다.'],['동료들과 화상 점심을 먹는다','r2','화면 너머로 함께 점심을 먹었다.']],{once:1,sc:'job'});
+Y(22,62,'w jk:office|factory','*','일터에 인공지능 도구와 자동화 기계가 들어와 일하는 방식이 바뀌었다.',[['새 도구를 먼저 배워 동료들을 돕는다','k3 C','새 도구를 먼저 익혀 동료들에게 알려 주었다.','$4'],['내 일이 사라질까 다른 기술도 익힌다','k2 D','저녁마다 다른 기술을 배웠다.'],['노조(동료들)와 대책을 의논한다','r2 B','동료들과 함께 재교육을 요구했다.']],{once:1,sc:'job'});
+Y(22,62,'w jk:office','*','사내 체육대회가 열렸다. 줄다리기에서 우리 팀이 이겼다.||회사 워크숍에서 밤늦게까지 팀원들과 이야기를 나눴다.','r3 j2',{cd:5,sc:'job'});
+Y(22,62,'w jk:farm','*','가축(닭·소)에 병이 돌았다.',[['수의사(방역소)를 부른다','D','방역소에서 와서 약을 놓았다.','@-1'],['아픈 가축을 따로 둔다','k1 D','아픈 가축을 따로 두어 번지는 것을 막았다.'],['이웃 농가에 바로 알린다','r2 K','이웃에 알려 함께 대비했다.']],{cd:6,sc:'harvest'});
+Y(22,62,'w jk:farm','*','농민 협동조합에 들어오라는 권유를 받았다.',[['들어간다','r2 D','협동조합에 들어가 함께 팔고 함께 샀다.','@1'],['혼자 하는 게 편하다','','혼자 하기로 했다.']],{once:1,sc:'harvest'});
+Y(22,70,'w jk:shop','*','단골 할머니가 다음 달에 갚겠다며 외상을 부탁한다.',[['기꺼이 외상을 준다','K r2','외상을 주었다. 다음 달 할머니가 떡을 들고 와 갚았다.'],['조금 깎아 드린다','K','값을 조금 깎아 드렸다.','@-1'],['정중히 거절한다','D','정중히 거절했다.']],{cd:6,sc:'job'});
+Y(22,70,'w jk:shop','*','가게 간판을 새로 달았다. 지나가던 사람들이 한 번씩 올려다보았다.','j3',{once:1,sc:'job'});
+Y(22,62,'w jk:hosp','*','밤샘 근무 뒤 퇴근 버스에서 졸다가 종점까지 갔다.','h-2 j1',{cd:5,sc:'hosp'});
+Y(22,62,'w jk:hosp','*','새 감염병 소식에 병원이 비상이다.',[['보호 장비를 갖추고 앞장선다','B K','앞장서 환자를 돌봤다.','h-2'],['감염 관리 수칙을 다시 정비한다','D k2','수칙을 다시 정비해 병원 안 감염을 막았다.'],['동료들과 근무표를 다시 짠다','r2 D','동료들과 쉬는 시간을 지켜 가며 버텼다.']],{once:1,sc:'hosp'});
+Y(22,62,'w jk:school','*','학부모가 밤늦게 항의 전화를 했다.',[['다음 날 만나 이야기하자고 한다','D','다음 날 차분히 만나 오해를 풀었다.'],['끝까지 들어 준다','K','끝까지 들었다. 학부모가 마지막에 고맙다고 했다.'],['학교 상담 창구로 안내한다','D','학교 공식 창구로 안내했다.']],{cd:5,sc:'school'});
+Y(22,62,'w jk:school','*','수학여행을 인솔했다. 밤새 아이들 방을 돌며 잠을 못 잤다.||졸업식 날, 제자들이 몰래 준비한 영상을 틀었다.','r3 j2 h-1',{cd:4,sc:'school'});
+Y(19,62,'w jk:part','*','비가 와서 공사장 일이 공쳤다. 하루 벌이가 없다.','@-1 j-1',{cd:4,sc:'jobloss'});
+Y(19,55,'w jk:dream','*','내 작품이 다른 사람 것과 비슷하다는 말이 돌았다.',[['작업 과정을 모두 공개한다','B D','작업 과정을 공개하자 오해가 풀렸다.'],['직접 만나 이야기한다','r2','상대 작가와 만나 오해를 풀었다.'],['다음 작품으로 보여 준다','C k2','다음 작품에 더 매달렸다.']],{once:1,sc:'stage'});
+Y(19,62,'w jk:dream','*','처음 보는 사람에게서 팬레터가 왔다. 내 작품 덕분에 힘든 시기를 버텼다고 했다.','j6 r2',{once:1,sc:'stage'});
+Y(19,62,'w jn:운전|택시|버스|화물|기사','*','새벽 첫차(첫 손님)를 태웠다. 텅 빈 거리에 해가 떠올랐다.||손님이 오늘이 생일이라며 떡을 나눠 주었다.','j2',{cd:4,sc:'job'});
+Y(35,62,'w rk>2','*','회사(일터)가 어려워 줄일 사람의 명단을 만들라는 지시를 받았다.',[['다른 방법을 찾자고 끝까지 설득한다','B K','다른 비용을 줄여 사람은 지켰다.','설득은 받아들여지지 않았다.'],['기준을 공정하게 세워 정한다','D','공정한 기준을 세웠다. 마음은 무거웠다.','j-3'],['내 자리를 걸고 반대한다','B','내 자리를 걸고 반대했다.','j-2']],{once:1,sc:'job'});
+Y(22,62,'w','*','동료가 부당한 대우를 받는 것을 보았다.',[['함께 윗사람에게 말한다','B K','함께 말하자 상황이 바뀌었다.','말을 꺼냈다가 나까지 눈 밖에 났다.'],['동료의 이야기를 먼저 들어 준다','K r2','동료가 고맙다며 눈시울을 붉혔다.'],['상담 창구(노동청)를 알려 준다','D','도움받을 곳을 알려 주었다.']],{cd:8,sc:'job'});
+Y(22,62,'w frm','*','야근 수당이 제대로 들어오지 않았다.',[['근무 기록을 들고 따진다','B D','기록을 보여 주자 수당이 들어왔다.','@1'],['동료들과 함께 이야기한다','r2','동료들과 함께 말해 바로잡았다.','@1'],['그냥 넘어간다','j-2','그냥 넘어갔다.']],{cd:8,sc:'money'});
+Y(22,62,'w frm t3','12','연말 상여금이 나왔다.||올해 회사 실적이 좋아 상여금이 두둑했다.','j3 @1',{cd:4,sc:'money'});
+Y(48,64,'w','*','젊은 후배들의 새로운 일 방식이 낯설다.',[['배우려는 마음으로 묻는다','k2 C','후배에게 배우니 일이 훨씬 빨라졌다.'],['내 경험을 나눈다','r2 K','내 경험을 나누자 후배들이 귀 기울였다.'],['내 방식을 지킨다','D','내 방식대로 했다.']],{once:1,sc:'job'});
+Y(19,60,'nj t3','*','고용센터에 가서 실업급여를 신청했다. 다음 일을 찾을 때까지 숨을 돌릴 수 있다.','j1 @1',{once:1,sc:'money'});
+
+// ── 삶의 이정표
+Y(39,41,'','*','마흔 번째 생일이다.',[['가족과 조촐하게 보낸다','r3 j2','가족과 케이크에 초를 꽂았다.'],['새로운 도전을 하나 시작한다','B C','마흔에 처음으로 해 보는 일을 시작했다.'],['혼자 지난날을 돌아본다','G k1','지난 마흔 해를 공책에 적어 보았다.']],{once:1});
+Y(49,51,'','*','쉰 번째 생일이다. 친구들이 깜짝 잔치를 열어 주었다.','r4 j4',{once:1,sc:'friend'});
+Y(59,61,'','*','예순 번째 생일, 아이들(조카들)이 모여 큰 상을 차렸다.','r4 j4',{once:1,w:.8,sc:'fest'});
+Y(35,60,'sgl','*','혼자 사는 삶이 익숙해졌다.',[['혼자만의 일상을 즐긴다','j3 G','좋아하는 것들로 하루를 채웠다.'],['친구들과 가까이 산다','r3','친구들이 사는 동네로 이사했다.'],['새로운 만남에 마음을 연다','B r2','동호회에서 좋은 사람을 만났다.']],{once:1});
+
+// ── 마을과 나라의 일
+Y(19,85,'','*','동네 대청소 날, 이웃들과 골목의 쓰레기를 치웠다.||마을 사람들이 모여 개울(공터)을 함께 치웠다.','r3 K',{cd:5});
+Y(25,85,'t2','*','마을 회의에서 새 우물(가로등)을 어디에 놓을지 정했다.',[['아이들 통학길에 놓자고 한다','K r2','아이들이 다니는 길에 놓기로 했다.'],['가장 어려운 집 가까이에 놓자고 한다','K r2','가장 어려운 집 가까이에 놓기로 했다.'],['다수의 뜻을 따른다','G','다수의 뜻을 따랐다.']],{once:1});
+Y(20,70,'KR|US|GB|CA|AU|JP','*','재판에 시민 배심원(참여 재판원)으로 뽑혔다.',[['꼼꼼히 증거를 살핀다','D k2','며칠 동안 증거를 살피고 의견을 냈다.'],['다른 배심원의 말을 귀 기울여 듣는다','r2 G','서로의 생각을 들으며 결론을 냈다.']],{once:1,w:.5});
+Y(19,85,'','*','인구 조사원이 집에 찾아와 식구 수와 나이를 물었다.','k1',{once:1});
+Y(19,75,'','*','선거 날, 투표소에서 하루 동안 투표 사무원으로 일했다.','r2 k1',{once:1});
+
+// ── 자주 찾아오는 갈림길에 세 번째 길
+[['{fest} 연휴가 왔다.',['혼자 조용히 쉰다','h2 G','오랜만에 혼자 푹 쉬었다.']],
+ ['씨를 뿌리는 철이다. 하늘을 보며 비를 기다린다.',['날씨 정보를 보고 뿌릴 날을 정한다','k1 D','일기 예보를 보고 날을 정했다.']],
+ ['학교 과학 박람회가 열린다.',['다른 학교 작품을 구경 다닌다','C k1','신기한 작품들을 구경하며 아이디어를 얻었다.']],
+ ['{kn}의 {kg}학년 학부모 상담 주간이다.',['{kn}과(와) 함께 가서 셋이 이야기한다','r3 K','{kn}이(가) 직접 하고 싶은 말을 선생님께 했다.']],
+ ['학교 체육 대회가 열렸다. 반 대항 {sport} 시합이 있다.',['반 응원 도구를 만든다','r2 C','직접 만든 응원 도구가 운동장에서 가장 눈에 띄었다.']],
+ ['동네 {hob} 대회(발표회)에 나가 볼까?',['함께하는 사람들과 팀으로 나간다','r3','함께 무대에 서니 덜 떨렸다.']],
+ ['이웃집에 큰일이 생겼다.',['다른 이웃들과 힘을 모은다','r3 K','이웃들이 돌아가며 도왔다.']],
+ ['일을 더 잘하고 싶어 공부를 시작할까?',['일터 선배에게 배운다','r2 k2','선배를 따라다니며 일을 배웠다.']],
+ ['학교 연극을 올린다.',['대본을 쓴다','C k2','내가 쓴 대본으로 연극이 올라갔다.']],
+ ['저녁마다 자격증 공부를 해 볼까?',['동료와 함께 공부 모임을 만든다','r2 D','동료들과 함께 공부했다.']],
+ ['학교 발표회 날이다. 반마다 노래와 춤을 준비했다.',['무대 의상을 만든다','C r1','친구들의 무대 의상을 직접 만들었다.']],
+ ['부모님 생신이다.',['형제들과 함께 깜짝 잔치를 연다','r4 K','형제들과 모여 깜짝 잔치를 열었다.','@-1']],
+ ['길에서 지갑을 주웠다. 안에 현금과 신분증이 들어 있다.',['경찰서(파출소)에 맡긴다','D','파출소에 맡겼다. 며칠 뒤 주인이 고맙다는 전화를 했다.']],
+ ['새로 온 후배 {coll2}에게 일을 가르쳐 주게 되었다.',['일하는 방법을 문서로 만들어 준다','D k2','문서를 보며 후배가 금세 일을 익혔다.']],
+ ['방학 동안 일을 도와야 한다.',['일을 도우며 번 돈을 조금 모은다','D','방학 동안 번 돈을 조금 모았다.']],
+ ['오랜 친구와 크게 다투고 한동안 연락을 끊었다.',['편지를 쓴다','r2 K','편지를 보냈다. 몇 주 뒤 답장이 왔다.']],
+ ['동네 {sport} 모임에 나가 볼까?',['아이(가족)와 함께 나간다','r3 h2','가족과 함께 운동하는 주말이 생겼다.']],
+ ['오랜만에 연락 온 친구가 돈을 빌려 달라고 한다.',['돈 대신 일자리를 알아봐 준다','K r2','아는 곳에 일자리를 알아봐 주었다.']],
+ ['교통사고를 당했다.',['보험사와 꼼꼼히 정리하며 치료받는다','D h2','서류를 꼼꼼히 챙기며 치료를 받았다.']],
+ ['허리가 자주 아프다.',['의자와 책상 높이를 바꾼다','k1 h2','작업 자세를 바꾸자 통증이 줄었다.']],
+ ['{coll}이(가) 좋은 사람을 소개해 주겠다고 한다.',['여럿이 함께 만나자고 한다','r2','여럿이 함께 만나 편하게 이야기했다.']],
+ ['일감이 끊긴 날이 이어졌다.',['동료들과 일감을 나눈다','r2 K','동료들과 일감을 나눠 함께 버텼다.']],
+ ['길에서 강아지가 졸졸 따라왔다.',['동물 보호소에 연락한다','D','보호소에 연락해 강아지를 맡겼다.']],
+ ['새 메뉴(상품)를 내놓았다.',['손님들에게 먼저 맛보게 한다','r2 C','손님들의 의견을 듣고 다듬었다.']],
+ ['가게 임대료가 오른다는 연락이 왔다.',['주인과 조건을 다시 이야기한다','B','이야기 끝에 인상 폭을 줄였다.']],
+ ['오토바이를 한 대 장만할까?',['자전거를 산다','h2 D','자전거를 샀다. 다리가 튼튼해졌다.','@-1']],
+ ['마을 대항 {sport} 대회가 열렸다.',['간식을 준비해 선수들을 챙긴다','r2 K','선수들이 내가 만든 간식을 먹고 힘을 냈다.']],
+ ['장날이다. 새벽부터 짐을 이고 시장으로 걸어갔다.',['다른 상인들과 물건을 바꾼다','r2 C','다른 상인들과 물건을 맞바꿨다.']],
+ ['동생과 리모컨(장난감) 때문에 싸웠다.',['번갈아 하자고 정한다','D r2','시간을 정해 번갈아 하기로 했다.']],
+ ['{spouse}와(과) 집안일 때문에 다퉜다.',['집안일 표를 다시 짠다','D r2','집안일 표를 새로 짰다.']],
+ ['결혼기념일이다.',['처음 만난 곳에 다시 가 본다','r4 j2','처음 만난 곳에 다시 가 보았다. 많이 바뀌었지만 마음은 그대로였다.']],
+ ['{bff}이(가) 힘든 일이 있다며 밤늦게 연락해 왔다.',['다음 날 좋아하는 음식을 사 들고 간다','r3 K','좋아하는 음식을 사 들고 찾아갔다.']],
+ ['물놀이를 하다 깊은 곳에 빠졌다. 근처에 있던 어른이 끌어내 주었다.',['구해 준 어른께 감사 인사를 간다','r2 G','구해 준 어른께 음료수를 사 들고 인사를 갔다.']],
+ ['어릴 때 다니지 못한 학교 공부를 다시 해 볼까?',['라디오(휴대폰) 강의로 공부한다','k2 C','일하는 틈틈이 강의를 들었다.']],
+ ['이웃 어른이 도시에 가서 일하자고 한다.',['한 철만 다녀온다','D','농한기에만 도시에서 일하고 돌아왔다.','@1']],
+ ['시장에 내놓은 작물 값이 크게 떨어졌다.',['직접 가공해 판다','C k1','말리고 절여서 값을 더 받았다.','@1']],
+ ['{mate}의 생일 파티에 초대받았다.',['편지를 써서 건넨다','r2 K','편지를 읽은 친구가 수줍게 웃었다.']],
+ ['젊은이들에게 내가 아는 것을 가르쳐 줄 기회가 생겼다.',['글로 정리해 남긴다','k2 D','내가 아는 것을 글로 정리해 남겼다.']],
+ ['일하던 곳에서 떨어지는 자재에 다칠 뻔했다.',['위험한 곳을 알리고 고치자고 한다','B r2','위험한 곳에 안전망이 생겼다.']],
+ ['아빠가 병원에 입원하셨다.',['간병인의 도움을 받는다','D','간병인의 도움을 받았다.','@-1']],
+ ['저녁마다 마을에 글을 가르치는 교실이 열린다.',['아이와 함께 다닌다','r2 k2','아이와 함께 글을 배웠다.']],
+ ['{spouse}이(가) 다니던 일자리를 잃었다.',['살림을 함께 줄이며 기다려 준다','r3 G','살림을 줄이며 서로 기대어 버텼다.']],
+ ['자동차를 살까?',['차를 함께 쓰는 서비스를 이용한다','k1','필요할 때만 빌려 쓰기로 했다.']],
+ ['대출 금리가 올랐다. 다달이 내는 이자가 늘었다.',['더 낮은 금리로 갈아탄다','k1 D','금리가 낮은 대출로 갈아탔다.']]
+].forEach(([t,r])=>calOpt(t,r));
+
+// ── 일흔 넘어 (나이 든 날들도 저마다 다르게)
+Y(68,99,'','*','손주의 졸업식에 갔다. 사진을 찍을 때 손주가 내 손을 꼭 잡았다.','j5 r3',{once:1,w:.8,sc:'grad'});
+Y(68,99,'','*','귀가 잘 들리지 않아 보청기를 맞출까 고민했다.',[['맞춘다','r2 k1','보청기를 끼자 새소리가 다시 들렸다.','@-1'],['큰 소리로 말해 달라고 부탁한다','G','가족들이 또박또박 말해 주었다.'],['그냥 지낸다','r-1','대화에서 자꾸 빠지게 되었다.']],{once:1,sc:'hosp'});
+Y(70,99,'','*','혼자 사는 옆집 어르신의 안부를 매일 아침 확인한다.','K r3',{once:1});
+Y(68,99,'','*','손주가 학교 숙제로 내 어린 시절 이야기를 인터뷰했다.','r4 j4',{once:1});
+Y(70,99,'','*','고향 친구의 부고를 들었다. 함께 뛰놀던 개울이 생각났다.','j-3 r1',{cd:6,sc:'farewell'});
+Y(70,99,'','*','동네 체조 교실에서 매일 아침 몸을 풀었다.||복지관 노래 교실에서 젊은 날의 노래를 불렀다.','h2 r2 j2',{cd:3});
+Y(70,95,'','*','몸이 예전 같지 않아 돌봄을 어떻게 받을지 가족 회의가 열렸다.',[['자녀 집 가까이로 옮긴다','r3','자녀 집 가까이로 이사했다.'],['집에서 방문 돌봄을 받는다','h2 D','도우미가 일주일에 몇 번 찾아왔다.'],['돌봄 시설에 들어간다','h2','돌봄 시설에 들어가 새 친구들을 사귀었다.']],{once:1,sc:'house'});
+Y(70,90,'KR|JP','*','운전면허를 반납할까?',[['반납하고 대중교통을 탄다','D h1','면허를 반납했다. 버스 정류장까지 걷는 길이 운동이 되었다.'],['가까운 곳만 운전한다','','가까운 곳만 운전하기로 했다.'],['가족이 태워 주기로 한다','r2','가족이 태워 주기로 했다.']],{once:1});
+Y(70,99,'','*','오래된 사진들을 정리해 가족 앨범(디지털 앨범)으로 만들었다.','r3 j3',{once:1});
+Y(75,99,'gk','*','증손주가 태어났다는 소식을 들었다.','j6 r3',{once:1,sc:'baby'});
+Y(70,99,'','*','집 안에서 넘어져 며칠 병원에 있었다.',[['재활 운동을 꾸준히 한다','h3 D','다시 걸을 수 있게 되었다.'],['집 안에 손잡이를 단다','k1 h2','욕실과 계단에 손잡이를 달았다.']],{once:1,sc:'hosp',nt:'떨어지는 사고는 의도하지 않은 부상 사망 원인 가운데 두 번째로 많고, 노인에게 특히 위험합니다 (WHO)'});
+Y(65,99,'','*','독감 예방주사를 맞았다.','h2',{cd:4,sc:'hosp'});
+Y(70,99,'KR','*','사진관에서 오래 남길 사진(장수 사진)을 찍었다. 사진사가 웃어 보라며 농담을 했다.','j2',{once:1});
+Y(70,99,'','*','새들에게 모이를 주는 것이 아침 일과가 되었다. 같은 새가 매일 찾아온다.','j3 G',{once:1});
+Y(68,99,'','*','젊은 시절 일하던 곳을 찾아가 보았다. 건물은 그대로였지만 사람들은 모두 바뀌었다.','j2 r1',{once:1});
+Y(70,99,'','*','가진 물건을 하나씩 정리해 필요한 사람들에게 나눠 주었다.','K r2 j2',{once:1});
+Y(70,99,'','*','마을에서 가장 나이 많은 어르신의 생신 잔치에 갔다. 아직도 정정하셨다.','r2 j2',{once:1});
+Y(68,99,'','*','장례를 어떻게 치를지 미리 정해 둘까?',[['가족에게 바라는 것을 말해 둔다','r2 D','가족에게 차분히 이야기했다.'],['소박하게 해 달라고 적어 둔다','G','소박하게 해 달라고 적어 두었다.'],['아직은 생각하고 싶지 않다','','아직은 생각하지 않기로 했다.']],{once:1});
+
+// ── 나라의 모습 더하기
+Y(10,80,'BD','*','다카의 오래된 거리 시장에서 갓 튀긴 싱가라를 먹었다.','j1',{once:1});
+Y(10,80,'KE','*','엘도레트 고원의 마라톤 훈련 캠프 옆을 지나갔다. 새벽부터 선수들이 달리고 있었다.','h1 j2',{once:1});
+Y(10,80,'UG','*','나일강이 시작되는 진자의 강가에 가 보았다.','j2 k1',{once:1,sc:'travel'});
+Y(10,80,'UG','*','동네 결혼 소개 잔치(칸잘라)에 온 마을이 모였다.','j3 r3',{cd:4,sc:'wedding'});
+Y(10,80,'TZ','*','잔지바르 스톤타운의 좁은 골목에서 길을 잃었다가 큰 나무문 앞에서 다시 길을 찾았다.','j2',{once:1});
+Y(10,80,'VN','*','호이안의 등불 거리에서 강물에 소원 등을 띄웠다.','j3',{once:1,sc:'fest'});
+Y(10,80,'AF','*','봄이 오자 언덕에 붉은 튤립(라알라) 같은 들꽃이 피었다.','j2',{once:1});
+Y(10,80,'RU','*','모스크바 지하철역의 화려한 천장 장식을 올려다보았다.','j2',{once:1,sc:'travel'});
+Y(10,80,'IQ','*','쿠르드 지역의 산마을에서 봄 소풍을 했다.','j2',{once:1});
+Y(10,80,'MZ','*','바자루토 섬 근처 바다에서 듀공을 보았다는 어부의 이야기를 들었다.','j2',{once:1,sc:'sea'});
+Y(10,80,'ZA','*','소웨토의 거리에서 만델라가 살던 집을 보았다.','k2',{once:1,sc:'travel'});
+Y(10,80,'NE','*','아가데즈의 진흙 탑(그랜드 모스크)을 보았다.','k1 j2',{once:1,sc:'travel'});
+Y(10,80,'IR','*','야즈드의 바람탑(바드기르)이 더위를 식히는 원리를 배웠다.','k2',{once:1});
+Y(10,80,'YE','*','소코트라 섬의 우산 모양 나무(용혈수) 사진을 보았다.','k1',{once:1});
+Y(10,80,'DZ','*','알제의 하얀 언덕 마을(카스바)의 좁은 계단을 올랐다.','j2',{once:1,sc:'travel'});
+Y(10,80,'CM','*','두알라 항구에 큰 화물선이 들어오는 것을 보았다.','j1',{once:1,sc:'sea'});
+
+// ── 큰 사건에 세 번째 길 (나라·지역의 큰일, 자연재해)
+maj3('크게 아파서 며칠 입원하게',['책을 잔뜩 읽으며 지낸다','k G','병실에서 책 열 권을 읽었다.','k4 j3','머리가 아파 책을 덮었다.','j-1']);
+maj3('다니던 학교가 학생이 줄어',['온라인으로 다른 학교 수업을 듣는다','k C','화면으로 먼 학교 친구들과 함께 배웠다.','k4 j2','화면 수업이 낯설었다.','j-2']);
+maj3('살던 동네가 재개발되어',['옛 동네 사진을 찍어 기록으로 남긴다','k C','옛 골목 사진첩을 만들었다.','k3 r3','사진을 다 찍기도 전에 철거가 시작되었다.','j-2']);
+maj3('대학수학능력시험 날이다',['쉬는 시간마다 지난 시간은 잊는다','j G','한 과목 한 과목 새 마음으로 풀었다.','k3 j4','앞 시간의 실수가 자꾸 떠올랐다.','j-3']);
+maj3('몬순 폭우로 동네가',['어린 동생들을 먼저 챙긴다','r K','동생들 손을 꼭 잡고 함께 피했다.','r5 j2','짐을 챙기지 못했다.','@-1']);
+maj3('집에서는 일손이 모자라니',['선생님께 집에 찾아와 달라고 부탁한다','r B','선생님이 부모님을 설득해 주셨다.','k4 r3','부모님 마음을 바꾸지 못했다.','j-4']);
+maj3('수백만 명이 치르는 대학 입학시험',['친구들과 스터디 모임을 만든다','r D','서로 모르는 문제를 가르쳐 주며 실력이 늘었다.','k5 r3','모이면 자꾸 수다만 떨었다.','j-2']);
+maj3('큰 도시에서 일할 기회가',['가족과 함께 이사한다','r B','온 가족이 함께 도시로 옮겼다.','r3 $15','도시 생활비가 생각보다 비쌌다.','@-2']);
+maj3('집안의 결혼식을 치러야',['이웃들과 음식과 일손을 나눠 맡는다','r K','이웃들이 저마다 음식을 해 와 큰 잔치가 되었다.','r6 j4','준비가 엇갈려 음식이 모자랐다.','j-2']);
+maj3('열이 심하게 난다. 말라리아',['동네 보건 요원을 부른다','k D','보건 요원이 와서 검사하고 약을 주었다.','h4 j2','보건 요원이 다른 마을에 가 있었다.','h-3']);
+maj3('학비를 낼 돈이 모자란다',['장학금을 알아본다','k D','교회(모스크)의 장학금을 받았다.','k3 j4','장학금 마감이 지나 있었다.','j-3']);
+maj3('비가 오지 않아 밭이 말라',['가뭄에 강한 작물로 바꿔 심는다','k C','카사바를 심어 가뭄을 버텼다.','k3 j2','바꿔 심은 작물도 말랐다.','j-3']);
+maj3('대도시 라고스로 가면',['기술을 먼저 배우고 떠난다','k D','기술을 배운 뒤 라고스로 가 좋은 일자리를 얻었다.','k4 $15','배우는 동안 기회가 지나갔다.','j-2']);
+maj3('폭풍 경보가 울렸다',['라디오를 들으며 이웃에게 소식을 전한다','r K','이웃들에게 대피 소식을 전했다.','r5 k2','전화가 끊겨 연락이 닿지 않았다.','j-2']);
+maj3('부모님의 일 때문에 다른 주로',['예전 친구들과 화상 통화를 이어 간다','r G','새 친구와 옛 친구 모두와 가까이 지냈다.','r4 j2','시간이 지나며 연락이 뜸해졌다.','r-2']);
+maj3('대학에 가려면 큰 학비가',['지역 전문대에서 시작한다','k D','2년제에서 시작해 4년제로 편입했다.','k4 j3','편입 시험에 떨어졌다.','j-3']);
+maj3('갑자기 크게 아팠다. 병원비가',['병원의 무료·감면 진료를 신청한다','k D','소득에 따라 병원비를 깎아 주는 제도를 신청했다.','j4 @1','서류가 반려되었다.','j-3']);
+maj3('폭우로 언덕 동네에 산사태',['구조대를 돕는다','r B','구조대와 함께 이웃을 찾았다.','r6 h-2','구조 중 다쳤다.','h-5']);
+maj3('축구 클럽 유소년 선발',['코치에게 따로 지도를 부탁한다','k D','코치의 지도로 실력이 늘어 다음 해 합격했다.','h3 k3','코치는 바빠서 시간이 없었다.','j-2']);
+maj3('큰 지진이 났다.',['대피소 운영을 돕는다','r K','대피소에서 담요와 물을 나눴다.','r6 j2','지쳐서 며칠을 앓았다.','h-4']);
+maj3('취업 활동의 계절이다',['인턴십으로 먼저 일해 본다','k C','인턴으로 일한 회사에서 정식으로 채용되었다.','k4 $5','인턴십이 끝나고 채용은 되지 않았다.','j-3']);
+maj3('야근이 끝없이 이어진다',['정해진 시간에 퇴근하는 날을 정한다','h B','수요일마다 정시에 퇴근했다.','h4 r2','눈치가 보였다.','j-2']);
+maj3('마을에 젊은 사람이 거의',['마을에 젊은 사람을 부르는 일을 한다','r C','빈집을 고쳐 젊은 가족을 맞았다.','r5 j5','사람이 오지 않았다.','j-2']);
+maj3('큰비로 강물이 넘쳐',['물이 빠진 뒤 집 치우기를 돕는다','r K','이웃들과 함께 진흙을 퍼냈다.','r5 h-1','몸살이 났다.','h-3']);
+maj3('땅이 크게 흔들렸다',['가족 연락망을 확인한다','k D','미리 정해 둔 장소에서 가족을 만났다.','r3 j3','전화가 한참 동안 되지 않았다.','j-3']);
+maj3('큰 폭풍이 다가온다는',['창문에 테이프를 붙이고 물과 음식을 챙긴다','k D','미리 챙긴 덕에 며칠을 무사히 버텼다.','h2 j2','폭풍이 길어져 음식이 모자랐다.','j-2']);
+maj3('비가 오지 않아 물이 귀해',['빗물 저장 통을 만든다','k C','빗물 통 덕분에 다음 가뭄을 버텼다.','k3 j3','통이 새었다.','j-1']);
+maj3('숨이 막히는 더위가',['시원한 공공장소(쉼터)를 이웃에게 알린다','r K','이웃들과 함께 무더위 쉼터에서 지냈다.','r4 h2','쉼터가 문을 닫았다.','h-2']);
+maj3('혹독한 추위와 큰 눈',['집에 머물며 난방을 아낀다','k D','한 방에 모여 지내며 겨울을 났다.','r3 j1','감기에 걸렸다.','h-3']);
+maj3('산불이 번져 연기가',['마스크를 쓰고 집 안에 머문다','k D','창을 닫고 연기를 피했다.','h2','연기에 목이 아팠다.','h-3']);
+maj3('화산이 연기를 뿜기',['반려동물과 가축을 먼저 챙긴다','r K','가축들도 함께 피했다.','r4 j2','가축 몇 마리를 놓쳤다.','j-3 @-1']);
+maj3('바닷물이 해마다 높아져',['높은 곳으로 이사할 계획을 세운다','k D','가족과 함께 이사 계획을 세웠다.','k3 r2','갈 곳이 마땅치 않았다.','j-3']);
+maj3('나라가 어수선해져',['라디오로 소식을 듣고 차분히 기다린다','k G','차분히 기다리는 사이 학교가 다시 문을 열었다.','k2 j2','혼란이 길어졌다.','j-3']);
+maj3('반 전체의 성적 순위가',['친구에게 공부를 가르쳐 준다','r K','가르쳐 주다 보니 나도 더 잘 알게 되었다.','r4 k3','친구는 시큰둥했다.','j-1']);
+maj3('나이 드신 부모님을 모시고',['형제들과 번갈아 모신다','r D','형제들과 석 달씩 번갈아 모셨다.','r4 h1','옮겨 다니시는 부모님이 힘들어하셨다.','r-2']);
+maj3('집 앞 강물이 불어나',['물 위 학교(배 교실)에 다닌다','k C','배 위 교실에서 수업을 이어 갔다.','k4 j2','배가 오지 않는 날이 많았다.','k-1']);
+maj3('도시의 공장에서 일할 사람',['기술 학교부터 다닌다','k D','기술 학교를 마치고 더 좋은 자리를 얻었다.','k4 $10','학비가 부족했다.','@-1']);
+maj3('집안 어른들이 앞날을 정해',['선생님께 도움을 청한다','r B','선생님이 어른들과 이야기해 주셨다.','r3 k2','어른들은 뜻을 굽히지 않으셨다.','j-3']);
+maj3('먼 도시로 일하러 간 가족이',['저축해 두고 급할 때 쓴다','k D','모아 둔 돈이 나중에 큰 힘이 되었다.','k2 %3','갑자기 쓸 일이 생겨 금방 바닥났다.','j-1']);
+maj3('먼 길을 온 손님이 갑자기',['손님과 함께 음식을 만든다','r C','손님과 함께 음식을 만들며 금세 친해졌다.','r5 j3','손님이 피곤해했다.','r-1']);
+maj3('모래바람이 며칠째 불어',['젖은 천으로 집 안을 닦는다','h D','집 안 먼지를 닦아 내며 버텼다.','h2','목이 아파 며칠을 앓았다.','h-3']);
+maj3('집안에서 혼사 이야기가',['상대를 먼저 만나 보고 정하겠다고 한다','r B','상대를 만나 보고 정하기로 했다.','r3 j2','어른들이 서운해하셨다.','r-2']);
+maj3('이웃집에 큰일이 생겨 온 마을이',['필요한 물건을 모아 전한다','r K','이웃들이 모은 물건을 함께 전했다.','r5 j2','물건이 모자랐다.','j-1']);
+maj3('도시에 가면 일이 있다고',['도시에서 일하며 고향에 돈을 보낸다','r D','도시에서 일하며 다달이 돈을 보냈다.','r3 $10','도시 생활이 빠듯했다.','j-2']);
+maj3('공부를 계속할지, 직업 교육을',['일하며 공부하는 길을 찾는다','k C','일과 공부를 함께 하는 과정에 들어갔다.','k4 $5','둘 다 버거웠다.','h-2']);
+maj3('한 해 동안 다른 나라에서',['다른 나라 친구를 우리 집에 초대한다','r C','다른 나라 친구가 한 달 동안 우리 집에 머물렀다.','r4 k2','서로 말이 잘 통하지 않았다.','j-1']);
+maj3('한겨울에 난방이 끊겼다',['이웃 노인들을 우리 집으로 모신다','r K','이웃 어르신들과 한방에 모여 겨울을 났다.','r6 j2','방이 좁아 다들 불편했다.','j-1']);
+maj3('젊은 사람들이 일자리를 찾아 서쪽',['몇 해만 다녀오기로 한다','D','몇 해 일하고 돌아와 고향에 가게를 열었다.','$15 j3','돌아오기가 쉽지 않았다.','r-3']);
+maj3('학교 팀의 주전이 될',['팀 매니저를 맡는다','r D','팀 매니저로 선수들을 도왔다.','r4 k2','할 일이 너무 많았다.','h-2']);
+maj3('갑자기 일자리를 잃었다',['실업급여를 받으며 새 기술을 배운다','k D','실업급여를 받는 동안 새 기술을 익혔다.','k4 $5','배운 기술로 일을 구하지 못했다.','j-3']);
+maj3('집안 살림이 갑자기 어려워졌다. 그래도',['가족이 함께 작은 장사를 시작한다','r B','온 가족이 함께 음식 장사를 시작했다.','r4 @2','장사가 잘되지 않았다.','@-1 j-2']);
+maj3('먼 나라로 일하러 간 친척이',['고향에서 기술을 배운다','k D','고향에서 기술을 배워 자리를 잡았다.','k4 $8','배울 곳이 마땅치 않았다.','j-2']);
+maj3('온 마을이 큰 잔치를 준비한다',['노래와 춤을 맡는다','j C','내 노래에 온 마을이 박수를 쳤다.','j6 r3','긴장해서 가사를 잊었다.','j-2']);
+maj3('큰 나라로 공부하러, 일하러',['온라인으로 공부하며 섬에 남는다','k C','섬에서 온라인으로 학위를 땄다.','k5 j2','인터넷이 자주 끊겼다.','j-2']);
+maj3('먼 나라로 일하러 가면 돈을',['가까운 큰 도시로 간다','D','가까운 도시에서 일하며 주말마다 집에 왔다.','r3 $8','도시 일자리가 적었다.','j-2']);
+maj3('{fest} 행사의 큰 역할을',['아이들에게 역할을 나눠 준다','r K','아이들과 함께 준비해 더 즐거운 행사가 되었다.','r5 j4','아이들이 말을 듣지 않았다.','j-1']);
+maj3('{sport} 대회에 우리 동네 대표로',['동네 아이들을 데리고 응원단을 꾸린다','r K','온 동네 아이들이 응원하러 왔다.','r5 j4','응원 소리에 오히려 긴장했다.','j-2']);
+maj3('먼바다로 나가면 고기가',['다른 배들과 함께 나간다','r D','여러 배가 함께 나가 무사히 돌아왔다.','r4 $10','함께 나간 배들도 빈손이었다.','j-2']);
+maj3('혹독한 겨울이 올 거라는 소식',['가축 일부를 팔아 먹이를 산다','k D','가축 일부를 팔아 남은 가축을 지켰다.','j3 @1','먹이 값이 너무 올라 있었다.','j-3']);
+maj3('광산 깊은 곳이 무너질',['다른 일자리를 알아본다','k C','광산을 떠나 다른 일을 시작했다.','h4 $-10','새 일이 쉽지 않았다.','j-3']);
+maj3('공장이 다른 나라로 옮겨',['동료들과 협동조합 공장을 세운다','r B','동료들과 함께 작은 공장을 세웠다.','r6 $5','자금이 모자랐다.','j-4']);
+maj3('근처에 큰 가게가 새로 생겼다',['온라인 판매를 시작한다','k C','온라인으로 팔기 시작해 먼 곳의 손님이 생겼다.','j5 $20','온라인 판매가 낯설었다.','j-2']);
+maj3('올해는 관광객이 뚝 끊겼다',['동네 사람들을 위한 상품을 만든다','k C','동네 사람들을 위한 체험을 만들어 버텼다.','j4 $5','손님이 많지 않았다.','j-2']);
+maj3('큰 무대에 설 기회가',['함께하는 동료들을 돋보이게 한다','r K','동료들과 함께 빛난 무대가 되었다.','r6 j5','내 순서를 놓쳤다.','j-2']);
+maj3('위급한 사람(학생)이 나를',['다른 기관과 연결해 함께 돕는다','k D','지원 기관과 연결해 오래 도울 길을 만들었다.','r5 k2','기관의 답이 늦었다.','j-2']);
+maj3('{work} 일에 큰 기회가',['이웃 일꾼들과 기회를 나눈다','r K','이웃들과 함께 일해 모두의 벌이가 늘었다.','r6 $15','몫을 나누니 내 몫이 적었다.','$-5']);
+maj3('다른 나라로 일하러 가면 몇 배',['짧게 한 철만 다녀온다','D','한 철 일하고 돌아와 모은 돈으로 집을 고쳤다.','$20 j3','일자리가 약속과 달랐다.','j-4']);
+maj3('살 집을 마련할까?',['부모님과 함께 살며 더 모은다','r D','부모님과 함께 살며 돈을 모았다.','r3 %5','함께 사는 게 쉽지 않았다.','r-2']);
+maj3('마을 신용조합에서 작은 돈을',['조합 교육부터 받는다','k D','장사 교육을 받은 뒤 가게를 열었다.','k4 $10','교육만 받고 시작하지 못했다.','j-1']);
+maj3('길에서 돈이 두둑한 지갑을',['신분증 주소로 직접 찾아간다','r K','주인 집을 찾아가 돌려주었다. 주인이 눈물을 글썽였다.','r6 j4','주소가 바뀌어 찾지 못하고 경찰서에 맡겼다.','j1']);
+maj3('오래 알고 지낸 사람이 함께 살자고',['조금 더 천천히 알아 가자고 한다','r G','천천히 마음을 쌓아 갔다.','r4 j3','상대가 서운해했다.','r-2']);
+maj3('다 자란 {kid}이(가) 살림이 어렵다며',['당분간 우리 집에서 함께 산다','r K','한동안 함께 살며 다시 일어설 힘을 모았다.','r5 j2','함께 사는 게 서로 불편했다.','r-2']);
+
+// ── 일한 만큼 버는 사람(가게·농사·고기잡이·예술·날품)은 '월급 명세서' 대신 벌이를 셈한다
+(function(){ const e=calFind('올해 월급이 정해졌다.'); if(e) e.c.push('!jk:shop|farm|fish|herd|dream|part'); })();
+Y(19,69,'w frm jk:shop|farm|fish|herd|dream|part','*','장부를 펼쳐 지난 한 해의 벌이를 따져 보았다. 세금 신고도 해야 한다.||올해 벌이를 셈해 보니 작년과 조금 달랐다.||한 해 매출과 들어간 돈을 정리했다.','',{k:'pay',run:'pay',sc:'money'});
+(function(){ const e=calFind('처음으로 혼자 살 집을 구하러 다녔다. 열 곳을 보고 나서야 마음에 드는 곳을 찾았다.'); if(e) e.c.push('sgl'); })();
+
+// ── 명절의 선택이 '실패'로 끝날 때도 자연스럽게
+(function(){ const fails={'가족과 함께 보낸다':'길이 막혀 늦게 도착했지만, 늦은 밤까지 함께 웃었다.||일이 생겨 하루밖에 함께 있지 못했다.','온 가족이 고향에 간다':'차표를 구하지 못해 고향에 가지 못했다. 영상 통화로 인사를 나눴다.','집에서 오붓하게 보낸다':'친척들이 갑자기 찾아와 오붓하게 보내지는 못했다. 그래도 북적여서 즐거웠다.','이웃과 음식을 나눈다':'음식이 모자라 몇 집에만 나눴다.','고향에 내려간다':'길이 너무 막혀 열 시간 넘게 차 안에 있었다. 도착하니 다들 자고 있었다.'};
+  CAL.filter(e=>e.k==='fest'&&e.opts).forEach(e=>e.opts.forEach(o=>{ if(!o.fail&&fails[o.l]) o.fail=fails[o.l]; })); })();
+
+/* =====================================================================
+   [나라마다의 삶 2] 태어날 아이가 많은 나라부터: 학교 · 일과 돈 · 나라의 제도 · 날마다의 모습 · 명절 · 자연의 어려움
+   - 사실에 바탕을 두고, 숫자에는 출처를 붙인다(nt). 어두운 일도 담담하게 적는다.
+   ===================================================================== */
+const REL_C='rel:가톨릭|개신교|기독교|정교회';
+// 인도
+Y(6,13,'IN e','*','점심시간, 학교에서 나라가 주는 급식으로 달(콩 수프)과 밥을 먹었다. 이 한 끼 때문에 학교에 오는 친구도 있다.||급식 당번이 되어 친구들 접시에 키차디를 덜어 주었다.','h2 r1',{cd:3,sc:'school',nt:'인도의 학교 급식(PM POSHAN)은 공립학교 어린이 1억 명 넘게에게 점심을 줍니다'});
+Y(6,80,'IN','*','집에서는 우리 지방 말, 학교에서는 영어와 힌디어를 쓴다. 한 문장에 세 가지 말이 섞일 때도 있다.','k2',{once:1,nt:'인도 헌법이 인정하는 공용 언어(제8부칙 언어)는 22개입니다'});
+Y(5,80,'IN','3','홀리 축제 날, 색 가루를 서로 뿌리며 온 동네가 무지개색이 되었다.||홀리 날, 물총을 들고 친구들과 골목을 누볐다.','j4 r3',{cd:2,sc:'fest'});
+Y(15,17,'IN m|IN h','*','10학년 보드 시험 결과가 신문에 실렸다. 학원 광고판마다 1등 학생의 얼굴이 걸렸다.',[['내 점수에 만족한다','G','내 점수에 만족하기로 했다.'],['다음 시험을 위해 입시 학원에 다니기로 한다','k2 D','입시 학원(코칭 센터) 등록서를 썼다.','@-1'],['과학이 아닌 다른 길을 알아본다','C','예술과 상업 과목도 알아보았다.']],{once:1,sc:'school'});
+Y(16,18,'IN h ac+','*','공대 입시(JEE)를 위해 멀리 있는 입시 학원 도시로 가서 하숙을 할까?',[['떠난다','k4 D r-2','작은 하숙방에서 하루 열두 시간씩 공부했다.','@-2'],['집에서 온라인 강의로 준비한다','k2 C','집에서 온라인 강의를 들으며 준비했다.'],['내 속도로 학교 공부에 집중한다','k1 h2','학교 공부에 집중했다.']],{once:1,sc:'school'});
+Y(21,32,'IN univD','*','안정된 공무원 시험(UPSC) 준비를 해 볼까? 몇 자리를 두고 수십만 명이 겨룬다.',[['몇 해를 걸고 준비한다','k4 D','도서관 자리를 맡아 몇 해를 공부했다.'],['일하며 틈틈이 준비한다','k2 D','일하며 틈틈이 준비했다.'],['민간 회사에 들어간다','','회사에 들어가기로 했다.']],{once:1,sc:'school',nt:'인도의 고위 공무원 시험(UPSC)에는 해마다 100만 명 안팎이 지원하고, 1,000명 남짓이 뽑힙니다'});
+Y(19,80,'IN U','*','출근 시간의 통근 기차에 거의 매달리듯 탔다. 창문 밖으로 바람이 세게 불었다.||콩나물시루 같은 지하철 여성 전용 칸에 겨우 올랐다.','j-1',{cd:4,sc:'travel'});
+Y(5,80,'IN','[4,5,6]','한낮 기온이 45도를 넘었다. 낮에는 밖에 나가지 말라는 안내가 나왔다.','h-2',{cd:3,sc:'heat'});
+Y(19,80,'IN jk:farm','*','농부에게 주는 지원금(PM-KISAN) 2,000루피가 휴대폰 계좌로 들어왔다. 씨앗을 사는 데 보탰다.','j2',{cd:3,sc:'money',nt:'인도는 농가에 한 해 6,000루피를 세 번에 나눠 계좌로 보내 줍니다 (PM-KISAN)'});
+Y(19,85,'IN hi','*','아유시만 바라트 건강 카드로 큰 병원에서 수술비 걱정 없이 수술을 받았다.','h3 j3',{once:1,sc:'hosp',nt:'인도의 아유시만 바라트(PM-JAY)는 가구마다 한 해 50만 루피까지 입원 치료비를 내 줍니다'});
+Y(10,80,'IN','[4,5]','IPL 크리켓 시즌, 동네 찻집 텔레비전 앞에 사람들이 모였다. 공 하나에 모두가 소리쳤다.','j3 r2',{cd:2,sc:'sport'});
+Y(20,45,'IN U w','*','음식 배달 앱으로 배달 일을 해 볼까? 일한 만큼 벌지만 보험은 없다.',[['오토바이로 배달을 시작한다','D h-2','하루 열 시간 넘게 오토바이를 탔다.','@2'],['지금 일에 집중한다','D','지금 일에 집중했다.']],{once:1,sc:'job'});
+// 중국
+Y(18,20,'CN u','9','대학에 들어가자마자 2주 동안 군사 훈련(쥔쉰)을 받았다. 햇볕에 얼굴이 새까맣게 탔다.','h3 r2',{once:1,sc:'school'});
+Y(6,14,'CN R','*','부모님은 먼 도시의 공장에서 일하신다. 할머니와 둘이 산다. 설에만 부모님 얼굴을 본다.||부모님과 영상 통화를 하다가 할머니 몰래 울었다.','r2 j-2',{once:1,w:.7,nt:'2020년 중국의 부모와 떨어져 사는 아이(류서우 아동)는 6,693만 명이었습니다 (중국 인구조사, 유니세프)'});
+Y(25,45,'CN U kp|CN U ke','*','도시에서 오래 일했지만 호적(후커우)이 고향에 있어 아이를 도시 공립학교에 보내기가 어렵다.',[['서류를 갖춰 끝까지 신청한다','D','몇 달을 뛰어다닌 끝에 입학 허가를 받았다.'],['사립학교에 보낸다','','학비가 비싼 사립학교에 보냈다.','@-3'],['아이를 고향 학교에 보낸다','r-2','아이를 고향 학교에 보냈다. 주말마다 전화했다.']],{once:1,sc:'school'});
+Y(5,80,'CN','4','청명절에 조상의 묘를 찾아 풀을 뽑고 향을 피웠다.','r2',{cd:3,sc:'farewell'});
+Y(5,80,'CN','6','단오에 쫑쯔(대나무 잎 찹쌀밥)를 빚고 강에서 용선 경기를 구경했다.','j3 r2',{cd:3,sc:'fest'});
+Y(25,40,'CN U sgl','*','부모님이 공원의 결혼 상대 찾기 모퉁이(샹친자오)에 내 나이와 키, 월급을 적은 종이를 붙였다.',[['한번 만나 보기로 한다','r1 B','소개받은 사람과 차를 마셨다. 생각보다 대화가 잘 통했다.'],['내 인연은 내가 찾겠다고 말한다','B','부모님께 내 뜻을 말씀드렸다.'],['웃어넘긴다','G','그냥 웃어넘겼다.']],{once:1,sc:'friend'});
+Y(25,40,'CN U','*','결혼하려면 집이 있어야 한다는 말을 들었다. 집값은 월급의 수십 년 치다.',[['가족 모두의 돈을 모아 계약금을 낸다','r2','온 가족의 저금을 모아 작은 아파트 계약금을 냈다.','@-6'],['세 들어 살며 모은다','D','당분간 세 들어 살기로 했다.']],{once:1,sc:'house'});
+Y(55,70,'CN','*','정년이 몇 년 늦춰졌다는 소식을 들었다. 2025년부터 정년이 천천히 늘어난다.','k1',{once:1,nt:'중국은 2025년부터 15년에 걸쳐 남자 정년을 60세에서 63세로, 여자는 50·55세에서 55·58세로 늦춥니다'});
+Y(19,80,'CN U','*','배달 앱으로 저녁을 시켰다. 20분 만에 문 앞에 도착했다.||밤 열한 시에 주문한 물건이 다음 날 아침 일찍 왔다.','j1',{once:1});
+// 나이지리아
+Y(7,14,'NG ns','*','또래들이 학교에 간 사이 시장에서 물건을 날랐다.','D h-1',{once:1,nt:'나이지리아의 학교 밖 어린이는 약 1,830만 명으로 세계에서 가장 많은 편입니다 (유니세프)'});
+Y(10,80,'NG U','*','노란 단포 버스에 몸을 구겨 넣었다. 차장이 목적지를 쉴 새 없이 외쳤다.','j1',{once:1,sc:'travel'});
+Y(16,80,'NG','*','은행이 먼 대신 동네 POS 가게에서 수수료를 내고 현금을 찾았다.','',{once:1,sc:'money'});
+Y(8,40,'NG','*','방과 후 엄마의 시장 좌판을 지켰다. 손님에게 값을 깎아 주는 요령을 배웠다.||엄마 대신 시장 좌판에 앉아 토마토를 팔았다.','k1 r2',{cd:4,sc:'job'});
+Y(19,80,'NG','*','병원비를 마련하려 가족 단체 대화방에 사정을 올렸다. 친척들이 조금씩 보내 주었다.','r3 @-1',{once:1,sc:'hosp',nt:'나이지리아는 병원비의 약 71%를 환자가 직접 냅니다 (WHO 2019)'});
+Y(8,80,'NG','*','동네 비디오 가게(요즘은 휴대폰)로 놀리우드 영화를 온 가족이 함께 보았다.','j2 r2',{cd:4,sc:'stage'});
+Y(22,40,'NG U w','*','대학을 마쳤지만 원하는 일자리가 좀처럼 나지 않는다.',[['작은 사업을 시작한다','B C','휴대폰 액세서리 가게를 열었다.','@-1'],['기술을 배워 해외 원격 일을 구한다','k3 C','밤마다 코딩을 배웠다.'],['아는 사람의 소개를 기다린다','r1','아는 사람의 소개를 기다렸다.']],{once:1,sc:'job'});
+// 파키스탄
+Y(5,80,'PK','[12,1]','겨울이 되자 가스 압력이 약해져 아침밥 짓기가 어려웠다.','j-1',{cd:3,sc:'cold'});
+Y(6,15,'PK rel:이슬람','*','저녁마다 동네 모스크에서 코란 읽기를 배웠다.','k2 G',{once:1});
+Y(19,80,'PK','*','도로변 찻집(다바)에서 짜이를 마시며 트럭 운전사들의 이야기를 들었다.','j1 r1',{once:1});
+Y(20,50,'PK','*','사우디에서 일하는 삼촌이 보내온 돈으로 집 이 층을 올렸다.','r2 j2',{once:1,sc:'house',nt:'2024년 파키스탄이 받은 해외 송금은 약 349억 달러로 GDP의 약 9%입니다 (세계은행)'});
+Y(10,80,'PK','*','사촌의 결혼식, 손에 헤나를 그리는 메헨디 날부터 사흘 동안 잔치가 이어졌다.','j4 r3',{cd:3,sc:'wedding'});
+Y(15,17,'PK s','*','매트릭 시험을 앞두고 과학반과 예술반 가운데 하나를 골라야 한다.',[['과학반','k2 D','과학반을 골랐다.'],['예술(인문)반','C j1','예술반을 골랐다.'],['컴퓨터반','k2 C','컴퓨터반을 골랐다.']],{once:1,sc:'school'});
+// 인도네시아
+Y(8,16,'ID s','*','토요일마다 스카우트(프라무카) 활동을 했다. 매듭 묶는 법을 배웠다.','k1 r2',{cd:2,sc:'school'});
+Y(5,80,'ID rel:이슬람','*','라마단 새벽, 동네 청년들이 북을 치며 사후르(새벽 식사) 시간을 알렸다.||라마단 해 질 녘, 이프타르(금식을 마치는 식사)를 기다리며 시장을 돌았다.','r2 j2',{cd:2,sc:'fest'});
+Y(5,80,'ID U','[1,2]','큰비가 내려 자카르타의 동네가 허리까지 잠겼다.','j-2',{cd:4,sc:'flood'});
+Y(12,80,'ID','*','새 수도 누산타라를 칼리만탄 숲속에 짓는다는 뉴스가 나왔다.','k1',{once:1});
+Y(19,80,'ID','*','이웃 아주머니들의 아리산 모임에서 이번 달 곗돈이 우리 집에 당첨되었다!','j3 @1',{once:1,sc:'money'});
+Y(10,80,'ID','*','마을 결혼식에 가믈란 연주와 다랑(인형극) 공연이 밤새 이어졌다.','j3',{once:1,sc:'stage'});
+Y(19,80,'ID hi','*','BPJS 건강보험 카드를 들고 보건소(푸스케스마스)에 갔다.','h2',{once:1,sc:'hosp'});
+// 콩고민주공화국
+Y(10,30,'CD','*','동네 형들이 손으로 코발트를 캐는 광산에 일하러 간다고 한다.',[['학교에 남는다','k2 D','학교에 남았다.'],['방학 동안만 따라간다','h-4 @1','먼지 가득한 굴에서 일했다. 기침이 오래갔다.'],['다른 일거리를 찾는다','C','시장에서 짐 나르는 일을 구했다.','@1']],{once:1,sc:'mine',nt:'세계 코발트의 70% 넘게가 콩고민주공화국에서 나옵니다 (미국지질조사국)'});
+Y(10,80,'CD U','*','멋쟁이 아저씨들(사푀르)이 화려한 정장을 차려입고 킨샤사 거리를 걸었다.','j2',{once:1});
+Y(5,80,'CD','*','시골 마을에는 전기가 들어오지 않는다. 해가 지면 등잔불 아래서 숙제를 했다.','k1 D',{cd:5});
+Y(5,80,'CD','*','동쪽 지역의 분쟁을 피해 친척 가족이 우리 집에 와 함께 지냈다.',[['방을 나눠 쓴다','K r3','방 하나를 나눠 쓰며 함께 지냈다.'],['먹을 것을 나눈다','K r2','먹을 것을 나눴다.']],{once:1});
+Y(19,80,'CD','*','보건소에서 엠폭스(원숭이두창) 예방 수칙을 알리는 방송이 나왔다.','k1',{once:1,sc:'hosp'});
+// 에티오피아
+Y(18,18,'ET sec','7','고교 졸업 전국 시험을 대학 캠퍼스에서 치렀다. 부정행위를 막으려고 수험생 모두가 대학 기숙사에서 지냈다.','k1',{once:1,sc:'school',nt:'에티오피아 12학년 전국 시험에서 대학 입학 점수를 넘긴 학생은 2023년 3.2%, 2025년 8.4%였습니다'});
+Y(5,80,'ET','1','팀캇(주현절) 날, 하얀 옷을 입은 사람들의 행렬을 따라 걸었다.','j3 r2',{cd:2,sc:'fest'});
+Y(5,80,'ET','9','메스켈 축제 날, 커다란 모닥불(데메라)이 타오르는 것을 보았다.','j3',{cd:3,sc:'fest'});
+Y(8,80,'ET rel:정교회','*','수요일과 금요일은 금식일이라 고기 대신 콩 요리(시로)를 먹는다.','h1 G',{once:1});
+Y(19,80,'ET','*','이웃들과 에쿠브(돈 모으기 모임)에 들었다. 이번 달은 내가 목돈을 탈 차례다.','j3 @1',{once:1,sc:'money'});
+Y(19,60,'ET R w-','*','가뭄이 든 해, 마을 길을 고치는 공공 일을 하고 식량을 받았다.','r2 D',{once:1,sc:'drought'});
+Y(10,80,'ET','*','큰 댐(그랜드 에티오피아 르네상스 댐)이 전기를 만들기 시작했다는 소식에 마을이 들떴다.','j2',{once:1});
+// 미국
+Y(17,18,'US h','5','졸업 무도회(프롬) 날, 친구들과 빌린 정장(드레스)을 입고 사진을 찍었다.','j4 r3',{once:1,sc:'stage'});
+Y(5,80,'US','11','추수감사절, 온 가족이 칠면조 요리를 나눠 먹으며 고마운 일을 하나씩 말했다.','r3 j2 G',{cd:2,sc:'fest'});
+Y(5,80,'US','7','7월 4일 독립기념일 밤, 공원 잔디밭에 누워 불꽃놀이를 보았다.','j3',{cd:3,sc:'fest'});
+Y(6,17,'US s','*','학교에서 위급할 때 교실 문을 잠그고 숨는 훈련을 했다.','j-1 k1',{cd:4,sc:'school'});
+Y(22,62,'US frm','*','회사가 퇴직연금(401k)에 내가 넣는 만큼 똑같이 더 넣어 준다고 한다.',[['최대한 넣는다','D','월급의 일부를 꼬박꼬박 넣었다.','%2'],['조금만 넣는다','','조금만 넣었다.'],['지금은 쓸 돈이 급하다','','나중으로 미뤘다.']],{once:1,sc:'money'});
+Y(20,45,'US kb frm','*','아이가 태어났지만 나라가 보장하는 유급 육아휴가가 없다.',[['모아 둔 휴가를 모두 쓴다','r3','모아 둔 휴가를 모두 쓰고 아이 곁에 있었다.'],['무급으로 몇 주 더 쉰다','r4 K','월급 없이 몇 주를 더 쉬었다.','@-2'],['바로 일터로 돌아간다','D','바로 일터로 돌아갔다.']],{once:1,sc:'baby',nt:'미국은 OECD 나라 가운데 나라가 보장하는 유급 출산·육아휴가가 없는 유일한 나라입니다 (OECD)'});
+Y(19,40,'US jk:shop','*','식당에서 일하면 시급보다 손님이 주는 팁이 더 많다. 오늘은 팁이 두둑했다.','j2 @1',{cd:3,sc:'job'});
+Y(20,60,'US U','*','퇴근 뒤 차량 호출 앱으로 운전을 해서 돈을 더 벌었다.','h-1 @1',{cd:6,sc:'job'});
+// 방글라데시
+Y(13,17,'BD f1 s','*','같은 반 친구가 결혼한다며 학교를 그만두었다.',[['선생님께 알리고 함께 찾아간다','B K','선생님과 함께 친구 집을 찾아가 이야기를 나눴다.'],['친구에게 계속 공부하자고 편지를 쓴다','K r2','편지를 썼다. 친구가 답장을 보내왔다.'],['아무것도 할 수 없어 마음이 무겁다','j-3','마음이 오래 무거웠다.']],{once:1,nt:'방글라데시는 20~24세 여성의 약 51%가 18살이 되기 전에 결혼했습니다 (유니세프)'});
+Y(19,70,'BD w-','*','마을 여성들이 함께 소액 대출(마이크로크레딧)을 받아 닭을 키우기 시작했다.',[['함께 시작한다','r2 B','닭을 키워 달걀을 팔았다.','@1'],['조금 더 지켜본다','D','조금 더 지켜보기로 했다.']],{once:1,sc:'money',nt:'방글라데시 그라민은행의 무하마드 유누스는 가난한 사람을 위한 소액 대출로 2006년 노벨 평화상을 받았습니다'});
+Y(5,80,'BD','2','2월 21일 언어 순교자의 날, 맨발로 기념탑에 꽃을 바쳤다.','r2 G',{cd:3,sc:'fest',nt:'이날은 유네스코가 정한 세계 모국어의 날이기도 합니다'});
+Y(19,80,'BD R','*','바닷물이 논으로 스며들어 벼가 자라지 않았다. 새우 양식으로 바꾸자는 이야기가 나왔다.',[['새우 양식을 시작한다','C B','새우 연못을 만들었다.','@-1'],['소금에 강한 벼 품종을 심는다','k2 D','농업 지도소에서 받은 새 품종을 심었다.'],['도시로 일하러 간다','B r-2','다카의 공장으로 일하러 갔다.']],{once:1,sc:'harvest'});
+// 브라질
+Y(19,70,'BR w- kid','*','아이들이 학교에 다니고 예방접종을 받으면 나라에서 가족 수당(볼사 파밀리아)이 나온다.','j2 @1',{once:1,sc:'money'});
+Y(5,80,'BR','6','6월 축제(페스타 주니나), 체크무늬 셔츠를 입고 콰드릴랴 춤을 추었다.','j3 r2',{cd:2,sc:'fest'});
+Y(8,80,'BR U w-','*','언덕 위 동네(파벨라)의 좁은 계단을 올라 집에 갔다. 아래로 도시의 불빛이 보였다.','',{once:1});
+Y(5,80,'BR','*','저녁 아홉 시, 온 가족이 드라마(노벨라)를 보며 주인공 이야기를 했다.','j2 r2',{cd:4});
+Y(19,69,'BR frm','12','12월, 열세 번째 월급(데시무 테르세이루)이 나왔다. 크리스마스 선물을 샀다.','j3 @1',{cd:2,sc:'money'});
+Y(19,80,'BR','*','시장에서 픽스(Pix)로 몇 초 만에 돈을 보냈다.','k1',{once:1,sc:'money'});
+Y(8,40,'BR R','*','아마존강의 지류를 따라 배를 타고 학교(장터)에 갔다.','j2',{once:1,sc:'sea'});
+// 이집트
+Y(16,18,'EG h','*','학교 수업보다 과외 센터에 더 오래 앉아 있었다. 타나위야 아마가 다가온다.||밤 열 시, 과외 센터를 나와 마이크로버스를 탔다.','k2 h-1',{cd:2,sc:'school'});
+Y(10,80,'EG U','*','마이크로버스를 세우려고 손가락 모양으로 행선지를 알렸다.','j1',{once:1,sc:'travel'});
+Y(5,80,'EG','4','봄의 축제(샴 엘 네심), 가족과 공원에서 소금에 절인 생선과 색칠한 달걀을 먹었다.','j3 r2',{cd:2,sc:'fest'});
+Y(19,80,'EG hi','*','우리 지역에도 보편적 건강보험이 시작되었다는 안내를 받았다.','j1',{once:1,nt:'이집트는 2019년부터 지역을 하나씩 늘려 가며 보편적 건강보험을 넓히고 있습니다'});
+Y(19,80,'EG','*','이웃들과 가메이야(돈 모으기 모임)를 시작했다. 결혼 준비 자금이 필요한 사람이 먼저 타기로 했다.','r3 @1',{once:1,sc:'money'});
+// 탄자니아 · 케냐 · 우간다
+Y(19,80,'KE','*','동네 학생의 대학 학비를 마련하려는 하람베(모금 잔치)가 열렸다.',[['돈을 보탠다','K r3','작은 돈을 보탰다. 학생이 대학 합격증을 들고 인사하러 왔다.','@-1'],['노래와 음식으로 잔치를 돕는다','r3','잔치 음식을 날랐다.'],['다음에 돕겠다고 한다','','다음에 돕기로 했다.']],{once:1});
+Y(8,80,'KE','*','나이로비 도심 빌딩 너머로 기린이 풀을 뜯는 모습이 보였다.','j2',{once:1});
+Y(8,14,'KE s','*','새 교육과정(CBC)으로 바뀌며 과제를 직접 만들어 발표하는 수업이 늘었다.','k2 C',{once:1,sc:'school'});
+Y(13,15,'TZ s','*','초등학교 때는 스와힐리어로 배웠는데 중학교부터 모든 수업이 영어다. 한동안 애를 먹었다.','k2 D',{once:1,sc:'school'});
+Y(10,80,'UG U','*','보다보다(오토바이 택시)를 타고 캄팔라의 언덕길을 올랐다.','j1',{once:1,sc:'travel'});
+Y(5,80,'UG','*','길에서 롤렉스(달걀말이 차파티)를 사 먹었다.','j2',{once:1});
+Y(10,80,'UG','*','옆 마을에 이웃 나라에서 온 난민들의 정착촌이 있다. 같은 학교에 다니는 친구도 있다.','r2 k1',{once:1,nt:'우간다는 아프리카에서 난민을 가장 많이 받아들인 나라 가운데 하나입니다 (유엔난민기구)'});
+Y(10,80,'TZ coast','*','잔지바르의 바닷가 마을에서 향신료 농장을 구경했다.','j2 k1',{once:1});
+// 필리핀
+Y(5,80,'PH','[7,8,9,10]','태풍 경보 신호가 올라가 학교가 문을 닫았다. 창문에 테이프를 붙였다.||태풍이 지나간 뒤, 이웃들과 쓰러진 나무를 치웠다.','j-1 r1',{cd:2,sc:'storm',nt:'필리핀 주변에는 해마다 태풍이 20개 안팎 찾아옵니다 (필리핀 기상청 PAGASA)'});
+Y(5,80,'PH','*','동네 사리사리 가게에서 샴푸와 과자를 한 봉지씩 낱개로 샀다.','j1',{once:1});
+Y(19,69,'PH frm','12','법으로 정해진 열세 번째 달 월급이 나왔다.','j3 @1',{cd:2,sc:'money'});
+Y(5,80,'PH '+REL_C,'12','크리스마스 전 아흐레 동안 새벽 미사(심방 가비)에 다녔다. 끝나면 쌀떡(비빙카)을 먹었다.','r2 j2',{cd:2,sc:'fest'});
+Y(10,50,'PH','*','엄마가 홍콩에서 가사 일을 하신다. 일요일마다 영상 통화를 한다.','r1 j-2',{once:1,w:.5,nt:'2024년 해외에서 일하는 필리핀 사람은 약 219만 명이고, 그 57%가 여성입니다 (필리핀 통계청)'});
+// 멕시코
+Y(5,80,'MX','12','크리스마스 전 아흐레 동안 이웃집을 돌며 노래하는 포사다스에 갔다. 피냐타를 깨뜨렸다.','j3 r3',{cd:2,sc:'fest'});
+Y(5,80,'MX U','*','물이 끊겨 동네에 급수차(피파)가 왔다. 양동이를 들고 줄을 섰다.','j-1',{cd:4});
+Y(10,80,'MX U','*','가면을 쓴 레슬러들의 경기(루차 리브레)를 보러 갔다.','j3',{once:1,sc:'sport'});
+Y(19,80,'MX','*','친척들과 탄다(돈 모으기 모임)를 했다. 열 달 만에 내 차례가 왔다.','j2 @1',{once:1,sc:'money'});
+Y(19,80,'MX','*','미국에서 일하는 사촌이 보낸 돈으로 할머니 집 지붕을 고쳤다.','r2',{once:1,sc:'house',nt:'멕시코가 받는 해외 송금은 한 해 약 676억 달러로 세계에서 두 번째로 많습니다 (세계은행)'});
+// 베트남
+Y(3,80,'VN','[1,2]','뗏(설)에 어른들께 세배하고 빨간 봉투(리씨)를 받았다. 복숭아꽃이 활짝 피었다.','j3 r2',{cd:2,sc:'fest'});
+Y(5,80,'VN','[10,11]','중부 지방에 큰비가 내려 강물이 넘쳤다. 배를 타고 이웃을 구했다.','j-2',{cd:4,sc:'flood'});
+Y(19,80,'VN','*','연유를 넣은 진한 커피를 길가 낮은 의자에 앉아 마셨다.','j2',{once:1});
+Y(14,15,'VN m','*','공립 고등학교 입학시험이 다가온다. 원하는 학교의 경쟁률이 높다.',[['영재 고등학교(쭈옌)에 도전한다','k3 B','밤늦게까지 문제집을 풀었다.'],['가까운 공립고에 맞춰 준비한다','k2 D','차분히 준비했다.'],['직업학교를 알아본다','C','직업학교를 알아보았다.']],{once:1,sc:'school'});
+// 러시아 · 동유럽 · 중앙아시아
+Y(7,17,'RU|BY|UA|KZ|KG|UZ s','9','9월 1일 지식의 날, 꽃다발을 들고 새 학년 첫 등교를 했다. 1학년 아이가 종을 울렸다.','j2 r2',{cd:3,sc:'school'});
+Y(20,45,'RU kb','*','아이가 태어나 나라에서 주는 출산 지원금(모성 자본)을 받았다. 집을 넓히는 데 쓸 수 있다.','j3 @2',{once:1,sc:'baby'});
+Y(5,80,'RU|KZ|MN','[1,2]','영하 30도 아래로 떨어진 날, 속눈썹에 서리가 맺혔다.','h-1',{cd:3,sc:'cold'});
+Y(3,8,'RU|BY|UA|KZ','12','새해를 맞아 유치원에 할아버지 서리(제드 모로즈)와 눈 아가씨(스네구로치카)가 찾아왔다.','j4',{once:1,sc:'fest'});
+Y(19,80,'UZ','*','온 동네 남자들이 모여 커다란 솥에 쁠롭(볶음밥)을 지었다.','r3 j2',{cd:3,sc:'fest'});
+Y(19,80,'UZ|TJ','*','마할라(동네 공동체) 어른들이 이웃집 결혼식 준비를 함께 도왔다.','r3 K',{cd:3,sc:'wedding'});
+Y(10,60,'UZ R','9','목화 수확 철이다. 손으로 목화를 땄다.','h-1 @1',{cd:3,sc:'harvest',nt:'우즈베키스탄은 2021년 목화 수확에서 조직적인 강제 노동이 사라졌다는 평가를 받았습니다 (ILO)'});
+Y(19,45,'UZ|TJ|KG','*','러시아에서 일하는 삼촌이 보낸 돈으로 동생들 학비를 냈다.','r2',{once:1,nt:'타지키스탄은 해외 송금이 GDP의 약 48%로 세계에서 가장 높습니다 (세계은행 2024)'});
+Y(5,80,'KZ','3','나우르즈(봄 새해)에 큰 천막(유르트)을 세우고 나우르즈 코제(일곱 가지 재료 수프)를 나눠 먹었다.','j3 r3',{cd:2,sc:'fest'});
+// 일본
+Y(7,15,'JP s','*','방과 후 반 친구들과 교실과 복도를 직접 청소했다.','r2 D',{cd:3,sc:'school'});
+Y(7,12,'JP e','*','급식 당번이 되어 흰 모자와 앞치마를 쓰고 배식을 했다.','r2 D',{cd:3,sc:'school'});
+Y(10,15,'JP e|JP m','*','학교가 끝나면 학원(주쿠)에 간다. 집에 오면 밤 아홉 시다.','k2 h-1',{cd:2,sc:'school'});
+Y(13,18,'JP m|JP h','*','동아리 활동(부카쓰) 때문에 주말에도 학교에 갔다.',[['열심히 한다','h2 r2 D','주말 연습 끝에 대회에 나갔다.'],['공부와 반반 나눈다','k1 D','공부와 동아리를 반반 나눴다.'],['동아리를 그만둔다','h1','동아리를 그만두었다.']],{once:1,sc:'sport'});
+Y(5,80,'JP','4','벚꽃 아래 돗자리를 펴고 꽃놀이(하나미)를 했다.','j3 r2',{cd:2,sc:'fest'});
+Y(19,80,'JP U','*','편의점에서 공과금을 내고 택배까지 부쳤다. 편의점에서 못 하는 일이 없다.','j1',{once:1});
+Y(60,70,'JP frm','*','정년이 지나도 같은 회사에서 다시 고용되어 일할 수 있다. 계약을 새로 맺었다.','k1 j1',{once:1,sc:'job'});
+// 한국
+Y(13,18,'KR m|KR h','*','수행평가가 한 주에 다섯 개나 겹쳤다.',[['계획표를 짜서 하나씩 끝낸다','D k2','계획표대로 하나씩 끝냈다.'],['친구들과 나눠 서로 돕는다','r2 K','친구들과 자료를 나눠 서로 도왔다.'],['밤을 새운다','h-3 k1','밤을 새워 겨우 끝냈다.']],{cd:2,sc:'school'});
+Y(16,18,'KR h','*','학교생활기록부(생기부)에 적을 활동을 찾느라 바빴다.',[['좋아하는 주제로 탐구 보고서를 쓴다','k3 C','좋아하는 주제로 보고서를 썼다.'],['봉사 동아리에서 꾸준히 활동한다','K r2','봉사 동아리 활동을 이어 갔다.'],['수능 공부에 집중한다','k2 D','수능 공부에 집중했다.']],{cd:2,sc:'school'});
+Y(8,12,'KR e U','*','하교 뒤 태권도, 피아노, 영어 학원을 차례로 돈다. 학원 차 안에서 간식을 먹는다.','k1 h-1',{cd:2,sc:'school'});
+Y(15,17,'KR h g<3','11','수능 날 아침, 선배들을 응원하러 고사장 앞에 나가 구호를 외쳤다.','r2 j2',{once:1,sc:'school'});
+Y(19,80,'KR U','*','새벽 배송으로 시킨 물건이 아침에 문 앞에 와 있었다.','j1',{once:1});
+Y(25,60,'KR frm','*','국민연금 가입 내역 안내문이 왔다. 지금까지 낸 돈과 나중에 받을 돈이 적혀 있었다.','k1',{once:1,sc:'money'});
+Y(65,95,'KR','*','경로당에서 동네 어르신들과 바둑을 두고 점심을 함께 먹었다.','r3 j2',{cd:3});
+Y(25,55,'KR w','*','회식 자리에서 2차를 가자고 한다. 내일은 이른 회의가 있다.',[['한 시간만 함께한다','r2','한 시간만 있다가 먼저 일어났다.'],['정중히 먼저 들어간다','h2 D','먼저 들어갔다. 아침이 가벼웠다.'],['끝까지 함께한다','r3 h-2','새벽까지 함께했다.']],{cd:3,sc:'job'});
+Y(19,30,'KR','*','첫 자취방을 구하러 다녔다. 보증금과 월세를 듣고 놀랐다.',[['학교(일터) 가까운 원룸','j1','가까운 원룸을 구했다.','@-1'],['조금 멀어도 넓은 곳','h1','조금 멀어도 넓은 곳을 구했다.'],['공공 임대주택에 신청한다','D','청년 임대주택에 신청해 당첨되었다.','@1']],{once:1,sc:'house'});
+// 튀르키예 · 이란 · 이라크 · 중동
+Y(15,18,'TR h','*','주말마다 대입 학원(데르샤네)에서 문제를 풀었다.','k2 h-1',{cd:2,sc:'school'});
+Y(5,80,'TR','*','아침에 깨를 뿌린 둥근 빵(시미트)을 사서 차이와 함께 먹었다.','j2',{once:1});
+Y(19,80,'TR','*','지진에 대비해 우리 아파트가 튼튼한지 검사를 받으라는 안내가 왔다.',[['검사를 받는다','D','검사를 받았다. 보강 공사가 필요하다고 했다.','@-2'],['이웃들과 함께 신청한다','r2 D','이웃들과 함께 신청했다.']],{once:1,sc:'quake'});
+Y(5,80,'IR','4','노루즈 열사흘째(시즈다베다르), 온 가족이 들판으로 소풍을 가서 새싹을 강물에 띄워 보냈다.','j3 r2',{cd:2,sc:'fest'});
+Y(5,80,'IR','12','일 년 중 밤이 가장 긴 얄다의 밤, 석류와 수박을 먹으며 하페즈 시집을 펼쳤다.','r3 j2',{cd:2,sc:'fest'});
+Y(5,80,'IQ','[7,8]','한낮 기온이 50도에 이르러 관공서와 학교가 문을 닫았다.','h-2',{cd:3,sc:'heat'});
+Y(5,80,'IQ','*','동네 발전기 주인에게 다달이 돈을 내고 전기를 나눠 받는다.','@-1',{once:1});
+Y(10,80,'IQ rel:이슬람','*','아르바인 순례 기간, 길가에 천막을 치고 걸어가는 순례자들에게 음식과 물을 나눠 주었다.','r3 K',{cd:3,sc:'fest'});
+Y(10,80,'SA f1','*','운전면허를 땄다. 2018년부터 여성도 운전할 수 있게 되었다.','j4 B',{once:1,sc:'travel'});
+Y(19,60,'SA frm','*','사우디 국민을 일정 비율 이상 고용하라는 제도(사우디화) 덕분에 일자리 면접 기회가 늘었다.','j2',{once:1,sc:'job'});
+Y(10,80,'YE','*','물을 사려고 급수차 앞에 줄을 섰다. 물값이 또 올랐다.','j-2 @-1',{cd:3,nt:'예멘은 세계에서 가장 큰 인도주의 위기 가운데 하나를 겪고 있습니다 (유엔)'});
+Y(10,80,'YE','*','할아버지가 옛날 모카 항구에서 커피를 실어 날랐다는 이야기를 들려주셨다.','r2',{once:1});
+// 수단 · 아프가니스탄
+Y(5,80,'SD','*','전쟁을 피해 온 친척 가족이 우리 집에 함께 살게 되었다. 좁아도 서로 의지했다.','r3 j-2',{once:1,nt:'2023년 4월 시작된 전쟁으로 수단에서는 1,400만 명 넘게 집을 떠났습니다 (유엔난민기구 2025)'});
+Y(7,15,'SD s','*','학교 건물이 피란민 대피소로 쓰여 한동안 수업이 멈췄다. 나무 그늘에서 선생님이 글자를 가르쳐 주셨다.','k1',{once:1,sc:'school'});
+Y(5,80,'SD','*','붉은 꽃잎 차(카르카데)를 마시며 저녁 별을 보았다.','j2',{once:1});
+Y(10,80,'AF','*','이웃 나라에서 일하던 친척들이 갑자기 돌아왔다. 다 함께 일자리를 찾아 나섰다.','r2 j-2',{once:1,nt:'아프가니스탄 사람 1,000만 명 넘게 강제 이주를 겪었습니다 (유엔난민기구 2024)'});
+Y(5,80,'AF','*','빵(난)을 사려고 화덕 가게 앞에 줄을 섰다. 갓 구운 빵 냄새가 골목에 가득했다.','j1',{cd:4});
+// 앙골라 · 모잠비크 · 남아공 · 남부 아프리카
+Y(10,80,'AO U','*','파란색과 흰색의 미니버스(칸동게이루)에 탔다. 차 안에서 키좀바 음악이 흘렀다.','j1',{once:1,sc:'travel'});
+Y(12,80,'AO','*','동네 잔치에서 어른들께 키좀바 춤을 배웠다.','j3 r2',{once:1,sc:'stage'});
+Y(5,80,'MZ','[1,2,3]','사이클론이 해안을 덮쳐 지붕이 날아갔다. 이웃들과 함께 지붕을 다시 얹었다.','j-3 r2',{cd:5,sc:'storm',nt:'2019년 사이클론 이다이는 모잠비크·짐바브웨·말라위에서 1,000명 넘는 목숨을 앗아 갔습니다'});
+Y(10,80,'MZ','*','시장에서 캐슈너트를 볶아 팔았다.','@1',{once:1,sc:'job'});
+Y(19,60,'ZA','*','일자리를 구하기가 정말 어렵다. 친구들 셋 가운데 한 명은 일이 없다.',[['직업 훈련 과정에 들어간다','k3 D','기술을 배웠다.'],['동네에서 작은 장사를 한다','B C','길가에서 음식을 팔았다.','@1'],['아는 사람의 일을 돕는다','r2','아는 사람의 일을 거들었다.']],{once:1,sc:'jobloss',nt:'남아공의 공식 실업률은 2025년 4분기 31.4%였습니다 (남아공 통계청)'});
+Y(19,80,'ZA','*','이웃 여성들의 스톡벨(돈 모으기 모임)에서 연말 장보기 돈을 함께 모았다.','r3 @1',{once:1,sc:'money'});
+Y(10,80,'ZA U','*','미니버스 택시를 타려고 손가락으로 가는 곳을 표시했다. 기사가 알아보고 멈췄다.','j1',{once:1,sc:'travel'});
+Y(7,15,'ZA s','*','학교에서 영어와 줄루어(코사어)를 함께 배운다.','k2',{once:1,sc:'school',nt:'남아공의 공식 언어는 2023년 수어가 더해져 12개입니다'});
+Y(19,80,'ZW','*','새 화폐가 또 나왔다. 가게마다 미국 달러와 새 돈 가운데 무엇을 받을지 달랐다.','k1 j-1',{once:1,sc:'money'});
+Y(10,80,'ZM','*','빅토리아 폭포의 물보라가 멀리서도 연기처럼 보였다. 사람들은 이곳을 ‘천둥 치는 연기’라고 부른다.','j3',{once:1});
+Y(10,80,'MW','*','말라위 호수에서 잡은 작은 물고기(우시파)를 말려 시장에 내다 팔았다.','@1',{once:1,sc:'sea'});
+// 서아프리카 · 사헬
+Y(10,40,'NE f1','*','어릴 때 함께 놀던 친구가 열다섯에 결혼해 다른 마을로 떠났다.','r-1 j-2',{once:1,nt:'니제르는 20~24세 여성의 약 76%가 18살이 되기 전에 결혼해 세계에서 가장 높습니다 (유니세프)'});
+Y(5,80,'NE|ML|BF|TD','*','우물가에서 물을 긷기 위해 한 시간 넘게 줄을 섰다.','D h-1',{cd:3});
+Y(10,80,'NE','9','유목민 축제(게레월)에서 얼굴을 꾸민 청년들이 노래하며 춤추는 모습을 보았다.','j3',{once:1,sc:'fest'});
+Y(19,80,'NE','*','이 나라에서는 여성 한 명이 평균 여섯 명쯤의 아이를 낳는다. 우리 집도 형제가 많다.','r2',{once:1,nt:'니제르의 합계출산율은 6명 안팎으로 세계에서 가장 높습니다 (유엔)'});
+Y(10,80,'ML','4','젠네의 진흙 모스크에 새 흙을 바르는 날, 온 마을 사람들이 흙 바구니를 날랐다.','r3 j3',{cd:3,sc:'fest'});
+Y(10,80,'BF','*','2년마다 열리는 아프리카 영화제(페스파코)에 가서 영화를 보았다.','j3 k1',{once:1,sc:'stage'});
+Y(10,80,'TD','*','어른들이 예전에는 차드호가 훨씬 넓었다고 하셨다.','k1',{once:1,nt:'차드호는 1960년대 이후 넓이가 크게 줄었습니다 (유엔환경계획)'});
+Y(10,80,'SN','*','손님이 오면 누구든 한 상에 앉혀 쩨부젠(생선 밥)을 함께 먹는다. 이것을 ‘테랑가(환대)’라고 한다.','r3 K',{once:1});
+Y(19,40,'SN','*','동네 청년 몇 명이 배를 타고 먼 바다를 건너 유럽으로 가겠다고 한다.',[['위험하다며 말린다','K r2','위험하다며 말렸다.'],['고향에서 일할 길을 함께 찾는다','r2 C','함께 고기잡이 협동조합을 알아보았다.'],['나도 떠날까 고민한다','B','밤새 고민했다.']],{once:1});
+Y(10,80,'GH s','*','중학교를 마치자 무상 고등학교 제도 덕분에 학비 걱정 없이 진학했다.','j3 k1',{once:1,sc:'school',nt:'가나는 2017년부터 공립 고등학교 학비를 받지 않습니다 (Free SHS)'});
+Y(10,80,'GH','*','트로트로(미니버스)를 타고 아크라 시장에 갔다. 차장이 쉴 새 없이 손님을 불렀다.','j1',{once:1,sc:'travel'});
+Y(10,80,'GH','*','결혼식에 온 가족이 켄테 천으로 지은 옷을 입었다.','j3 r2',{cd:3,sc:'wedding'});
+Y(10,80,'CI R jk:farm','*','카카오 열매를 쪼개 콩을 꺼내 바나나 잎 위에 말렸다.','D @1',{cd:3,sc:'harvest',nt:'코트디부아르는 세계 카카오의 약 40%를 생산합니다 (국제코코아기구)'});
+Y(10,80,'CI U','*','합승 택시(워로워로)를 타고 아비장 시내를 지났다. 쿠페데칼레 음악이 흘렀다.','j1',{once:1,sc:'travel'});
+Y(7,15,'CM s','*','학교에서 프랑스어와 영어를 둘 다 배운다.','k2',{once:1,sc:'school'});
+Y(10,80,'CM','*','길가 화로에서 플랜틴(요리용 바나나)을 구워 팔았다.','@1',{once:1,sc:'job'});
+Y(10,80,'MG R','*','바닐라 꽃을 손으로 하나하나 수분시켰다. 꽃은 단 하루만 핀다.','D',{cd:3,sc:'harvest',nt:'마다가스카르는 세계 바닐라의 대부분을 생산합니다'});
+Y(10,80,'MG','[7,8,9]','조상의 유해를 새 천으로 감싸는 의식(파마디하나)에 온 친척이 모여 음악에 맞춰 춤을 췄다.','r3',{once:1,sc:'fest'});
+Y(10,80,'SO','*','가뭄에 낙타 몇 마리를 잃었다. 남은 가축을 데리고 물이 있는 곳으로 옮겨 갔다.','j-3',{once:1,sc:'drought'});
+Y(10,80,'SS','*','소 떼를 몰고 우기의 목초지로 옮겨 갔다. 소는 이곳에서 가장 큰 재산이다.','h1 D',{once:1});
+// 미얀마 · 태국 · 캄보디아 · 동남아
+Y(5,80,'MM','*','얼굴에 노란 타나카를 바르고 학교(일터)에 갔다.','j1',{once:1});
+Y(7,20,'MM m0 rel:불교','*','짧은 기간 절에 들어가 동자승으로 지냈다(신쀼).','G k1',{once:1});
+Y(5,80,'MM|TH|LA|KH rel:불교','*','이른 아침 탁발하는 스님들께 밥을 공양했다.','G r1',{cd:3});
+Y(20,25,'TH m0 rel:불교','*','짧은 기간 출가해 스님으로 지냈다. 부모님께 공덕을 바치는 일이라고 한다.','G r2',{once:1});
+Y(19,80,'TH hi','*','30바트 보편 의료 제도 덕분에 동네 병원에서 적은 돈으로 진료를 받았다.','h2',{once:1,sc:'hosp',nt:'태국은 2002년부터 30바트 보편 의료 제도로 거의 모든 국민에게 의료보험을 넓혔습니다'});
+Y(5,80,'KH','[9,10]','조상의 넋을 기리는 프춤번 기간, 절에 음식을 바치러 갔다.','r2',{cd:2,sc:'fest'});
+Y(5,80,'LK','4','4월 새해(아부루드다)에 정해진 좋은 시각에 맞춰 불을 피우고 우유밥을 지었다.','j3 r3',{cd:2,sc:'fest'});
+Y(10,80,'LK R','*','언덕의 차밭에서 찻잎을 땄다. 손끝이 초록색으로 물들었다.','D',{cd:3,sc:'harvest'});
+Y(5,80,'LK|MM|TH|KH rel:불교','5','부처님 오신 날(베삭), 집집마다 등불을 내걸었다.','j2 r2',{cd:2,sc:'fest'});
+// 네팔 · 말레이시아 · 몽골 · 카자흐스탄
+Y(10,80,'NP','*','마을 젊은이 절반이 말레이시아와 걸프 나라로 일하러 떠났다. 마을에는 노인과 아이들이 남았다.','r-1',{once:1,nt:'네팔이 받는 해외 송금은 GDP의 약 33%입니다 (세계은행 2024)'});
+Y(5,80,'NP','[9,10]','다사인 축제, 어른들이 이마에 붉은 티카를 찍어 주며 축복해 주셨다.','j3 r3',{cd:2,sc:'fest'});
+Y(18,40,'NP','*','관광객의 짐을 지고 히말라야 산길을 오르는 일(포터)을 했다.','h-2 @1',{once:1,sc:'job'});
+Y(17,17,'MY s','11','중등교육 수료시험(SPM)을 보았다.','k1',{once:1,sc:'school'});
+Y(10,80,'MN','7','나담 축제에서 씨름, 말타기, 활쏘기 시합을 구경했다.','j3',{cd:2,sc:'sport'});
+Y(10,80,'MN','*','겨울 대비로 게르 둘레에 펠트를 한 겹 더 둘렀다.','D',{once:1,sc:'cold'});
+// 라틴아메리카
+Y(10,80,'CO','*','베네수엘라에서 온 가족이 옆집으로 이사 왔다.',[['환영 음식을 들고 간다','K r3','아레파를 들고 인사하러 갔다. 금세 친해졌다.'],['동네 일자리를 소개해 준다','K r2','동네 가게 일자리를 소개해 주었다.'],['멀찍이 지켜본다','','멀찍이 지켜보았다.']],{once:1,nt:'베네수엘라를 떠난 사람은 약 790만 명이고, 그 가운데 280만 명 넘게가 콜롬비아에 삽니다 (유엔난민기구·R4V)'});
+Y(10,80,'CO R','*','산비탈 커피밭에서 빨갛게 익은 커피 열매를 손으로 땄다.','D @1',{cd:3,sc:'harvest'});
+Y(19,80,'AR','*','물가가 너무 빨리 올라 월급을 받자마자 장을 보고 남은 돈은 달러로 바꿨다.','k1 j-1',{cd:4,sc:'money'});
+Y(5,80,'AR|UY|PY','*','친구들과 둥글게 앉아 마테차 한 잔을 돌려 마셨다.','r3',{once:1});
+Y(10,80,'VE','*','친구들 상당수가 나라를 떠났다. 단체 대화방에는 여러 나라 시간이 섞여 있다.','r-2 j-2',{once:1});
+Y(5,80,'PE','6','6월 24일 태양의 축제(인티 라이미)에 쿠스코 광장이 사람들로 가득 찼다.','j3',{cd:3,sc:'fest'});
+Y(5,80,'CL','9','9월 18일 독립 축제(피에스타스 파트리아스), 쿠에카 춤을 추며 엠파나다를 먹었다.','j3 r2',{cd:2,sc:'fest'});
+Y(5,80,'GT|HN|SV','*','화려하게 칠한 옛 스쿨버스(치킨 버스)를 타고 장에 갔다.','j1',{once:1,sc:'travel'});
+Y(5,80,'GT','4','성주간, 거리에 색색의 톱밥으로 꽃길(알폼브라)을 깔았다.','r3 j3',{cd:2,sc:'fest'});
+// 북아프리카
+Y(5,80,'MA','*','금요일 점심, 온 가족이 큰 접시의 쿠스쿠스를 둘러싸고 앉았다.','r3 j2',{cd:3});
+Y(10,80,'MA|DZ|TN','*','동네 공중목욕탕(함맘)에서 때를 밀었다.','h2 r1',{once:1});
+Y(10,80,'DZ R','[10,11]','사하라 오아시스 마을에서 대추야자를 땄다.','D j2',{cd:3,sc:'harvest'});
+// 유럽 · 북아메리카
+Y(5,80,'IT','*','일요일 점심, 할머니 댁에서 세 시간 동안 식사를 했다.','r3 j2',{cd:3});
+Y(5,80,'ES','*','저녁 아홉 시가 넘어서야 온 가족이 저녁을 먹었다.','r2',{once:1});
+Y(5,80,'CA','[1,2]','영하 20도의 겨울, 동네 연못이 얼어 아이스하키를 했다.','h2 j3',{cd:2,sc:'sport'});
+Y(19,80,'GB hi','*','NHS 병원 진료를 몇 주 기다렸다. 진료비는 내지 않았다.','h1',{once:1,sc:'hosp'});
+Y(19,80,'FR','*','연금 개혁에 반대하는 파업으로 기차가 멈췄다.',[['시위에 함께 나간다','B r2','거리 행진에 함께했다.'],['재택근무를 한다','D','집에서 일했다.'],['자전거로 출근한다','h2','자전거로 출근했다.']],{once:1,sc:'travel'});
+Y(5,80,'FR|BE|CH','*','동네 빵집에서 갓 구운 바게트를 사 들고 오며 끄트머리를 떼어 먹었다.','j2',{once:1});
+Y(5,80,'DE','*','빈 병을 마트 기계에 넣고 보증금(판트)을 돌려받았다.','k1',{once:1});
+// 북한
+Y(10,17,'KP s','[5,6]','모내기철, 학생들도 농촌 일손 돕기에 나갔다.','h-1 r2',{cd:2,sc:'harvest'});
+
+// ── 더 많은 나라의 모습 (태어날 아이가 많은 나라 30곳이 저마다 열 가지 넘게)
+// 앙골라
+Y(5,80,'AO','*','루안다의 바닷가 길(마르지날)을 따라 가족과 저녁 산책을 했다.','r2 j2',{cd:4});
+Y(10,80,'AO','*','석유값이 떨어지자 나라 살림이 어려워져 물가가 뛰었다.','j-2 @-1',{once:1,sc:'money',nt:'앙골라는 수출의 대부분을 석유에 기대고 있어 석유값에 따라 살림이 크게 흔들립니다'});
+Y(5,80,'AO','*','엄마가 끓인 무암바(야자 기름 닭 스튜)를 풍지(카사바 죽)와 함께 먹었다.','r2 j2',{once:1});
+Y(12,80,'AO','2','루안다 카니발에서 동네 춤패가 북을 치며 행진했다.','j3 r2',{cd:3,sc:'fest'});
+Y(7,15,'AO s','*','학생 수가 많아 오전반과 오후반으로 나눠 학교에 다녔다.','k1',{once:1,sc:'school'});
+Y(19,60,'AO R','*','오랜 내전 때 묻힌 지뢰를 치웠다는 표지판이 밭 가에 서 있었다.','k1',{once:1});
+Y(19,60,'AO jk:farm','*','커피와 카사바를 함께 기르는 밭에서 일했다.','D',{cd:4,sc:'harvest'});
+Y(10,80,'AO','*','동네 공터의 농구 시합에 사람들이 몰려들었다. 이 나라는 아프리카 농구 강국이다.','j3 r2',{cd:3,sc:'sport'});
+Y(5,80,'AO','*','우기에 빗물을 커다란 통에 받아 두었다.','D',{cd:4});
+Y(19,70,'AO U','*','길가 좌판(키탄데이라) 아주머니에게 생선을 샀다.','r1',{once:1});
+// 모잠비크
+Y(5,80,'MZ','*','엄마가 코코넛 밀크로 끓인 마타파(카사바 잎 스튜)를 먹었다.','r2 j2',{once:1});
+Y(10,70,'MZ U','*','칭칭 사람을 태운 미니버스(샤파)에 끼어 탔다.','j1',{once:1,sc:'travel'});
+Y(10,80,'MZ coast','*','인도양 바닷가에서 어부들이 돛단배(다우)를 끌어 올렸다.','j2',{cd:4,sc:'sea'});
+Y(7,15,'MZ s','*','교실이 모자라 나무 그늘 아래서 수업을 들었다.','k1',{once:1,sc:'school'});
+Y(19,60,'MZ','*','북쪽 지역의 분쟁을 피해 온 가족이 마을에 자리를 잡았다.',[['먹을 것을 나눈다','K r2','먹을 것을 나눴다.'],['아이들을 우리 학교로 데려간다','K r2','아이들을 학교에 데려가 선생님께 소개했다.']],{once:1});
+Y(19,60,'MZ','*','남아공 광산에서 일하던 삼촌이 몇 해 만에 돌아왔다.','r3',{once:1});
+Y(10,80,'MZ','*','동네 마림바 연주에 맞춰 춤을 추었다.','j3',{cd:4,sc:'stage'});
+Y(19,70,'MZ','*','휴대폰 송금(엠페사)으로 시골 할머니께 돈을 보냈다.','r2',{once:1,sc:'money'});
+// 예멘
+Y(5,80,'YE','*','옛 사나의 흙벽돌 탑 집들 사이를 걸었다. 창마다 하얀 무늬가 둘러져 있었다.','j2',{once:1});
+Y(5,80,'YE','*','전기가 하루 몇 시간만 들어와 지붕에 태양광 판을 얹었다.','k1',{once:1,nt:'예멘에서는 전쟁 뒤 전기가 끊긴 곳이 많아 태양광 판이 빠르게 늘었습니다'});
+Y(7,15,'YE s','*','학교 선생님들이 몇 달째 월급을 받지 못했다. 그래도 교실 문을 열어 주셨다.','k1 G',{once:1,sc:'school'});
+Y(5,80,'YE','*','온 가족이 둘러앉아 살타(고기 스튜)를 빵에 찍어 먹었다.','r2 j2',{once:1});
+Y(10,80,'YE','*','구호 단체가 나눠 준 식량 꾸러미를 받으러 줄을 섰다.','j-1',{cd:4});
+Y(10,80,'YE coast','*','어부들이 홍해에서 잡은 생선을 경매로 팔았다.','j1',{once:1,sc:'sea'});
+// 알제리
+Y(5,80,'DZ','*','금요일 점심, 가족이 둘러앉아 쿠스쿠스를 먹었다.','r3 j2',{cd:3});
+Y(10,80,'DZ','7','7월 5일 독립기념일, 거리에 초록·흰색 깃발이 가득했다.','j2',{cd:3,sc:'fest'});
+Y(10,80,'DZ','*','저녁마다 동네 카페에서 어른들이 축구 이야기로 목소리를 높였다.','r1',{once:1});
+Y(16,18,'DZ h','6','바칼로레아(고교 졸업시험) 기간, 부정행위를 막으려고 인터넷이 끊겼다.','k1',{once:1,sc:'school',nt:'알제리는 바칼로레아 기간에 시험지 유출을 막으려고 인터넷을 제한해 왔습니다'});
+Y(10,80,'DZ','*','남쪽 사막으로 여행을 가서 모래 언덕 위에서 별을 보았다.','j3 k1',{once:1,sc:'travel'});
+Y(19,60,'DZ','*','프랑스에 사는 사촌이 여름 방학에 고향에 왔다.','r2',{cd:4});
+Y(5,80,'DZ','*','라마단 밤, 가족이 모여 달콤한 과자(즐라비아)를 먹었다.','r2 j2',{cd:3,sc:'fest'});
+// 카메룬
+Y(5,80,'CM','*','엄마가 땅콩과 쓴잎으로 끓인 은돌레를 만들었다.','r2 j2',{once:1});
+Y(10,80,'CM','*','축구 국가대표(불굴의 사자들)의 경기가 있는 날, 동네가 들썩였다.','j3 r2',{cd:3,sc:'sport'});
+Y(19,70,'CM','*','은잔기(돈 모으기 모임)에서 모은 돈으로 재봉틀을 샀다.','@1 j2',{once:1,sc:'money'});
+Y(10,80,'CM','*','우리 지역 말, 프랑스어, 영어, 그리고 시장 말(카무프랑글레)까지 섞어 썼다.','k2',{once:1});
+Y(10,80,'CM','*','카메룬산 기슭의 마을에서 화산 흙에 기른 바나나를 땄다.','D',{once:1,sc:'harvest'});
+Y(19,60,'CM','*','영어권 지역의 분쟁으로 학교가 몇 달 문을 닫았다는 소식을 들었다.','j-1',{once:1});
+Y(10,80,'CM','*','동네 결혼식에서 마콧사 음악에 맞춰 밤새 춤을 추었다.','j3 r2',{cd:3,sc:'wedding'});
+// 수단
+Y(10,80,'SD','*','나일강이 만나는 하르툼의 강가에서 친척들과 소풍을 했던 옛 사진을 보았다.','r2',{once:1});
+Y(19,60,'SD','*','아라비아고무 나무에서 수액을 거두는 일을 도왔다.','D @1',{once:1,sc:'harvest',nt:'수단은 세계 아라비아고무의 큰 몫을 생산합니다'});
+Y(5,80,'SD','*','온 가족이 커다란 쟁반에 둘러앉아 풀(콩 요리)을 빵에 찍어 먹었다.','r2 j2',{once:1});
+Y(10,80,'SD','*','이웃 나라 차드의 난민촌으로 피란 간 친척에게서 소식이 왔다.','r1 j-1',{once:1});
+Y(10,80,'SD','*','라디오로 학교 수업을 들었다.','k1',{once:1,sc:'school'});
+Y(19,70,'SD','*','동네 사람들이 함께 운영하는 공동 부엌(타키야)에서 밥을 나눴다.','K r3',{cd:4});
+Y(10,80,'SD','*','모래바람(하붑)이 거대한 벽처럼 몰려와 낮이 밤처럼 어두워졌다.','j-1',{cd:4,sc:'drought'});
+Y(19,70,'SD','*','휴대폰 은행 앱으로 해외 친척이 보낸 돈을 받았다.','r1',{once:1,sc:'money'});
+// 이라크
+Y(5,80,'IQ','*','티그리스 강가 식당에서 통째로 구운 생선(마스구프)을 먹었다.','r2 j2',{once:1});
+Y(10,80,'IQ','*','남쪽 습지에서 갈대로 엮은 집과 물소를 보았다.','k1 j2',{once:1});
+Y(10,80,'IQ','*','바그다드의 책 거리(무타나비 거리)에서 헌책을 샀다.','k2',{once:1});
+Y(19,70,'IQ','*','대추야자 농장에서 수확을 도왔다.','D @1',{once:1,sc:'harvest'});
+Y(10,80,'IQ','*','모래바람이 몰려와 학교가 하루 쉬었다.','',{cd:4,sc:'drought'});
+Y(19,60,'IQ frm','*','공공 기관 일자리에 합격했다. 이 나라에서는 많은 사람이 공공 부문에서 일한다.','j3',{once:1,sc:'job'});
+// 튀르키예
+Y(10,80,'TR','*','보스포루스 해협을 건너는 배 위에서 갈매기에게 시미트를 나눠 주었다.','j3',{once:1,sc:'sea'});
+Y(5,80,'TR','*','쿠르반 바이람(희생제)에 고기를 이웃과 형편이 어려운 집에 나눴다.','r3 K',{cd:3,sc:'fest'});
+Y(10,80,'TR','*','동네 목욕탕(하맘)의 뜨거운 돌 위에 누워 땀을 뺐다.','h2',{once:1});
+Y(19,70,'TR','*','물가가 크게 올라 월급날 장을 한꺼번에 보았다.','j-1',{cd:4,sc:'money'});
+Y(10,80,'TR','*','할머니가 만든 만트(작은 만두)에 요구르트 소스를 듬뿍 얹었다.','r2 j2',{once:1});
+Y(10,80,'TR','*','카파도키아 하늘에 열기구 수십 개가 떠오르는 것을 보았다.','j3',{once:1,sc:'travel'});
+Y(19,70,'TR','*','동네 여성들의 ‘골드 데이’ 모임에서 금화 한 닢씩을 모아 이번엔 내가 받았다.','r2 @1',{once:1,sc:'money'});
+// 이란
+Y(16,18,'IR h','*','대학 입학시험(콘쿠르)을 앞두고 하루 열두 시간씩 학원에서 공부했다.','k3 h-2',{cd:2,sc:'school'});
+Y(5,80,'IR','*','엄마가 사프란을 넣어 노랗게 지은 밥에 바삭한 누룽지(타흐디그)를 얹어 주었다.','r2 j2',{once:1});
+Y(10,80,'IR','*','이스파한의 광장과 다리를 가족과 걸었다.','j3',{once:1,sc:'travel'});
+Y(19,70,'IR','*','물가가 뛰어 저축한 돈의 값어치가 줄었다.',[['금화를 산다','D','금화 몇 닢을 샀다.'],['외화로 바꿔 둔다','k1','외화로 바꿔 두었다.'],['그대로 둔다','','그대로 두었다.','%-5']],{cd:6,sc:'money'});
+Y(5,80,'IR','*','마당의 작은 연못가에 앉아 할아버지가 하페즈의 시를 읊어 주셨다.','r2 k1',{once:1});
+// 아프가니스탄
+Y(10,80,'AF','*','시장에서 석류와 건포도를 샀다.','j1',{once:1});
+Y(7,15,'AF f1','*','집에서 몰래 운영되는 작은 공부방에 다녔다.','k3 B',{once:1,sc:'school'});
+Y(19,60,'AF','*','가뭄이 길어져 밀 수확이 크게 줄었다.','j-3 @-1',{cd:5,sc:'drought'});
+Y(10,80,'AF','*','동네 남자들이 말을 타고 공을 차지하는 경기(부즈카시)를 보러 갔다.','j3',{once:1,sc:'sport'});
+Y(5,80,'AF','*','엄마가 만든 볶음밥(카불리 팔라우)에 당근과 건포도가 가득했다.','r2 j2',{once:1});
+// 니제르 · 탄자니아 · 우간다 · 케냐
+Y(5,80,'NE','*','가뭄에 강한 기장(밀렛)을 빻아 죽을 쑤었다.','D',{cd:4});
+Y(7,15,'NE s','*','흙벽돌 교실에서 오십 명이 함께 수업을 들었다.','k1',{once:1,sc:'school'});
+Y(10,80,'NE','*','니제르강에서 고깃배가 돌아오는 것을 보았다.','j1',{once:1,sc:'sea'});
+Y(19,60,'NE R','*','건기에 가축을 데리고 풀이 있는 남쪽으로 옮겨 갔다.','D h-1',{cd:4});
+Y(10,80,'TZ','*','달라달라(미니버스)를 타고 다르에스살람 시장에 갔다.','j1',{once:1,sc:'travel'});
+Y(5,80,'TZ','*','엄마가 옥수수 가루로 우갈리를 쑤어 콩 반찬과 함께 차려 주셨다.','r2 j2',{once:1});
+Y(19,70,'TZ','*','마을 저축 은행(비코바) 모임에서 돈을 빌려 닭장을 지었다.','@1 r2',{once:1,sc:'money'});
+Y(10,80,'TZ','*','세렝게티의 누 떼가 지평선을 따라 이동하는 모습을 보았다.','j4',{once:1,sc:'travel'});
+Y(10,80,'UG','*','빅토리아 호숫가에서 갓 잡은 틸라피아를 구워 먹었다.','j2',{once:1,sc:'sea'});
+Y(5,80,'UG','*','바나나를 쪄서 으깬 마토케를 먹었다.','j1',{once:1});
+Y(19,70,'UG','*','마을 저축·대출 모임에서 빌린 돈으로 작은 가게를 열었다.','@1 B',{once:1,sc:'money'});
+Y(10,80,'KE','*','마사이 친구의 마을에서 높이 뛰는 춤(아두무)을 보았다.','j3',{once:1,sc:'stage'});
+Y(5,80,'KE','*','저녁으로 우갈리와 수쿠마 위키(케일 볶음)를 먹었다.','j1',{once:1});
+Y(19,70,'KE','*','차마(돈 모으기 모임) 친구들과 함께 땅을 조금 샀다.','r2 @-1',{once:1,sc:'money'});
+// 베트남 · 러시아 · 남아공 · 콩고민주공화국
+Y(5,80,'VN','*','빗속에 우비를 뒤집어쓰고 오토바이로 출근(등교)했다.','',{cd:4,sc:'travel'});
+Y(10,80,'VN','*','하롱베이의 섬들 사이를 배로 지났다.','j3',{once:1,sc:'sea'});
+Y(19,60,'VN','*','일본(대만)으로 일하러 갈 연수생 모집 공고를 보았다.',[['지원한다','B C','일본어 학원에 다니며 준비했다.'],['고향에서 일한다','r2','고향에 남기로 했다.']],{once:1,sc:'job'});
+Y(5,80,'VN','*','설 전날, 온 가족이 둘러앉아 바인쯩(네모난 찹쌀떡)을 밤새 삶았다.','r3 j2',{cd:3,sc:'fest'});
+Y(10,80,'RU','*','시베리아 횡단 열차를 타고 며칠 동안 달렸다. 창밖으로 자작나무 숲이 끝없이 이어졌다.','j3 k1',{once:1,sc:'travel'});
+Y(5,80,'RU','*','블리니(얇은 팬케이크)를 굽는 마슬레니차 축제에 갔다.','j3 r2',{cd:3,sc:'fest'});
+Y(19,70,'RU','*','숲에 버섯을 따러 갔다. 바구니가 가득 찼다.','h2 j2',{cd:3});
+Y(5,80,'ZA','*','온 가족이 둘러앉아 파프(옥수수 죽)와 고기를 먹었다.','r2 j2',{once:1});
+Y(10,80,'ZA','*','케이프타운 테이블 마운틴에 케이블카로 올랐다.','j3',{once:1,sc:'travel'});
+Y(19,70,'ZA','*','아이를 위한 정부 수당(아동 지원 수당)을 신청했다.','j1',{once:1,sc:'money'});
+Y(5,80,'CD','*','엄마가 카사바 잎으로 품두(스튜)를 끓였다.','r2 j2',{once:1});
+Y(10,80,'CD','*','킨샤사 강 건너편으로 브라자빌의 불빛이 보였다. 두 나라의 수도가 강 하나를 사이에 두고 마주 보고 있다.','k1',{once:1});
+Y(10,80,'CD','*','동네 축구장에서 레오파르(국가대표) 유니폼을 입은 아이들이 공을 찼다.','j2 h1',{cd:3,sc:'sport'});
+// 방글라데시 · 에티오피아 · 이집트 · 필리핀 · 멕시코 · 파키스탄 · 인도네시아
+Y(10,80,'BD','*','콕스바자르의 길고 긴 모래사장을 걸었다.','j3',{once:1,sc:'sea'});
+Y(5,80,'BD','*','엄마가 머스터드 오일로 일리시(생선) 카레를 만들었다.','r2 j2',{once:1});
+Y(10,80,'ET','*','라리벨라의 바위를 깎아 만든 교회를 보았다.','k2 j2',{once:1,sc:'travel'});
+Y(19,70,'ET','*','휴대폰(텔레비르)으로 전기 요금을 냈다.','k1',{once:1,sc:'money'});
+Y(5,80,'EG','*','아침으로 풀 메다메스(콩 요리)와 타메야를 빵에 싸 먹었다.','j2',{once:1});
+Y(19,60,'EG','*','걸프 나라에서 일하는 형이 보낸 돈으로 결혼 준비를 시작했다.','r2',{once:1});
+Y(10,80,'PH','*','보홀의 초콜릿 힐스를 보러 갔다.','j3',{once:1,sc:'travel'});
+Y(19,70,'PH','*','팔루와간(돈 모으기 모임)에서 탄 돈으로 학비를 냈다.','@1 r2',{once:1,sc:'money'});
+Y(10,80,'MX','*','테오티우아칸의 태양의 피라미드 꼭대기에 올랐다.','j3 h1',{once:1,sc:'travel'});
+Y(5,80,'MX','1','1월 6일 동방박사의 날, 로스카 빵을 자르다 아기 인형이 나왔다. 2월에 타말레스를 대접해야 한다.','j3 r2',{cd:3,sc:'fest'});
+Y(10,80,'PK','*','라호르의 오래된 시장에서 갓 구운 난과 니하리를 먹었다.','j2',{once:1});
+Y(19,60,'PK','*','커미티(돈 모으기 모임)에서 탄 돈으로 오토바이를 샀다.','@-1 j2',{once:1,sc:'money'});
+Y(10,80,'ID','*','발리의 사원 축제에서 사람들이 머리에 과일 탑을 이고 행진했다.','j3',{once:1,sc:'fest'});
+Y(19,70,'ID','*','라마단이 끝나면 회사에서 명절 보너스(THR)가 나왔다.','j3 @1',{cd:2,sc:'money',nt:'인도네시아는 르바란 명절 전에 한 달 치 월급만큼의 명절 수당(THR)을 주도록 법으로 정했습니다'});
 </script>
 
 <!-- =====================================================================
@@ -4162,7 +5270,7 @@ function calToast(m,t,fx,nt,fam){ const d=document.createElement('div'); d.class
   while($('toasts').children.length>3) $('toasts').firstChild.remove(); setTimeout(()=>d.remove(),nt?7000:5200); }
 function fireCal(k){ const L=G.life, it=L.cur.cal[k], ev=L.calEv(it), ym=ymOf(it.m), head=`${ym.y}년 ${ym.m}월 · ${it.dyn?'가족':calTag()}`;
   if(!ev){ it.done=1; return; }
-  if(ev.opts){ const v=L.calVars(ev,it), q=L.fillV(ev.txt,v);
+  if(ev.opts){ const v=L.calVars(ev,it), q=L.fillV(v.__t||ev.txt,v);
     sheet(`<div class="place calp">${esc(head)}</div><h2>${esc(q)}</h2><div class="opts">${ev.opts.map((o,i)=>`<button data-i="${i}">${esc(L.fillV(o.l,v))}${pct(L.calOptP(o))}</button>`).join('')}</div>`,'calq');
     onOpts(i=>{ const r=L.calDo(k,i); closeSheet(); renderMon(); persist(); if(!r) return;
       if(r.big||ev.ex) popup(`${head} · ${r.label||''}${r.p!=null?(r.ok?' · 잘됨':' · 뜻대로 되지 않음'):''}`,r.t,r.fx,()=>{ renderHud(); },r.ok?'':'bad',r.sc,r.nt);
@@ -4189,7 +5297,8 @@ $('btnInfo').onclick=()=>{
   const fam=[], P=L.ppl||{}, rel={mom:'엄마',dad:'아빠',gran:'할머니',sib:'동생',spouse:'배우자'}; PERSON_KEYS.forEach(k=>{ if(!L.spotOK(k)) return; if(k==='kid') return; fam.push(rel[k]&&P[k]?`${rel[k]} ${P[k].n}`:L.spotName(k)); }); L.kidsHome().forEach(k=>fam.push(`${k.sex?'딸':'아들'} ${k.n}`));
   const sc=L.sch||{}, hi=L.tx('{high}'), school = a<7?'아직 학교에 갈 나이가 아니에요' : f.univ&&f.school?`${sc.univ} 학생` : a<=12?(f.elem?`${sc.elem} ${a-6}학년`:'학교에 다니지 못하고 있어요') : a<=18?(f.sec?(a>=16&&f.hs?`${hi} 학생`:`${sc.mid} 학생`):f.elem?`${sc.elem}까지 다녔어요 · 지금은 일을 도와요`:'학교에 다니지 못했어요 · 일을 도와요') : f.univDone?`${sc.univ} 졸업`:f.sec?`${f.hs?hi:sc.mid} 졸업`:f.elem?`${sc.elem} 졸업`:'학교에 다니지 못했어요';
   const j=L.job, ratio=L.inc/C.med;
-  const job = a<19?'—' : j?`${esc(f.co||'')} · ${j.n}<br><span class="sub">한 달에 약 ${fmtPay(L.inc)} · 이 나라 보통 벌이(${fmtPay(C.med)})의 ${ratio>=10?Math.round(ratio):ratio.toFixed(1)}배</span>` : f.retired?`일을 내려놓았어요<br><span class="sub">연금·가족의 도움 한 달에 약 ${fmtPay(L.inc)}</span>` : (f.univ&&f.school?'대학생':'일을 쉬는 중');
+  const I=instOf(L), rk=rankName(L), svcNow=L._army||(f.svc&&a>=f.svc[0]&&a<f.svc[1]);
+  const job = a<19?'—' : svcNow?'군 복무 중이에요' : j?`${esc(f.co||'')} · ${j.n}${rk&&rk!==j.n?` (${esc(rk)})`:''}${f.job==='abroad'&&f.migTo?` · ${esc(f.migTo)}에서`:''}<br><span class="sub">한 달에 약 ${fmtPay(L.inc)} · 이 나라 보통 벌이(${fmtPay(C.med)})의 ${ratio>=10?Math.round(ratio):ratio.toFixed(1)}배<br>${f.inf?'비공식 일자리 (계약서·사회보험이 없어요)':`공식 일자리 (${esc(I.pen||'연금')}·건강보험에 가입되어 있어요)`}</span>` : f.retired?`일을 내려놓았어요<br><span class="sub">연금·가족의 도움 한 달에 약 ${fmtPay(L.inc)}</span>` : (f.univ&&f.school?'대학생':'일을 쉬는 중');
   const places=['집']; if(a>=6) places.push('동네'); if(a>=13) places.push('큰길 건너'); if(a>=19) places.push('일터가 있는 곳'); if(canDrive()) places.push(`${L.C.landmark}(${C.veh.n})`);
   const wtxt=L.w>=.7?'넉넉한 편':L.w>=.45?'보통':L.w>=.25?'빠듯한 편':'어려운 편', top=L.topTrait(), tot=Object.values(L.tr).reduce((s,v)=>s+v,0);
   const JP=L.joyParts(), nm={m:'살림',n:'나라의 형편',r:'곁의 사람들',g:'감사하는 마음',c:'함께 웃는 문화',h:'건강'};
@@ -4198,7 +5307,7 @@ $('btnInfo').onclick=()=>{
   const money=adult?`<dt>가진 돈</dt><dd><b class="${L.cash<0?'neg':''}">${fmtWon(L.cash)}</b>${L.cash<0?' (빚)':''}${L.house?`<br>집 ${fmtWon(L.house)} · 모두 합하면 ${fmtWon(L.nw)}`:'<br><span class="sub">아직 내 집이 없어요</span>'}${lastM?`<br><span class="sub">지난 ${lastM.step>1?lastM.step+'년':'해'}: 번 돈 ${fmtWon(lastM.inc)} · 쓴 돈 ${fmtWon(lastM.spend)} · 이자 ${lastM.int>=0?'+':''}${fmtWon(lastM.int)}${lastM.ev?` · 큰일 ${lastM.ev>0?'+':''}${fmtWon(lastM.ev)}`:''}</span>`:''}${moneySvg(L)}</dd>`:'';
   sheet(`<div class="place">내 정보</div><h2>${esc(L.name)} · ${a}살 (${stageOf(a)}) · ${L.by+a}년</h2>
     <dl class="info"><dt>사는 곳</dt><dd>${C.n} · ${esc(L.town||'')} (${SETN[L.set]})</dd><dt>태어난 가정</dt><dd>${FAM[L.famI].n} · 지금 살림은 ${wtxt}${L.fam&&L.fam.rel?` · 가족의 종교: ${esc(L.fam.rel)}`:''}</dd><dt>함께 사는 사람</dt><dd>${fam.length?fam.join(' · '):'혼자 살아요'}</dd>
-    <dt>학교</dt><dd>${school}</dd><dt>하는 일</dt><dd>${job}</dd>${money}${L.jobs&&L.jobs.length?`<dt>거쳐 온 일</dt><dd>${L.jobs.map(x=>x.n+'('+x.a+'살)').join(' → ')}</dd>`:''}<dt>가족</dt><dd>${f.widow&&P.spouse?`${esc(P.spouse.n)}과(와)는 ${f.widA}살에 사별했어요`.replace('과(와)',josa(P.spouse.n,'과','와').slice(P.spouse.n.length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:''):f.family?`${esc(P.spouse?P.spouse.n:'')}과(와) 가정을 꾸렸어요`.replace('과(와)',josa(P.spouse?P.spouse.n:'배우자','과','와').slice((P.spouse?P.spouse.n:'배우자').length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:'')+(f.grandkid?' · 손주 있음':''):'아직 가정을 꾸리지 않았어요'}</dd><dt>친구</dt><dd>${esc(P.friend?P.friend.n:'')}</dd>${L.f.pet?`<dt>반려동물</dt><dd>${esc(L.f.pet.n)} (${esc(L.f.pet.sp)}${L.f.pet.dA!=null?`, ${L.f.pet.dA}살 때 무지개다리를 건넘`:`, 함께한 지 ${a-L.f.pet.a}년`})</dd>`:''}${L.f.hob&&L.f.hob.length?`<dt>취미</dt><dd>${L.f.hob.map(h=>esc(h.n)+' Lv.'+h.lv).join(' · ')}</dd>`:''}
+    <dt>학교</dt><dd>${school}</dd><dt>하는 일</dt><dd>${job}</dd>${money}<dt>나라의 제도</dt><dd><span class="sub">병원비 가운데 직접 내는 몫 약 ${I.oop}% (WHO)${I.hi?` · ${esc(I.hi)}`:''}<br>일하는 사람 가운데 비공식 일자리 약 ${I.inf}% (ILO)${retAgeOf(L)?` · 정년 ${retAgeOf(L)}세`:' · 정해진 정년 없음'}${I.cs&&I.cs[0]&&(I.cs[2]===2||L.sex===0)?` · 군 복무 ${I.cs[0]>=24?Math.round(I.cs[0]/12)+'년':I.cs[0]+'개월'}`:''}</span></dd>${L.jobs&&L.jobs.length?`<dt>거쳐 온 일</dt><dd>${L.jobs.map(x=>x.n+'('+x.a+'살)').join(' → ')}</dd>`:''}<dt>가족</dt><dd>${f.widow&&P.spouse?`${esc(P.spouse.n)}과(와)는 ${f.widA}살에 사별했어요`.replace('과(와)',josa(P.spouse.n,'과','와').slice(P.spouse.n.length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:''):f.family?`${esc(P.spouse?P.spouse.n:'')}과(와) 가정을 꾸렸어요`.replace('과(와)',josa(P.spouse?P.spouse.n:'배우자','과','와').slice((P.spouse?P.spouse.n:'배우자').length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:'')+(f.grandkid?' · 손주 있음':''):'아직 가정을 꾸리지 않았어요'}</dd><dt>친구</dt><dd>${esc(P.friend?P.friend.n:'')}</dd>${L.f.pet?`<dt>반려동물</dt><dd>${esc(L.f.pet.n)} (${esc(L.f.pet.sp)}${L.f.pet.dA!=null?`, ${L.f.pet.dA}살 때 무지개다리를 건넘`:`, 함께한 지 ${a-L.f.pet.a}년`})</dd>`:''}${L.f.hob&&L.f.hob.length?`<dt>취미</dt><dd>${L.f.hob.map(h=>esc(h.n)+' Lv.'+h.lv).join(' · ')}</dd>`:''}
     <dt>갈 수 있는 곳</dt><dd>${places.join(' → ')}</dd><dt>성향</dt><dd>${tot?Object.keys(TRAIT).map(k=>TRAIT[k]+' '+L.tr[k]).join(' · ')+`<br><span class="sub">지금까지는 '${TRAIT[top]}'이 가장 많아요</span>`:'아직 쌓인 것이 없어요'}</dd>
     <dt>지금까지</dt><dd>선택 ${L.n}번 · 뜻대로 안 된 일 ${L.fail||0}번 · 놓친 순간 ${L.miss}번</dd>${G.room?`<dt>학급 방</dt><dd>${esc(G.room)}</dd>`:''}</dl>
     ${L.comps&&L.comps.length?`<div class="stack-s"><b style="font-weight:400">같은 1초에 태어난 사람들 · 지금 ${a}살 무렵</b><table class="famtbl">${L.comps.map(p=>`<tr><th>${esc(p.n)}</th><td>${esc(p.cn)} · ${p.sex?'여':'남'}</td><td>${esc(L.compNow(p,a))}</td></tr>`).join('')}</table></div>`:''}
@@ -4900,6 +6009,10 @@ function lifeStory(L){ const P=L.ppl||{}, sc=L.sch||{}, f=L.f, by=L.by||2026, ro
   rows.push(['다닌 학교',schs.length?schs.map(esc).join(' → '):'학교에 다니지 못했습니다']);
   if(f.elem&&P.teacher) rows.push(['첫 담임',`${esc(P.teacher.n)} 선생님`]);
   if(L.jobs&&L.jobs.length) rows.push(['해 온 일',L.jobs.map(j=>`${esc(j.co||'')} ${esc(j.n)}(${j.a}살~)`).join('<br>')]);
+  if(f.rkTop&&f.rkMax) rows.push(['일의 계단',`${esc(f.rkTop)}까지 올랐습니다${f.frmY?` · 공식 일자리에서 ${f.frmY}년`:''}`]); else if(f.frmY) rows.push(['일의 계단',`공식 일자리에서 ${f.frmY}년 일했습니다`]);
+  if(f.svcDone&&f.svcN) rows.push(['군 복무',`${(L.by||2026)+(f.svcA||19)}년 무렵 복무를 마쳤습니다`]);
+  if(f.migTo&&(L.jobs||[]).some(j=>/다른 나라/.test(j.n))) rows.push(['다른 나라에서 일한 날',`${esc(f.migTo)}에서 일했습니다`]);
+  if(f.abrDone) rows.push(['유학',`${esc(f.abrDone)}에서 대학원을 마쳤습니다`]);
   rows.push(['함께한 사람',P.spouse?`${esc(P.spouse.n)} (${L.f.marA||''}살에 결혼${L.f.widow?` · ${L.f.widA}살에 사별`:''})`:'가정을 꾸리지 않았습니다']);
   if(L.kids&&L.kids.length) rows.push(['아이',L.kids.map(k=>`${k.sex?'딸':'아들'} ${esc(k.n)} (${by+k.b}년생)`).join('<br>')]);
   if(P.friend) rows.push(['평생 친구',esc(P.friend.n)]);
