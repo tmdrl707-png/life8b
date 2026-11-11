@@ -783,7 +783,8 @@ ROWS.trim().split('\n').forEach(row=>{
   if(NORTH4.includes(code)){ base.seasons=N4; base.sp=[0,2,2,3]; }
   if(SOUTH4.includes(code)){ base.seasons=['여름','가을','겨울','봄']; base.sp=[1,2,3,0]; }
   if(['SE','NO','FI','DK','IS'].includes(code)) base.joy=5;      // 서로 믿고 돌보는 사회라는 응답이 많은 북유럽
-  if(['CR','MX','UY','PA','SV','GT','NI'].includes(code)) base.joy=8;  // 살림에 비해 스스로 행복하다고 답하는 사람이 특히 많은 나라들
+  if(['CR','MX','UY','PA','SV','GT','NI'].includes(code)) base.joy=8;
+  if(code==='HT') base.joy=-1;   // 오랜 정치 불안과 폭력 속에서 스스로 매긴 삶의 만족도가 낮은 편 (세계행복보고서)  // 살림에 비해 스스로 행복하다고 답하는 사람이 특히 많은 나라들
   if(['KZ','UZ','KG'].includes(code)) base.joy=3;
   if(['SA','AE','KW','QA','BH','OM','YE','EG','LY','DZ','IQ','JO','MR','NE','ML','TD','SD','DJ','SO','TM','NA','ER'].includes(code)) base.arid=1;   // 사막이 많은 나라는 땅이 늘 모래빛
   const c=COUNTRIES[code]=Object.assign(base,D);
@@ -4428,6 +4429,24 @@ Y(10,80,'PK','*','라호르의 오래된 시장에서 갓 구운 난과 니하�
 Y(19,60,'PK','*','커미티(돈 모으기 모임)에서 탄 돈으로 오토바이를 샀다.','@-1 j2',{once:1,sc:'money'});
 Y(10,80,'ID','*','발리의 사원 축제에서 사람들이 머리에 과일 탑을 이고 행진했다.','j3',{once:1,sc:'fest'});
 Y(19,70,'ID','*','라마단이 끝나면 회사에서 명절 보너스(THR)가 나왔다.','j3 @1',{cd:2,sc:'money',nt:'인도네시아는 르바란 명절 전에 한 달 치 월급만큼의 명절 수당(THR)을 주도록 법으로 정했습니다'});
+
+// 아이티 (아메리카에서 살림이 가장 어려운 나라. 무장 조직의 폭력과 재해가 겹쳐 있다)
+Y(5,80,'HT','*','무장 조직 때문에 살던 동네를 떠나 친척 집으로 옮겼다. 챙긴 것은 가방 두 개뿐이었다.||총소리가 이어진 밤, 온 가족이 바닥에 엎드려 아침을 기다렸다. 다음 날 짐을 싸서 동네를 떠났다.',[['친척 집에서 함께 지낸다','r3','좁은 방에서 열 명이 함께 지냈다.'],['피란민 쉼터(학교 건물)로 간다','D','학교 건물에 마련된 쉼터에서 지냈다.'],['시골 고향으로 내려간다','B','버스를 갈아타며 시골 고향으로 갔다.']],{once:1,sc:'unrest',nt:'2025년 아이티에서는 무장 조직의 폭력으로 약 130만 명이 집을 떠났습니다 (IOM)'});
+Y(6,17,'HT s','*','길이 막혀 학교가 몇 주째 문을 닫았다. 선생님이 휴대폰 메시지로 숙제를 보내 주셨다.||학교 가는 길에 검문이 생겨 엄마가 학교에 가지 말라고 하셨다.','k1 j-2',{cd:3,sc:'school',nt:'2025년 아이티에서는 폭력 때문에 1,000곳이 넘는 학교가 문을 닫았습니다'});
+Y(5,80,'HT','*','시장 물가가 또 올라 쌀과 콩을 반만 샀다. 저녁은 한 끼만 먹었다.||먹을 것이 모자라 학교 급식(점심 한 끼)이 하루 가운데 가장 든든한 밥이었다.','h-2 j-2',{cd:3,sc:'money',nt:'2025년 아이티 인구의 절반이 넘는 약 570만 명이 심각한 식량 부족을 겪고 있습니다 (IPC)'});
+Y(5,80,'HT','1','1월 1일 독립기념일, 온 가족이 호박 수프(수프 주무)를 나눠 먹었다. 자유를 기념하는 음식이다.','r3 j2',{cd:2,sc:'fest',nt:'아이티는 1804년 노예 혁명으로 독립한 첫 흑인 공화국이고, 수프 주무는 유네스코 인류무형유산입니다'});
+Y(6,80,'HT','*','집에서는 아이티 크리올어로 말하지만, 학교 시험은 프랑스어로 본다.','k2',{once:1,sc:'school'});
+Y(8,80,'HT','*','알록달록하게 칠한 합승 트럭(탑탑)에 올라탔다. 뒷문에 성경 구절이 적혀 있었다.','j1',{once:1,sc:'travel'});
+Y(5,80,'HT','*','할머니가 2010년 대지진 때 이야기를 들려주셨다. 그날 동네 건물이 거의 다 무너졌다고 한다.','r2 k1',{once:1,sc:'quake'});
+Y(5,80,'HT','*','숯불로 밥을 지었다. 숯을 만들려고 나무를 베어 언덕이 점점 민둥산이 된다.','',{once:1});
+Y(5,80,'HT','*','깨끗한 물이 귀해 봉지에 담긴 물(사셰 물)을 사서 마셨다.','@-1',{cd:4});
+Y(5,80,'HT','[3,4]','부활절 앞 몇 주 동안 라라 악단이 대나무 나팔을 불며 밤늦게까지 거리를 행진했다.','j3 r2',{cd:2,sc:'fest'});
+Y(19,80,'HT','*','시장 상인 아주머니들(마당 사라)과 함께 시골에서 물건을 떼어 와 도시 시장에 팔았다.','@1 D',{cd:4,sc:'job'});
+Y(19,80,'HT','*','미국에 사는 사촌이 보낸 돈으로 동생들 학비를 냈다.','r2',{once:1,sc:'money',nt:'아이티가 받는 해외 송금은 GDP의 약 19%입니다 (세계은행 2024)'});
+Y(5,80,'HT','*','여러 집이 한 마당(라쿠)을 함께 쓰며 산다. 저녁이면 마당에 둘러앉아 이야기를 나눈다.','r3',{once:1});
+Y(5,80,'HT','[8,9,10]','허리케인 경보가 내렸다. 지붕 함석을 끈으로 묶고 밤새 바람 소리를 들었다.','j-2',{cd:4,sc:'storm'});
+Y(10,80,'HT','*','동네에 콜레라가 돌아 물을 꼭 끓여 마시라는 안내가 붙었다.','h-1 k1',{cd:6,sc:'sick'});
+Y(19,45,'HT','*','나라를 떠나는 사람이 많다. 이웃 나라나 미국으로 갈까?',[['떠날 길을 알아본다','B C','서류를 알아보기 시작했다.'],['이곳에서 살아갈 길을 찾는다','r2 D','고향에 남아 할 수 있는 일을 찾았다.'],['가족이 모두 함께 갈 수 있을 때까지 기다린다','r2 G','기다리기로 했다.']],{once:1});
 </script>
 
 <!-- =====================================================================
@@ -4839,7 +4858,8 @@ const BSTYLE={ house:{wall:'#F3E3C7',roof:'#C8503A',rt:'gable',win:'two'}, hanok
   studio:{wall:'#E9DDF0',roof:'#7B5EA7',rt:'gable',win:'two',sign:'star'}, flat:{wall:'#F2C88F',roof:'#C96B4B',rt:'flat',win:'two',tank:1}, tin:{wall:'#D8A46A',roof:'#9AA3A8',rt:'tin',win:'two'},
   thatch:{wall:'#D8B888',roof:'#C8A050',rt:'thatch',win:'two'}, factory:{wall:'#B8BCC4',roof:'#787E88',rt:'saw',win:'grid',chimney:1}, mine:{wall:'#8A7A68',roof:'#6A5A48',rt:'cave',win:'none'},
   port:{wall:'#C8D8E0',roof:'#3870A0',rt:'gable',win:'two',sign:'fish'}, kiosk:{wall:'#FFF0D0',roof:'#30A0A0',rt:'awning',win:'front',sign:'flag'}, dome:{wall:'#F3ECDD',roof:'#3F8FA8',rt:'dome',win:'two'},
-  ger:{wall:'#F4F0E4',roof:'#E8E0CC',rt:'ger',win:'none'}, stilt:{wall:'#B88A58',roof:'#C8A050',rt:'thatch',win:'two',stilt:1}, adobe:{wall:'#D0A070',roof:'#B88858',rt:'adobe',win:'small'} };
+  ger:{wall:'#F4F0E4',roof:'#E8E0CC',rt:'ger',win:'none'}, stilt:{wall:'#B88A58',roof:'#C8A050',rt:'thatch',win:'two',stilt:1}, adobe:{wall:'#D0A070',roof:'#B88858',rt:'adobe',win:'small'},
+  schoolS:{wall:'#EFE4C8',roof:'#8C969E',rt:'tin',win:'two',sign:'clock'}, clinic:{wall:'#F2F2EA',roof:'#9AA3A8',rt:'tin',win:'two',sign:'cross'}, tinS:{wall:'#C9A27A',roof:'#8F989E',rt:'tin',win:'two'} };   // 살림이 어려운 나라의 학교·보건소·집
 function buildingSprite(kind,w,h,pal,enter){
   const st=Object.assign({},BSTYLE[kind]||BSTYLE.house,pal||{});
   return cached(['B',kind,w,h,st.wall,st.roof,enter?1:0].join('|'),w+2,h+12,(x,c)=>{
@@ -5388,23 +5408,23 @@ function label(txt,x,y,size,bg,fg,bd){ g.font=`${size}px ${LABEL_FONT}`; const w
 
 /* ---------- 땅 지도 만들기 ---------- */
 const TCOL={g:'#88C860',t:'#58A040',f:'#A8D878',p:'#E8D4A0',k:'#D8D8D0',r:'#6E767E',d:'#C8A878',h:'#585E68',w:'#3C90E0',s:'#F0DCA0',z:'#E8D0A0',c:'#B8A060'};
-function terrain(){ const L=G.life, key=['T',L.set,L.C.rg,L.C.lt].join('|'); if(terrain.k===key) return terrain.v;
-  const U=L.set==='U', T=[];
+function terrain(){ const L=G.life, key=['T',L.set,L.C.rg,L.C.lt,L.C.tier<=1?1:0].join('|'); if(terrain.k===key) return terrain.v;
+  const U=L.set==='U', T=[], poor=L.C.tier<=1;   // 살림이 어려운 나라의 도시는 흙길이 많다
   for(let y=0;y<OUT.h;y++){ const row=[]; for(let x=0;x<OUT.w;x++){ const cx=x+.5, cy=y+.5; let t='g';
     if(hash(x,y)<.035) t='f'; else if(!U&&hash(y,x+40)<.03) t='t';
     if(!U) OUT.fields.forEach(r=>{ if(inRect(cx,cy,r)) t='c'; });
-    if(inRect(cx,cy,OUT.patch.play)) t=U?'k':'p';
+    if(inRect(cx,cy,OUT.patch.play)) t=U&&!poor?'k':'p';
     if(inRect(cx,cy,OUT.patch.nature)) t=U?(hash(x,y)<.3?'f':'g'):(inRect(cx,cy,[1.6,20.6,4.8,3.8])?'w':'s');
     if(inRect(cx,cy,OUT.patch.mount)) t=L.C.lt==='ds'?'z':L.C.lt==='fr'?'t':'g';
     if(inRect(cx,cy,OUT.patch.sea)) t='w'; else if(inRect(cx,cy,OUT.patch.sand)) t='s';
-    if(onRoad(cx,cy,0)) t=U||x>=46?'r':'d';
+    if(onRoad(cx,cy,0)) t=(U&&!poor)||x>=46?'r':'d';
     if(inRect(cx,cy,OUT.hw)) t='h';
-    if(U&&t!=='r'&&t!=='h'&&x<46&&onRoad(cx,cy,1.05)&&!inRect(cx,cy,OUT.patch.nature)) t='k';
+    if(U&&!poor&&t!=='r'&&t!=='h'&&x<46&&onRoad(cx,cy,1.05)&&!inRect(cx,cy,OUT.patch.nature)) t='k';
     row.push(t); } T.push(row); }
   // 건물과 나무 밑에는 꽃을 두지 않는다 (꽃은 살랑거리며 다시 그려지므로)
   for(let y=0;y<OUT.h;y++) for(let x=0;x<OUT.w;x++){ if(T[y][x]!=='f') continue; const cx=x+.5, cy=y+.5;
     if(Object.values(OUT.b).some(b=>inRect(cx,cy,b,.6))||OUT.trees.some(tr=>Math.abs(tr[0]-cx)<1&&Math.abs(tr[1]-cy)<1.2)||inRect(cx,cy,OUT.patch.play,.2)) T[y][x]='g'; }
-  for(const k in OUT.b){ const d=doorOf(k); for(let i=0;i<2;i++){ const yy=Math.floor(d[1]+i), xx=Math.floor(d[0]-.5); for(const x2 of [xx,xx+1]) if(T[yy]&&T[yy][x2]&&'gftc'.includes(T[yy][x2])) T[yy][x2]=U?'k':'p'; } }
+  for(const k in OUT.b){ const d=doorOf(k); for(let i=0;i<2;i++){ const yy=Math.floor(d[1]+i), xx=Math.floor(d[0]-.5); for(const x2 of [xx,xx+1]) if(T[yy]&&T[yy][x2]&&'gftc'.includes(T[yy][x2])) T[yy][x2]=U&&!poor?'k':'p'; } }
   terrain.k=key; terrain.v=T; return T; }
 const LAYER_TOP=24;   // 지도 위쪽 여백(지붕·산이 칸 위로 솟는 부분)
 function worldKey(){ const L=G.life; return ['O',L.set,L.c,spOf(L),L.age>=7&&L.age<=12&&L.f.elem?1:0,L.job?L.job.kind:'',L.famI].join('|'); }
@@ -5415,7 +5435,7 @@ function worldLayer(){ const L=G.life, key=worldKey(); if(worldLayer.k===key) re
     if(t==='c'){ const tile=cached(['CROP',sp].join('|'),16,16,(cx)=>{ const P=(X,Y,Wd,H,cc)=>pr(cx,X,Y,Wd,H,cc); P(0,0,16,16,'#9A7048'); for(let r=0;r<4;r++){ P(0,r*4+3,16,1,'#7A5030'); if(sp!==3) for(let q=0;q<4;q++){ P(q*4+1,r*4,2,3,sp===2?'#E8C040':'#58A040'); P(q*4+2,r*4-1,1,1,sp===2?'#F8E070':'#78C060'); } } }); x.drawImage(tile,i*PX,y*PX+oy); }
     else x.drawImage(groundTile(t==='w'?'w':t,sp,(i*7+y*3)%4,0),i*PX,y*PX+oy); }
   // 큰길 가운데 선
-  for(let i=0;i<OUT.w;i+=2){ if(i>=15&&i<=17||i>=30&&i<=32||(i>=46&&i<=50)) continue; if(L.set==='U'||i>=50) pr(x,i*PX+4,12*PX+oy-1,8,2,'#F0F0E8'); }
+  for(let i=0;i<OUT.w;i+=2){ if(i>=15&&i<=17||i>=30&&i<=32||(i>=46&&i<=50)) continue; if((L.set==='U'&&L.C.tier>1)||i>=50) pr(x,i*PX+4,12*PX+oy-1,8,2,'#F0F0E8'); }
   for(let y=0;y<OUT.h;y+=2){ pr(x,48*PX-1,y*PX+oy+4,2,8,'#F2C14E'); }
   // 먼 곳의 명소
   const lt=L.C.lt, mp=OUT.patch.mount;
@@ -5434,16 +5454,17 @@ function worldLayer(){ const L=G.life, key=worldKey(); if(worldLayer.k===key) re
   if(lt==='fr') for(let i=0;i<7;i++) x.drawImage(treeSprite(treeTypeFor(L.C.rg,i+3),sp,1),(mp[0]+.2+(i%4)*1.3)*PX,(mp[1]+.5+Math.floor(i/4)*2.6)*PX+oy);
   if(lt==='ds') for(let i=0;i<3;i++) x.drawImage(treeSprite('cactus',sp,1),(mp[0]+.6+i*1.6)*PX,(mp[1]+4.6)*PX+oy);
   worldLayer.k=key; worldLayer.c=c; return c; }
-function kindOf(key){ const L=G.life, U=L.set==='U', rg=L.C.rg, tin=(rg==='AF'||rg==='SA'||rg==='SE'||rg==='OC')&&L.C.tier<=2;
+function kindOf(key){ const L=G.life, U=L.set==='U', rg=L.C.rg, poor=L.C.tier<=1, tin=(rg==='AF'||rg==='SA'||rg==='SE'||rg==='OC'||rg==='LA')&&L.C.tier<=2;
   const code=L.C.code;
   switch(key){ case 'home': case 'friend':
       if(code==='MN'||(!U&&['KZ','KG'].includes(code))) return 'ger';
       if(!U&&(rg==='SE'||rg==='OC')&&L.C.tier<=3) return 'stilt';
       if(!U&&L.C.arid&&L.C.tier<=3) return 'adobe';
-      return L.C.tier<=1&&!U?'thatch':L.C.home[U?0:1];
-    case 'elem': case 'mid': return 'school'; case 'shop': return tin&&!U?'tin':'shop'; case 'study': return U?'office':'hall'; case 'market': return 'market';
-    case 'work': { const j=L.job, k=j?j.kind:'part'; return {office:'office',factory:'factory',farm:'barn',herd:'barn',shop:'shop',school:'school',hosp:'hospital',dream:'studio',fish:'port',mine:'mine',tour:'kiosk',part:U?'office':'tin'}[k]||'shop'; }
-    case 'cafe': return 'cafe'; case 'hosp': return 'hospital'; case 'hall': return rg==='ME'||rg==='CA'?'dome':'hall'; case 'station': return 'station'; case 'far': return U?L.C.home[1]:'office'; }
+      if(poor) return U?'tinS':rg==='LA'?'tin':'thatch';
+      return L.C.home[U?0:1];
+    case 'elem': case 'mid': return poor?'schoolS':'school'; case 'shop': return (tin&&!U)||poor?'tin':'shop'; case 'study': return U&&!poor?'office':'hall'; case 'market': return 'market';
+    case 'work': { const j=L.job, k=j?j.kind:'part'; return {office:'office',factory:'factory',farm:'barn',herd:'barn',shop:'shop',school:'school',hosp:'hospital',dream:'studio',fish:'port',mine:'mine',tour:'kiosk',part:U&&!poor?'office':'tin'}[k]||'shop'; }
+    case 'cafe': return poor?'kiosk':'cafe'; case 'hosp': return poor?'clinic':'hospital'; case 'hall': return rg==='ME'||rg==='CA'?'dome':'hall'; case 'station': return 'station'; case 'far': return U?(poor?'tin':L.C.home[1]):'office'; }
   return 'house'; }
 function landmarkSprite(lt,sp){ return cached(['LM',lt,sp].join('|'),88,96,(x,c)=>{ const P=(X,Y,Wd,H,cc)=>pr(x,X,Y,Wd,H,cc);
   if(lt==='mt'){ for(let i=0;i<70;i++){ const w=Math.round(i*1.15)+2; P(44-w/2,10+i,w/2,1,'#8A9A88'); P(44,10+i,w/2,1,'#6A7A68'); if(i<16){ P(44-w/2,10+i,w,1,sp===1&&i>10?'#8A9A88':'#F4F8FC'); } } P(20,60,12,6,'#58A040'); P(60,62,14,6,'#58A040'); }
