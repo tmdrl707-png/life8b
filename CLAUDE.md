@@ -40,7 +40,7 @@ python3 dev/tests/endL.py x            # 엔딩을 컴퓨터(1366×768)·휴대�
 - 장면 그림 이름 규칙은 `art.js`의 `scArtName(kind,L)`: 지역(`life_<지역>_<m|f>`, `farewell_<지역>`), 시골판(`<종류>_r`), 지역판(결혼·아기·학교). 이미지가 없으면 옛 도트 그림으로 대신 나온다.
 
 ## 그림 만들기 (제미나이 + Claude in Chrome)
-로그인된 제미나이(gemini.google.com)에서 그림을 만들고 Claude in Chrome으로 받는다. 프롬프트는 "warm hand-painted 2D anime film look, soft watercolor, wide 16:9, no text". 스프라이트는 마젠타(#FF00FF) 배경 한 장에 여러 개를 그린 뒤 `cut.py`로 배경을 투명하게 자른다. 이미지 받기는 `blob:` 주소로 읽히는 상태(채팅을 새로 고친 뒤)에서 캔버스로 내보내 **한 번에 한 파일씩** 다운로드한다(크롬이 자동 다중 다운로드를 막는다). 하루 생성 한도에 걸리면 다음에 이어서 한다. 남은 일: 중동·중남미·유럽 학교 장면, 집 장면의 지역판.
+로그인된 제미나이(gemini.google.com)에서 그림을 만들고 Claude in Chrome으로 받는다. 프롬프트는 "warm hand-painted 2D anime film look, soft watercolor, wide 16:9, no text". 스프라이트는 마젠타(#FF00FF) 배경 한 장에 여러 개를 그린 뒤 `cut.py`로 배경을 투명하게 자른다. 이미지 받기는 `blob:` 주소로 읽히는 상태(채팅을 새로 고친 뒤)에서 캔버스로 내보내 **한 번에 한 파일씩** 다운로드한다(크롬이 자동 다중 다운로드를 막는다). 하루 생성 한도에 걸리면 다음에 이어서 한다. 남은 일: 없음(중동·중남미·유럽 학교와 집 지역판은 2026-11-12에 추가했다).
 
 ## 커밋
 커밋 메시지는 한국어로 짧게, 끝에 아래 줄을 붙인다.
