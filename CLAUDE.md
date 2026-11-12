@@ -40,10 +40,10 @@ python3 dev/tests/endL.py x            # 엔딩을 컴퓨터(1366×768)·휴대�
 - `Store`: Firebase(REST) 또는 localStorage. 모드 `db`(인증 끔, 아이디·섞은 비밀번호를 `acc/`에 저장), `auth`(Firebase 인증), `local`. 경로: `acc/`, `users/`, `reg/`, `idcfg/closed`, `rooms/<코드>/…`, `tdata/…`.
 - 학급 방: 선생님이 열면 반 전체가 같은 나이로 움직인다. 일찍 끝난 학생은 '다른 삶 둘러보기'. 끝난 삶은 `members/<아이디>/past/<시각>`.
 - 마친 삶 기록: `lifeRecord()`(요약·오각형 최대·흐름·돈·이야기 표·기억·답) → `lifeDetailHTML()`로 학생·교사 화면에서 펼쳐 본다.
-- 장면 그림 이름 규칙은 `art.js`의 `scArtName(kind,L)`: 지역(`life_<지역>_<m|f>`, `farewell_<지역>`), 시골판(`<종류>_r`), 지역판(결혼·아기·학교). 이미지가 없으면 옛 도트 그림으로 대신 나온다.
+- 장면 그림 이름 규칙은 `art.js`의 `scArtName(kind,L)`: 지역(`life_<지역>_<m|f>`, `farewell_<지역>`), 시골판(`<종류>_r`), 지역판(결혼·아기·학교·집·직업·병원·축제, `SC_VAR`). 집 밖 장면 `town`은 나이 4단계(`town6|13|19|75_<지역>`, `townStage`). 일상·집 밖 장면은 `scVar(kind,문장,나이,L)`이 `'life@end_meal_EA'`처럼 종류 뒤에 그림 이름을 붙여 고른다(엔딩 카드·나의 기록·사건 창 `popup`). 지역 코드: EA·SE·SA·AF·ME·LA·WE(`RG_ART`). 이미지가 없으면 옛 도트 그림으로 대신 나온다.
 
 ## 그림 만들기 (제미나이 + Claude in Chrome)
-로그인된 제미나이(gemini.google.com)에서 그림을 만들고 Claude in Chrome으로 받는다. 프롬프트는 "warm hand-painted 2D anime film look, soft watercolor, wide 16:9, no text". 스프라이트는 마젠타(#FF00FF) 배경 한 장에 여러 개를 그린 뒤 `cut.py`로 배경을 투명하게 자른다. 이미지 받기는 `blob:` 주소로 읽히는 상태(채팅을 새로 고친 뒤)에서 캔버스로 내보내 **한 번에 한 파일씩** 다운로드한다(크롬이 자동 다중 다운로드를 막는다). 하루 생성 한도에 걸리면 다음에 이어서 한다. 남은 일: 없음(중동·중남미·유럽 학교와 집 지역판은 2026-11-12에 추가했다).
+로그인된 제미나이(gemini.google.com)에서 그림을 만들고 Claude in Chrome으로 받는다. 프롬프트는 "warm hand-painted 2D anime film look, soft watercolor, wide 16:9, no text". 스프라이트는 마젠타(#FF00FF) 배경 한 장에 여러 개를 그린 뒤 `cut.py`로 배경을 투명하게 자른다. 이미지 받기는 `blob:` 주소로 읽히는 상태(채팅을 새로 고친 뒤)에서 캔버스로 내보내 **한 번에 한 파일씩** 다운로드한다(크롬이 자동 다중 다운로드를 막는다). 하루 생성 한도에 걸리면 다음에 이어서 한다. 2026-11-12에 학교·집·직업·병원·축제 지역판, 집 밖 장면(나이×지역 28장), 엔딩 일상 장면 25장을 더했다.
 
 ## 커밋
 커밋 메시지는 한국어로 짧게, 끝에 아래 줄을 붙인다.

@@ -504,7 +504,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 /* ---------- 엔딩: 나의 기록 고르기 (마지막 장 앞) · 개인 기록에 장면과 한 마디로 남기기 ---------- */
 // 장면 그림 (기록에는 나라·사는 곳·성별만 있으므로 그것으로 그림 이름을 정한다)
 function scThumb(kind,who,cls){ let n=null; try{ n=scArtName(kind,who)||scArtName('life',who); }catch(e){}
-  const tt=(typeof SCENE_TITLE!=='undefined'&&SCENE_TITLE[kind])||'삶';
+  const tt=(typeof SCENE_TITLE!=='undefined'&&SCENE_TITLE[String(kind||'').split('@')[0]])||'삶';
   return `<span class="${cls||'scimg'}" data-t="${esc(tt)}">${n?`<img src="art/sc/${n}.webp" alt="${esc(tt)}" loading="lazy" onerror="this.remove()">`:''}</span>`; }
 const recWho=l=>({C:COUNTRIES[l.c||'KR']||COUNTRIES.KR,set:l.set,sex:l.sex,f:{}});
 // 고를 거리: 큰 일·내가 고른 일·장면이 있는 기억을 앞에, 삶 전체에서 고르게 12개

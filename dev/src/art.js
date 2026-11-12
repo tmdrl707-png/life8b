@@ -128,8 +128,27 @@ const SC_ART=new Set(['house','flood','quake','storm','drought','heat','cold','f
 const SC_RURAL=new Set(['house','school','birth','baby','job','hosp']);
 const SC_IMG={};
 const SC_REG=new Set(['life','farewell']), RG_ART={EA:'EA',SE:'SE',SA:'SA',AF:'AF',ME:'ME',CA:'ME',LA:'LA',EU:'WE',NA:'WE',OC:'WE'};
-const SC_VAR=new Set(["baby_AF", "baby_EA", "baby_LA", "baby_ME", "baby_SA", "baby_SE", "house_AF", "house_LA", "house_ME", "house_SA", "house_SE", "school_AF", "school_LA", "school_ME", "school_SA", "school_SE", "school_WE", "school_r", "wedding_AF", "wedding_EA", "wedding_LA", "wedding_ME", "wedding_SA", "wedding_SE"]);
-function scArtName(kind,L){ if(kind==='title') return 'title'; if(!SC_ART.has(kind)) return null; const C=L&&L.C, g=C&&RG_ART[C.rg];
+const SC_VAR=new Set(["baby_AF", "baby_EA", "baby_LA", "baby_ME", "baby_SA", "baby_SE", "baby_WE", "fest_AF", "fest_LA", "fest_ME", "fest_SA", "fest_SE", "fest_WE", "hosp_AF", "hosp_LA", "hosp_ME", "hosp_SA", "hosp_SE", "hosp_WE", "house_AF", "house_LA", "house_ME", "house_SA", "house_SE", "job_AF", "job_LA", "job_ME", "job_SA", "job_SE", "job_WE", "school_AF", "school_LA", "school_ME", "school_SA", "school_SE", "school_WE", "school_r", "wedding_AF", "wedding_EA", "wedding_LA", "wedding_ME", "wedding_SA", "wedding_SE", "wedding_WE"]);
+// 집 밖으로 나가는 장면(town): 나이 4단계(6·13·19·75세) × 지역 7곳
+const townStage=a=>a<10?6:a<19?13:a<75?19:75;
+// 엔딩·기억의 일상 장면: 'life@end_meal_EA'처럼 종류 뒤에 그림 이름을 붙여 넘긴다
+const SC_END=new Set(['end_grandkids','end_couple','end_garden','end_friends','end_album','end_birthday','end_rain_window','end_dawn_walk','end_moving','end_stargaze','end_playground','end_bench','end_neighbors','end_videocall','end_exercise','end_study_night','end_fishing','end_window_night']);
+function scHas(n){ if(!n) return false; if(SC_END.has(n)) return true; return /^end_meal_(EA|SE|SA|AF|ME|LA|WE)$/.test(n)||/^town(6|13|19|75)_(EA|SE|SA|AF|ME|LA|WE)$/.test(n)||/^life_(EA|SE|SA|AF|ME|LA|WE)_[mf]$/.test(n); }
+function scHash(t){ let h=7; t=String(t||''); for(let i=0;i<t.length;i++) h=(h*31+t.charCodeAt(i))>>>0; return h; }
+// 종류·문장·나이로 알맞은 그림을 골라 '종류@그림이름'을 돌려준다 (일상(life)과 집 밖(town)만, 나머지는 그대로)
+function scVar(kind,txt,age,L){ try{ const g=L&&L.C&&RG_ART[L.C.rg]; if(!g||age==null) return kind;
+    if(kind==='town') return 'town@town'+townStage(age)+'_'+g;
+    if(kind!=='life') return kind; const t=String(txt||''), meal='end_meal_'+g;
+    const R=[[/손주|손자|손녀/,'end_grandkids'],[/생일|케이크|촛불/,'end_birthday'],[/사진|앨범/,'end_album'],[/낚시/,'end_fishing'],[/별을|별이|밤하늘|달을|달이/,'end_stargaze'],[/텃밭|정원|화분|꽃을 심|씨앗/,'end_garden'],
+      [/영상통화|전화|편지|소식을 전/,'end_videocall'],[/이웃/,'end_neighbors'],[/산책|바닷가|바다를/,'end_dawn_walk'],[/운동|체조|달리기/,'end_exercise'],[/빗소리|비가 내|비 오는/,'end_rain_window'],[/이사/,'end_moving'],
+      [/먹|밥|식사|음식|요리|부엌|반찬|저녁상/,meal],[/친구/,age<60?'end_friends':'end_couple'],[/배우자|아내|남편|부부|둘이서/,age>=50?'end_couple':'end_friends'],[/퇴근|일을 마치|하루를 마치/,'end_bench'],[/공부|책을|숙제/,age<30?'end_study_night':'end_rain_window'],[/놀|술래|운동장|공차기/,age<13?'end_playground':'end_friends']];
+    for(const [re,n] of R) if(re.test(t)) return 'life@'+n;
+    const pool=age<13?['end_playground','end_birthday',meal,'end_stargaze']:age<30?['end_friends','end_study_night',meal,'end_bench','end_rain_window','end_stargaze']:age<60?[meal,'end_bench','end_neighbors','end_birthday','end_rain_window','end_exercise','end_moving']:['life_'+g+(L.sex===0?'_m':'_f'),'end_couple','end_garden','end_grandkids','end_album','end_window_night','end_videocall','end_fishing','end_dawn_walk',meal];
+    return 'life@'+pool[scHash(t+'|'+age)%pool.length]; }catch(e){ return kind; } }
+const scBase=k=>String(k||'').split('@')[0];
+function scArtName(kind,L){ if(kind==='title') return 'title'; kind=String(kind||''); if(kind.includes('@')){ const [b,n]=kind.split('@'); return scHas(n)?n:scArtName(b,L); }
+  if(!SC_ART.has(kind)) return null; const C=L&&L.C, g=C&&RG_ART[C.rg];
+  if(g&&kind==='town') return 'town'+townStage(L.age||0)+'_'+g;
   if(g&&kind==='life') return 'life_'+g+(L.sex===0?'_m':'_f'); if(g&&kind==='farewell') return 'farewell_'+g;
   if(C&&SC_RURAL.has(kind)&&(C.tier<=1||(C.tier===2&&L.set==='R'))) return (kind==='baby'?'birth':kind)+'_r';
   if(g){ const k=(kind==='birth'&&g!=='EA'&&g!=='WE')?'baby':kind; if(SC_VAR.has(k+'_'+g)) return k+'_'+g; }
@@ -138,7 +157,7 @@ function scImg(n){ let e=SC_IMG[n]; if(!e){ e=SC_IMG[n]={im:null}; artLoad('art/
 function scPreload(kinds,L){ kinds.forEach(k=>{ const n=scArtName(k,L); if(n) scImg(n); }); }
 const _drawScene=drawScene;
 drawScene=function(x,kind,t,L){ const n=scArtName(kind,L), im=n&&scImg(n);
-  if(!im) return _drawScene(x,kind,t,L);
+  if(!im) return _drawScene(x,scBase(kind),t,L);
   const sm=x.imageSmoothingEnabled; x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high';
   const z=1.05+.035*Math.sin(t*.22), w=160*z, h=80*z, dx=(160-w)/2+Math.sin(t*.15)*2.2, dy=(80-h)/2+Math.cos(t*.13)*1.2;
   x.drawImage(im,dx,dy,w,h);
@@ -166,3 +185,8 @@ personSprite=function(o){ const s=_personSprite(o); if(o.half) return s; const k
   const g=$('rotGo'), s=$('rotSkip'); if(g) g.onclick=go; if(s) s.onclick=()=>{ document.body.classList.add('portraitOK'); };
   addEventListener('resize',()=>{ if(typeof resize==='function'&&!game.hidden) resize(); });
 })();
+
+// 사건 창의 장면: '종류@그림'이어도 제목은 기본 종류로, 일상·집 밖 장면은 그 나이에 맞는 그림으로
+sceneHTML=function(kind){ const b=scBase(kind); return kind?`<canvas class="scene" width="640" height="320" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[b]||'삶'} —</div>`:''; };
+const _popupSc=popup;
+popup=function(tag,txt,fx,after,cls,sc,nt){ if((sc==='life'||sc==='town')&&G.life){ const m=/^(\d+)살/.exec(String(tag||'')); sc=scVar(sc,txt,m?+m[1]:G.life.age,G.life); } return _popupSc(tag,txt,fx,after,cls,sc,nt); };
