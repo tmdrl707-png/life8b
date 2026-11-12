@@ -230,9 +230,9 @@ const PLACE_IN={
   friend:{kind:'home',role:'fparent',n:['친구 부모님','친구 방','친구','창가','책장','부엌'],p0:[3,2.6],p2:[10.4,4.8],peer:1,
     f:[['counter',1,1,3,.8,'f_kitchen'],['table',4.8,1.1,1.6,.9,'f_table'],['sofa',8,1,2.2,.8,'f_sofa'],['tv',11,1,1.7,.5,'f_tv'],['bed',.9,8.1,2.2,1,'f_bed'],['desk',10.5,8.3,1.6,.7,'f_desk']]},
   shop:{kind:'shop',role:'shopk',n:['가게 주인','계산대','손님','창가','진열대','창고'],p0:[2.5,2.4],p2:[9,4.8],
-    f:[['counter',1,1,3,.8,'s_counter'],['w_goods',5.2,1.1,3,.8,'s_goods'],['w_goods',9.6,1.1,3,.8,'s_goods'],['shelf',.9,6.6,2.6,.7,'s_shelf'],['w_rack',10.4,6.6,2.6,.7,'s_goods']]},
+    f:[['w_desk',1,1,2.6,.9,'s_counter'],['w_goods',5.2,1.1,3,.8,'s_goods'],['w_goods',9.6,1.1,3,.8,'s_goods'],['shelf',.9,6.6,2.6,.7,'s_shelf'],['w_rack',10.4,6.6,2.6,.7,'s_goods']]},
   lib:{kind:'school',role:'libn',n:['사서','책상','책 읽는 사람','창가','책장','열람실'],p0:[11.8,7.1],p2:[5,4.4],peer:1,seats:[[9.7,4.5,'adult',0]],
-    f:[['shelf',.9,1,2.6,.7,'l_shelf'],['shelf',4,1,2.6,.7,'l_shelf'],['shelf',10.4,1,2.6,.7,'l_shelf'],['table',3.5,5,2.6,.8,'l_table'],['table',8.4,5,2.6,.8,'l_table'],['counter',10.6,7.7,2.4,.7,'l_desk']]},
+    f:[['shelf',.9,1,2.6,.7,'l_shelf'],['shelf',4,1,2.6,.7,'l_shelf'],['shelf',10.4,1,2.6,.7,'l_shelf'],['table',3.5,5,2.6,.8,'l_table'],['table',8.4,5,2.6,.8,'l_table'],['w_desk',10.6,7.5,2.4,.9,'l_desk']]},
   study:{kind:'school',role:'teacher',n:['선생님','책상','같이 공부하는 사람','창가','책꽂이','자습실'],p0:[7,2.4],p2:[10.8,6.2],peer:1,seats:[[4.8,5.2,'peer',3],[8.2,6.8,'peer',3]],
     f:[['board',4,.62,6,.45,'st_board'],['desk',4.3,4.3,1,.6,'st_desk'],['desk',7.7,4.3,1,.6,'st_desk'],['desk',4.3,5.9,1,.6,'st_desk'],['desk',7.7,5.9,1,.6,'st_desk'],['shelf',.9,8.3,2.6,.7,'st_shelf']]},
   gym:{kind:'dream',role:'coach',n:['코치','운동 기구','같이 운동하는 사람','창가','매트','탈의실'],p0:[7,2.6],p2:[6.6,6.4],peer:1,
@@ -244,15 +244,15 @@ const PLACE_IN={
   cafe:{kind:'shop',role:'cafek',n:['주인','계산대','손님','창가','탁자','소파'],p0:[3,2.4],p2:[9.4,4.4],seats:[[3.8,4.6,'adult',3]],
     f:[['counter',1,1,4,.8,'c_counter'],['sofa',10.4,1,2.6,.8,'c_sofa'],['table',3,5,1.6,.9,'c_table'],['table',8.6,5,1.6,.9,'c_table']]},
   bank:{kind:'office',role:'clerk',n:['은행원','창구','손님','창가','상담 책상','대기 의자'],p0:[7,2.4],p2:[4.5,4.4],seats:[[1.8,5.6,'elder',0]],
-    f:[['counter',2,1,10,.8,'b_counter'],['desk',6,5,2,.7,'b_desk'],['sofa',1,6.2,2.6,.8,'b_wait'],['sofa',10.4,6.2,2.6,.8,'b_wait']]},
+    f:[['w_desk',2,1,2.6,.9,'b_counter'],['w_desk',5.7,1,2.6,.9,'b_counter'],['w_desk',9.4,1,2.6,.9,'b_counter'],['desk',6,5,2,.7,'b_desk'],['sofa',1,6.2,2.6,.8,'b_wait'],['sofa',10.4,6.2,2.6,.8,'b_wait']]},
   hosp:{kind:'hosp',role:'doc',n:['의사 선생님','진료실','간호사','창가','약 선반','대기실'],p0:[11.4,2.6],p2:[5,3.6],seats:[[1.6,7.3,'elder',0]],
     f:[['w_bed',1,1,2.4,1,'h_bed'],['w_bed',4.4,1,2.4,1,'h_bed'],['desk',10.4,1.2,2,.7,'h_desk'],['shelf',10.4,7.6,2.6,.7,'h_shelf'],['sofa',1,7.8,2.6,.8,'h_wait']]},
   hall:{kind:'office',role:'clerk',n:['직원','창구','주민','창가','게시판','회의 탁자'],p0:[3.4,2.4],p2:[9,4],seats:[[4.6,4.6,'elder',3],[7,4.6,'adult',3]],
-    f:[['counter',1,1,5,.8,'ha_counter'],['board',8,.62,5,.45,'ha_board'],['table',4,5,4,.9,'ha_table'],['sofa',10.4,7.4,2.6,.8,'ha_wait']]},
+    f:[['w_desk',1,1,2.4,.9,'ha_counter'],['w_desk',3.6,1,2.4,.9,'ha_counter'],['board',8,.62,5,.45,'ha_board'],['table',4,5,4,.9,'ha_table'],['sofa',10.4,7.4,2.6,.8,'ha_wait']]},
   post:{kind:'office',role:'clerk',n:['우체국 직원','창구','손님','창가','소포 선반','편지 쓰는 탁자'],p0:[5,2.4],p2:[8,5.6],
-    f:[['counter',2,1,6,.8,'p_counter'],['shelf',10.4,1,2.6,.7,'p_shelf'],['table',2,5.5,2.4,.8,'p_table'],['w_rack',10.4,6,2.6,.8,'p_rack']]},
+    f:[['w_desk',2,1,2.6,.9,'p_counter'],['w_desk',5,1,2.6,.9,'p_counter'],['shelf',10.4,1,2.6,.7,'p_shelf'],['table',2,5.5,2.4,.8,'p_table'],['shelf',10.4,6,2.6,.7,'p_rack']]},
   station:{kind:'tour',role:'clerk',n:['역무원','매표소','여행객','창가','안내판','대기 의자'],p0:[3,2.4],p2:[7,6.6],seats:[[3,4.6,'adult',3],[10,4.6,'elder',3]],
-    f:[['counter',1,1,4,.8,'t_ticket'],['w_rack',6,1,3,.8,'t_board'],['shelf',10.4,1,2.6,.7,'t_shop'],['sofa',2,5,3,.8,'t_wait'],['sofa',9,5,3,.8,'t_wait']]}
+    f:[['w_desk',1,1,2.6,.9,'t_ticket'],['w_white',6,.8,3,1,'t_board'],['shelf',10.4,1,2.6,.7,'t_shop'],['sofa',2,5,3,.8,'t_wait'],['sofa',9,5,3,.8,'t_wait']]}
 };
 // 건물 안의 물건: [글, 오르는 것] · 어린이(K) · 청소년(Y) · 어른(A, 노인도)
 const PL=(n,K,Y,A)=>({n,K,Y,A});

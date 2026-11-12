@@ -108,7 +108,7 @@ Object.assign(Life.prototype,{
       const pj=f.dad.al&&this.f.div!=='dad'?f.dad.job:f.mom.job, farm=/농|목동|소작|일꾼|어부/.test(pj), lastB=this.f.badY;
       if((lastB==null||a-lastB>=5)&&R()<.06*step){ this.f.badY=a; add({txt:farm?`가뭄으로 농사가 잘 안돼 ${pj} 일로 버는 돈이 반으로 줄었다. 한동안 밥상이 조용했다.`:`${dadT()}가 다니던 일터가 문을 닫았다. 새 일을 구할 때까지 한동안 저녁 밥상이 조용했다.`,fx:{j:-4},sc:farm?'drought':'jobloss',act:'poorer'}); }
       else if(R()<.05*step) add({txt:`${f.mom.job==='집안일'?'아빠':pickOne(['엄마','아빠'])}의 일이 잘되어 집안 형편이 조금 나아졌다.`,fx:{j:3},sc:'money',act:'richer'});
-      if(R()<.06*step) add({txt:`${pickOne(['엄마','아빠'])}가 몸이 안 좋아 며칠 입원하셨다. ${a<10?'할머니(이웃)가 대신 밥을 챙겨 주셨다.':'동생들 밥을 내가 챙겼다.'}`,fx:{r:2,j:-2},sc:'hosp'});
+      if(R()<.06*step) add({txt:`${pickOne(['엄마','아빠'])}가 몸이 안 좋아 며칠 입원하셨다. ${a<10?(this.gran&&!this.f.ggone?'할머니가 대신 밥을 챙겨 주셨다.':'옆집 어른이 대신 밥을 챙겨 주셨다.'):'그동안 집안일을 내가 맡아 했다.'}`,fx:{r:2,j:-2},sc:'hosp'});
       const hs=this.homeSibs(); if(hs.length&&R()<.15*step){ const T=sibTerm(this,pickOne(hs)), W=josa(T,'과','와'); add({txt:pickOne(a<6?[`${W} 이불 속에서 술래잡기를 하다 엄마한테 혼났다.`,`${T}가 업어 줘서 동네 한 바퀴를 돌았다.`.replace(T+'가',josa(T,'이','가'))]:[`${W} 밤늦게까지 이불 속에서 이야기를 나눴다.`,`${W} 리모컨 때문에 크게 싸웠다가 저녁에 슬쩍 화해했다.`,`${W} 함께 부모님 몰래 깜짝 생일상을 차렸다.`,`${T}에게 고민을 털어놓았다. 생각보다 진지하게 들어 주었다.`]),fx:{r:2,j:2},sc:'life'}); }
     }
     // 어른이 되어: 부모님이 나이 드시고, 돌봐 드려야 할 때가 온다

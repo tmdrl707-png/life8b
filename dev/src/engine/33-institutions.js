@@ -95,7 +95,7 @@ function csFlag(L,k){ const cs=instOf(L).cs; return !!cs&&cs[3].split(' ').inclu
 // 빈칸 값: 그 나라 제도의 이름
 function instVars(L){ const I=instOf(L), f=L.f, cs=I.cs;
   return {hiN:I.hi||'의료 지원 제도',penN:I.pen||'연금',spN:I.sp?I.sp[1]:'노인 수당',spA:I.sp?I.sp[0]:65,rosN:I.ros||'동네 저축 모임',mmN:I.mm||'휴대폰 송금',migTo:f.migTo||pickOne(I.mig),svcM:cs?cs[0]:18,svcY:cs?(cs[0]>=24?Math.round(cs[0]/12)+'년':cs[0]+'개월'):'',raA:retAgeOf(L)||60,oopP:I.oop,infP:I.inf,nsN:I.ns||'',
-    rank:rankName(L),rank2:rankName(L,1),abrTo:f.abrS||pickOne(['미국','영국','독일','일본','캐나다','오스트레일리아','프랑스','네덜란드']),stdTo:pickOne(L.C.tier>=3?['미국','영국','독일','캐나다','오스트레일리아']:['영국','미국','중국','말레이시아','튀르키예','러시아','독일'])}; }
+    rank:rankName(L),rank2:rankName(L,1)||'한 단계 위',abrTo:f.abrS||pickOne(['미국','영국','독일','일본','캐나다','오스트레일리아','프랑스','네덜란드']),stdTo:pickOne(L.C.tier>=3?['미국','영국','독일','캐나다','오스트레일리아']:['영국','미국','중국','말레이시아','튀르키예','러시아','독일'])}; }
 
 /* ---------- 직급: 같은 일을 오래 하면 한 계단씩 오른다 ---------- */
 const RANKS={

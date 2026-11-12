@@ -133,17 +133,21 @@ const SC_VAR=new Set(["baby_AF", "baby_EA", "baby_LA", "baby_ME", "baby_SA", "ba
 const townStage=a=>a<10?6:a<19?13:a<75?19:75;
 // 엔딩·기억의 일상 장면: 'life@end_meal_EA'처럼 종류 뒤에 그림 이름을 붙여 넘긴다
 const SC_END=new Set(['end_grandkids','end_couple','end_garden','end_friends','end_album','end_birthday','end_rain_window','end_dawn_walk','end_moving','end_stargaze','end_playground','end_bench','end_neighbors','end_videocall','end_exercise','end_study_night','end_fishing','end_window_night']);
-function scHas(n){ if(!n) return false; if(SC_END.has(n)) return true; return /^end_meal_(EA|SE|SA|AF|ME|LA|WE)$/.test(n)||/^town(6|13|19|75)_(EA|SE|SA|AF|ME|LA|WE)$/.test(n)||/^life_(EA|SE|SA|AF|ME|LA|WE)_[mf]$/.test(n); }
+// art/sc 에 실제로 있는 그림 이름 (빌드 때 목록을 고쳐 적는다: 그림을 더하면 여기에도)
+const SC_ALL=new Set(["baby", "baby_AF", "baby_EA", "baby_LA", "baby_ME", "baby_SA", "baby_SE", "baby_WE", "birth", "birth_r", "cold", "drought", "end_album", "end_bench", "end_birthday", "end_couple", "end_dawn_walk", "end_exercise", "end_fishing", "end_friends", "end_garden", "end_grandkids", "end_meal_AF", "end_meal_EA", "end_meal_LA", "end_meal_ME", "end_meal_SA", "end_meal_SE", "end_meal_WE", "end_moving", "end_neighbors", "end_playground", "end_rain_window", "end_stargaze", "end_study_night", "end_videocall", "end_window_night", "farewell", "farewell_AF", "farewell_EA", "farewell_LA", "farewell_ME", "farewell_SA", "farewell_SE", "farewell_WE", "fest", "fest_AF", "fest_LA", "fest_ME", "fest_SA", "fest_SE", "fest_WE", "fire", "flood", "friend", "grad", "harvest", "heat", "hosp", "hosp_AF", "hosp_LA", "hosp_ME", "hosp_SA", "hosp_SE", "hosp_WE", "hosp_r", "house", "house_AF", "house_LA", "house_ME", "house_SA", "house_SE", "house_r", "job", "job_AF", "job_LA", "job_ME", "job_SA", "job_SE", "job_WE", "job_r", "jobloss", "life", "life_AF_f", "life_AF_m", "life_EA_f", "life_EA_m", "life_LA_f", "life_LA_m", "life_ME_f", "life_ME_m", "life_SA_f", "life_SA_m", "life_SE_f", "life_SE_m", "life_WE_f", "life_WE_m", "mine", "money", "noschool", "pet", "quake", "school", "school_AF", "school_LA", "school_ME", "school_SA", "school_SE", "school_WE", "school_r", "sea", "sick", "sport", "stage", "storm", "title", "town", "town13_AF", "town13_EA", "town13_LA", "town13_ME", "town13_SA", "town13_SE", "town13_WE", "town19_AF", "town19_EA", "town19_LA", "town19_ME", "town19_SA", "town19_SE", "town19_WE", "town6_AF", "town6_EA", "town6_LA", "town6_ME", "town6_SA", "town6_SE", "town6_WE", "town75_AF", "town75_EA", "town75_LA", "town75_ME", "town75_SA", "town75_SE", "town75_WE", "travel", "unrest", "volcano", "wedding", "wedding_AF", "wedding_EA", "wedding_LA", "wedding_ME", "wedding_SA", "wedding_SE", "wedding_WE"]);
+function scHas(n){ if(!n) return false; if(SC_END.has(n)||SC_ALL.has(n)) return true; return /^end_meal_(EA|SE|SA|AF|ME|LA|WE)$/.test(n)||/^town(6|13|19|75)_(EA|SE|SA|AF|ME|LA|WE)$/.test(n)||/^life_(EA|SE|SA|AF|ME|LA|WE)_[mf]$/.test(n); }
 function scHash(t){ let h=7; t=String(t||''); for(let i=0;i<t.length;i++) h=(h*31+t.charCodeAt(i))>>>0; return h; }
 // 종류·문장·나이로 알맞은 그림을 골라 '종류@그림이름'을 돌려준다 (일상(life)과 집 밖(town)만, 나머지는 그대로)
 function scVar(kind,txt,age,L){ try{ const g=L&&L.C&&RG_ART[L.C.rg]; if(!g||age==null) return kind;
     if(kind==='town') return 'town@town'+townStage(age)+'_'+g;
     if(kind!=='life') return kind; const t=String(txt||''), meal='end_meal_'+g;
-    const R=[[/손주|손자|손녀/,'end_grandkids'],[/생일|케이크|촛불/,'end_birthday'],[/사진|앨범/,'end_album'],[/낚시/,'end_fishing'],[/별을|별이|밤하늘|달을|달이/,'end_stargaze'],[/텃밭|정원|화분|꽃을 심|씨앗/,'end_garden'],
+    if(age<3&&!/생일|돌잔치/.test(t)) return 'baby';   // 아기 때의 일상은 아기와 부모 그림으로
+    if(/집값|계약서|전세|월세|보증금|청약|집주인/.test(t)) return 'house';
+    const R=[[/혜성|유성|일식|월식/,'end_stargaze'],[/모임|봉사|쓰레기를 줍|청소를 했|마을 회의|선거/,'end_neighbors'],[/손주|손자|손녀/,'end_grandkids'],[/정전|전기가 (들어오지|끊)/,'end_window_night'],[/생일|케이크/,'end_birthday'],[/사진|앨범/,'end_album'],[/낚시/,'end_fishing'],[/별을|별이|밤하늘|달을|달이/,'end_stargaze'],[/텃밭|정원|화분|꽃을 심|씨앗/,'end_garden'],
       [/영상통화|전화|편지|소식을 전/,'end_videocall'],[/이웃/,'end_neighbors'],[/산책|바닷가|바다를/,'end_dawn_walk'],[/운동|체조|달리기/,'end_exercise'],[/빗소리|비가 내|비 오는/,'end_rain_window'],[/이사/,'end_moving'],
       [/먹|밥|식사|음식|요리|부엌|반찬|저녁상/,meal],[/친구/,age<60?'end_friends':'end_couple'],[/배우자|아내|남편|부부|둘이서/,age>=50?'end_couple':'end_friends'],[/퇴근|일을 마치|하루를 마치/,'end_bench'],[/공부|책을|숙제/,age<30?'end_study_night':'end_rain_window'],[/놀|술래|운동장|공차기/,age<13?'end_playground':'end_friends']];
     for(const [re,n] of R) if(re.test(t)) return 'life@'+n;
-    const pool=age<13?['end_playground','end_birthday',meal,'end_stargaze']:age<30?['end_friends','end_study_night',meal,'end_bench','end_rain_window','end_stargaze']:age<60?[meal,'end_bench','end_neighbors','end_birthday','end_rain_window','end_exercise','end_moving']:['life_'+g+(L.sex===0?'_m':'_f'),'end_couple','end_garden','end_grandkids','end_album','end_window_night','end_videocall','end_fishing','end_dawn_walk',meal];
+    const pool=age<13?['end_playground',meal,'end_playground','end_stargaze']:age<30?['end_friends','end_study_night',meal,'end_bench','end_rain_window','end_stargaze']:age<60?[meal,'end_bench','end_neighbors','end_rain_window','end_window_night']:['life_'+g+(L.sex===0?'_m':'_f'),'end_couple','end_garden','end_grandkids','end_album','end_window_night','end_videocall','end_fishing','end_dawn_walk',meal];
     return 'life@'+pool[scHash(t+'|'+age)%pool.length]; }catch(e){ return kind; } }
 const scBase=k=>String(k||'').split('@')[0];
 function scArtName(kind,L){ if(kind==='title') return 'title'; kind=String(kind||''); if(kind.includes('@')){ const [b,n]=kind.split('@'); return scHas(n)?n:scArtName(b,L); }
@@ -193,10 +197,25 @@ sceneHTML=function(kind){ if((kind==='life'||kind==='town')&&G.life){ const L=G.
 const _popupSc=popup;
 popup=function(tag,txt,fx,after,cls,sc,nt){ if(G.life){ const m=/^(\d+)살/.exec(String(tag||'')), a=m?+m[1]:G.life.age; if(sc==='life'||sc==='town') sc=scVar(sc,txt,a,G.life); else sc=scAgeFix(sc,txt,a); } return _popupSc(tag,txt,fx,after,cls,sc,nt); };
 // 그 나이에 맞지 않는 그림을 바꾼다: 어른에게 아이들 그림이 나오지 않게 (어른의 시험은 밤의 책상, 운동은 공원 운동, 친구는 저녁 모임, 아픔은 병원·벤치)
-function scAgeFix(kind,txt,a){ if(!kind||!G.life||G.life.dead) return kind; const t=String(txt||''), sch=G.life.f&&G.life.f.school;
-  if(kind==='school'&&a>=20&&!sch) return 'life@end_study_night';
-  if(kind==='sport'&&a>=25) return 'life@end_exercise';
-  if(kind==='friend'&&a>=25) return 'life@end_friends';
-  if(kind==='sick'&&a>=19){ if(/지쳤|쉬어|피곤|마음도/.test(t)) return 'life@end_bench'; if(/마지막|가족과 함께 시간/.test(t)) return a>=55?'life':'hosp'; return 'hosp'; }
+function scAgeFix(kind,txt,a){ if(!kind||!G.life||G.life.dead) return kind; const L=G.life, t=String(txt||''), sch=L.f&&L.f.school, C=L.C||{}, g=RG_ART[C.rg]||'EA', b=scBase(kind);
+  // 문장에 맞춰 바로잡기 (종류는 맞지만 그림이 어긋나던 것들)
+  if(b==='farewell'&&/고향에 다녀|귀성|고향으로 가는/.test(t)) return 'travel';
+  if(b==='wedding'&&/돌잔치|생일/.test(t)) return 'life@end_birthday';
+  if((b==='baby'||b==='birth')&&/손주가 (놀러|학교|숙제)|손주와|손주를 맡/.test(t)) return 'life@end_grandkids';
+  if(b==='grad'&&a<19) return 'school';                                   // 초·중·고 졸업식에 학사모 그림 대신 학교
+  if(b==='sport'){ if(/텔레비전|티브이|중계|화면으로/.test(t)) return 'life@end_meal_'+g; if(/온 나라가|거리가 (축제|노랗게)|들썩/.test(t)) return 'fest';
+    if(/발명|과학|글짓기|그리기|미술|수학|퀴즈/.test(t)) return 'school'; if(/자전거/.test(t)&&a<13) return 'life@end_playground'; }
+  if(b==='job'){ if(/농사|밭일|밭에|논에|수확|추수|씨를 뿌|가축/.test(t)) return 'harvest'; if(/입영|입대|훈련소|군 복무|복무를 마|전역/.test(t)) return 'travel';
+    if(/회식|송년회|2차|건배/.test(t)) return 'life@end_friends';
+    const jk=a>=19&&L.f&&L.f.job&&L.job?L.job.kind:null;
+    if(jk==='office') return 'job@job_WE'; if(jk==='hosp') return 'hosp'; if(jk==='school') return 'school'; if(jk==='farm') return 'harvest';
+    if(jk==='dream') return /선수|경기|훈련/.test(t)?'sport':'stage'; if(jk==='shop'&&C.tier>=3) return 'job@job'; }
+  if(b==='hosp'&&a<13&&(g==='EA'||g==='WE')) return 'sick';                 // 아이의 병원 일에 할머니 그림 대신 아이 그림
+  if(b==='house'&&L.set==='U'&&C.tier>=3) return 'house@house';               // 잘사는 나라 도시의 집에 시골 전통집 그림이 나오지 않게
+  // 나이에 맞게: 어른에게 아이들 그림이 나오지 않게 (어른의 시험은 밤의 책상, 운동은 공원 운동, 친구는 저녁 모임, 아픔은 병원·벤치)
+  if(b==='school'&&a>=20&&!sch) return 'life@end_study_night';
+  if(b==='sport'&&a>=25) return 'life@end_exercise';
+  if(b==='friend'&&a>=25) return 'life@end_friends';
+  if(b==='sick'&&a>=19){ if(/지쳤|쉬어|피곤|마음도/.test(t)) return 'life@end_bench'; if(/마지막|가족과 함께 시간/.test(t)) return a>=55?'life':'hosp'; return 'hosp'; }
   return kind; }
 
