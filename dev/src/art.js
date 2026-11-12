@@ -127,7 +127,7 @@ const SC_ART=new Set(['house','flood','quake','storm','drought','heat','cold','f
 const SC_RURAL=new Set(['house','school','birth','baby','job','hosp']);
 const SC_IMG={};
 const SC_REG=new Set(['life','farewell']), RG_ART={EA:'EA',SE:'SE',SA:'SA',AF:'AF',ME:'ME',CA:'ME',LA:'LA',EU:'WE',NA:'WE',OC:'WE'};
-const SC_VAR=new Set(["baby_AF", "baby_EA", "baby_LA", "baby_ME", "baby_SA", "baby_SE", "school_AF", "school_SA", "school_SE", "school_r", "wedding_AF", "wedding_EA", "wedding_LA", "wedding_ME", "wedding_SA", "wedding_SE"]);
+const SC_VAR=new Set(["baby_AF", "baby_EA", "baby_LA", "baby_ME", "baby_SA", "baby_SE", "house_AF", "house_LA", "house_ME", "house_SA", "house_SE", "school_AF", "school_LA", "school_ME", "school_SA", "school_SE", "school_WE", "school_r", "wedding_AF", "wedding_EA", "wedding_LA", "wedding_ME", "wedding_SA", "wedding_SE"]);
 function scArtName(kind,L){ if(kind==='title') return 'title'; if(!SC_ART.has(kind)) return null; const C=L&&L.C, g=C&&RG_ART[C.rg];
   if(g&&kind==='life') return 'life_'+g+(L.sex===0?'_m':'_f'); if(g&&kind==='farewell') return 'farewell_'+g;
   if(C&&SC_RURAL.has(kind)&&(C.tier<=1||(C.tier===2&&L.set==='R'))) return (kind==='baby'?'birth':kind)+'_r';
