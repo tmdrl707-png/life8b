@@ -1,1 +1,3 @@
 test.html
+dev/tests/out/
+__pycache__/
