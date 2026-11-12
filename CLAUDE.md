@@ -12,6 +12,7 @@ python3 dev/rebuild.py                 # dev/src/template.html에 조각 57개�
 python3 -m http.server 8765            # 저장소 맨 위에서. http://localhost:8765/index.html 로 확인
 python3 dev/tests/aplay.py KR          # 한 삶을 끝까지 직접 고르며 도는 시험 (나라 코드를 여러 개 줄 수 있음)
 python3 dev/tests/aendshow.py          # 엔딩 슬라이드를 모두 넘겨 보는 시험
+python3 dev/tests/endearly.py          # 엔딩 2판 흐름(어린 삶 8장·어른 12장, 남긴 뒤 다른 삶 제안, 답 저장)
 python3 dev/tests/endL.py x            # 엔딩을 컴퓨터(1366×768)·휴대폰 가로(844×390)로 찍음 → dev/tests/out/
 ```
 시험 스크립트는 Playwright를 쓴다 (`pip install playwright && playwright install chromium`). 외부(https) 요청은 막고 돌리므로 Firebase 없이 **이 기기 저장(localStorage) 방식**으로 동작한다. 로그인·아이디 관리 시험은 `ids.py`가 `Store.fb=false`로 바꿔서 한다.
@@ -47,6 +48,7 @@ python3 dev/tests/endL.py x            # 엔딩을 컴퓨터(1366×768)·휴대�
 - 시간 흐름: 학생은 창이 떠 있어도 `flowTick`이 한 해를 흘려 보낸다. 선택 창은 `DEC`(제한 시간 뒤 저절로). 교사용·개발자·저장하기 창(`G.hardPause`)은 멈춘다. 한 해 길이는 `L.yl`(`secOf`).
 - `Store`: Firebase(REST) 또는 localStorage. 모드 `db`(인증 끔, 아이디·섞은 비밀번호를 `acc/`에 저장), `auth`(Firebase 인증), `local`. 경로: `acc/`, `users/`, `reg/`, `idcfg/closed`, `rooms/<코드>/…`, `tdata/…`.
 - 학급 방: 선생님이 열면 반 전체가 같은 나이로 움직인다. 일찍 끝난 학생은 '다른 삶 둘러보기'. 끝난 삶은 `members/<아이디>/past/<시각>`.
+- 엔딩(ui/40 `finishLife`)은 4막 12장: 마지막 순간 · 남겨진 말 · 삶의 길(`endPathSVG`) · 주어진 것/고른 것/우연(`endCross`·`endChance`) · 기억 고르기(ui/60 `pickCands`, 시기별) · 스쳐 간 장면 · 떠나보낸 것과 남긴 것(`endLossLeft`) · 같은 1초(`endMapSVG`) · 숫자로 본 이 삶 · 생각해 보기 · 나의 한 문장 · 인생 기록. 행복 점수·그래프는 기록 메뉴(ui/55 '돈과 행복')에만 둔다(선생님 결정). 일찍 끝난 삶의 다시 태어나기는 기록 뒤 `endOffer`.
 - 마친 삶 기록: `lifeRecord()`(요약·오각형 최대·흐름·돈·이야기 표·기억·답) → `lifeDetailHTML()`로 학생·교사 화면에서 펼쳐 본다.
 - 장면 그림 이름 규칙은 `ui/53-art-loader.js`의 `scArtName(kind,L)`: 지역(`life_<지역>_<m|f>`, `farewell_<지역>`), 시골판(`<종류>_r`), 지역판(결혼·아기·학교·집·직업·병원·축제, `SC_VAR`). 집 밖 장면 `town`은 나이 4단계(`town6|13|19|75_<지역>`, `townStage`). 일상·집 밖 장면은 `scVar(kind,문장,나이,L)`이 `'life@end_meal_EA'`처럼 종류 뒤에 그림 이름을 붙여 고른다(엔딩 카드·나의 기록·사건 창 `popup`). 지역 코드: EA·SE·SA·AF·ME·LA·WE(`RG_ART`). 이미지가 없으면 옛 도트 그림으로 대신 나온다.
 

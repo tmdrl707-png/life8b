@@ -239,3 +239,35 @@
 #s-end .rp{color:#8FA3B3;font-size:.85em}
 canvas#card{width:100%;max-width:22rem;height:auto;border-radius:var(--r);display:block;margin:0 auto}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ===== 엔딩 2판 (2026-11-12): 4막 12장 — 작별 · 돌아보기 · 견주어 보기 · 나에게로 ===== */
+/* 내용이 길 때 가운데 정렬로 위쪽이 잘리지 않게: 위·아래 자동 여백으로 가운데 */
+#s-end .slide{justify-content:flex-start!important}
+#s-end .slide:not(.split)>:first-child{margin-top:auto}#s-end .slide:not(.split)>:last-child{margin-bottom:auto}
+#s-end .voices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr));gap:12px}
+#s-end blockquote.vq{font-size:1.12rem;line-height:1.6;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+#s-end blockquote.vq cite{font-size:.9rem;color:#FFC9A8;font-weight:700}#s-end .vq .mref{font-size:.8rem;color:#9FB0BF}
+#s-end .epath{width:100%;overflow-x:auto}#s-end .epath svg{width:100%;min-width:600px;max-height:calc(100dvh - 12rem);height:auto;display:block}
+#s-end .gcr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#s-end .ll{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#s-end .gcol{background:rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;border-top:3px solid #6B7E8D;min-width:0}
+#s-end .gcol.g{border-top-color:#9FC6E8}#s-end .gcol.c{border-top-color:#FFC9A8}#s-end .gcol.u{border-top-color:#B9A6D6}
+#s-end .gcol h4{margin:0 0 6px;font-size:1rem}#s-end .gcol ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px;font-size:.95rem;line-height:1.5}
+#s-end .gcol li b{color:#FFC9A8;margin-right:4px}#s-end .gcol small{color:#9FB0BF}
+#s-end .ask{font-weight:700;margin:4px 0 0}
+#s-end .ansrow{display:flex;flex-wrap:wrap;gap:8px}#s-end .btn.ans{flex:1 1 9rem}#s-end .btn.ans.on{background:#FFC9A8;border-color:#FFC9A8;color:#2A2622;font-weight:800}
+#s-end .cardrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:12px}
+#s-end .cardrow .ncard{display:flex!important;flex-direction:column}
+#s-end .cardrow .nbody{padding:10px 12px}#s-end .cardrow .nbody p{font-size:.95rem!important;margin:0;line-height:1.5}
+#s-end figure.emap{margin:0}#s-end figure.emap svg{width:100%;height:auto;background:#DCEEFA;border-radius:12px;display:block}
+#s-end figure.emap figcaption{font-size:.8rem;color:#AFC0CD;margin-top:4px}
+#s-end #recBox canvas#card{max-height:calc(100dvh - 13rem);width:auto!important;max-width:100%;display:block;margin:0 auto}
+#s-end .hbar,.hbar{display:grid;grid-template-columns:7rem minmax(0,1fr) 2.4rem;gap:.5rem;align-items:center;margin:4px 0}.hbar i{display:block;height:.6rem;border-radius:99px}
+#s-end .slide label.stack-s input{margin-top:4px}
+@media (max-width:700px){ #s-end .gcr,#s-end .ll{grid-template-columns:1fr} }
+@media (min-aspect-ratio: 5/4) and (max-height: 560px){
+  #s-end .gcol{padding:8px 10px}#s-end .gcol ul{font-size:.82rem;gap:2px}#s-end .gcol h4{font-size:.88rem;margin-bottom:3px}
+  #s-end blockquote.vq{font-size:.95rem;padding:10px 12px}#s-end .btn.ans{padding:.35rem .6rem;min-height:0;font-size:.85rem}
+  #s-end .cardrow .nbody p{font-size:.8rem!important}#s-end .cardrow .nbody{padding:6px 8px}#s-end .cardrow .mq{display:none}
+  #s-end .epath svg{min-width:560px}
+}
+#s-end .eone{display:flex;flex-direction:column;gap:.7rem;width:100%}

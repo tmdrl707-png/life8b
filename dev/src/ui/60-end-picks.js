@@ -5,15 +5,19 @@ function scThumb(kind,who,cls){ let n=null; try{ n=scArtName(kind,who)||scArtNam
   return `<span class="${cls||'scimg'}" data-t="${esc(tt)}">${n?`<img src="art/sc/${n}.webp" alt="${esc(tt)}" loading="lazy" onerror="this.remove()">`:''}</span>`; }
 const recWho=l=>({C:COUNTRIES[l.c||'KR']||COUNTRIES.KR,set:l.set,sex:l.sex,f:{}});
 // 고를 거리: 큰 일·내가 고른 일·장면이 있는 기억을 앞에, 삶 전체에서 고르게 12개
-function pickCands(L){ const M=(L.mem||[]).filter(m=>m.a>0&&m.t&&!/^(몸이 많이 약해져|크게 아파 집에서)/.test(m.t));
-  const sc=m=>(m.big?3:0)+(m.q?2:0)+(m.sc?1:0)+(m.f?-1:0); const top=M.slice().sort((a,b)=>sc(b)-sc(a)).slice(0,30).sort((a,b)=>a.a-b.a);
-  if(top.length<=12) return top; const out=[]; for(let i=0;i<12;i++){ const m=top[Math.floor(i*top.length/12)]; if(!out.includes(m)) out.push(m); } return out; }
+function pickCands(L){ const M=(L.mem||[]).filter(m=>m.a>0&&m.t&&!/^(몸이 많이 약해져|크게 아파 집에서)/.test(m.t)), a=L.lifespan||L.age;
+  // 어린 시절 · 청소년 · 어른 · 노년에서 고루 (예전에는 점수가 같으면 앞의 기억만 남아 30대 뒤가 빠졌다)
+  const sc=m=>memScore(m)+(m.q&&m.l?1:0)+(m.f?-1:0)+m.a*1e-4, best=(arr,n)=>arr.slice().sort((x,y)=>sc(y)-sc(x)).slice(0,n);
+  if(a<15) return best(M,12).sort((x,y)=>x.a-y.a);
+  const e2=Math.max(30,Math.round(a*.6)), parts=[M.filter(m=>m.a<13),M.filter(m=>m.a>=13&&m.a<20),M.filter(m=>m.a>=20&&m.a<e2),M.filter(m=>m.a>=e2)].filter(x=>x.length);
+  const per=Math.max(2,Math.floor(12/parts.length)), out=[]; parts.forEach(p=>out.push(...best(p,per)));
+  if(out.length<12) best(M.filter(m=>!out.includes(m)),12-out.length).forEach(m=>out.push(m));
+  return out.slice(0,12).sort((x,y)=>x.a-y.a); }
 function pickSlideHTML(L,C,scKind){ const cut=(t,n)=>t.length>n?t.slice(0,n-1)+'…':t;
-  return `<div id="pkBox" class="pkbox"><p class="soft">이 삶을 정리해요. 고른 것은 마지막 기록 카드와 '지나온 삶'에 남아요.</p>
-    <h3 class="pkh">1. 가장 기억에 남는 순간 3가지 <small id="pkN">0 / 3</small></h3>
+  return `<div id="pkBox" class="pkbox"><p class="soft">가장 기억에 남는 순간 3가지를 골라 주세요. 고른 장면이 다음 장에서 스쳐 지나가고, 기록 카드와 '지나온 삶'에 남아요.</p>
+    <h3 class="pkh">가장 기억에 남는 순간 <small id="pkN">0 / 3</small></h3>
     <div class="pkgrid">${C.map((m,i)=>`<button type="button" class="pk" data-i="${i}">${scThumb(scKind(m),L,'pkimg')}<span class="pka">${m.a}살</span><span class="pkt">${esc(cut(memT(m),70))}</span><span class="pkno"></span><span class="pkstar" data-s="${i}" title="가장 기억에 남는 한 장면">★ 대표 장면</span></button>`).join('')||'<p class="small">고를 만한 기억이 없어요.</p>'}</div>
-    <p class="small sub">고른 순간에서 <b>★ 대표 장면</b>을 누르면 그 장면이 이 삶을 대표하는 그림이 돼요. 고르지 않으면 첫 번째로 고른 순간이 대표가 돼요.</p>
-    <label class="stack-s pksum" for="lsum"><b>2. 이 삶을 한 마디로 요약하자면?</b><input id="lsum" maxlength="40" placeholder="예: 바다를 사랑해 끝까지 바다 곁에 산 사람"></label></div>`; }
+    <p class="small sub">고른 순간에서 <b>★ 대표 장면</b>을 누르면 그 장면이 이 삶을 대표하는 그림이 돼요. 고르지 않으면 첫 번째로 고른 순간이 대표가 돼요.</p></div>`; }
 function pickWire(box,PK){ const paint=()=>{ box.querySelectorAll('.pk').forEach(b=>{ const i=+b.dataset.i, k=PK.sel.indexOf(i); b.classList.toggle('on',k>=0); b.classList.toggle('fav',PK.fav===i&&k>=0); b.querySelector('.pkno').textContent=k>=0?k+1:''; }); const n=$('pkN'); if(n) n.textContent=`${PK.sel.length} / 3`; };
   box.querySelectorAll('.pk').forEach(b=>b.onclick=e=>{ const i=+b.dataset.i;
     if(e.target.closest('.pkstar')){ if(!PK.sel.includes(i)){ if(PK.sel.length>=3) return; PK.sel.push(i); } PK.fav=i; paint(); return; }

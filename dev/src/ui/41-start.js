@@ -13,7 +13,7 @@ function lifeRecord(L,o){ const a=L.lifespan, cz=causeOf(L), by=L.by||2026; let 
   const avgJ=H.length?Math.round(H.reduce((x,h)=>x+(h.j||0),0)/H.length):null;
   return {name:L.name,c:L.c,set:L.set,famI:L.famI,age:a,by,top:o.top,n:L.n,town:L.town,nw:Math.round(L.nw||0),kids:o.kids,title:o.title,epi:o.epi,cause:cz.n,sex:L.sex,
     peak:pk?[pk.a,pk.j,pk.k,pk.t,pk.e,pk.r,pk.h]:null,hist:hs,avgJ,earned:Math.round(L.earned||0),maxNW:Math.round(L.maxNW||0),le:L.C.le,
-    rows:rows.slice(0,24).map(r=>[r[0].slice(0,30),r[1].slice(0,200)]),mem:pick.map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,140)]),ans:o.ans||[],notes:o.notes||[],sum:o.sum||'',top3:o.top3&&o.top3.length?o.top3:null,fav:o.fav!=null?o.fav:null,t:Date.now()}; }
+    rows:rows.slice(0,24).map(r=>[r[0].slice(0,30),r[1].slice(0,200)]),mem:pick.map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,140)]),ans:o.ans||[],notes:o.notes||[],sum:o.sum||'',hpf:L.hp?(()=>{ const hp=L.hp, n=Math.max(1,hp.cnt||1), r={}; ['m','n','r','g','c','h'].forEach(k=>r[k]=Math.round((hp[k]||0)/n)); return r; })():null,top3:o.top3&&o.top3.length?o.top3:null,fav:o.fav!=null?o.fav:null,t:Date.now()}; }
 
 // 마친 삶 하나를 자세히: 숫자 요약 · 오각형 · 나이에 따른 흐름 · 이야기 표 · 기억에 남은 일 · 남긴 말 (교사용 기록과 내 기록에서 함께 쓴다)
 function lifeDetailHTML(l){

@@ -12,14 +12,20 @@ async def main():
         await ev("()=>{ G.running=false; if(!$('sheet').hidden) closeSheet(); const L=G.life; L.cur=null; L.runAuto(); if(!L.dead){ L.dead=true; L.lifespan=L.age; } finishLife(); }"); await pg.wait_for_timeout(800)
         for _ in range(40):
             if await pg.locator('#pkBox').count(): break
-            if await pg.locator('#ltitle').count(): await pg.fill('#ltitle','시험으로 산 삶')
             await pg.click('#btnStep'); await pg.wait_for_timeout(200)
         print('고르기 장:',await pg.inner_text('#endIn .shead'),'| 고를 거리',await pg.locator('#pkBox .pk').count())
         await pg.locator('#pkBox .pk').nth(0).click(); await pg.locator('#pkBox .pk').nth(3).click(); await pg.locator('#pkBox .pk').nth(5).click()
         await pg.locator('#pkBox .pk').nth(3).locator('.pkstar').click(); await pg.locator('#pkBox .pk').nth(7).click()
-        await pg.fill('#lsum','끝까지 가족 곁을 지킨 사람'); await pg.wait_for_timeout(300)
         print('고른 수',await pg.inner_text('#pkN'))
         await pg.screenshot(path=S+'pick_slide.png')
+        await pg.click('#btnStep'); await pg.wait_for_timeout(500)
+        print('고른 장면:',(await pg.inner_text('#endIn .slide'))[:80].replace('\n',' / '))
+        for _ in range(10):
+            if await pg.locator('#lsum').count(): break
+            if await pg.locator('#endIn [data-ans]').count(): await pg.locator('#endIn [data-ans]').first.click()
+            if await pg.locator('#rq1').count(): await pg.fill('#rq1','엄마, 늘 밥을 챙겨 주셔서')
+            await pg.click('#btnStep'); await pg.wait_for_timeout(300)
+        await pg.fill('#lsum','끝까지 가족 곁을 지킨 사람'); await pg.fill('#ltitle','시험으로 산 삶'); await pg.wait_for_timeout(200)
         await pg.click('#btnStep'); await pg.wait_for_timeout(800)
         print('마지막 장:',await pg.inner_text('#endIn .shead'),'| 메뉴',await pg.locator('#recBox .rtabs button').all_inner_texts())
         print('나의 기록:',(await pg.inner_text('#recBox .rpane[data-r=mine]'))[:150].replace('\n',' / '))
