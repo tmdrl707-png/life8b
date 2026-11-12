@@ -24,6 +24,9 @@ const THB=[ // [이름, 문장 규칙, 간격(해), 최대 횟수] — 간격·�
   ['homecome',/귀성|고향에 다녀오려면|고향으로 가는 길/,3,8],
   ['vacation',/휴가/,2,12],
   ['tornado',/토네이도/,6,3],
+  // 사람과의 작은 일도 같은 장면이 몇 해마다 되풀이되지 않게
+  ['friendSick',/친구 .{0,14}아프다는 소식/,8,2], ['fundraise',/돕는 모금/,8,3], ['moveHelp',/이삿짐을 나르/,10,2], ['oldFriend',/안부를 물어 왔다|오랜만에 보자고/,6,4],
+  ['doctorEx',/운동을 권했다/,10,2], ['kidGreet',/동네 아이가 인사를/,8,3], ['bossTeach',/일을 가르쳐 달라고/,8,3],
 ];
 const thbVal=(v,L)=>typeof v==='function'?v(L):v;
 function thbKeys(t){ t=String(t||''); const ks=[]; for(const th of THB) if(th[1].test(t)) ks.push(th); return ks; }
@@ -102,14 +105,22 @@ const SPORT_POOL={KR:['축구','야구','농구','배구','배드민턴','태권
     if(/토네이도 경보/.test(t)){ ev.cd=Math.max(ev.cd||0,6); ev.mx=3; }
     if(/사이클론 경보가 울려 마을 대피소/.test(t)){ ev.cd=Math.max(ev.cd||0,6); }
     if(/^부모님 없이 맞는/.test(t)){ ev.mx=2; ev.cd=Math.max(ev.cd||0,5); }
+    // 야간 자율 학습·PC방은 동아시아 학교의 모습, 노래방은 동아시아·동남아와 살림이 넉넉한 나라에서
+    if(/^밤늦게까지 남아 공부하는 자율 학습/.test(t)) ev.c.push('rg:EA');
+    if(/^동네 노래방\(가라오케\)/.test(t)) ev.c.push('t3|rg:SE|rg:EA');
   });
 })();
 
 /* ---------- 작은 선택: 소극적인 선택은 실패하지 않는다 ---------- */
+const RX_HONEST=/돌려 드린다|돌려준다|돌려 준다|사실대로|솔직하게 말|정직하게|그대로 드린다|주인을 찾아|경찰서에 맡/;
 const RX_PASSIVE=/구경|들여다본|바라본|올려다본|웃는다|웃어 준|까르르|잠든다|안긴다|품에|귀 기울|듣는다|감사한다|떠올린다|돌아본다|생각한다|응원|지켜본|지켜보|멀리서만|집에 있|집에서 (쉰|쉬|조용|지낸)|쉰다|쉬기로|듣기만|소리만|할 일을 먼저|그냥 |넘어간|모른 척|관심 없|귀찮|빠진다|빠지겠|거절|사양|돌아선|평소처럼|하던 일을|참는다|기다린다|미룬다|양보한다|따른다/;
 (function(){ const P=Life.prototype, _op=P.optP;
-  P.optP=function(o){ if(this.age<6&&o&&optGain(o).g<=4) return null;   // 아기·어린아이의 작은 선택(웃기, 들여다보기 …)은 실패하지 않는다
-    if(o&&RX_PASSIVE.test(String(o.l||''))&&optGain(o).g<=3) return null; return _op.call(this,o); };
+  SCENES.forEach(sc=>{ if(sc.req==='dying') sc.opts.forEach(o=>o.sure=1); });   // 마지막 시간의 선택(고맙다는 말 …)은 실패하지 않는다
+  P.optP=function(o){ if(o&&o.sure) return null; if(this.age<6&&o&&optGain(o).g<=4) return null;   // 아기·어린아이의 작은 선택(웃기, 들여다보기 …)은 실패하지 않는다
+    if(o&&RX_PASSIVE.test(String(o.l||''))&&optGain(o).g<=3) return null;
+    if(o&&!o.tr&&optGain(o).g<=1) return null;                                // 얻는 것이 아주 작은 선택(행복 +1 같은)도 확실
+    if(o&&RX_HONEST.test(String(o.l||''))) return null;                        // 정직·양심의 선택은 '내가 그렇게 한다'는 것 (실패하지 않는다)
+    return _op.call(this,o); };
 })();
 
 /* ---------- 달력: 한 해를 짤 때와 일이 일어날 때 사이에 형편이 바뀌면(집을 샀다, 일을 잃었다 …) 맞지 않게 된 일은 건너뛴다 ---------- */
@@ -120,6 +131,8 @@ const RX_PASSIVE=/구경|들여다본|바라본|올려다본|웃는다|웃어 �
 /* ---------- 새로 더한 달력의 일 (맨 뒤에 더해야 예전 저장의 번호가 바뀌지 않는다) ---------- */
 Y(65,95,'ret','*','{penN}이(가) 들어오는 날, 시장에 가서 좋아하는 과일을 샀다.','j2',{cd:4,sc:'money'});
 Y(65,95,'ret kid','*','자녀들이 보내 준 돈으로 한 달 살림을 꾸렸다. 고마운 마음과 미안한 마음이 함께였다.','j1 r2',{cd:6,sc:'money'});
+Y(16,18,'h !rg:EA','*','시험 기간이다. 방과 후 학교 도서관에 남아 공부하는 친구들이 많다.',[['도서관 불이 꺼질 때까지 남는다','k2 D h-1','도서관 불이 꺼질 때까지 남아 공부했다.'],['집중이 잘되는 곳을 따로 찾는다','k2 C','집 근처 조용한 곳에서 내 속도로 공부했다.'],['친구들과 놀러 나간다','j2 k-2','친구들과 밤늦게까지 놀았다. 시험지가 조금 낯설었다.']],{k:'h_night',sc:'school'});
+setPd(CAL[CAL.length-1].opts);
 /* ---------- 예전 저장: 달력의 일 번호가 바뀌었으면 올해 남은 일을 다시 짠다 ---------- */
 const CAL_SIG=CAL.length;
 (function(){ const _ld=Life.load; Life.load=function(o){ const L=_ld.call(this,o);

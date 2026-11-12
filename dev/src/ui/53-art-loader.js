@@ -188,7 +188,15 @@ personSprite=function(o){ const s=_personSprite(o); if(o.half) return s; const k
 
 // 사건 창의 장면: '종류@그림'이어도 제목은 기본 종류로, 일상·집 밖 장면은 그 나이에 맞는 그림으로
 sceneHTML=function(kind){ if((kind==='life'||kind==='town')&&G.life){ const L=G.life; let t=''; try{ t=(L.pending&&L.pending.q)||(L.cur&&L.cur.m!=null&&MAJORS[L.cur.m]?L.tx(MAJORS[L.cur.m].txt):''); }catch(e){} kind=scVar(kind,t,L.age,L); }   // 큰 갈림길·큰 사건의 '삶' 그림도 그 나이에 맞게 (젊은 사람에게 할아버지 그림이 나오지 않게)
+  if(G.life&&!G.life.dead){ const L=G.life; let t=''; try{ t=(L.pending&&L.pending.q)||(L.cur&&L.cur.m!=null&&MAJORS[L.cur.m]?L.tx(MAJORS[L.cur.m].txt):''); }catch(e){} kind=scAgeFix(kind,t,L.age); }
   const b=scBase(kind); return kind?`<canvas class="scene" width="640" height="320" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[b]||'삶'} —</div>`:''; };
 const _popupSc=popup;
-popup=function(tag,txt,fx,after,cls,sc,nt){ if((sc==='life'||sc==='town')&&G.life){ const m=/^(\d+)살/.exec(String(tag||'')); sc=scVar(sc,txt,m?+m[1]:G.life.age,G.life); } return _popupSc(tag,txt,fx,after,cls,sc,nt); };
+popup=function(tag,txt,fx,after,cls,sc,nt){ if(G.life){ const m=/^(\d+)살/.exec(String(tag||'')), a=m?+m[1]:G.life.age; if(sc==='life'||sc==='town') sc=scVar(sc,txt,a,G.life); else sc=scAgeFix(sc,txt,a); } return _popupSc(tag,txt,fx,after,cls,sc,nt); };
+// 그 나이에 맞지 않는 그림을 바꾼다: 어른에게 아이들 그림이 나오지 않게 (어른의 시험은 밤의 책상, 운동은 공원 운동, 친구는 저녁 모임, 아픔은 병원·벤치)
+function scAgeFix(kind,txt,a){ if(!kind||!G.life||G.life.dead) return kind; const t=String(txt||''), sch=G.life.f&&G.life.f.school;
+  if(kind==='school'&&a>=20&&!sch) return 'life@end_study_night';
+  if(kind==='sport'&&a>=25) return 'life@end_exercise';
+  if(kind==='friend'&&a>=25) return 'life@end_friends';
+  if(kind==='sick'&&a>=19){ if(/지쳤|쉬어|피곤|마음도/.test(t)) return 'life@end_bench'; if(/마지막|가족과 함께 시간/.test(t)) return a>=55?'life':'hosp'; return 'hosp'; }
+  return kind; }
 

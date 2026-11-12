@@ -33,6 +33,10 @@ async def main():
         await ev("(()=>{ W.x=33.4; W.y=22; })()"); await walk(0,.1,40); print('다리 건너기:',await st())
         await ev("(()=>{ W.x=20; W.y=22; })()"); await walk(0,.1,15); print('강물에 막힘(y가 24 전):',await st())
         await ev("(()=>{ W.x=31.7; W.y=2.4; })()"); await walk(0,-.12,30); print('돌아옴:',await st())
+        # 2-2) 북쪽 길 끝 → 산과 숲
+        await ev("(()=>{ W.car=false; W.x=61.9; W.y=2.5; })()"); await walk(0,-.12,30); print('산과 숲으로:',await st()); await shot('4')
+        await ev("(()=>{ W.x=46.7; W.y=24; })()"); await walk(0,-.12,40); print('계곡 다리 건너 오르기:',await st())
+        await ev("(()=>{ W.x=46.7; W.y=45; })()"); await walk(0,.12,30); print('돌아옴:',await st())
         # 3) 동쪽 큰길 끝(탈것) → 큰 도시
         await ev("(()=>{ W.x=118; W.y=24.6; W.car=true; })()"); await walk(.2,0,40); print('큰 도시로:',await st()); await shot('3')
         await ev("(()=>{ W.car=false; W.x=40; W.y=33; NPCMAP={}; })()"); await shot('3walk')
