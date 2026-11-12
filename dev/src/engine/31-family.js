@@ -120,7 +120,7 @@ Object.assign(Life.prototype,{
       if(this.f.pgone&&f.sibs.filter(s=>s.al&&s.born).length>=2&&!this.f.inh2&&R()<.2){ add({txt:'부모님이 남기신 집을 두고 형제자매 사이에 의견이 갈렸다.',opts:[{l:'양보한다',fx:{r:3,j:-1},tr:'K',res:'내 몫을 양보했다. 형제자매와의 사이는 지켰다.'},{l:'공평하게 나누자고 한다',fx:{r:-1,'@':3},tr:'B',res:'공평하게 나누기로 했다. 한동안 서먹했다.'}],sc:'house',act:'inh2'}); }
     }
     // 가족의 종교와 명절
-    const rf=RELF[f.rel], ru=this.f.relU||(this.f.relU={}), cf=C.fest||''; if(rf&&R()<.55){ const dup=x=>(x[2]==='eid'&&/이드|라마단|르바란|하리 라야|타바스키/.test(cf))||(/크리스마스|성탄/.test(x[1])&&/크리스마스/.test(cf))||(/디왈리/.test(x[1])&&/디왈리/.test(cf))||(/부활절/.test(x[1])&&/부활절/.test(cf)); const ok=rf.map((x,i)=>[x,i]).filter(([x,i])=>a>=x[0]&&!dup(x)&&(ru[i]==null||(!x[3]&&a-ru[i]>=4))); if(ok.length){ const [e,i]=pickOne(ok); ru[i]=a; add({txt:e[1],fx:{r:2,j:2},sc:'fest',m:e[2]==='eid'?eidMonth(this.by+a):e[2]||null}); } }
+    const rf=RELF[f.rel], ru=this.f.relU||(this.f.relU={}), cf=C.fest||''; if(rf&&R()<.45){ const dup=x=>(x[2]==='eid'&&/이드|라마단|르바란|하리 라야|타바스키/.test(cf))||(/크리스마스|성탄/.test(x[1])&&/크리스마스/.test(cf))||(/디왈리/.test(x[1])&&/디왈리/.test(cf))||(/부활절/.test(x[1])&&/부활절/.test(cf)); const ok=rf.map((x,i)=>[x,i]).filter(([x,i])=>a>=Math.max(x[0],4)&&!dup(x)&&(ru[i]==null||(!x[3]&&a-ru[i]>=6&&((this.f.relN||{})[i]||0)<5))); if(ok.length){ const [e,i]=pickOne(ok); ru[i]=a; const rn=this.f.relN||(this.f.relN={}); rn[i]=(rn[i]||0)+1; add({txt:e[1],fx:{r:2,j:2},sc:'fest',m:e[2]==='eid'?eidMonth(this.by+a):e[2]||null}); } }
     return out; },
   // 가족 이야기가 실제로 일어날 때 상태를 바꾼다
   famAct(act){ if(!act) return; const f=this.fam, [k,x,y]=act.split(':');

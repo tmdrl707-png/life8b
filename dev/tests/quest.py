@@ -16,7 +16,7 @@ async def main():
         print('나이',await ev('G.life.age'),'미션',qi, await ev("G.life.q?QUESTS[G.life.q.i].ask:null"))
         if qi is None: print('미션을 받지 못함'); print('errs',errs); await b.close(); return
         async def step(tag):
-            await ev("(()=>{ if(!$('sheet').hidden) closeSheet(); $('flash').hidden=true; G.life.cur.scenes.forEach(c=>c.done=1); const t=targets().find(t=>t.type==='q'); W.map=t.m; NPCMAP={}; W.car=false; W.x=t.p[0]+.3; W.y=t.p[1]; G.life.cur.scenes=[]; })()")
+            await ev("(()=>{ if(!$('sheet').hidden) closeSheet(); $('flash').hidden=true; G.life.cur.scenes.forEach(c=>c.done=1); (G.life.ensureCal()||[]).forEach(x=>x.done=1); G.life.cur.mDone=G.life.cur.plan; const t=targets().find(t=>t.type==='q'); W.map=t.m; NPCMAP={}; W.car=false; W.x=t.p[0]+.3; W.y=t.p[1]; G.life.cur.scenes=[]; })()")
             await pg.wait_for_timeout(500)
             other=await ev("$('sheet').hidden?null:$('sheetBox').innerText.slice(0,60)")
             if other: print('   (그 사이 열린 다른 창 닫음:',other.replace('\n',' '),')'); await ev("closeSheet()"); await pg.wait_for_timeout(200)

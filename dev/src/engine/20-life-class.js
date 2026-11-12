@@ -158,7 +158,7 @@ class Life{
   // 수치가 높을수록 더 올리기는 어려워진다. 감사하는 마음이 쌓이면 나쁜 일에 덜 흔들린다
   apply(fx){ if(!fx) return; const C=this.C; for(const k in fx){ const v=fx[k];
     if(k==='$'){ if(this.f.job&&v){ this.inc=this.payClamp(this.inc*(1+v/100)); this.maxInc=Math.max(this.maxInc,this.inc); } continue; }
-    if(k==='x'){ if(this.f.job&&v){ const old=loseJob(this); this.remember({a:this.age,t:`${old.n} 일을 잃고 ${this.job.n} 일을 시작했다.`,big:1,sc:'jobloss',q:this._why}); } continue; }
+    if(k==='x'){ if(this.f.job&&v){ const old=loseJob(this); this.remember({a:this.age,t:old.id===this.job.id?`${old.n} 일감이 끊겼다. 한동안 이곳저곳을 다니며 일을 구했다.`:`${old.n} 일을 잃고 ${this.job.n} 일을 시작했다.`,big:1,sc:'jobloss',q:this._why}); } continue; }
     if(k==='@'){ const d=v*C.med*(v<0?(this._mScale||1):1); this.cash+=d; this.mEv+=d; continue; }
     if(k==='%'){ if(this.cash>0){ const d=this.cash*v/100; this.cash+=d; this.mEv+=d; } continue; }
     if(k==='H'){ if(v>0&&!this.house){ let p=this.housePrice()*v/100; const can=(Math.max(this.cash,0)+this.debtCap()*.5)/.2; if(p>can) p=Math.max(can,p*.35); /* 집값의 20% 남짓은 모은 돈으로 — 모자라면 더 작은 집 */ this.house=p; this.cash-=p; this.mHouse-=p; this.f.houseA=this.age; this.f.houseN=(this.f.houseN||0)+1; }
@@ -406,7 +406,7 @@ class Life{
 }
 // 사건 문장으로 장면 그림의 종류를 짐작한다
 function sceneKindOf(t){ t=String(t||'');
-  const R=[[/홍수|물에 잠|강물이 넘|큰비|우기에 길|몬순/,'flood'],[/지진|땅이 크게 흔들/,'quake'],[/폭풍|태풍|큰바람|허리케인/,'storm'],[/가뭄|비가 오지 않|물이 귀/,'drought'],[/더위|폭염/,'heat'],[/추위|눈보라|큰 눈|겨울|난방/,'cold'],[/산불|불이|숲에 큰불/,'fire'],[/화산/,'volcano'],[/바닷물|파도|먼바다/,'sea'],[/어수선|분쟁/,'unrest'],
+  const R=[[/홍수|물에 잠|강물이 넘|큰비|우기에 길|몬순/,'flood'],[/지진|땅이 크게 흔들/,'quake'],[/폭풍|태풍|큰바람|허리케인|사이클론|토네이도/,'storm'],[/가뭄|비가 오지 않|물이 귀/,'drought'],[/더위|폭염/,'heat'],[/추위|눈보라|큰 눈|겨울|난방/,'cold'],[/산불|불이|숲에 큰불/,'fire'],[/화산/,'volcano'],[/바닷물|파도|먼바다/,'sea'],[/어수선|분쟁/,'unrest'],
     [/태어났|동생이 태어|손주/,'baby'],[/떠나보|떠나셨|먼 길을/,'farewell'],[/결혼|가정을 꾸|잔치|혼사/,'wedding'],[/입원|아파|병|열이|돌림병|말라리아|진단|앓/,'sick'],[/졸업/,'grad'],[/집을 샀|집이 생|우리 집|새 아파트|집을 짓|지은 집/,'house'],[/시험|입학|학교|성적|수능|공부|합격/,'school'],
     [/일자리를 잃|사람을 줄|문을 닫|실직/,'jobloss'],[/월급|돈|사업|물가|살림|빚/,'money'],[/일|직장|면접|회사|농사|공장/,'job'],[/축제|행사|명절|잔치/,'fest'],[/대회|경기|선수|결승|달리기/,'sport'],[/이사|도시로|떠난다|다른 나라|여행/,'travel'],[/강아지|동물/,'pet'],[/친구|고백|좋아하는/,'friend'],[/무대|발표회/,'stage']];
   for(const [re,k] of R) if(re.test(t)) return k; return 'life'; }
