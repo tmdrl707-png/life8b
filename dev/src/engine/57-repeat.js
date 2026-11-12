@@ -34,7 +34,7 @@ const festIn=(L,s)=>{ s=String(s||''); if(s.indexOf('{fest}')>=0||s.indexOf('{fe
 })();
 
 /* ---------- 해마다 돌아오는 학교·계절의 일: 같은 일은 한 삶에 3번까지 ---------- */
-const SEAS_MAX={spring:3,autumn:3,vacS:3,vac:3,uVac:3,chore:3,h_night:3,health:3,kidX:3,fest:4,holiday:4};
+const SEAS_MAX={spring:3,autumn:3,vacS:3,vac:3,uVac:3,chore:3,h_night:3,health:3,kidX:3,fest:2,holiday:2};   // 명절 문장 하나는 두 번까지 (명절은 여러 문장이 돌아가며 나온다)
 (function(){ const P=Life.prototype;
   const _cc=P.calCtx; P.calCtx=function(ev,st,sy){ if(ev&&ev.id!=null&&ev.k&&SEAS_MAX[ev.k]){ const n=this.calN&&this.calN[ev.id]; if(n&&n>=SEAS_MAX[ev.k]) return null; }
     return _cc.call(this,ev,st,sy); };
@@ -70,7 +70,7 @@ const SEAS_MAX={spring:3,autumn:3,vacS:3,vac:3,uVac:3,chore:3,h_night:3,health:3
 })();
 
 /* ---------- 쉽게 할 수 있는 선택(텔레비전 보기, 늦잠, 실컷 놀기)은 실패하지 않는다 ---------- */
-(function(){ const P=Life.prototype, RX_EASY=/텔레비전|티브이|휴대폰만|휴대폰을 본|게임만|게임을 실컷|늦잠|낮잠|빈둥|뒹군|만화만|실컷 논|집에 간다|집으로 간다|먼저 집에|그냥 잔다|자 버린다|딴짓/;
+(function(){ const P=Life.prototype, RX_EASY=/텔레비전|티브이|휴대폰만|휴대폰을 본|게임만|게임을 실컷|늦잠|낮잠|빈둥|뒹군|만화만|실컷 논|집에 간다|집으로 간다|먼저 집에|그냥 잔다|자 버린다|딴짓|입어 본|차려입|책을 빌|빌려 본다|앉아 |숨을 고|쉬어 간|사진을 찍|구경한다/;
   const _op=P.optP; P.optP=function(o){ if(o&&RX_EASY.test(String(o.l||''))) return null; return _op.call(this,o); };
 })();
 
@@ -136,6 +136,7 @@ sceneKindOf=function(t){ t=String(t||''); for(const [re,k] of SCENE_RX) if(re.te
   const FIX=[
     [/집 보일러\(지붕\)가 고장 났다\./,L=>L.C.hz&&L.C.hz.includes('cold')||['KR','JP','CN','RU','DE','GB','FR','PL','UA','CA','US','KZ','MN','TR','IR','AF','KP'].includes(L.c)?'겨울 들머리에 집 보일러가 고장 났다.':'비가 새서 집 지붕을 고쳤다.'],
     [/버스와 지하철로 다니며 돈을 모았다\./,L=>L.set==='R'?'버스를 타고 다니며 돈을 모았다.':null],
+    [/([가-힣]+ 일) 일을/,L=>'$1을'],
     [/친구들과 PC방에서 밤을 보냈다\./,L=>L.c==='JP'?'친구들과 만화 카페에서 밤을 보냈다.':L.c==='CN'?'친구들과 인터넷 카페(왕바)에서 밤을 보냈다.':null]];
   const _tx=P.tx; P.tx=function(s){ if(typeof s==='string'&&s.length<200){ for(const [re,f] of FIX) if(re.test(s)){ const v=f(this); if(v) s=s.replace(re,v); } } return _tx.call(this,s); };
 })();
@@ -165,4 +166,19 @@ JOB_FAM.coach='care';
 (function(){ const P=Life.prototype;
   const _rq=P.reqOK; P.reqOK=function(req){ if(req==='haskid') return (this.kids||[]).length>0; return _rq.call(this,req); };
   SCENES.forEach(sc=>{ const t=String(Array.isArray(sc.txt)?sc.txt.join(' '):sc.txt); if(!sc.req&&/멀리 사는 자녀가/.test(t)) sc.req='haskid'; });
+})();
+
+/* ---------- 월급의 나이별 모습: 처음엔 낮게 시작해 경력과 함께 오른다 ----------
+   점검(12개 나라 144판): 일하는 사람의 가운데 값이 그 나라 보통 월급의 20대 0.76배 → 40대 1.44배 → 60대 1.79배, 위쪽 4분의 1은 3배를 넘었다.
+   (실제로는 일하는 사람 가운데 값이 보통 월급의 1배 안팎, 40~50대에 1.2~1.3배 정도에서 멈춘다.) 한국 공무원의 첫 월급이 570만 원으로 나오기도 했다.
+   · 새 일을 얻을 때: 그 일의 보통 월급에 경력 계수를 곱한다 (사무·돌봄 0.7, 가게·꿈 0.82, 몸 쓰는 일 0.92에서 시작해 한 해에 0.015씩, 1까지)
+   · 해마다 오르는 몫을 조금 줄인다 (한 해 약 0.8%p)
+   · 선택의 결과로 월급이 오르는 몫($)은 절반 남짓만 (한 삶에 스무 번쯤 오르며 두 배가 되던 것) */
+(function(){ const P=Life.prototype, BASE={desk:.7,care:.7,shop:.82,dream:.82,hand:.92};
+  const _ap=P.apply; P.apply=function(fx){ if(fx&&fx.$>0){ fx=Object.assign({},fx); fx.$=fx.$*.45; } return _ap.call(this,fx); };
+  const expOf=L=>{ const js=L.jobs||[]; const first=js.find(j=>!/날품팔이|아르바이트/.test(j.n||'')); return first?Math.max(0,L.age-first.a):0; };
+  const _sj=setJob; setJob=function(L,id){ const ex=expOf(L), j=_sj(L,id); try{ if(L.ppl&&L.age>=16){ const fam=famOfJob(L,id), f=Math.min(1,(BASE[fam]||.85)+ex*.015); L.inc=L.payClamp?L.payClamp(L.inc*f):L.inc*f; } }catch(e){} return j; };
+  const _ep=P.endPeriod; P.endPeriod=function(){ const had=this.f.job&&!this.f.school&&this.age>=19, i0=this.inc; const r=_ep.apply(this,arguments);
+    if(had&&this.f.job&&!this.f.retired&&this.inc>i0*.9&&this.inc<i0*1.2) this.inc=this.inc/(1+.008*this.step);
+    return r; };
 })();

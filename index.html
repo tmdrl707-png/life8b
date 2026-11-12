@@ -1820,7 +1820,7 @@ M(8,14,'R',null,'다니던 학교가 학생이 줄어 문을 닫는다고 한다
 M(8,14,'U',null,'살던 동네가 재개발되어 이사를 가야 한다.',[['새 동네에서 먼저 인사한다','r B','새 동네에서 금세 친구를 사귀었다.','r5 j3','한동안 혼자 등교했다.','r-4 j-2'],['옛 친구들과 계속 연락한다','r K','멀어져도 이어지는 우정이 있다는 걸 알았다.','r4 j2','연락은 점점 뜸해졌다.','r-3']]);
 M(13,15,'*',null,'좋아하는 사람이 생겼다.',[['용기 내어 고백한다','j r B','서툰 고백이 받아들여졌다.','j9 r3','거절당했다. 며칠 동안 밥맛이 없었다.','j-6'],['마음을 간직한다','D','마음을 간직한 채 좋은 친구로 남았다.','r3 j2','말 한마디 못 한 것이 오래 아쉬웠다.','j-3']]);
 M(13,18,'*',null,'성적이 갑자기 떨어졌다.',[['공부 방법을 바꿔 본다','k D','새 방법이 맞아 성적이 올랐다.','k6 j4','쉽게 오르지 않았다. 그래도 포기하지 않았다.','k2 j-2'],['선생님께 상담을 청한다','r B','선생님이 내게 맞는 길을 함께 찾아 주셨다.','k4 r3','용기 내 찾아갔지만 뾰족한 수는 없었다.','j-2']]);
-M(13,18,'*',null,'집안 형편이 갑자기 어려워졌다.',[['일을 도와 집에 보탠다','h D','힘들었지만 집에 보탬이 되었다.','r5 j2 h-2','무리하다 몸살이 났다.','h-5 k-2'],['장학금에 도전한다','k D','장학금을 받았다. 부모님이 눈물을 보이셨다.','k4 j6 r3','아깝게 떨어졌다.','j-4']]);
+M(13,18,'*',null,'집안 형편이 갑자기 어려워졌다.',[['일을 도와 집에 보탠다','h D','힘들었지만 집에 보탬이 되었다.','r5 j2 h-2','무리하다 몸살이 났다.','h-5 k-2'],['장학금에 도전한다','k D','장학금을 받았다. 부모님이 눈물을 보이셨다.','k4 j6 r3','장학금 심사에서 아깝게 떨어졌다.','j-4']]);
 M(14,18,'*',null,'큰 대회에 나갈 기회가 왔다.',[['도전한다','k B','본선에 올랐다. 세상이 넓다는 걸 알았다.','j7 k4','예선에서 떨어졌다. 그래도 그 무대는 잊히지 않았다.','j-2 k2'],['실력을 더 쌓고 다음을 노린다','k D','조용히 쌓은 실력이 자신감이 되었다.','k5','망설이는 사이 기회가 지나갔다.','j-3']]);
 M(15,18,'*',null,'친구들이 수업을 빠지고 놀러 가자고 한다.',[['거절하고 수업에 들어간다','k D','친구들은 투덜댔지만 다음 날 아무 일 없었다.','k3','거절한 뒤 한동안 어색했다.','r-3 k2'],['다 같이 선생님께 솔직히 말한다','r B','선생님이 현장 학습으로 바꿔 주셨다.','r5 j4','혼이 났다. 그래도 속은 시원했다.','j-2 r2'],['같이 수업을 빠지고 놀러 간다','j C','아무도 모르게 실컷 놀았다. 그런데 그날 배운 부분이 시험에 나왔다.','j5 r3 k-3','선생님께 들켜 반성문을 썼다. 집에도 연락이 갔다.','j-4 k-2 r-1']]);
 M(19,28,'*',null,'처음으로 혼자 살아 보게 되었다.',[['꼼꼼히 살림을 꾸린다','k D','작지만 내 손으로 꾸린 집이 생겼다.','j6 k2','생활비가 빠듯해 라면으로 버텼다.','h-3 j-2'],['친구와 함께 산다','r K','티격태격하면서도 든든했다.','r6 j3','생활 습관이 달라 자주 다퉜다.','r-4']]);
@@ -2716,7 +2716,7 @@ const FAIL_BY=[[/배운다|배워 본|연습|공부|외운다|익힌다|따라 �
 // 고른 행동을 '~하려 했지만'으로 바꾼다 (예: 물을 떠다 준다 → 물을 떠다 주려 했지만). 바꾸지 못하면 null
 const TRY_L={'만든다':'만들','논다':'놀','판다':'팔','운다':'울','연다':'열','단다':'달','든다':'들','분다':'불','건다':'걸','민다':'밀','안다':'알','빈다':'빌','돈다':'돌','존다':'졸','떤다':'떨','썬다':'썰','문다':'물','머문다':'머물','흔든다':'흔들','부순다':'부수','다툰다':'다투','이룬다':'이루'};
 const TRY_IRR={'듣':'들으','걷':'걸으','묻':'물으','싣':'실으','깨닫':'깨달으','돕':'도우','줍':'주우','굽':'구우','눕':'누우','짓':'지으','잇':'이으','붓':'부으','낫':'나으','긋':'그으'};
-function tryForm(l){ l=String(l||'').trim(); if(!/[가-힣]다$/.test(l)||/[()]/.test(l)) return null; let m;
+function tryForm(l){ l=String(l||'').replace(/\s*\([^)]*\)/g,'').trim(); if(!/[가-힣]다$/.test(l)) return null; let m;
   if((m=l.match(/^(.*(?:기로|려고|자고|라고|다고))\s?한다$/))) return m[1]+' 했지만';
   if((m=l.match(/^(.*?)([가-힣]+)는다$/))){ const pre=m[1], w=m[2];
     for(const k in TRY_IRR) if(w.endsWith(k)&&!(k==='묻'&&/땅|흙|묻어/.test(pre))) return pre+w.slice(0,-k.length)+TRY_IRR[k]+'려 했지만';
@@ -2728,7 +2728,7 @@ function tryForm(l){ l=String(l||'').trim(); if(!/[가-힣]다$/.test(l)||/[()]/
     return pre+body+String.fromCharCode(0xAC00+code-4)+'려 했지만'; }
   return null; }
 // '~하려 했지만' 뒤에 붙는 말 (선택의 종류별)
-const FAIL_TAIL=[[/배운다|배워 본|연습|공부|외운다|익힌다|따라 한|따라 쓴/,['아직은 손에 익지 않았다.','금세 막혀서 다음에 다시 해 보기로 했다.']],
+const FAIL_TAIL=[[/공부|외운다|읽는다|복습|예습/,['생각만큼 머리에 들어오지 않았다.','집중이 잘되지 않아 금세 책을 덮었다.']],[/배운다|배워 본|연습|익힌다|따라 한|따라 쓴/,['아직은 손에 익지 않았다.','금세 막혀서 다음에 다시 해 보기로 했다.']],
   [/말을 건|말한다|말해 본|부탁|조언|설득|고백|사과|위로|건넨다|묻는다|물어본|권한다|제안|하자고|달라고/,['마음이 잘 전해지지 않았다.','대화가 어색하게 끝났다.']],
   [/만든다|만들어 본|그린다|그려 본|고친다|고쳐 본|꾸민다|쌓는다|접는다|글을 쓴다|편지를 쓴다|일기를 쓴다/,['생각만큼 잘되지는 않았다.','엉뚱한 모양이 되어 버렸다. 그래도 조금 웃었다.']],
   [/돕는다|도와|챙겨 준|챙겨 드|챙긴다|나눠 준|나눠 드|나눠 먹|들어 드린|떠다 준|가져다/,['오히려 일이 꼬였다. 그래도 마음은 전해졌다.','큰 도움이 되지는 못했다.']],
@@ -2736,8 +2736,8 @@ const FAIL_TAIL=[[/배운다|배워 본|연습|공부|외운다|익힌다|따라
   [/뛴다|달린다|던진다|헤엄|오른다|올라간다|건넌다|탄다/,['금방 숨이 찼다.','넘어져 무릎이 까졌다.']],
   [/끄고|그만한다|줄인다|안 한다|하지 않는다|일찍 잔다|일찍 들어/,['결국 조금만 더 하고 말았다.','결심이 오래가지 않았다. 내일은 꼭 지키기로 했다.']],
   [/모은다|아낀다|저금|번다|판다|팔아/,['생각보다 쉽지 않았다.','며칠 하다 흐지부지되었다.']]];
-const failTx=l=>{ const tf=tryForm(l), g=FAIL_BY.find(x=>x[0].test(l));
-  if(tf){ const gt=FAIL_TAIL.find(x=>x[0].test(l)); return tf+' '+pickOne(gt?gt[1]:['뜻대로 되지 않았다.','상황이 따라 주지 않았다.','생각처럼 풀리지 않았다.','이번에는 잘되지 않았다.']); }
+const failTx=l=>{ l=String(l||'').replace(/\s*\([^)]*\)/g,'').trim(); const tl=l.split(' ').slice(-2).join(' '), tf=tryForm(l), g=FAIL_BY.find(x=>x[0].test(tl))||FAIL_BY.find(x=>x[0].test(l));   // 괄호 속 말은 빼고, 갈래는 끝의 두 낱말(동사)로
+  if(tf){ const gt=FAIL_TAIL.find(x=>x[0].test(tl)); return tf+' '+pickOne(gt?gt[1]:['뜻대로 되지 않았다.','상황이 따라 주지 않았다.','생각처럼 풀리지 않았다.','이번에는 잘되지 않았다.']); }
   return `‘${l}’ — `+pickOne(g?g[1]:['마음은 그랬지만 일이 생각처럼 풀리지 않았다.','해 보려 했지만 상황이 따라 주지 않았다.','뜻대로 되지는 않았다. 다음엔 다르게 해 봐야겠다.']); };
 class Life{
   constructor(o){
@@ -7135,7 +7135,7 @@ const festIn=(L,s)=>{ s=String(s||''); if(s.indexOf('{fest}')>=0||s.indexOf('{fe
 })();
 
 /* ---------- 해마다 돌아오는 학교·계절의 일: 같은 일은 한 삶에 3번까지 ---------- */
-const SEAS_MAX={spring:3,autumn:3,vacS:3,vac:3,uVac:3,chore:3,h_night:3,health:3,kidX:3,fest:4,holiday:4};
+const SEAS_MAX={spring:3,autumn:3,vacS:3,vac:3,uVac:3,chore:3,h_night:3,health:3,kidX:3,fest:2,holiday:2};   // 명절 문장 하나는 두 번까지 (명절은 여러 문장이 돌아가며 나온다)
 (function(){ const P=Life.prototype;
   const _cc=P.calCtx; P.calCtx=function(ev,st,sy){ if(ev&&ev.id!=null&&ev.k&&SEAS_MAX[ev.k]){ const n=this.calN&&this.calN[ev.id]; if(n&&n>=SEAS_MAX[ev.k]) return null; }
     return _cc.call(this,ev,st,sy); };
@@ -7171,7 +7171,7 @@ const SEAS_MAX={spring:3,autumn:3,vacS:3,vac:3,uVac:3,chore:3,h_night:3,health:3
 })();
 
 /* ---------- 쉽게 할 수 있는 선택(텔레비전 보기, 늦잠, 실컷 놀기)은 실패하지 않는다 ---------- */
-(function(){ const P=Life.prototype, RX_EASY=/텔레비전|티브이|휴대폰만|휴대폰을 본|게임만|게임을 실컷|늦잠|낮잠|빈둥|뒹군|만화만|실컷 논|집에 간다|집으로 간다|먼저 집에|그냥 잔다|자 버린다|딴짓/;
+(function(){ const P=Life.prototype, RX_EASY=/텔레비전|티브이|휴대폰만|휴대폰을 본|게임만|게임을 실컷|늦잠|낮잠|빈둥|뒹군|만화만|실컷 논|집에 간다|집으로 간다|먼저 집에|그냥 잔다|자 버린다|딴짓|입어 본|차려입|책을 빌|빌려 본다|앉아 |숨을 고|쉬어 간|사진을 찍|구경한다/;
   const _op=P.optP; P.optP=function(o){ if(o&&RX_EASY.test(String(o.l||''))) return null; return _op.call(this,o); };
 })();
 
@@ -7237,6 +7237,7 @@ sceneKindOf=function(t){ t=String(t||''); for(const [re,k] of SCENE_RX) if(re.te
   const FIX=[
     [/집 보일러\(지붕\)가 고장 났다\./,L=>L.C.hz&&L.C.hz.includes('cold')||['KR','JP','CN','RU','DE','GB','FR','PL','UA','CA','US','KZ','MN','TR','IR','AF','KP'].includes(L.c)?'겨울 들머리에 집 보일러가 고장 났다.':'비가 새서 집 지붕을 고쳤다.'],
     [/버스와 지하철로 다니며 돈을 모았다\./,L=>L.set==='R'?'버스를 타고 다니며 돈을 모았다.':null],
+    [/([가-힣]+ 일) 일을/,L=>'$1을'],
     [/친구들과 PC방에서 밤을 보냈다\./,L=>L.c==='JP'?'친구들과 만화 카페에서 밤을 보냈다.':L.c==='CN'?'친구들과 인터넷 카페(왕바)에서 밤을 보냈다.':null]];
   const _tx=P.tx; P.tx=function(s){ if(typeof s==='string'&&s.length<200){ for(const [re,f] of FIX) if(re.test(s)){ const v=f(this); if(v) s=s.replace(re,v); } } return _tx.call(this,s); };
 })();
@@ -7266,6 +7267,21 @@ JOB_FAM.coach='care';
 (function(){ const P=Life.prototype;
   const _rq=P.reqOK; P.reqOK=function(req){ if(req==='haskid') return (this.kids||[]).length>0; return _rq.call(this,req); };
   SCENES.forEach(sc=>{ const t=String(Array.isArray(sc.txt)?sc.txt.join(' '):sc.txt); if(!sc.req&&/멀리 사는 자녀가/.test(t)) sc.req='haskid'; });
+})();
+
+/* ---------- 월급의 나이별 모습: 처음엔 낮게 시작해 경력과 함께 오른다 ----------
+   점검(12개 나라 144판): 일하는 사람의 가운데 값이 그 나라 보통 월급의 20대 0.76배 → 40대 1.44배 → 60대 1.79배, 위쪽 4분의 1은 3배를 넘었다.
+   (실제로는 일하는 사람 가운데 값이 보통 월급의 1배 안팎, 40~50대에 1.2~1.3배 정도에서 멈춘다.) 한국 공무원의 첫 월급이 570만 원으로 나오기도 했다.
+   · 새 일을 얻을 때: 그 일의 보통 월급에 경력 계수를 곱한다 (사무·돌봄 0.7, 가게·꿈 0.82, 몸 쓰는 일 0.92에서 시작해 한 해에 0.015씩, 1까지)
+   · 해마다 오르는 몫을 조금 줄인다 (한 해 약 0.8%p)
+   · 선택의 결과로 월급이 오르는 몫($)은 절반 남짓만 (한 삶에 스무 번쯤 오르며 두 배가 되던 것) */
+(function(){ const P=Life.prototype, BASE={desk:.7,care:.7,shop:.82,dream:.82,hand:.92};
+  const _ap=P.apply; P.apply=function(fx){ if(fx&&fx.$>0){ fx=Object.assign({},fx); fx.$=fx.$*.45; } return _ap.call(this,fx); };
+  const expOf=L=>{ const js=L.jobs||[]; const first=js.find(j=>!/날품팔이|아르바이트/.test(j.n||'')); return first?Math.max(0,L.age-first.a):0; };
+  const _sj=setJob; setJob=function(L,id){ const ex=expOf(L), j=_sj(L,id); try{ if(L.ppl&&L.age>=16){ const fam=famOfJob(L,id), f=Math.min(1,(BASE[fam]||.85)+ex*.015); L.inc=L.payClamp?L.payClamp(L.inc*f):L.inc*f; } }catch(e){} return j; };
+  const _ep=P.endPeriod; P.endPeriod=function(){ const had=this.f.job&&!this.f.school&&this.age>=19, i0=this.inc; const r=_ep.apply(this,arguments);
+    if(had&&this.f.job&&!this.f.retired&&this.inc>i0*.9&&this.inc<i0*1.2) this.inc=this.inc/(1+.008*this.step);
+    return r; };
 })();
 </script>
 
