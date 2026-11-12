@@ -594,3 +594,4 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 </style>`);
 // 휴대폰에서는 개발자 막대를 처음부터 접어 둔다
 { const _db=devBar; devBar=function(){ const b=$('devBar'); if(b&&!b.dataset.init){ b.dataset.init=1; if(matchMedia('(max-height:560px)').matches) b.classList.add('mini'); } return _db.apply(this,arguments); }; }
+

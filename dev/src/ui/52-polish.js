@@ -73,3 +73,4 @@ openMem=function(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()
   $('sheetBox').querySelectorAll('.itabs button').forEach(b=>b.onclick=()=>openMem(b.dataset.f));
   $('sheetBox').querySelector('.mlist').onclick=e=>{ const c=e.target.closest('.mcard.sc'); if(!c) return; const m=list[+c.dataset.i]; popup(`${m.a}살의 기억`,memT(m),null,()=>openMem(flt),'',m.sc,m.q?`${m.q}${m.l?' → '+m.l:''}`:null); }; };
 $('btnMem').onclick=()=>openMem('all');
+

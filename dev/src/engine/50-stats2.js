@@ -122,3 +122,4 @@ Life.prototype.optBlocked=function(o,kind){ if(!o) return ''; const fx=kind==='m
 })();
 // 기술이 높을수록 원하는 일자리를 얻기 쉽다
 jobP=(old=>(L,j)=>clamp(old(L,j)+(L.s&&L.s.t!=null?(L.s.t-35)/100*.35:0),.04,.96))(jobP);
+

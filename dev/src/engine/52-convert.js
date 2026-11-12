@@ -32,3 +32,4 @@ function convFx(fx,txt,big,lab){ if(!fx) return fx; const g=Object.assign({},fx)
 // 검사: 한 선택에서 크게 오르는 축 두 개, 각 +3(큰 사건 +4, 행복 +6) 이하
 function convCheck(){ const bad=[], AX=['h','j','k','r','t','e'], chk=(fx,big,w)=>{ const p=AX.filter(k=>(fx[k]||0)>1); if(p.length>2||p.some(k=>fx[k]>(big?(k==='j'?6:4):3))) bad.push(w); };
   CAL.forEach(ev=>(ev.opts||[]).forEach(o=>chk(o.fx||{},false,ev.txt))); SCENES.forEach(sc=>sc.opts.forEach(o=>chk(o.fx||{},false,sc.txt))); MAJORS.forEach(m=>m.opts.forEach(o=>{ chk(o.okFx||{},true,m.txt); chk(o.failFx||{},true,m.txt); })); return bad; }
+

@@ -70,3 +70,4 @@ function shapeHTML(L){ const pk=peakOf(L)||L.s, v={}; AXES.forEach(k=>v[k]=pk[k]
     <div class="rbox"><p class="rcap">나이에 따라 달라진 것들</p>${lineChartSVG(L,pk.a)}</div>
     <p class="soft">${sudden?`건강이 ${last.h}로 나쁘지 않았지만, 삶은 ${cause?esc(cause)+'(으)로 ':''}갑자기 끝났습니다. 건강이 좋아도 사고나 병은 예고 없이 찾아옵니다.`:'건강은 삶을 이어 가는 힘, 재산은 삶을 버티는 자원이라 오각형 밖에 따로 둡니다. 마지막 해 건강 0은 삶이 끝난 뒤의 표시입니다.'}</p>${resBars(Object.assign(Object.create(Object.getPrototypeOf(L)),L,{s:Object.assign({},L.s,{h:0})}))}
     <p class="note">오각형이 크다고 더 좋은 삶은 아닙니다. 모양이 저마다 다를 뿐입니다. 직접 고르며 산 해에는 오각형이 커지고, 그냥 지나간 해에는 조금만 자랍니다.${L.limN?` 살면서 돈이나 건강 때문에 고를 수 없던 선택이 ${L.limN}번 있었습니다.`:''}</p>`; }
+

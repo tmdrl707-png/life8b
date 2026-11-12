@@ -190,3 +190,4 @@ personSprite=function(o){ const s=_personSprite(o); if(o.half) return s; const k
 sceneHTML=function(kind){ const b=scBase(kind); return kind?`<canvas class="scene" width="640" height="320" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[b]||'삶'} —</div>`:''; };
 const _popupSc=popup;
 popup=function(tag,txt,fx,after,cls,sc,nt){ if((sc==='life'||sc==='town')&&G.life){ const m=/^(\d+)살/.exec(String(tag||'')); sc=scVar(sc,txt,m?+m[1]:G.life.age,G.life); } return _popupSc(tag,txt,fx,after,cls,sc,nt); };
+
