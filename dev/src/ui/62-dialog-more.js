@@ -54,14 +54,14 @@ function careerTalk(st,w){ const L=G.life, f=L.f, rank=dirRank(L), ax=topAxes(L)
       {who:w.n,t:`${axI} 돋보이는구나.${cur?` 지난번에 ${DIRS[cur].n} 쪽에 관심 있다고 했지?`:''} 선생님은 ${DIRS[sug].n} 쪽도 잘 맞을 것 같아. 어느 쪽을 더 알아볼까?`,html,
        opts:cand.map(d=>d===cur?`지금 관심 있는 ${DIRS[d].n} 쪽`:d===sug?`선생님이 권하는 ${DIRS[d].n} 쪽`:`${DIRS[d].n} 쪽도 궁금해요`),sub:cand.map(dirSub),then:i=>{ const d=cand[i], D=DIRS[d]; f.dirT2=L.age; setDir(L,d,2);
         const x=done('',`진로 상담에서 ${D.n} 쪽을 더 알아보기로 했다.`,{k:1.5,e:1,t:.8});
-        return [{who:w.n,t:`좋아. ${D.n} 쪽이라면 ${(a=>a.length>1?josa(a[0],'이나','나')+' '+a[1]:a[0])(D.maj.slice(0,2).map(m=>L.c!=='KR'&&m==='국어국문학과'?'어문학과':m))} 같은 학과가 있어. ${josa(AX_N[D.ax[0]]||'건강','을','를')} 꾸준히 키우면 도움이 될 거야.`},{who:'',t:'상담실을 나오며 해야 할 일을 수첩에 적었다.',up:x.up}]; }}]); return; }
+        return [{who:w.n,t:`좋아. ${D.n} 쪽이라면 ${(a=>a.length>1?josa(a[0],'이나','나')+' '+a[1]:a[0])(majorsFor(L,d,Math.min(2,myTier(L))).slice(0,2))} 같은 학과가 있어. 지금 성적이면 ${tierWord(L,myTier(L))} 정도를 바라볼 수 있어. ${josa(AX_N[D.ax[0]]||'건강','을','를')} 꾸준히 키우면 도움이 될 거야.`},{who:'',t:'상담실을 나오며 해야 할 일을 수첩에 적었다.',up:x.up}]; }}]); return; }
   // 3 진학 상담: 목표 학과
-  ensureDir(L); const D=DIRS[f.dir], loc=m=>L.c!=='KR'&&m==='국어국문학과'?'어문학과':m, maj=D.maj.map(loc).slice(0,3), alt=rank.find(d=>d!==f.dir);
-  const opts=maj.concat(`${DIRS[alt].n} 쪽 학과로 바꿔 본다`,'대학보다 바로 일을 배우고 싶어요'), sub=maj.map(m=>{ const j=MAJOR_JOB[m]&&jobInfo(L,MAJOR_JOB[m]); return (MAJ_HARD[m]<=-.2?'들어가기 매우 어려움 · ':MAJ_HARD[m]<=-.06?'들어가기 어려운 편 · ':'')+(j?`졸업 뒤 ${j.n} 등`:''); }).concat(DIRS[alt].ex,'졸업 뒤 바로 일자리를 찾는다');
+  ensureDir(L); const D=DIRS[f.dir], my=myTier(L), mt=Math.min(2,my), maj=majorsFor(L,f.dir,mt).slice(0,3), alt=rank.find(d=>d!==f.dir);
+  const opts=maj.concat(`${DIRS[alt].ser}로 바꿔 본다`,'대학보다 바로 일을 배우고 싶어요'), sub=maj.map(m=>{ const j=MAJOR_JOB[m]&&jobInfo(L,MAJOR_JOB[m]); return `${D.ser}`+((MAJ_MD[m]||0)>=.2?' · 들어가기 매우 어려움':(MAJ_MD[m]||0)>=.06?' · 들어가기 어려운 편':'')+(j?` · 졸업 뒤 ${j.n} 등`:''); }).concat(DIRS[alt].ex,'졸업 뒤 바로 일자리를 찾는다');
   dlgRun([{who:'',t:`진학 상담. ${wi} 모의고사 성적표와 대학 목록을 펼쳐 놓으셨다.`,html},
-    {who:w.n,t:`원서를 쓸 때가 다가오는구나. ${D.n} 쪽에서 어느 학과를 목표로 할까?`,opts,sub,then:i=>{ f.dirT3=L.age; let m, t;
+    {who:w.n,t:`원서를 쓸 때가 다가오는구나. 지금 성적이면 ${tierWord(L,my)} 정도가 알맞고, 조금 위도 도전해 볼 수 있어. ${D.ser}에서 어느 학과를 목표로 할까?`,opts,sub,then:i=>{ f.dirT3=L.age; let m, t;
       if(i<maj.length){ m=maj[i]; f.major=m; t=`${m}! 목표가 생겼으니 남은 시간을 잘 써 보자. 붙을 수 있는 곳과 도전할 곳을 함께 써 두자.`; }
-      else if(i===maj.length){ setDir(L,alt,3); m=loc(DIRS[alt].maj[0]); f.major=m; t=`${DIRS[alt].n} 쪽으로 바꿔 보는구나. 그럼 ${josa(m,'을','를')} 목표로 해 보자.`; }
+      else if(i===maj.length){ setDir(L,alt,3); m=pickMajor(L,alt,mt); f.major=m; t=`${DIRS[alt].ser}로 바꿔 보는구나. 그럼 ${josa(m,'을','를')} 목표로 해 보자.`; }
       else { f.wantWork=1; t='그것도 좋은 길이야. 대학에 안 가도 기술과 경험을 쌓으면 길은 많아. 원서는 혹시 몰라 하나만 써 두자.'; }
       const x=done('',m?`진학 상담에서 ${josa(m,'을','를')} 목표로 정했다.`:'진학 상담에서 대학보다 바로 일을 배우고 싶다고 말했다.',{k:1,e:1,j:.6});
       return [{who:w.n,t},{who:'',t:'목표를 정하자 마음이 조금 단단해졌다.',up:x.up}]; }}]); }

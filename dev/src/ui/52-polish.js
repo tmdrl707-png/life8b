@@ -1,4 +1,4 @@
-/* ========== 화면 다듬기 (3판): 닫기 버튼 · 더 큰 알림 · 미니맵 아래 오각형 · 내 정보 메뉴 · 기억 카드 ========== */
+/* ========== 화면 다듬기 (3판): 닫기 버튼 · 더 큰 알림 · (미니맵 아래 오각형 — 11-13부터 끔) · 내 정보 메뉴 · 기억 카드 ========== */
 // 닫을 수 있는 창에는 오른쪽 위에 늘 보이는 ✕
 (function(){ const _sheet=sheet; sheet=function(html,cls){ _sheet(html,cls); const box=$('sheetBox'); if(!box) return; const ok=$('btnOk');
   if(ok||/\bclosable\b/.test(cls||'')){ const b=document.createElement('button'); b.className='xclose'; b.type='button'; b.setAttribute('aria-label','닫기'); b.textContent='✕';
@@ -21,7 +21,7 @@ function renderMiniRad(){ const L=G.life, hud=$('hud'); if(!L||!hud) return; let
   el.style.top=top+'px'; el.style.left=(r?r.left-pr.left:12)+'px'; if(r) el.style.width=MINIRAD_OFF?'auto':Math.min(r.width,190)+'px';
   el.classList.toggle('off',MINIRAD_OFF);
   el.innerHTML=MINIRAD_OFF?`<button class="mrtog" type="button" aria-label="삶의 모양 펼치기">⬠ 삶의 모양 ＋</button>`:`<div class="mrhd"><span>삶의 모양</span><button class="mrtog" type="button" aria-label="삶의 모양 접기">－</button></div>${miniRadarSVG(L.s)}`; }
-(function(){ const _rh=renderHud; renderHud=function(){ _rh.apply(this,arguments); try{ renderMiniRad(); }catch(e){} }; addEventListener('resize',()=>{ try{ renderMiniRad(); }catch(e){} }); })();
+// 11-13 선생님 결정: 게임 화면의 작은 오각형은 띄우지 않는다(내 정보 '삶의 모양'에서 본다). renderMiniRad는 남겨 두되 부르지 않는다.
 // ---- 내 정보: 메뉴로 나눈다
 const INFO_TABS=[['me','개인 정보'],['others','다른 사람들'],['fam','우리 가족'],['shape','삶의 모양'],['trait','성향'],['joy','내 행복을 만드는 것']];
 function infoRow(k,v){ return `<div class="irow"><div class="ik">${k}</div><div class="iv">${v}</div></div>`; }
