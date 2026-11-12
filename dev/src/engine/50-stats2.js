@@ -65,7 +65,8 @@ Life.prototype.optCost=function(fx){ if(!fx) return 0; let c=0; if(fx['@']<0) c+
 Life.prototype.optBlocked=function(o,kind){ if(!o) return ''; const fx=kind==='m'?o.okFx:kind==='ch'?(o.ok&&o.ok[1]):o.fx, lab=String(o.l||o.label||''), s=this.s, a=this.age;
   if(a>=8&&s.h<66&&RX_HARD.test(lab)) return '건강이 좋지 않아요';
   if(a>=19&&s.h<38&&RX_WORK.test(lab)) return '몸이 버티기 어려워요';
-  const c=this.optCost(fx); if(c>0&&a>=16){ const after=this.cash-c+(fx&&fx.H>0?this.housePrice()*fx.H/100*.7:0); if(after< -this.debtLimit()*(c>=this.C.med*2?1:1.8)) return '돈이 부족해요'; }   // 작은 돈은 빚을 조금 더 지고라도 쓸 수 있다
+  if(fx&&fx.H>0&&!this.house&&a>=16&&Math.max(this.cash,0)+this.debtCap()*.5<this.housePrice()*fx.H/100*.2*.35) return '돈이 부족해요';
+  const c=this.optCost(fx); if(c>0&&a>=16&&!(fx&&fx.H>0)){ const after=this.cash-c+(fx&&fx.H>0?this.housePrice()*fx.H/100*.7:0); if(after< -this.debtLimit()*(c>=this.C.med*2?1:1.8)) return '돈이 부족해요'; }   // 작은 돈은 빚을 조금 더 지고라도 쓸 수 있다
   return ''; };
 (function(){ const P=Life.prototype;
   const _apply=P.apply; P.apply=function(fx){ if(!fx) return; ensureV2(this); const g=Object.assign({},fx), s=this.s;

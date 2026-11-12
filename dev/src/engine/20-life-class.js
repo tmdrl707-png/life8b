@@ -161,7 +161,7 @@ class Life{
     if(k==='x'){ if(this.f.job&&v){ const old=loseJob(this); this.remember({a:this.age,t:`${old.n} 일을 잃고 ${this.job.n} 일을 시작했다.`,big:1,sc:'jobloss',q:this._why}); } continue; }
     if(k==='@'){ const d=v*C.med*(v<0?(this._mScale||1):1); this.cash+=d; this.mEv+=d; continue; }
     if(k==='%'){ if(this.cash>0){ const d=this.cash*v/100; this.cash+=d; this.mEv+=d; } continue; }
-    if(k==='H'){ if(v>0&&!this.house){ const p=this.housePrice()*v/100; this.house=p; this.cash-=p; this.mHouse-=p; this.f.houseA=this.age; this.f.houseN=(this.f.houseN||0)+1; }
+    if(k==='H'){ if(v>0&&!this.house){ let p=this.housePrice()*v/100; const can=(Math.max(this.cash,0)+this.debtCap()*.5)/.2; if(p>can) p=Math.max(can,p*.35); /* 집값의 20% 남짓은 모은 돈으로 — 모자라면 더 작은 집 */ this.house=p; this.cash-=p; this.mHouse-=p; this.f.houseA=this.age; this.f.houseN=(this.f.houseN||0)+1; }
       else if(v<0&&this.house){ this.cash+=this.house; this.mHouse+=this.house; this.house=0; } continue; }
     if(k==='V'){ if(this.house) this.house*=1+v/100; continue; }
     if(k==='M'){ if(!this.f.family) this.marry(this.ppl.pre||this.makeSpouse()); continue; }
@@ -261,7 +261,11 @@ class Life{
     this.ensureCal(); log.cal=this.calAuto();
     return log; }
   evP(e){ let p=e.p; const s=this.s; for(const m of (e.m||'').split(' ')){ if(!m) continue; const key=m.slice(0,-1), x=key==='w'?this.w:s[key]/100; p*= m.slice(-1)==='+'?.4+1.2*x:1.6-1.2*x; } return clamp(p,.005,.6); }
-  // 돈: 번 돈 − 쓴 돈(생활비·집세·아이·학비) ± 이자. 모자라면 빚(마이너스)이 된다
+  // 돈: 번 돈 − 쓴 돈(생활비·집세·아이·학비) ± 이자. 모자라면 먼저 모은 돈을 쓰고, 그래도 모자라면 빚을 진다
+  // 빚은 두 가지: 집을 사며 진 대출(집값의 80%까지)과 그 밖의 빚(신용대출). 그 밖의 빚은 한도(debtCap)를 넘지 못한다 —
+  // 한도에 닿으면 버는 만큼만 쓰며 살림을 줄이고, 처음 크게 넘칠 때는 채무 조정(개인회생)을 받는다. 노년의 빚이 끝없이 불어나지 않게.
+  debtCap(){ const C=this.C, yi=(this.inc||0)*12; return Math.max(12*C.med*(C.tier>=3?1.5:1),yi*(C.tier>=3?1.2:.8)); }
+  debtParts(){ const d=Math.max(0,-this.cash), mort=this.house?Math.min(d,this.house*.8):0; return {mort,uns:d-mort}; }
   ledger(step){ const C=this.C, f=this.f, a=this.age, med=C.med, U=this.set==='U', t=C.tier;
     if(a<19&&!f.univ){ this.mEv=0; this.mHouse=0; return null; }
     let inc=0, tuition=0;
@@ -269,15 +273,31 @@ class Life{
     else if(f.retry){ student=true; inc=0; tuition=med*12*.25*(1-[1,.5,.1][this.famI]); }
     else inc=(this.inc||0)*12;
     if(f.family) inc+=(f.spInc||0)*12*(a>=65?.45:1);
-    const kh=this.kidsHome().length, ae=1+(f.family?.6:0)+.3*kh;
-    const needs=student ? 12*med*.12+tuition : 12*med*(t<=2?.32:.42)*ae + (this.house?this.house*.012:12*med*(t<=2?(U?.15:.05):(U?.2:.1))) + kh*12*med*(this.c==='KR'?.3:.18);   // 대학생은 대개 부모님 집에서 지낸다
+    const kh=this.kidsHome().length, ae=1+(f.family?.6:0)+.3*kh, old=(f.retired||a>=65)?.8:1;
+    const living=student?12*med*.12:12*med*(t<=2?.32:.42)*ae*old, home=student?0:(this.house?this.house*.012:12*med*(t<=2?(U?.15:.05):(U?.2:.1))), kids=student?0:kh*12*med*(this.c==='KR'?.3:.18);
+    const needs=living+home+kids+tuition;   // 대학생은 대개 부모님 집에서 지낸다
+    // 꼭 써야 하는 돈(먹고 자고 아이 키우는 최소한). 벌이가 그보다 많으면 사람들은 버는 만큼에 맞춰 줄여 산다
+    const ess=student?needs:(living*.62+home*.7+kids*.55)*(this.house?.9:1);
+    const dp=this.debtParts(), cap=this.debtCap();
     // 남는 돈의 일부를 모은다. 빚이 있으면 갚는 데 더 많이 쓴다(집 대출은 매달 갚아 나간다)
-    const spend = inc>=needs ? needs+(this.cash<0?.45:.85)*(inc-needs) : inc+(needs-inc)*.35;
-    const rate=this.cash>=0?(t>=3?.01:.02):(this.house?.035:.075), intr=this.cash*rate;
+    let spend, tight=0;
+    if(inc>=needs) spend=needs+(this.cash<0?.45:.85)*(inc-needs);
+    else if(inc>=ess) spend=this.cash<0?inc*.9:inc*.97;                       // 넉넉하지 않아도 버는 만큼에 맞춰 산다
+    else if(this.cash>ess-inc) spend=ess;                                      // 모아 둔 돈으로 메운다
+    else if(dp.uns<cap) spend=inc+Math.max(0,this.cash)/step+(ess-inc-Math.max(0,this.cash)/step)*.6;   // 조금씩 빌려 쓴다
+    else { spend=Math.max(inc,0)*.92; tight=1; }                                  // 더는 빌릴 수 없다: 버는 만큼만 쓰며 버틴다
+    if(this.mEv<0) spend-=Math.min(-this.mEv/step*.6,Math.max(0,spend-ess));   // 큰돈이 든 해에는 다른 씀씀이를 줄인다
+    const rate=this.cash>=0?(t>=3?.01:.02):null, intr=rate!=null?this.cash*rate:-(dp.mort*.035+dp.uns*.06);
     const before=this.cash-this.mEv-this.mHouse;   // 이번 해 큰일로 바뀌기 전 돈
     this.cash+=(inc-spend+intr)*step; this.earned+=inc*step;
+    // 그 밖의 빚이 한도의 1.8배를 넘으면: 처음 한 번은 채무 조정으로 줄이고, 그 뒤로는 한도에서 더 늘지 않는다(줄여 살며 버틴다)
+    let note=null; const d2=this.debtParts();
+    if(d2.uns>cap*1.8){ if(!f.rehab&&a>=19){ f.rehab=a; const cut=d2.uns-cap*.4; this.cash+=cut; note=`빚이 감당할 수 없을 만큼 불어나 법원의 채무 조정(개인회생)을 받았다. 빚의 일부를 줄여 받고, 몇 해 동안 아껴 쓰며 나머지를 갚아 나가기로 했다.`; }
+      else this.cash+=d2.uns-cap*1.8; }
     if(this.house) this.house*=Math.pow(1+(U?(t>=3?.012:.01):.003)+gauss()*.02,step);
-    const e={a,step,inc:inc*step,spend:spend*step,int:intr*step,ev:this.mEv,hb:this.mHouse,cash:this.cash,house:this.house,prev:before};
+    const e={a,step,inc:inc*step,spend:spend*step,int:intr*step,ev:this.mEv,hb:this.mHouse,cash:this.cash,house:this.house,prev:before,need:needs*step,ess:ess*step};
+    if(tight) e.tight=1; if(note) e.note=note;
+    f.tightY=tight?(f.tightY||0)+step:0;
     this.mEv=0; this.mHouse=0; this.money.push(e); if(this.money.length>60) this.money.shift(); this.maxNW=Math.max(this.maxNW||0,this.nw); return e; }
   // 한 해(어른은 두 해)를 마무리한다
   endPeriod(){
@@ -316,9 +336,9 @@ class Life{
       else if(f.retired) this.inc=pension(this); else this.inc=C.med*.25;
       if(a>=70&&f.job){ this.retire(); add('나이가 들어 일을 내려놓았다.',{j:2},1,'job'); }
     }
-    const led=this.ledger(step); if(led) out.push({t:'',money:led,big:0});
+    const led=this.ledger(step); if(led) out.push({t:'',money:led,big:0}); if(led&&led.note){ this.apply({j:-5}); out.push({t:led.note,fx:{j:-5},big:1,sc:'money'}); this.remember({a,t:led.note,big:1,sc:'money'}); }
     // 빚이 집값보다 커지면 버티지 못하고 집을 판다
-    if(this.house&&this.cash<-this.house*1.02){ const hv=this.house; this.cash+=hv; this.house=0; const t=`늘어난 빚을 감당하지 못해 살던 집을 팔았다. 집을 판 돈으로 빚의 대부분을 갚고 다시 세 들어 살게 되었다.`; this.apply({j:-6,h:-2}); out.push({t,fx:{j:-6,h:-2},big:1,sc:'house'}); this.remember({a,t,big:1,sc:'house'}); }
+    if(this.house&&this.cash<-(this.house*.8+this.debtCap())){ const hv=this.house; this.cash+=hv; this.house=0; const t=`늘어난 빚을 감당하지 못해 살던 집을 팔았다. 집을 판 돈으로 빚의 대부분을 갚고 다시 세 들어 살게 되었다.`; this.apply({j:-6,h:-2}); out.push({t,fx:{j:-6,h:-2},big:1,sc:'house'}); this.remember({a,t,big:1,sc:'house'}); }
     if(a>=19&&!f.school){ const hh=(this.inc||0)+(f.family?(f.spInc||0)*.6:0), wt=clamp(.5+.22*Math.log2(Math.max(hh,.1)/C.med)+clamp(this.nw/(C.med*12*15),-.12,.12),.02,.98); this.w+=(wt-this.w)*.3; }
     // 행복: 돈보다 관계·감사·문화가 더 크게 움직인다
     const P=this.joyParts(); let tgt=46; for(const k in P){ tgt+=P[k]; this.hp[k]=(this.hp[k]||0)+P[k]*step; } this.hp.cnt+=step;
@@ -353,7 +373,7 @@ class Life{
     if(b===19){ if(!f.univ) f.school=0; const hn=this.tx('{high}'); out.push({t:`어른이 되었다.${f.hs?' '+josa(hn,'을','를')+' 졸업했다.':''} 일터가 있는 곳까지 갈 수 있다.`,fx:null,big:1,sc:f.hs?'grad':'town'}); }
     if(b>=C.veh.age&&a<C.veh.age&&b>=10) out.push({t:`이제 ${josa(C.veh.n,'을','를')} 탈 수 있다. 길 위에서 '${C.veh.n} 타기'를 눌러 보자.`,fx:null,big:1,sc:'travel'});
     if((b===21||b===22)&&this.sex===0&&this.c==='KR'&&!f.army){ f.army=1; big('군 복무를 마쳤다. 1년 6개월이 생각보다 빨리 지나갔다.',{h:3,r:2},'job'); }
-    if(f.univ&&f.school&&b>=(f.univA||19)+4){ f.school=0; f.univDone=1; f.needJob=1; big(`${josa(sch.univ,'을','를')} 졸업했다.`,{k:4,j:4},'grad'); }
+    if(f.univ&&f.school&&b>=(f.univA||19)+(f.jc?2:4)){ f.school=0; f.univDone=1; f.needJob=1; big(`${josa(sch.univ,'을','를')} 졸업했다.`,{k:4,j:4},'grad'); }
     if(b===75||b===76){ if(!f.noVeh){ f.noVeh=1; out.push({t:`이제 ${josa(C.veh.n,'은','는')} 타지 않기로 했다. 천천히 걸어서 다닌다.`,fx:null,big:1,sc:'town'}); } }
     this.news=out; return {entries:out,dead:false};
   }
@@ -361,7 +381,9 @@ class Life{
   renameKid(i,given){ const k=this.kids[i]; given=String(given||'').trim().slice(0,8); if(!k||!given||given===k.given) return; const old=k.n; k.given=given; k.n=joinName(this.c,k.sur||this.sur,given,k.sex===1);
     this.mem.forEach(m=>{ if(m.t&&m.t.includes(old)) m.t=m.t.split(josa(old,'이','가')).join(josa(k.n,'이','가')).split(old).join(k.n); }); }
   // 자동 진행 (교사용 '나이 건너뛰기'와 점검용)
-  runAuto(until){ let g=0; while(!this.dead&&this.age<(until==null?999:until)&&g++<200){ this.startPeriod(); let gg=0; while(this.pending&&gg++<4) this.choose(Math.floor(R()*this.pending.opts.length)); if(this.cur.sk&&R()<.7) this.getSick(); this.cur.scenes.forEach((c,k)=>{ if(R()<.8) this.doScene(k,Math.floor(R()*SCENES[c.i].opts.length)); }); for(let m=0;m<this.cur.plan;m++) if(R()<.8&&this.major()!=null) this.chooseMajor(Math.floor(R()*MAJORS[this.cur.m].opts.length)); this.endPeriod(); } return this; }
+  // 아무거나 고르되, 화면에서 막히는 선택(돈이 부족해요 등)은 고르지 않는다
+  autoPick(list,kind){ const ok=list.map((o,i)=>i).filter(i=>!(this.optBlocked&&this.optBlocked(list[i],kind))); const pool=ok.length?ok:list.map((o,i)=>i); return pool[Math.floor(R()*pool.length)]; }
+  runAuto(until){ let g=0; while(!this.dead&&this.age<(until==null?999:until)&&g++<200){ this.startPeriod(); let gg=0; while(this.pending&&gg++<4) this.choose(this.autoPick(this.pending.opts,'ch')); if(this.cur.sk&&R()<.7) this.getSick(); this.cur.scenes.forEach((c,k)=>{ if(R()<.8) this.doScene(k,this.autoPick(SCENES[c.i].opts,'s')); }); for(let m=0;m<this.cur.plan;m++) if(R()<.8&&this.major()!=null) this.chooseMajor(this.autoPick(MAJORS[this.cur.m].opts,'m')); this.endPeriod(); } return this; }
   // ── 기억: 상황(q) · 내 선택(l) · 결과(t)를 함께 남긴다. 같은 상황의 같은 결과는 새로 쌓지 않고 몇 번이었는지 센다
   // 여러 삶에 똑같이 나오던 문장은 삶마다 다른 표현 하나로 (같은 삶 안에서는 늘 같은 표현)
   pv(t){ const a=typeof RES_ALT!=='undefined'&&RES_ALT[t]; if(!a) return t; if(this.vs==null) this.vs=Math.floor(Math.random()*1e9); let h=this.vs>>>0; for(const c of t) h=(Math.imul(h,31)+c.charCodeAt(0))>>>0; const i=h%(a.length+1); return i?a[i-1]:t; }

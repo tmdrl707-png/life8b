@@ -30,7 +30,8 @@ function beginPeriod(first){
   if(card) yearCard(L,afterCard); else if(!catching) afterCard(); else next();
 }
 // 해마다 돈이 어떻게 바뀌었는지
-function moneyToast(e){ const d=e.inc-e.spend+e.int+e.ev; toast(`돈 · 지난 ${e.step>1?e.step+'년':'해'} ${d>=0?'+':''}${fmtWon(d)} → 가진 돈 ${fmtWon(e.cash)}${e.house?` · 집 ${fmtWon(e.house)}`:''}`,'money'+(d<0?' dn':'')); G.moneyFlash=d>=0?'up':'dn'; }
+function moneyToast(e){ const d=e.inc-e.spend+e.int+e.ev, y=e.step>1?e.step+'년':'해';
+  toast(`돈 · 지난 ${y} 번 돈 ${fmtWon(e.inc)} − 생활비 ${fmtWon(e.spend)}${e.ev?` ${e.ev>0?'+':'−'} 큰일 ${fmtWon(Math.abs(e.ev))}`:''}${Math.abs(e.int)>=1?` ${e.int>0?'+':'−'} 이자 ${fmtWon(Math.abs(e.int))}`:''} → 가진 돈 ${fmtWon(e.cash)}${e.house?` · 집 ${fmtWon(e.house)}`:''}${e.tight?' · 빚이 많아 버는 만큼만 쓰며 아껴 살았다':''}`,'money'+(d<0?' dn':'')); G.moneyFlash=d>=0?'up':'dn'; }
 // 아이 이름 짓기
 function nameKid(n,after){ const L=G.life, k=L.kids[n.kid], sug=[k.given]; for(let i=0;i<6&&sug.length<4;i++){ const g=pickGiven(L,k.sex,'now'); if(!sug.includes(g)) sug.push(g); }
   sheet(`${sceneHTML('baby')}<div class="place">${L.age}살 · 새 생명</div><p class="evt">${esc(n.t)}</p>${chips(n.fx)}
@@ -84,13 +85,14 @@ function popup(tag,txt,fx,after,cls,sc,nt){ if(softOn()&&/^(farewell|sick|hosp|u
 function flash(place,t,fx,tr,bad){ if(G.life&&G.life.pv) t=G.life.pv(t); const f=$('flash'); f.className='gbox'+(bad?' bad':''); f.innerHTML=`<div class="place">${esc(place)}</div><p>${esc(t)}</p>${chips(fx,tr)}`; f.hidden=false; f.style.animation='none'; void f.offsetWidth; f.style.animation=''; clearTimeout(flash.t); flash.t=setTimeout(()=>f.hidden=true,4500*RD()); }
 function sheet(html,cls){ $('sheetBox').className='box gbox '+(cls||''); $('sheetBox').innerHTML=html; $('sheet').hidden=false; paused=true; IN.jx=IN.jy=0; IN.id=null; animScenes(); }
 function closeSheet(){ $('sheet').hidden=true; paused=false; lastT=performance.now(); }
-// 선택지의 '될 가능성' 표시: 0 숨김 · 1 큰 갈림길·큰 사건만 높음/보통/낮음(기본) · 2 모두 숫자. 학급 방의 선생님 설정이 먼저
+// 선택지의 '될 가능성' 표시: 0 숨김 · 1 모두 높음/보통/낮음 · 2 모두 숫자(기본). 학급 방의 선생님 설정이 먼저. 확률이 없는 선택은 '확실'
 function roomCfg(k){ const r=G.roomInfo, c=r&&r.cfg; return !G.teacher&&c&&c[k]!=null&&c[k]!==''?c[k]:null; }
-function probMode(){ const v=roomCfg('prob'); if(v!=null) return +v; return G.opts.prob==null?1:+G.opts.prob; }
+function probMode(){ const v=roomCfg('prob'); if(v!=null) return +v; return G.opts.prob==null?2:+G.opts.prob; }
 function softOn(){ const v=roomCfg('soft'); if(v!=null) return +v===1; return !!(G.life&&G.life.opt&&G.life.opt.soft); }
 const RD=()=>Math.max(1,+(G.opts.read||1));   // 글이 떠 있는 시간 배율 (천천히 읽기)
-const pct=(p,big)=>{ if(p==null) return ''; const m=probMode(); if(m===2) return `<span>잘될 확률 ${Math.round(p*100)}%</span>`;
-  if(m===1&&big){ const lv=p>=.65?['hi','높음']:p>=.4?['mid','보통']:['lo','낮음']; return `<span class="pl ${lv[0]}">될 가능성 ${lv[1]}</span>`; } return ''; };
+const pct=(p,big)=>{ const m=probMode(); if(!m) return ''; if(p==null) return `<span class="pl sure">확실</span>`;
+  const lv=p>=.65?['hi','높음']:p>=.4?['mid','보통']:['lo','낮음'];
+  return m===2?`<span class="pl ${lv[0]}">잘될 확률 ${Math.round(p*100)}%</span>`:`<span class="pl ${lv[0]}">될 가능성 ${lv[1]}</span>`; };
 function onOpts(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e.target.closest('button'); if(b) fn(+b.dataset.i); }; }
 // 작은 선택
 function openScene(k){

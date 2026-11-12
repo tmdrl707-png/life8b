@@ -22,7 +22,7 @@
 .opts{gap:8px}
 .opts button{font-size:1rem;min-height:52px;padding:11px 12px 11px 26px;line-height:1.45}
 .opts button span{font-size:.8rem}
-.opts button span.pl{white-space:nowrap}.opts button span.pl.hi{color:#2F7A4F;background:#E5F3EA;border-color:rgba(47,122,79,.35)}.opts button span.pl.mid{color:#8A6410;background:#FBF1D9;border-color:rgba(138,100,16,.3)}.opts button span.pl.lo{color:#A8344B;background:#FBE5E9;border-color:rgba(168,52,75,.3)}
+.opts button span.pl{white-space:nowrap}.opts button span.pl.hi{color:#2F7A4F;background:#E5F3EA;border-color:rgba(47,122,79,.35)}.opts button span.pl.mid{color:#8A6410;background:#FBF1D9;border-color:rgba(138,100,16,.3)}.opts button span.pl.lo{color:#A8344B;background:#FBE5E9;border-color:rgba(168,52,75,.3)}.opts button span.pl.sure{color:#4A5A70;background:#EEF1F5;border-color:rgba(74,90,112,.3)}
 .opts button small{font-size:.8rem}
 #sheet .sub,#sheet .small{font-size:.82rem}
 #sheet .mq{font-size:.88rem}

@@ -332,7 +332,7 @@ Object.assign(Life.prototype,{
     return Object.assign({t,q:ev.opts?q:null,fx,p,ok,tr,big,sc,label:o?this.fillV(o.l,v):null,m:it.m,nt:ev.nt||null,fam:!!it.dyn},xr); },
   // 아직 일어나지 않은 달력의 일을 마저 정한다 (해가 끝날 때). 고르는 일은 확률이 가장 높은 선택으로
   calAuto(){ const out=[]; if(!this.cur||!this.cur.cal) return out; this._auto=1; try{
-    this.cur.cal.forEach((it,k)=>{ if(it.done) return; const ev=this.calEv(it); let bi=null; if(ev&&ev.opts){ let bp=-1; bi=0; ev.opts.forEach((o,i)=>{ const p=this.calOptP(o); const pp=p==null?.5:p; if(pp>bp){ bp=pp; bi=i; } }); }
+    this.cur.cal.forEach((it,k)=>{ if(it.done) return; const ev=this.calEv(it); let bi=null; if(ev&&ev.opts){ let bp=-1; bi=0; ev.opts.forEach((o,i)=>{ const p=this.calOptP(o); const pp=(p==null?.5:p)-(this.optBlocked&&this.optBlocked(o,'c')?2:0); if(pp>bp){ bp=pp; bi=i; } }); }
       const r=this.calDo(k,bi); if(r) out.push(r); }); }finally{ this._auto=0; }
     return out; },
   ensureCal(){ if(this.cur&&!this.cur.cal&&!this.pending) this.cur.cal=this.planCal(); return this.cur&&this.cur.cal; },

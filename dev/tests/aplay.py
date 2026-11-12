@@ -11,6 +11,13 @@ async def play(b,code,seed):
     await ev("G.sec=4; if(G.life.cur) G.life.cur.t=4")
     async def handle_sheet():
         for _ in range(12):
+            for _ in range(12):   # 아래 대화창(사람이 나오는 선택·진로 이야기): 글을 넘기고 아무 선택지나 고른다
+                if not await ev("dlgOpen()"): break
+                await ev("DLG.typing&&DLG.fin()")
+                n=await pg.locator('#dlg .dopts button').count()
+                if n: await pg.locator('#dlg .dopts button').nth(random.randrange(n)).click()
+                else: await ev("dlgNext()")
+                await pg.wait_for_timeout(40)
             if not await pg.is_visible('#sheet'): return
             txt=await pg.inner_text('#sheetBox')
             m=BAD.search(txt)

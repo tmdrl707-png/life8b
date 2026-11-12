@@ -1,6 +1,6 @@
 /* ========== 이번 삶의 설정 (빠르기 · 한 해 돌아보기 · 멈춤 질문 · 이별 장면) ========== */
 const PACE_PICKS={short:7,normal:10};   // 한 해(어른은 두 해)에 고르는 일의 평균 수 (자동 진행 200번으로 잰 값)
-G.opts=Object.assign({pace:'normal',yl:60,card:1,ask:0,soft:1,prob:1,read:1},ls('life8b_opts')||{});   // 중학생 수업: 무거운 장면은 처음부터 '짧고 담담하게'
+G.opts=Object.assign({pace:'normal',yl:60,card:1,ask:0,soft:1,prob:2,read:1},ls('life8b_opts')||{});   // 중학생 수업: 무거운 장면은 처음부터 '짧고 담담하게'
 const secOf=L=>L&&L.yl?L.yl:L&&L.pace==='short'?35:CFG.PERIOD_SEC;   // 한 해(어른은 두 해)의 길이(초): 시작할 때 고른 값
 // 100살까지 산다면 걸리는 시간 (어린 시절 19번 + 어른은 두 해씩 41번 = 60번)
 function lifeTimeText(yl){ const m=Math.round(60*yl/60), h=Math.floor(m/60), mm=m%60; return h?`${h}시간${mm?' '+mm+'분':''}`:`${m}분`; }
@@ -11,7 +11,7 @@ function renderBSet(){ const o=G.opts, L=G.life, seg=(k,arr)=>`<div class="seg" 
     <div class="stack-s"><b>시간의 빠르기</b>${seg('yl',[[35,'한 해 35초'],[60,'한 해 1분'],[120,'한 해 2분'],[300,'한 해 5분']])}<p class="small sub">100살까지 산다면 <b>${lifeTimeText(o.yl||60)}</b>이 걸려요 (어른이 되면 한 번에 두 해씩 흘러요). 선택을 고르는 동안에도 시간은 흐르고, 오래 고르지 않으면 저절로 정해져요.${(o.yl||60)<=35?' 한 해 35초는 달마다 일어나는 일과 큰 사건이 절반입니다.':''} '저장하기'를 누르면 다음 시간에 이어서 살 수 있어요.</p></div>
     <div class="stack-s"><b>한 해를 돌아보는 카드</b>${seg('card',[[1,'켜기'],[0,'끄기']])}<p class="small sub">해가 바뀔 때 지난해의 한 장면과 이 나라의 숫자 한 가지를 보여 줍니다.</p></div>
     <div class="stack-s"><b>무거운 장면 (가족과의 이별 · 큰 병 · 분쟁)</b>${seg('soft',[[0,'그대로 보기'],[1,'짧고 담담하게']])}<p class="small sub">'짧고 담담하게'를 고르면 가족과의 이별은 짧은 알림으로, 큰 병과 분쟁은 그림 없이 글로만 보여 줍니다. 일어나는 일 자체는 실제 통계 그대로입니다.</p></div>
-    <div class="stack-s"><b>선택지에 '될 가능성' 보여 주기</b>${seg('prob',[[0,'보이지 않기'],[1,'큰 일만 높음·보통·낮음'],[2,'모두 숫자로']])}<p class="small sub">숫자가 보이면 '가장 높은 숫자 고르기'가 되기 쉬워요. 기본은 큰 갈림길과 큰 사건에서만 높음·보통·낮음으로 보여 줍니다.</p></div>
+    <div class="stack-s"><b>선택지에 '될 가능성' 보여 주기</b>${seg('prob',[[0,'보이지 않기'],[1,'높음·보통·낮음'],[2,'숫자로(%)']])}<p class="small sub">기본은 숫자(%)예요. 얻는 것이 큰 선택일수록 확률이 낮아서, 높은 숫자만 고르면 얻는 것도 작아요. 얻는 것이 없는 선택은 '확실'로 보여요.</p></div>
     <div class="stack-s"><b>글이 떠 있는 시간</b>${seg('read',[[1,'보통'],[1.8,'길게 (천천히 읽기)']])}<p class="small sub">잠깐 나타났다 사라지는 글을 더 오래 보여 줍니다. 살아가는 중에는 위쪽의 '저장하기'로 저장하고 쉬었다가 이어서 할 수 있어요.</p></div>
     ${!G.teacher&&G.data&&G.data.room?`<p class="small sub notice">지금 '${esc(G.data.room)}' 반에 들어가 있어요. 선생님이 반 설정을 정해 두었다면 그 설정이 먼저 적용됩니다.</p>`:''}`; }
 $('bSet').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const sg=b.closest('.seg'); if(!sg) return; const k=sg.dataset.o; G.opts[k]=k==='pace'?b.dataset.v:+b.dataset.v; if(G.life&&G.life.opt&&k==='soft') G.life.opt.soft=G.opts.soft; ls('life8b_opts',G.opts); renderBSet(); };
