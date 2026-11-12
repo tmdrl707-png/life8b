@@ -350,6 +350,51 @@ h3{font-size:1rem;margin:0} p{margin:0}
   #s-end .whoami{grid-template-columns:13rem minmax(0,1fr);font-size:1.1rem;gap:.6rem 1.2rem}
 }
 @media (prefers-reduced-motion: reduce){#s-end .slide{animation:none}}
+/* 엔딩: 넓은 화면(컴퓨터·휴대폰 가로)은 한 화면에 맞춘 좌우 배치 */
+@media (min-aspect-ratio: 5/4) and (min-width: 600px){
+  #s-end{overflow:hidden}
+  #s-end #endIn.in{max-width:min(78rem,96vw);height:100dvh;min-height:0;box-sizing:border-box;padding:clamp(10px,2.4vh,28px) max(24px,env(safe-area-inset-right,0px)) 0 max(24px,env(safe-area-inset-left,0px));justify-content:flex-start}
+  #s-end .slideshow{height:100%;min-height:0;gap:clamp(6px,1.4vh,14px)}
+  #s-end .slide{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;justify-content:center;gap:.6rem;padding-right:4px;scrollbar-width:thin}
+  #s-end .slide>*{flex:none}
+  #s-end .slide.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:clamp(18px,3vw,44px);align-items:center;justify-content:stretch}
+  #s-end .sl-txt,#s-end .sl-vis{display:flex;flex-direction:column;gap:.7rem;min-width:0;max-height:100%}
+  #s-end .sl-txt{overflow-y:auto;scrollbar-width:thin}
+  #s-end .sl-vis{justify-content:center}
+  #s-end .sl-vis.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center}
+  #s-end .sl-vis.duo .rbox+.rbox{margin-top:0}
+  #s-end .sl-vis img,#s-end .sl-vis canvas{max-height:calc(100dvh - 9.5rem);width:auto;max-width:100%;margin:0 auto;object-fit:contain}
+  #s-end .sl-vis svg{max-height:calc(100dvh - 11rem);width:100%}
+  #s-end .sl-vis figure.lastart{margin:0}
+  #s-end .sl-vis .ncard{display:block}
+  #s-end .slide>.ncard{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);align-items:center;max-width:100%}
+  #s-end .slide>.ncard .nimg canvas{max-height:calc(100dvh - 10rem);width:auto;max-width:100%;margin:0 auto}
+  #s-end .slide.cols2{display:block;column-count:2;column-gap:clamp(20px,3vw,44px);column-fill:balance}
+  #s-end .slide.cols2>*{break-inside:avoid;margin-top:0;margin-bottom:.7rem}
+  #s-end .dl2{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  #s-end .dl2>dl.whoami{margin:0;background:rgba(255,255,255,.06);border-radius:12px;padding:8px 10px;grid-template-columns:max-content minmax(0,1fr);gap:.3rem .9rem}
+  #s-end .slide.split.even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  #s-end figure.oneline{margin:0}
+  #s-end .snav{position:static;background:none;padding:4px 0 calc(clamp(8px,2vh,18px) + env(safe-area-inset-bottom,0px))}
+}
+/* 휴대폰 가로: 글씨와 여백을 줄인다 */
+@media (min-aspect-ratio: 5/4) and (max-height: 560px){
+  #s-end .slide{font-size:.95rem;line-height:1.6}
+  #s-end .slide p{line-height:1.6;margin:0}
+  #s-end .slide p.big,#s-end .big{font-size:1.18rem;line-height:1.45;margin:0}
+  #s-end .slide p.soft{font-size:.88rem}
+  #s-end .slide p.note{font-size:.76rem;line-height:1.45}
+  #s-end .shead{font-size:.75rem}
+  #s-end blockquote.bigq{font-size:1.08rem;margin:0;padding:14px 18px}
+  #s-end figure.oneline blockquote{font-size:1.25rem;padding:14px 18px;margin-bottom:8px}
+  #s-end .snav .btn{min-width:6rem;padding:.45rem .9rem;min-height:0}
+  #s-end .tbar{grid-template-columns:4.5rem minmax(0,1fr) 2.6rem}
+  #s-end .tbar.hp{grid-template-columns:6.6rem minmax(0,1fr) 2.2rem}
+  #s-end .ncard .nbody p{font-size:1rem}
+  #s-end .nbody{padding:.7rem .9rem}
+  #s-end .sl-vis img,#s-end .sl-vis canvas{max-height:calc(100dvh - 7.5rem)}
+  #s-end .sl-vis svg{max-height:calc(100dvh - 8.5rem)}
+}
 #s-end .cardnews{display:flex;flex-direction:column;gap:1.4rem}
 #s-end .ncard{background:#F6F2EA;color:#2A2622;border-radius:16px;overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,.5);animation:slow 1.2s ease both}
 #s-end .nimg{position:relative;background:#3A4450}
@@ -6557,11 +6602,12 @@ function convCheck(){ const bad=[], AX=['h','j','k','r','t','e'], chk=(fx,big,w)
     <form class="panel stack" id="loginForm"><h2 class="ftitle">시작하기</h2>
       <label class="field" for="uid">아이디 <span class="sub small" style="font-weight:400">실명·학번 말고, 나만 아는 별명 (2~10자)</span>
         <input id="uid" maxlength="10" autocomplete="username" autocapitalize="off"></label>
-      <label class="field" for="upw">비밀번호 <span class="sub small" style="font-weight:400">6자 이상</span>
+      <label class="field" for="upw">비밀번호 <span class="sub small" style="font-weight:400">6자 이상 · 처음이면 지금 정하기</span>
         <input id="upw" type="password" maxlength="30" autocomplete="current-password"></label>
       <label class="row small"><input type="checkbox" id="keep"> 이 기기에서 로그인 유지 (여럿이 쓰는 기기에서는 끄기)</label>
       <p class="err" id="loginErr" role="alert"></p>
-      <div class="row"><button class="btn primary" type="submit" id="btnLogin">이어서 하기</button><button class="btn" type="button" id="btnJoin">처음이에요 · 새로 만들기</button></div>
+      <div class="row"><button class="btn primary" type="submit" id="btnLogin">시작하기</button></div>
+      <p class="small sub">처음 쓰는 아이디면 지금 적은 비밀번호로 정해지고, 다음부터는 그 비밀번호를 확인해요. 따로 가입할 필요가 없어요.</p>
       <p class="small sub" id="modeNote"></p>
     </form>
     <button class="btn ghost" id="btnTeacher">교사용 모드</button>
@@ -6719,21 +6765,25 @@ const Store={
   async refresh(){ const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${CFG.FIREBASE_API_KEY}`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(this.sess.rt)}); const d=await r.json(); if(d.error) throw new Error('SESSION'); this.sess.tok=d.id_token; this.sess.rt=d.refresh_token; this.sess.uid=d.user_id; if(this.sess.keep) ls('life8b_sess',{id:this.sess.id,rt:this.sess.rt,keep:1}); },
   async db(method,path,body){ const au=this.mode==='auth'&&this.sess&&this.sess.tok, url=()=>`${CFG.FIREBASE_DB_URL.replace(/\/$/,'')}/${CFG.PATH}/${path}.json${au?'?auth='+this.sess.tok:''}`, opt={method,body:body===undefined?undefined:JSON.stringify(body)};
     let r=await fetch(url(),opt); if(r.status===401&&au){ await this.refresh(); r=await fetch(url(),opt); } if(!r.ok) throw new Error('DB'); return r.json(); },
-  msg(e){ const m=String(e.message||e); if(/EMAIL_EXISTS|EXISTS/.test(m)) return '이미 있는 아이디예요. 다른 아이디를 써 보세요.'; if(/INVALID|NOT_FOUND|WRONG/.test(m)) return '아이디나 비밀번호가 맞지 않아요.'; if(/WEAK/.test(m)) return '비밀번호는 6자 이상이어야 해요.'; if(/TOO_MANY/.test(m)) return '시도가 너무 많아요. 잠시 뒤에 다시 해 주세요.'; if(/Failed to fetch|Network|DB/i.test(m)) return '인터넷 연결을 확인해 주세요.'; return '문제가 생겼어요. 다시 시도해 주세요. ('+m.slice(0,40)+')'; },
+  msg(e){ const m=String(e.message||e); if(/EMAIL_EXISTS|EXISTS/.test(m)) return '이미 있는 아이디예요. 다른 아이디를 써 보세요.'; if(/INVALID|NOT_FOUND|WRONG/.test(m)) return '이미 쓰고 있는 아이디인데 비밀번호가 맞지 않아요. 내 아이디가 맞는지, 비밀번호를 다시 확인해 주세요.'; if(/WEAK/.test(m)) return '비밀번호는 6자 이상이어야 해요.'; if(/TOO_MANY/.test(m)) return '시도가 너무 많아요. 잠시 뒤에 다시 해 주세요.'; if(/Failed to fetch|Network|DB/i.test(m)) return '인터넷 연결을 확인해 주세요.'; return '문제가 생겼어요. 다시 시도해 주세요. ('+m.slice(0,40)+')'; },
   uid(){ return this.sess?(this.sess.uid||this.sess.id):'teacher-local'; },
-  async login(id,pw,create,keep){
+  async login(id,pw,create,keep){ this.created=false;
     if(this.fb&&this.mode==='auth'){
-      try{ const d=await this.authCall(create?'signUp':'signInWithPassword',{email:this.email(id),password:pw,returnSecureToken:true});
+      try{ let d; const body={email:this.email(id),password:pw,returnSecureToken:true};
+        if(create==null){ try{ d=await this.authCall('signUp',body); this.created=true; }catch(e){ if(!/EMAIL_EXISTS/.test(String(e.message))) throw e; d=await this.authCall('signInWithPassword',body); } }
+        else d=await this.authCall(create?'signUp':'signInWithPassword',body);
         this.sess={id,uid:d.localId,tok:d.idToken,rt:d.refreshToken,keep}; if(keep) ls('life8b_sess',{id,rt:d.refreshToken,keep:1}); }
       catch(e){ if(/CONFIGURATION_NOT_FOUND|OPERATION_NOT_ALLOWED|PASSWORD_LOGIN_DISABLED|ADMIN_ONLY/.test(String(e.message))){ this.mode='db'; ls('life8b_mode','db'); return this.login(id,pw,create,keep); } throw e; }
     } else if(this.fb){
       const key='d'+this.hex(id); let acc=null; try{ acc=await this.db('GET','acc/'+key); }catch(e){ throw new Error('Network'); }
-      if(create){ if(acc) throw new Error('EXISTS'); const salt=Math.random().toString(36).slice(2)+Date.now().toString(36); await this.db('PUT','acc/'+key,{salt,hash:await this.hash(pw,salt),t:Date.now()}); }
+      if(create==null) create=!acc;
+      if(create){ if(acc) throw new Error('EXISTS'); this.created=true; const salt=Math.random().toString(36).slice(2)+Date.now().toString(36); await this.db('PUT','acc/'+key,{salt,hash:await this.hash(pw,salt),t:Date.now()}); }
       else if(!acc||acc.hash!==await this.hash(pw,acc.salt)) throw new Error('INVALID');
       this.sess={id,uid:key,keep}; if(keep) ls('life8b_sess',{id,db:1,keep:1});
     } else {
       const key='life8b_acc_'+id, acc=ls(key);
-      if(create){ if(acc) throw new Error('EXISTS'); const salt=Math.random().toString(36).slice(2); ls(key,{salt,hash:await this.hash(pw,salt),data:null}); }
+      if(create==null) create=!acc;
+      if(create){ if(acc) throw new Error('EXISTS'); this.created=true; const salt=Math.random().toString(36).slice(2); ls(key,{salt,hash:await this.hash(pw,salt),data:null}); }
       else{ if(!acc||(acc.hash!==await this.hash(pw,acc.salt)&&acc.hash!==await this.hash(acc.salt+pw))) throw new Error('INVALID'); }
       this.sess={id,keep}; if(keep) ls('life8b_sess',{id,local:1,keep:1});
     }
@@ -6806,13 +6856,12 @@ async function doLogin(create){
   const id=$('uid').value.trim(), pw=$('upw').value; $('loginErr').textContent='';
   if(id.length<2){ $('loginErr').textContent='아이디는 2자 이상으로 적어 주세요.'; return; }
   if(pw.length<6){ $('loginErr').textContent='비밀번호는 6자 이상이어야 해요.'; return; }
-  $('btnLogin').disabled=$('btnJoin').disabled=true;
-  try{ G.data=await Store.login(id,pw,create,$('keep').checked); G.teacher=false; G.troom=null; $('upw').value=''; openHub(); }
+  $('btnLogin').disabled=true;
+  try{ G.data=await Store.login(id,pw,create,$('keep').checked); G.teacher=false; G.troom=null; $('upw').value=''; openHub(); if(Store.created&&$('hubNow')) $('hubNow').insertAdjacentHTML('afterbegin',`<p class="small" style="margin:0;padding:8px 10px;border-radius:8px;background:#FFF4E0;color:#6A4A10">‘${esc(id)}’ 아이디를 새로 만들었어요. 다음부터는 방금 정한 비밀번호로 들어오면 돼요.</p>`); }
   catch(e){ $('loginErr').textContent=Store.msg(e); }
-  $('btnLogin').disabled=$('btnJoin').disabled=false;
+  $('btnLogin').disabled=false;
 }
-$('loginForm').onsubmit=e=>{ e.preventDefault(); doLogin(false); };
-$('btnJoin').onclick=()=>doLogin(true);
+$('loginForm').onsubmit=e=>{ e.preventDefault(); doLogin(null); };
 $('btnLogout').onclick=()=>{ Store.logout(); G.data=null; G.life=null; $('who').textContent=''; show('login'); };
 function openHub(){
   $('who').textContent=Store.sess?Store.sess.id+' 님':''; const sv=G.data.save;
@@ -6849,6 +6898,31 @@ function renderHubRoom(msg){
 // 페이지 위의 작은 도트 그림 (보이는 동안만 움직인다)
 function pixLoop(id,kind){ const c=$(id); if(!c) return; if(c.width===160){ c.width=640; c.height=320; } const x=c.getContext('2d'); x.setTransform(c.width/160,0,0,c.width/160,0,0); x.imageSmoothingEnabled=false; const t0=performance.now();
   const f=()=>{ if(!c.offsetParent) return; x.clearRect(0,0,160,80); try{ drawScene(x,kind,(performance.now()-t0)/1000,kind==='title'?null:G.life); }catch(e){} requestAnimationFrame(f); }; f(); }
+// 엔딩 슬라이드: 컴퓨터·휴대폰 가로처럼 넓은 화면에서는 글(왼쪽)과 그림·그래프(오른쪽)로 나누고, 한 화면에 들어오게 맞춘다
+const END_WIDE=window.matchMedia?matchMedia('(min-aspect-ratio: 5/4) and (min-width: 600px)'):{matches:false};
+const END_VIS='figure:not(.oneline),svg,canvas,.rbox,.ncard,blockquote:not(.bigq),.again';
+function endWide(){
+  const sl=document.querySelector('#endIn .slide'); if(!sl) return;
+  // 원래 순서로 되돌린 뒤 다시 나눈다 (화면을 돌렸을 때도 쓰임)
+  if(sl.classList.contains('split')){ const kids=[...sl.querySelectorAll(':scope>.sl-txt>*,:scope>.sl-vis>*')].sort((a,b)=>(+a.dataset.o)-(+b.dataset.o)); sl.innerHTML=''; kids.forEach(k=>sl.appendChild(k)); }
+  sl.querySelectorAll(':scope>.dl2').forEach(w=>{ const o=w._orig; if(o){ [...w.querySelectorAll('dl')].forEach(d=>[...d.children].forEach(c=>o.appendChild(c))); w.replaceWith(o); } });
+  sl.classList.remove('split','cols2','even');
+  if(!END_WIDE.matches) return;
+  const kids=[...sl.children]; kids.forEach((k,i)=>k.dataset.o=i);
+  const vis=kids.filter(k=>k.matches(END_VIS)), txt=kids.filter(k=>!vis.includes(k));
+  const th=txt.reduce((a,k)=>a+k.getBoundingClientRect().height,0);
+  if(vis.length&&txt.length&&th>=60){
+    const L=document.createElement('div'), R=document.createElement('div'); L.className='sl-txt'; R.className='sl-vis'+(vis.length>1&&vis.every(v=>v.matches('.rbox'))?' duo':'');
+    txt.forEach(k=>L.appendChild(k)); vis.forEach(k=>R.appendChild(k)); sl.append(L,R); sl.classList.add('split'); if(vis.length===1&&vis[0].matches('svg')) sl.classList.add('even'); return; }
+  // 글만 있는 긴 슬라이드: 넘치면 두 단으로
+  if(sl.scrollHeight>sl.clientHeight+4){
+    const dl=sl.querySelector(':scope>dl.whoami'); if(dl){ const ks=[...dl.children], half=Math.ceil(ks.filter(k=>k.tagName==='DT').length/2); let n=0, cut=ks.length;
+      ks.forEach((k,i)=>{ if(k.tagName==='DT'&&n++===half&&cut===ks.length) cut=i; });
+      const w=document.createElement('div'); w.className='dl2'; w._orig=dl; w.dataset.o=dl.dataset.o; const a=document.createElement('dl'), b=document.createElement('dl'); a.className=b.className='whoami';
+      ks.forEach((k,i)=>(i<cut?a:b).appendChild(k)); w.append(a,b); dl.replaceWith(w); if(sl.scrollHeight<=sl.clientHeight+4) return; }
+    if(txt.length>1) sl.classList.add('cols2'); }
+}
+if(END_WIDE.addEventListener) END_WIDE.addEventListener('change',()=>{ if(!$('s-end').hidden) endWide(); });
 // 태어나는 순간: 나라 → 사는 곳 → 가정 형편 → 함께 사는 가족 순서로 하나씩 무작위로 정해진다 (누르면 건너뜀)
 let BROLL=0;
 function birthReveal(cards){
@@ -8693,7 +8767,7 @@ function finishLife(){
   const go=d=>{ const j=i+d; if(j<0||j>=slides.length) return; $('endIn').querySelectorAll('input,textarea').forEach(e=>keep[e.id]=e.type==='checkbox'?e.checked:e.value); i=j; render(); };
   const render=()=>{ const sl=slides[i];
     $('endIn').innerHTML=`<div class="slideshow"><div class="sprog" aria-hidden="true"><i style="width:${((i+1)/slides.length*100).toFixed(1)}%"></i></div><div class="shead"><span class="kick">${esc(sl.k)}${sl.t?` · ${sl.t}`:''}</span><span class="snum">${i+1} / ${slides.length}</span></div><div class="step slide">${sl.b}</div><div class="snav">${i>0?'<button class="btn" id="btnPrev">← 이전</button>':'<span></span>'}${i<slides.length-1?'<button class="btn primary" id="btnStep">다음 →</button>':''}</div></div>`;
-    $('s-end').scrollTo(0,0);
+    $('s-end').scrollTo(0,0); endWide();
     $('endIn').querySelectorAll('input,textarea').forEach(e=>{ if(keep[e.id]!=null){ if(e.type==='checkbox') e.checked=!!keep[e.id]; else e.value=keep[e.id]; } });
     animEnd();
     $('endIn').querySelectorAll('canvas[data-k]').forEach(c=>{ const p=pre[c.dataset.k]; if(!p) return; const paint=()=>{ c.width=p.c.width; c.height=p.c.height; c.getContext('2d').drawImage(p.c,0,0); }; paint();
