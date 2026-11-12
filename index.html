@@ -54,6 +54,15 @@ h3{font-size:1rem;margin:0} p{margin:0}
 .seg{display:flex;border:2px solid #283038;border-radius:4px;overflow:hidden;background:var(--paper);flex-wrap:wrap}
 .seg button{border:0;background:transparent;padding:.5rem .8rem;font-weight:600;min-height:2.5rem;flex:1 1 auto}
 .seg button.on{background:var(--ink);color:#fff}
+/* 태어나는 순간 뽑기 */
+#s-birth>*{transition:opacity .6s}
+#s-birth.rolling>*:not(:nth-child(3)){opacity:0;pointer-events:none}
+#s-birth.rolling .kpi{cursor:pointer}
+.kpi .roll{min-height:5.2rem}
+.kpi .roll.spin{border-color:#E8A33D;background:#FFF8E8}
+.kpi .roll.spin b{color:#8a6a2a;letter-spacing:.02em}
+.kpi .roll.done{animation:rpop .38s ease-out}
+@keyframes rpop{0%{transform:scale(.9)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
 .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:.6rem}
 .kpi div{background:#fff;border:2px solid #283038;border-radius:4px;padding:.6rem .7rem}
 .kpi b{display:block;font-size:1.15rem} .kpi span{font-size:.8rem;color:var(--sub)}
@@ -6534,11 +6543,35 @@ function renderHubRoom(msg){
 // 페이지 위의 작은 도트 그림 (보이는 동안만 움직인다)
 function pixLoop(id,kind){ const c=$(id); if(!c) return; if(c.width===160){ c.width=640; c.height=320; } const x=c.getContext('2d'); x.setTransform(c.width/160,0,0,c.width/160,0,0); x.imageSmoothingEnabled=false; const t0=performance.now();
   const f=()=>{ if(!c.offsetParent) return; x.clearRect(0,0,160,80); try{ drawScene(x,kind,(performance.now()-t0)/1000,kind==='title'?null:G.life); }catch(e){} requestAnimationFrame(f); }; f(); }
+// 태어나는 순간: 나라 → 사는 곳 → 가정 형편 → 함께 사는 가족 순서로 하나씩 무작위로 정해진다 (누르면 건너뜀)
+let BROLL=0;
+function birthReveal(cards){
+  const box=$('bInfo'), sec=$('s-birth'), my=++BROLL;
+  const still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  box.innerHTML=cards.map(()=>'<div class="roll"><b>?</b><span>&nbsp;</span></div>').join('');
+  const els=[...box.children];
+  const fin=i=>{ els[i].classList.remove('spin'); els[i].classList.add('done'); els[i].innerHTML=`<b>${esc(cards[i].b)}</b><span>${esc(cards[i].s)}</span>`; };
+  const end=()=>{ sec.classList.remove('rolling'); box.onclick=null; };
+  if(still){ cards.forEach((_,i)=>fin(i)); end(); return; }
+  sec.classList.add('rolling'); let i=0, skip=false; box.onclick=()=>{ skip=true; };
+  const step=()=>{ if(my!==BROLL) return;
+    if(i>=cards.length||skip){ for(;i<cards.length;i++) fin(i); end(); return; }
+    const k=i, el=els[k], pool=cards[k].pool; let n=0; el.classList.add('spin');
+    const tick=()=>{ if(my!==BROLL) return;
+      if(skip||n>=12){ fin(k); i++; setTimeout(step,380); return; }
+      el.firstChild.textContent=pool[Math.floor(Math.random()*pool.length)]; n++; setTimeout(tick,50+n*12); };
+    tick(); };
+  setTimeout(step,300);
+}
 function birth(){
   const L=G.life=new Life(); G.sec=CFG.PERIOD_SEC;
   const C=L.C; $('bTitle').textContent=`${C.n} · ${SETN[L.set]}`; $('bLine').textContent=`${FAM[L.famI].n}의 ${SEX[L.sex]}아이`;
   const fam=['엄마','아빠'].concat(L.gran?['할머니']:[],L.sib?['동생']:[]);
-  $('bInfo').innerHTML=`<div><b>${C.n}</b><span>세계에서 태어나는 아기 1000명 중 ${(()=>{ const v=birthShare(L.c)*1000; return v>=10?Math.round(v):v>=1?v.toFixed(1):v.toFixed(2); })()}명</span></div><div><b>${SETN[L.set]}</b><span>사는 곳 (도시 ${Math.round(C.pU*100)}% · 농촌 ${Math.round((1-C.pU)*100)}%)</span></div><div><b>${FAM[L.famI].n.replace(' 가정','')}</b><span>가정 형편</span></div><div><b>${fam.join(' · ')}</b><span>함께 사는 가족</span></div>`;
+  birthReveal([
+    {b:C.n,s:`세계에서 태어나는 아기 1000명 중 ${(()=>{ const v=birthShare(L.c)*1000; return v>=10?Math.round(v):v>=1?v.toFixed(1):v.toFixed(2); })()}명`,pool:CKEYS.map(k=>COUNTRIES[k].n)},
+    {b:SETN[L.set],s:`사는 곳 (도시 ${Math.round(C.pU*100)}% · 농촌 ${Math.round((1-C.pU)*100)}%)`,pool:['도시','농촌']},
+    {b:FAM[L.famI].n.replace(' 가정',''),s:'가정 형편',pool:FAM.map(f=>f.n.replace(' 가정',''))},
+    {b:fam.join(' · '),s:'함께 사는 가족',pool:['엄마 · 아빠','엄마 · 아빠 · 할머니','엄마 · 아빠 · 동생','엄마 · 아빠 · 할머니 · 동생']}]);
   $('bName').value=L.given; $('bSur').textContent=L.sur?`· 성은 아빠(${L.ppl.dad.n})를 따라 '${L.sur}'`:'· 이 나라에서는 성 없이 이름만 쓰는 사람이 많아요';
   $('bFact').textContent=`${C.fact} 태어난 곳은 ${L.town}, 아빠는 ${L.ppl.dad.n}, 엄마는 ${L.ppl.mom.n}입니다.`;
   $('bCmp').innerHTML=cmpHTML(L); renderBSet();
