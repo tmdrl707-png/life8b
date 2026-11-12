@@ -8,7 +8,7 @@
 
 ## 작업 방법
 ```bash
-python3 dev/rebuild.py                 # dev/src/template.html에 조각 63개를 끼워 index.html 생성 (+이름 겹침 검사, -v: 감싸기 목록)
+python3 dev/rebuild.py                 # dev/src/template.html에 조각 64개를 끼워 index.html 생성 (+이름 겹침 검사, -v: 감싸기 목록)
 python3 -m http.server 8765            # 저장소 맨 위에서. http://localhost:8765/index.html 로 확인
 python3 dev/tests/aplay.py KR          # 한 삶을 끝까지 직접 고르며 도는 시험 (나라 코드를 여러 개 줄 수 있음)
 python3 dev/tests/aendshow.py          # 엔딩 슬라이드를 모두 넘겨 보는 시험
@@ -21,11 +21,11 @@ python3 dev/tests/sim.py dev/tests/sim_audit.js   # 여러 삶의 기록 문장 
 ```
 시험 스크립트는 Playwright를 쓴다 (`pip install playwright && playwright install chromium`). 외부(https) 요청은 막고 돌리므로 Firebase 없이 **이 기기 저장(localStorage) 방식**으로 동작한다. 로그인·아이디 관리 시험은 `ids.py`가 `Store.fb=false`로 바꿔서 한다.
 
-### 파일 구조 (2026-11-12에 큰 파일 v.html을 조각으로 나눔, 같은 날 밤 54-talk를 단위별로 더 나눔(57개), 11-13에 확률·진로·대화 조각 3개(60개), 같은 날 현실감·옆 동네 조각 3개를 더함(63개). **v.html은 없다**)
+### 파일 구조 (2026-11-12에 큰 파일 v.html을 조각으로 나눔, 같은 날 밤 54-talk를 단위별로 더 나눔(57개), 11-13에 확률·진로·대화 조각 3개(60개), 같은 날 현실감·옆 동네 조각 3개(63개), 아침에 되풀이 줄이기 조각 1개를 더함(64개). **v.html은 없다**)
 - `dev/src/template.html` — 빈 틀(head·`<style>`·`<script>` 태그). `<!--#include 경로-->` 줄마다 조각이 들어간다. 이 순서가 실행 순서다.
 - `dev/src/css/` 4개(01-base, 02-ending, 03-warm, 04-readable — 뒤의 것이 앞을 덮어씀). `html/screens.html` — 모든 화면의 뼈대.
-- `dev/src/engine/` 28개 — 화면과 무관한 자료·계산. 01-base(설정·나라 특색), 02-countries(193개국 표), 03-names-places, 04-scenes-base, 10-kr-only, 11-common, 12-regional, 13-jobs, 14-world-map, 15-life-data, 16-result-text, **20-life-class(Life, 저장 호환 — 가장 조심)**, 30-calendar(153KB), 31-family, 32-final-record, 33-institutions, 34-variety, 35-adult-days, 36-country-life2, 37-epidemic, 38-country-events, 39-job-region-events, 40-job-fit, 50-stats2, 51-new-events, 52-convert, 53-chance(선택지 확률 2판), 54-career(진로 흥미·대학 후보·일자리 후보), 55-realism(주제 간격·횟수, 내 운동, 명절 음식, 작은 선택 '확실', 예전 저장의 달력), 56-zone-places(옆 동네 지도의 장소·장면·미션).
-- `dev/src/ui/` 27개 — 화면 동작. 01-common-store(Store), 02-teacher-records(교사 기록·아이디 관리), 03-login-home(로그인·birthReveal·endWide), 04-teacher-mode, 10/11-pixel-art, 12-world-people(동네 지도 OUT·reachOf·ENTER·조작), 20-life-settings(시간 배율), 21-game-flow(진행·사건 창·저장하기), 30-render(그리기·가림막·미니맵), 31-memory-photos, 40-ending(엔딩 슬라이드), 41-start(시작 + lifeRecord·lifeDetailHTML), 50-stats-ui, 51-hd-character, 52-polish, 53-art-loader(그림·scArtName, atlas.json은 빌드 때 끼움), **54-talk(말 걸기·만져 보기·건물 안·학교 밖 활동)**, 55-life-record-menu(인생 기록 위쪽 메뉴), 56-dev-mode(개발자 모드), 57-error-box(오류 알림), 58-time-flow(흐르는 시간·저절로 정해지는 선택·저장하기), 59-hud-style(미니맵·상태란·알림 카드 스타일), 60-end-picks(엔딩 '나의 기록 고르기'), 61-phone-style(휴대폰 가로 스타일), 62-dialog-more(사람 '!' 선택·진로 이야기를 대화창으로, 대화창 그림 카드), 63-zones(옆 동네 지도: OUT 바꿔 끼우기·문·화살표), 90-visual-enhancer.
+- `dev/src/engine/` 31개 — 화면과 무관한 자료·계산. 01-base(설정·나라 특색), 02-countries(193개국 표), 03-names-places, 04-scenes-base, 10-kr-only, 11-common, 12-regional, 13-jobs, 14-world-map, 15-life-data, 16-result-text, **20-life-class(Life, 저장 호환 — 가장 조심)**, 30-calendar(153KB), 31-family, 32-final-record, 33-institutions, 34-variety, 35-adult-days, 36-country-life2, 37-epidemic, 38-country-events, 39-job-region-events, 40-job-fit, 50-stats2, 51-new-events, 52-convert, 53-chance(선택지 확률 2판), 54-career(진로 흥미·대학 후보·일자리 후보), 55-realism(주제 간격·횟수, 내 운동, 명절 음식, 작은 선택 '확실', 예전 저장의 달력), 56-zone-places(옆 동네 지도의 장소·장면·미션), 57-repeat(명절·학교 행사·큰 갈림길 횟수, 대유행 문장, 쉬운 선택 '확실', 낱말 바로잡기, 운동선수 은퇴·지도자, 월급의 나이별 모습, 장면 종류 분류 `sceneKindOf`).
+- `dev/src/ui/` 28개 — 화면 동작. 01-common-store(Store), 02-teacher-records(교사 기록·아이디 관리), 03-login-home(로그인·birthReveal·endWide), 04-teacher-mode, 10/11-pixel-art, 12-world-people(동네 지도 OUT·reachOf·ENTER·조작), 20-life-settings(시간 배율), 21-game-flow(진행·사건 창·저장하기), 30-render(그리기·가림막·미니맵), 31-memory-photos, 40-ending(엔딩 슬라이드), 41-start(시작 + lifeRecord·lifeDetailHTML), 50-stats-ui, 51-hd-character, 52-polish, 53-art-loader(그림·scArtName, atlas.json은 빌드 때 끼움), **54-talk(말 걸기·만져 보기·건물 안·학교 밖 활동)**, 55-life-record-menu(인생 기록 위쪽 메뉴), 56-dev-mode(개발자 모드), 57-error-box(오류 알림), 58-time-flow(흐르는 시간·저절로 정해지는 선택·저장하기), 59-hud-style(미니맵·상태란·알림 카드 스타일), 60-end-picks(엔딩 '나의 기록 고르기'), 61-phone-style(휴대폰 가로 스타일), 62-dialog-more(사람 '!' 선택·진로 이야기를 대화창으로, 대화창 그림 카드), 63-zones(옆 동네 지도: OUT 바꿔 끼우기·문·화살표), 90-visual-enhancer.
 - 번호는 폴더 안의 순서일 뿐이고 실제 순서는 template.html이 정한다. 새 조각을 만들면 template.html에 include 줄을 넣는다.
 - 모든 조각은 한 스크립트로 합쳐진다. **맨 바깥 `function 이름`이 두 조각에 있으면 rebuild.py가 멈춘다**(뒤의 것이 앞의 것까지 몰래 덮어써서 예전에 `scImg`로 장면 그림이 깨졌다). 앞 조각의 함수를 일부러 바꿀 때는 `const _x=이름; 이름=function(...){...}` 처럼 감싸고, 감싸는 조각이 뒤에 와야 한다(`python3 dev/rebuild.py -v`로 목록 확인). 예외 `treeSprite`(10번 것은 안 쓰임).
 - 휴대폰 가로 화면·대화창·알림 카드 스타일은 css/가 아니라 스크립트가 끼워 넣는다(ui/54·59·61, 52-polish). 54~61은 한 파일이던 talk.js를 순서 그대로 자른 것이라 이름을 공유하고, 순서를 바꾸면 안 된다.
@@ -57,7 +57,8 @@ python3 dev/tests/sim.py dev/tests/sim_audit.js   # 여러 삶의 기록 문장 
 - 선택지 확률(engine/53): 같은 장면 안에서 쉬운 길·어려운 길이 넉넉히 벌어지게(`setPd`), 얻는 것이 없는 선택은 '확실'. 표시는 기본 숫자(%) — `probMode`(0 숨김·1 높음/보통/낮음·2 숫자).
 - 진로(engine/54): 흥미 분야 `f.dir`(DIRS 7가지)·목표 학과 `f.major`. 진로 이야기 단계 `careerDue`(1 부모님 12~14 · 2 진로 상담 15~17 · 3 진학 상담 17~18), 놓치면 오각형으로 `ensureDir`. 19살 대학 `univMenu`: 성적 `acadQ`로 알맞은 층 `myTier`(0 최상위·1 중상위·2 지역 4년제·3 2년제, 합격선 `UT_NEED`)를 정하고 도전(한 층 위)·적정(관심 계열 둘 `dirPair`)·안정(한 층 아래). 학과는 `majorsFor`가 성적에 맞는 것만(`MAJ_MD`·`MAJ_ABS`, 의예과는 최상위만). 2년제는 `f.jc`, 일자리 `jobMenu`에 흥미 분야의 일을 더함.
 - 게임 화면의 작은 오각형(ui/52 `renderMiniRad`)은 11-13부터 띄우지 않는다(선생님 결정). 오각형은 내 정보 '삶의 모양'에서.
-- 돈(engine/20 `ledger`): 꼭 드는 생활비(`ess`) 아래로는 줄이지 못하고, 그보다 벌면 버는 만큼에 맞춰 산다. 집 대출(집값의 80%)과 그 밖의 빚을 나누고, 그 밖의 빚은 `debtCap`(보통 연봉 1~1.5년치)까지. 한도의 1.8배를 넘으면 한 번 채무 조정(`f.rehab`).
+- 되풀이 한도(engine/55 `THB`, engine/57): 명절 장면 한 해 둘·한 삶 26번(나이에 맞춰 `festPace`), 해마다 오는 학교·계절 일 3번(`SEAS_MAX`), 그 밖의 달력 일 3번, 되풀이되는 큰 갈림길 2번(`mjN`). 실패 문장은 고른 행동을 '~하려 했지만'으로(engine/16 `tryForm`·`FAIL_TAIL`). 장면 그림은 ui/53 `scAgeFix`가 문장·나이·하는 일에 맞춰 바꾼다.
+- 돈(engine/20 `ledger`): 꼭 드는 생활비(`ess`) 아래로는 줄이지 못하고, 그보다 벌면 버는 만큼에 맞춰 산다. 집 대출(집값의 80%)과 그 밖의 빚을 나누고, 그 밖의 빚은 `debtCap`(보통 연봉 1~1.5년치)까지. 한도의 1.8배를 넘으면 한 번 채무 조정(`f.rehab`). 월급은 첫 일에서 경력 계수(사무·돌봄 0.7부터)로 낮게 시작해 오른다(engine/57 `setJob` 감싸기) — 일하는 사람 가운데 값이 보통 월급의 20대 0.7배·40대 1.0배·50대 1.1배.
 - 마친 삶 기록: `lifeRecord()`(요약·오각형 최대·흐름·돈·이야기 표·기억·답) → `lifeDetailHTML()`로 학생·교사 화면에서 펼쳐 본다.
 - 장면 그림 이름 규칙은 `ui/53-art-loader.js`의 `scArtName(kind,L)`: 지역(`life_<지역>_<m|f>`, `farewell_<지역>`), 시골판(`<종류>_r`), 지역판(결혼·아기·학교·집·직업·병원·축제, `SC_VAR`). 집 밖 장면 `town`은 나이 4단계(`town6|13|19|75_<지역>`, `townStage`). 일상·집 밖 장면은 `scVar(kind,문장,나이,L)`이 `'life@end_meal_EA'`처럼 종류 뒤에 그림 이름을 붙여 고른다(엔딩 카드·나의 기록·사건 창 `popup`). 지역 코드: EA·SE·SA·AF·ME·LA·WE(`RG_ART`). 이미지가 없으면 옛 도트 그림으로 대신 나온다.
 
