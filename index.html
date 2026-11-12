@@ -239,6 +239,71 @@ h3{font-size:1rem;margin:0} p{margin:0}
 #s-end .res .rbar{color:#E7EEF4}#s-end .res .rbar .rt{background:rgba(255,255,255,.14)}#s-end .res .rbar .rv small{color:#AFC0CD}
 .lchart2{width:100%;display:block;margin:4px 0}.lchart2 .lgrid{stroke:#E1E7EC;stroke-width:1}.lchart2 .ltick{font-size:11px;fill:#6A7784}.lchart2 .lmark{stroke:#E2703A;stroke-width:1.5;stroke-dasharray:3 3}.lchart2 .lmk{fill:#E2703A;font-weight:700}
 #s-end .rbox .rcap{margin:2px 6px 0;font-size:.82rem;color:#7A6A5A;font-weight:700}#s-end .rbox+.rbox{margin-top:10px}
+
+/* ----- 화면 다듬기 3판 ----- */
+#sheet .box{position:relative}
+.xclose{position:sticky;top:0;align-self:flex-end;margin:-6px -6px -34px 0;z-index:5;width:40px;height:40px;border-radius:50%;border:2px solid #33404C;background:#FFFDF6;color:#33404C;font-size:18px;font-weight:800;line-height:1;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18);flex:none}
+.xclose:hover{background:#FFE7D6}
+#sheet .box.event .evt{font-size:1.28rem;line-height:1.7}
+#sheet .box.event .place{font-size:.92rem}
+#sheet .box.event h2{font-size:1.35rem}
+#sheet .box{font-size:1.02rem}
+#flash{width:min(94%,34rem);padding:18px 20px;pointer-events:auto;cursor:pointer}
+#flash p{font-size:1.22rem;line-height:1.65}
+#flash .place{font-size:.9rem}
+#miniRad{position:absolute;z-index:6;padding:6px 8px 4px;border-radius:12px;background:rgba(255,253,246,.94);cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+#miniRad.off{padding:4px 6px}
+#miniRad .mrhd{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;font-weight:800;color:#33404C}
+#miniRad .mrtog{border:1.5px solid #7C8A96;background:#fff;border-radius:8px;font-size:.8rem;font-weight:800;padding:2px 8px;cursor:pointer;color:#33404C;min-height:28px}
+#miniRad .mrad{width:100%;display:block}
+#sheet .box.info,#sheet .box.mem{width:min(100%,40rem);gap:12px}
+.ihead{position:sticky;top:-14px;z-index:4;background:inherit;margin:-14px -4px 0;padding:14px 48px 8px 4px;background:#FAF8F2;border-bottom:1px solid #E3DDCF}
+.ihead h2{margin:2px 0 8px;font-size:1.25rem}
+.itabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.itabs::-webkit-scrollbar{display:none}
+.itabs button{flex:none;border:1.5px solid #C9C2B2;background:#fff;color:#33404C;border-radius:999px;padding:7px 13px;font-size:.92rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.itabs button.on{background:#33404C;color:#fff;border-color:#33404C}
+.ibody{display:flex;flex-direction:column;gap:12px}
+.icard{background:#fff;border:1px solid #E3DDCF;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.icard h3{margin:0 0 4px;font-size:1.05rem;color:#33404C;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.icard h3 small{font-size:.8rem;color:#7A8592;font-weight:500}
+.irow{display:grid;grid-template-columns:6.2em 1fr;gap:10px;padding:7px 0;border-top:1px dashed #E7E2D6;font-size:1rem;line-height:1.55}
+.icard h3+.irow{border-top:0}
+.irow .ik{color:#6A7480;font-weight:700;font-size:.92rem}
+.irow .iv{min-width:0;word-break:keep-all}
+.isub{color:#6A7480;font-size:.86rem;line-height:1.5;margin:2px 0 0}
+.ibig{font-size:1.08rem;line-height:1.6;margin:0}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:8px}
+.pcard{border:1px solid #ECE6D8;border-radius:10px;padding:9px 11px;background:#FCFAF5;display:flex;flex-direction:column;gap:2px}
+.pcard b{font-size:1rem}.pcard p{margin:4px 0 0;font-size:.95rem;line-height:1.5}
+.axgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center}
+.axgrid div{display:flex;flex-direction:column;align-items:center;font-size:.85rem;font-weight:700}
+.axgrid b{font-size:1.25rem;font-variant-numeric:tabular-nums}
+.axgrid small.up{color:#2F8F5A}.axgrid small.dn{color:#C23B56}
+.jrow{display:grid;grid-template-columns:9.5em 1fr 2.2em;gap:8px;align-items:center;font-size:.95rem}
+.jrow small{color:#7A8592}.jrow .rt{height:10px;background:#E6ECF1;border-radius:5px;overflow:hidden}.jrow .rt i{display:block;height:100%;background:#E2703A;border-radius:5px}.jrow b{text-align:right;font-variant-numeric:tabular-nums}
+.mlist{display:flex;flex-direction:column;gap:8px}
+.mcard{display:grid;grid-template-columns:3.6em 1fr;gap:10px;background:#fff;border:1px solid #E3DDCF;border-left:4px solid #C9D3DC;border-radius:10px;padding:10px 12px}
+.mcard.big{border-left-color:#E2703A;background:#FFF8F1}
+.mcard.sc{cursor:pointer}.mcard.sc:hover{border-color:#E2703A}
+.mage{font-weight:800;font-size:1.05rem;color:#33404C;display:flex;flex-direction:column}.mage small{font-weight:500;font-size:.75rem;color:#7A8592}
+.mtx p{margin:0;line-height:1.6}.mtx .mq{color:#5A6878;font-size:.9rem}.mtx .ml{color:#2858A8;font-weight:700;font-size:.95rem}.mtx .mr{font-size:1.02rem}
+.mtags{display:flex;gap:6px;margin-top:4px}.scmark{display:inline-block;font-size:.72rem;font-weight:800;color:#fff;background:#7C95AE;border-radius:6px;padding:1px 6px}
+@media (max-width:420px){ .irow{grid-template-columns:5.2em 1fr} .jrow{grid-template-columns:7.6em 1fr 2em} .axgrid b{font-size:1.1rem} }
+
+/* ----- 엔딩 가독성 ----- */
+#s-end .slide{font-size:1.08rem;line-height:1.8;word-break:keep-all}
+#s-end .slide p{line-height:1.8}
+#s-end .slide p.big{font-size:1.42rem;line-height:1.55;font-weight:700;margin:.3em 0 .6em}
+#s-end .slide p.soft{font-size:1rem;color:#C5D3DF}
+#s-end .slide p.note{font-size:.86rem;color:#9FB0BF;line-height:1.6}
+#s-end .slide table{font-size:1rem}
+#s-end .slide>dl,#s-end .slide>table,#s-end .slide .tscroll{background:rgba(255,255,255,.06);border-radius:12px;padding:8px 10px}
+#s-end .ncard.anim canvas{image-rendering:pixelated;background:#BFD8E8}
+#s-end .ncard .nbody p{font-size:1.12rem}
+#s-end figure.oneline{margin:12vh 0 8vh;text-align:center}
+#s-end figure.oneline blockquote{margin:0 0 18px;font-size:1.62rem;line-height:1.65;font-weight:700;color:#FFF3E6;word-break:keep-all}
+#s-end figure.oneline figcaption{font-size:1.05rem;color:#FFC9A8;font-weight:700}
 /* ----- 엔딩 슬라이드쇼 ----- */
 #s-end .slideshow{position:relative;z-index:2;display:flex;flex-direction:column;gap:14px;min-height:calc(100dvh - 3rem)}
 #s-end .sprog{height:4px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden}
@@ -6429,7 +6494,7 @@ function renderHubRoom(msg){
   else $('btnRoomIn').onclick=async()=>{ const c=cleanCode($('roomCode').value); if(!c) return renderHubRoom('방 코드를 적어 주세요.'); const r=await Store.roomGet(c); if(!r) return renderHubRoom('그런 방이 없어요. 코드를 다시 확인해 주세요.'); G.data.room=c; Store.save(G.data,true); renderHubRoom(); };
 }
 // 페이지 위의 작은 도트 그림 (보이는 동안만 움직인다)
-function pixLoop(id,kind){ const c=$(id); if(!c) return; const x=c.getContext('2d'); x.imageSmoothingEnabled=false; const t0=performance.now();
+function pixLoop(id,kind){ const c=$(id); if(!c) return; if(c.width===160){ c.width=640; c.height=320; } const x=c.getContext('2d'); x.setTransform(c.width/160,0,0,c.width/160,0,0); x.imageSmoothingEnabled=false; const t0=performance.now();
   const f=()=>{ if(!c.offsetParent) return; x.clearRect(0,0,160,80); try{ drawScene(x,kind,(performance.now()-t0)/1000,kind==='title'?null:G.life); }catch(e){} requestAnimationFrame(f); }; f(); }
 function birth(){
   const L=G.life=new Life(); G.sec=CFG.PERIOD_SEC;
@@ -6513,7 +6578,7 @@ function randLook(rg,base){ const w=SKIN_W[rg]||SKIN_W.EA; let si=drawIdx(w); if
   return {si,skin:SKINS[si],hair:light?pickOne(HAIRS_LIGHT):pickOne(HAIRS_DARK),body:pickOne(CLOTHES),pants:pickOne(['#384868','#484040','#586878','#283850','#6A5040'])}; }
 function personSpriteOld(o){
   const key=['P',o.dir,o.fr,o.st,o.skin,o.hair,o.body,o.pants,o.long?1:0,o.hat||''].join('|');
-  if(o.dir===2){ return cached(key,16,16,(x,c)=>{ x.drawImage(personSprite(Object.assign({},o,{dir:1})),0,0); const f=flipX(c); x.clearRect(0,0,16,16); x.drawImage(f,0,0); }); }
+  if(o.dir===2){ return cached(key,16,16,(x,c)=>{ drawSpr(x,personSprite(Object.assign({},o,{dir:1})),0,0); const f=flipX(c); x.clearRect(0,0,16,16); x.drawImage(f,0,0); }); }
   return cached(key,16,16,(x,c)=>{
     const P=(X,Y,W,H,col)=>pr(x,X,Y,W,H,col), sk=o.skin, skD=shade(sk,.85), hr=o.hair, hrD=shade(hr,.75), hrL=shade(hr,1.35), bd=o.body, bdD=shade(bd,.75), pt=o.pants, sh='#403030', d=o.dir, fr=o.fr, st=o.st;
     if(st==='baby'){                       // 기어 다니는 아기
@@ -6543,7 +6608,7 @@ function personSpriteOld(o){
   });
 }
 /* ---------- 탈것 · 동물 (오른쪽을 향한 그림, 왼쪽은 뒤집는다) ---------- */
-function vehicleSprite(kind,face,col,rider){
+function vehicleSprite2(kind,face,col,rider){
   const rk=rider?[rider.skin,rider.hair,rider.body,rider.pants||'',rider.st||'',rider.long?1:0,rider.sty|0].join(','):'';
   const key=['V2',kind,face,col,rk].join('|'), w=kind==='car'?28:kind==='horse'?30:kind==='moto'?28:26, h=kind==='car'?18:kind==='horse'?30:28;
   if(face<0) return cached(key,w,h,(x)=>x.drawImage(flipX(vehicleSprite(kind,1,col,rider)),0,0));
@@ -6737,7 +6802,7 @@ function floorTile(kind,v){ return cached(['FL',kind,v].join('|'),16,16,(x)=>{ c
 function drawScene(x,kind,t,L){ if(kind==='house') kind='town';
   const W=160,H=80, P=(X,Y,Ww,Hh,c)=>pr(x,Math.round(X),Math.round(Y),Ww,Hh,c), sp=L?spOf(L):1, g=GRASS[sp];
   const look=(L&&L.look)||{skin:'#E0A878',hair:'#2A2420',body:'#E05838',pants:'#384868'};
-  const person=(px,py,o)=>x.drawImage(personSprite(Object.assign({dir:0,fr:0,st:'adult'},look,o||{})),Math.round(px),Math.round(py)-8);
+  const person=(px,py,o)=>drawSpr(x,personSprite(Object.assign({dir:0,fr:0,st:'adult'},look,o||{})),Math.round(px),Math.round(py)-8);
   const sky=(c1,c2)=>{ for(let i=0;i<6;i++) P(0,i*9,W,9,shade(c1,1+(i*.04))); P(0,54,W,26,c2||g[1]); for(let i=0;i<12;i++) P((i*37+5)%W,56+(i*7)%22,3,1,g[2]); };
   const house=(px,py,w,h,col)=>x.drawImage(buildingSprite('house',w,h,{roof:col||'#C8503A'}),px,py);
   const tree=(px,py,ty)=>x.drawImage(treeSprite(ty||'round',sp,1),px,py);
@@ -6756,10 +6821,10 @@ function drawScene(x,kind,t,L){ if(kind==='house') kind='town';
     case 'volcano': sky('#A88078','#6A7A50'); for(let i=0;i<40;i++){ const ww=Math.round(60-i*1.2); P(80-ww,14+i,ww*2,1,i<4?'#E04020':'#6A5A50'); } P(76,10,8,6,'#F86020'); for(let i=0;i<5;i++) P(70+i*5,2-(t*8+i*3)%10,6,4,'#5A5050'); house(10,40,30,24); break;
     case 'sea': sky('#88B8E0','#3C90E0'); P(0,40,W,40,'#3C90E0'); for(let i=0;i<10;i++){ const yy=44+(i%4)*9, xx=(i*31+t*25)%W; P(xx,yy,12,2,'#9ACCF8'); } { const b=Math.sin(t*3)*3; P(60,34+b,36,6,'#8A5A30'); P(64,40+b,28,3,'#6A4220'); P(76,14+b,2,20,'#5A4030'); P(78,16+b,14,14,'#F4F0E0'); person(64,20+b,{dir:2}); } break;
     case 'unrest': sky('#A8A8B0','#B8B0A0'); for(let i=0;i<4;i++){ P(8+i*38,24,32,34,'#C8BCA8'); P(12+i*38,36,24,22,'#7A808A'); for(let y=36;y<58;y+=3) P(12+i*38,y,24,1,'#6A7078'); } house(130,26,26,30); P(136,40,8,6,'#F8D890'); person(140,34,{dir:0,st:'kid'}); break;
-    case 'baby': case 'birth': sky('#F8E0E8','#F0D8C0'); P(56,46,48,18,'#E8C8A0'); P(56,46,48,3,'#C8A070'); P(68,40,24,10,'#FFFFFF'); x.drawImage(personSprite(Object.assign({},look,{dir:0,fr:0,st:'baby'})),72,34); person(34,40,{body:'#3870D0',long:1}); person(110,40,{body:'#40A048'}); for(let i=0;i<5;i++){ const yy=10+((t*12+i*9)%20); P(20+i*30,yy,3,3,'#F070A0'); P(19+i*30,yy+1,5,1,'#F070A0'); } break;
+    case 'baby': case 'birth': sky('#F8E0E8','#F0D8C0'); P(56,46,48,18,'#E8C8A0'); P(56,46,48,3,'#C8A070'); P(68,40,24,10,'#FFFFFF'); drawSpr(x,personSprite(Object.assign({},look,{dir:0,fr:0,st:'baby'})),72,34); person(34,40,{body:'#3870D0',long:1}); person(110,40,{body:'#40A048'}); for(let i=0;i<5;i++){ const yy=10+((t*12+i*9)%20); P(20+i*30,yy,3,3,'#F070A0'); P(19+i*30,yy+1,5,1,'#F070A0'); } break;
     case 'farewell': for(let i=0;i<8;i++) P(0,i*7,W,7,['#F8C890','#F4B080','#F09878','#E08080','#C07890','#9070A0','#6A6898','#4A5888'][i]); P(0,56,W,24,'#4A5838'); sun(80,52,'#F8E0A0'); P(0,54,W,4,'#3A4830'); person(60,40,{dir:3}); person(80,40,{dir:3,long:1,body:'#C84860'}); for(let i=0;i<3;i++){ const xx=(30+i*40+t*12)%W; P(xx,14+i*6,4,1,INK); P(xx+4,13+i*6,3,1,INK); } break;
     case 'wedding': sky('#F8E8F0'); P(46,20,68,4,'#E8A0B8'); P(46,20,4,40,'#E8A0B8'); P(110,20,4,40,'#E8A0B8'); person(64,42,{body:'#283850'}); person(82,42,{body:'#FFFFFF',long:1}); conf(30); break;
-    case 'sick': case 'hosp': sky('#E8F0F4','#DCE4EC'); P(30,40,70,20,'#FFFFFF'); P(30,36,16,8,'#E8EEF4'); P(30,56,70,4,'#B8C8D8'); x.drawImage(personSprite(Object.assign({},look,{dir:0,st:'adult'})),34,30); P(110,20,24,18,'#283038'); for(let i=0;i<20;i++) P(112+i,28+(i===8?-5:i===9?4:0),1,1,'#60E070'); P(120,40,2,20,'#909AA4'); break;
+    case 'sick': case 'hosp': sky('#E8F0F4','#DCE4EC'); P(30,40,70,20,'#FFFFFF'); P(30,36,16,8,'#E8EEF4'); P(30,56,70,4,'#B8C8D8'); drawSpr(x,personSprite(Object.assign({},look,{dir:0,st:'adult'})),34,30); P(110,20,24,18,'#283038'); for(let i=0;i<20;i++) P(112+i,28+(i===8?-5:i===9?4:0),1,1,'#60E070'); P(120,40,2,20,'#909AA4'); break;
     case 'school': case 'grad': sky('#B8E0F8'); x.drawImage(buildingSprite('school',72,44,null,true),44,14); tree(16,38); tree(130,38); person(40,52,{st:'kid'}); person(110,52,{st:'kid',body:'#3870D0',long:1}); if(kind==='grad'){ for(let i=0;i<5;i++){ const yy=10+((t*20+i*13)%30); P(20+i*28,yy,8,2,INK); P(23+i*28,yy-2,2,2,INK); } } break;
     case 'noschool': sky('#B8E0F8'); x.drawImage(buildingSprite('school',60,40,null,false),80,18); for(let i=0;i<10;i++) P(70+i*9,48,2,14,'#9A7048'); P(68,50,92,2,'#9A7048'); person(36,48,{st:'kid',dir:2}); P(26,58,10,6,'#7AA0C8'); break;
     case 'job': sky('#C8E0F0'); { const L2=L&&L.job, k=L2?L2.kind:'office'; const kd={office:'office',factory:'factory',farm:'barn',herd:'barn',shop:'shop',school:'school',hosp:'hospital',dream:'studio',fish:'port',mine:'mine',tour:'kiosk'}[k]||'shop'; x.drawImage(buildingSprite(kd,64,42,null,true),48,14); } person(30,46); person(120,46,{body:'#3870D0'}); for(let i=0;i<4;i++) P(20+i*36,8+Math.sin(t*3+i)*2,3,3,'#F8D048'); break;
@@ -6769,7 +6834,7 @@ function drawScene(x,kind,t,L){ if(kind==='house') kind='town';
     case 'mine': sky('#B8C0C8','#8A7A68'); x.drawImage(buildingSprite('mine',70,46,null,true),46,14); P(20,62,120,2,'#605048'); for(let i=0;i<12;i++) P(20+i*10,64,2,2,'#605048'); person(120,44,{hat:'#E8B030'}); break;
     case 'fest': sky('#405078','#806040'); for(let i=0;i<9;i++){ P(i*18+4,10+(i%2)*4,1,6,'#2A2420'); P(i*18+1,16+(i%2)*4,7,8,['#E04040','#F8C040','#40A048'][i%3]); P(i*18+2,18+(i%2)*4,5,4,'#F8E890'); } for(let i=0;i<4;i++) person(20+i*34,46+Math.abs(Math.sin(t*5+i))*-4,{body:CLOTHES[i+2]}); break;
     case 'sport': sky('#B8E0F8','#58A040'); P(0,54,W,26,'#58A040'); P(0,66,W,1,'#F8F8F8'); P(130,40,2,22,'#F8F8F8'); P(130,40,22,2,'#F8F8F8'); P(150,40,2,22,'#F8F8F8'); { const bx=60+Math.sin(t*3)*30; P(bx,44-Math.abs(Math.sin(t*6))*14,6,6,'#F8F8F8'); P(bx+2,46-Math.abs(Math.sin(t*6))*14,2,2,INK); } person(40,46,{dir:2}); person(100,46,{dir:1,body:'#3870D0'}); break;
-    case 'travel': sky('#A8D8F8'); P(0,58,W,6,'#6E767E'); for(let i=0;i<10;i++) P(i*18+(t*30)%18,61,8,1,'#F8F8F8'); { const v=L?L.C.veh.kind:'car'; x.drawImage(vehicleSprite(v,1,'#C2577A',v==='car'?null:look),60,42); } tree(10,38); tree(140,38); P(110,10+Math.sin(t)*2,24,4,'#F8F8F8'); P(116,8+Math.sin(t)*2,4,8,'#F8F8F8'); break;
+    case 'travel': sky('#A8D8F8'); P(0,58,W,6,'#6E767E'); for(let i=0;i<10;i++) P(i*18+(t*30)%18,61,8,1,'#F8F8F8'); { const v=L?L.C.veh.kind:'car'; drawSpr(x,vehicleSprite(v,1,'#C2577A',v==='car'?null:look),60,42); } tree(10,38); tree(140,38); P(110,10+Math.sin(t)*2,24,4,'#F8F8F8'); P(116,8+Math.sin(t)*2,4,8,'#F8F8F8'); break;
     case 'pet': sky('#C8E8F8'); house(10,26,40,32); person(70,44,{st:'kid'}); x.drawImage(animalSprite('dog',Math.floor(t*4)%2,-1),92,58); for(let i=0;i<3;i++) P(98+i*6,40-((t*10+i*4)%12),3,3,'#F070A0'); break;
     case 'friend': sky('#C8E8F8'); tree(14,36); tree(130,36); person(60,46,{st:'kid',dir:2}); person(78,46,{st:'kid',dir:1,body:'#3870D0',long:1}); P(72,36,4,4,'#F070A0'); P(71,37,6,2,'#F070A0'); break;
     case 'stage': sky('#202838','#403040'); P(20,56,120,10,'#8A5A30'); P(52,0,56,56,'#F8E89030'); for(let i=0;i<10;i++){ P(54+i*5,i*5,52-i*10>0?52-i*10:2,5,'rgba(248,232,144,0.18)'); } person(72,40,{body:'#E8B030'}); for(let i=0;i<8;i++) P(10+i*19,70,8,6,'#2A2430'); break;
@@ -6779,15 +6844,15 @@ function drawScene(x,kind,t,L){ if(kind==='house') kind='town';
       for(let yy=-r;yy<=r;yy++){ const ww=Math.round(Math.sqrt(r*r-yy*yy)); for(let xx=-ww;xx<ww;xx++){ const lon=Math.asin(clamp(xx/Math.max(ww,1),-1,1))/Math.PI*40+rot, u=((Math.floor(lon/3)%40)+40)%40, v=Math.floor((yy+r)/4);
           const land=(hash(u,v)+hash(u+1,v)*.6+hash(u,v+1)*.6)/2.2>.56; P(cx+xx,cy+yy,1,1,land?(xx>ww*.45?'#3E8A34':'#62B048'):(xx>ww*.45?'#2E78C8':'#3C90E0')); } }
       P(cx-r+6,cy-r+8,4,2,'rgba(255,255,255,.45)');
-      [0,2,4,5].forEach((si,i)=>{ const px=[18,44,102,128][i]; x.drawImage(personSprite({dir:0,fr:Math.floor(t*3+i)%3===1?1:0,st:'kid',skin:SKINS[si],hair:i===1?'#E8C070':'#2A2420',body:CLOTHES[i*2],pants:'#384868',long:i%2===1}),px,50-Math.abs(Math.round(Math.sin(t*4+i)*2))); }); } break;
+      [0,2,4,5].forEach((si,i)=>{ const px=[18,44,102,128][i]; drawSpr(x,personSprite({dir:0,fr:Math.floor(t*3+i)%3===1?1:0,st:'kid',skin:SKINS[si],hair:i===1?'#E8C070':'#2A2420',body:CLOTHES[i*2],pants:'#384868',long:i%2===1}),px,50-Math.abs(Math.round(Math.sin(t*4+i)*2))); }); } break;
     case 'country': { if(!L) break; const C=L.C; sky(sp===3?'#C8D8E8':C.arid?'#F0D8A8':'#A8D8F8');
       const lm=landmarkSprite(C.lt==='wt'||C.lt==='cs'?'mt':C.lt,sp); x.drawImage(lm,0,0,88,96,96,-4,66,72);
       if(C.lt==='wt'||C.lt==='cs'){ P(100,54,60,26,'#3C90E0'); for(let i=0;i<4;i++) P(104+i*14+(t*8%6),60+(i%2)*8,8,1,'#9ACCF8'); }
       const hk=typeof kindOf==='function'?kindOf('home'):'house'; x.drawImage(buildingSprite(hk,52,38,C.pal[hk],false),10,26);
       tree(70,36,treeTypeFor(C.rg,2)); tree(2,40,treeTypeFor(C.rg,5));
-      const lk=L.look||{skin:'#E0A878',hair:'#2A2420'}; x.drawImage(personSprite({dir:0,fr:0,st:'adult',skin:lk.skin,hair:lk.hair,body:'#3870D0',pants:'#384868',long:1}),64,58);
-      x.drawImage(personSprite({dir:0,fr:0,st:'adult',skin:lk.skin,hair:lk.hair,body:'#40A048',pants:'#484040'}),86,58);
-      x.drawImage(personSprite({dir:0,fr:Math.floor(t*2)%2,st:'baby',skin:lk.skin,hair:lk.hair,body:'#F8F0E0',pants:'#F8F0E0'}),76,64); } break;
+      const lk=L.look||{skin:'#E0A878',hair:'#2A2420'}; drawSpr(x,personSprite({dir:0,fr:0,st:'adult',skin:lk.skin,hair:lk.hair,body:'#3870D0',pants:'#384868',long:1}),64,58);
+      drawSpr(x,personSprite({dir:0,fr:0,st:'adult',skin:lk.skin,hair:lk.hair,body:'#40A048',pants:'#484040'}),86,58);
+      drawSpr(x,personSprite({dir:0,fr:Math.floor(t*2)%2,st:'baby',skin:lk.skin,hair:lk.hair,body:'#F8F0E0',pants:'#F8F0E0'}),76,64); } break;
     default: sky('#F8D8B0'); sun(80,34,'#F8E0A0'); tree(20,36); tree(124,36); house(52,30,52,30); person(70,52);
   }
 }
@@ -6810,7 +6875,7 @@ function personDims(st){
   if(st==='elder') return {HW:10,HH:9,TW:8,tH:6,lH:4,LW:3};
   return {HW:10,HH:9,TW:8,tH:6,lH:5,LW:3};
 }
-function personSprite(o){
+function personSprite5(o){
   const key=['P5',o.dir,o.fr|0,o.blink?1:0,o.st,o.skin,o.hair,o.body,o.pants,o.long?1:0,o.hat||'',o.sty|0,o.half?1:0].join('|');
   if(o.dir===2) return cached(key,16,24,(x)=>{ x.drawImage(flipX(personSprite(Object.assign({},o,{dir:1}))),0,0); });
   return cached(key,16,24,(x,c)=>{
@@ -7266,9 +7331,9 @@ function chips(fx,tr){ let h=''; if(fx) for(const k in fx){ const v=fx[k]; if(!v
     else if(STAT[k]) h+=`<span class="chip ${v>0?'up':'dn'}">${STAT[k]} ${v>0?'+':'−'}${Math.abs(v)}</span>`; }
   if(tr) h+=`<span class="chip tr">${TRAIT[tr]}</span>`; return h?`<div class="chips">${h}</div>`:''; }
 // 장면 그림: 창이 열려 있는 동안 조금씩 움직인다
-function sceneHTML(kind){ return kind?`<canvas class="scene" width="160" height="80" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[kind]||'삶'} —</div>`:''; }
+function sceneHTML(kind){ return kind?`<canvas class="scene" width="640" height="320" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[kind]||'삶'} —</div>`:''; }
 function animScenes(){ const cs=[...$('sheetBox').querySelectorAll('canvas.scene')]; if(!cs.length) return; const t0=performance.now();
-  const step=()=>{ if($('sheet').hidden) return; let alive=false; cs.forEach(c=>{ if(!c.isConnected) return; alive=true; const x=c.getContext('2d'); x.imageSmoothingEnabled=false; x.clearRect(0,0,160,80); drawScene(x,c.dataset.sc,(performance.now()-t0)/1000,G.life); }); if(alive) requestAnimationFrame(step); }; step(); }
+  const step=()=>{ if($('sheet').hidden) return; let alive=false; cs.forEach(c=>{ if(!c.isConnected) return; alive=true; const x=c.getContext('2d'); x.setTransform(c.width/160,0,0,c.width/160,0,0); x.imageSmoothingEnabled=false; x.clearRect(0,0,160,80); drawScene(x,c.dataset.sc,(performance.now()-t0)/1000,G.life); }); if(alive) requestAnimationFrame(step); }; step(); }
 function popup(tag,txt,fx,after,cls,sc,nt){ sheet(`${sceneHTML(sc)}<div class="place">${esc(tag)}</div><p class="evt">${esc(txt)}</p>${nt?`<p class="nt">${esc(nt)}</p>`:''}${chips(fx)}<button class="btn primary" id="btnOk">확인 ▶</button>`,'event '+(cls||'')); renderHud(); $('btnOk').onclick=()=>{ closeSheet(); if(after) after(); }; }
 function flash(place,t,fx,tr,bad){ const f=$('flash'); f.className='gbox'+(bad?' bad':''); f.innerHTML=`<div class="place">${esc(place)}</div><p>${esc(t)}</p>${chips(fx,tr)}`; f.hidden=false; f.style.animation='none'; void f.offsetWidth; f.style.animation=''; clearTimeout(flash.t); flash.t=setTimeout(()=>f.hidden=true,2600); }
 function sheet(html,cls){ $('sheetBox').className='box gbox '+(cls||''); $('sheetBox').innerHTML=html; $('sheet').hidden=false; paused=true; IN.jx=IN.jy=0; IN.id=null; animScenes(); }
@@ -7504,10 +7569,10 @@ function loop(t){
 }
 
 /* ========== 화면 그리기: 낮은 해상도 버퍼에 도트로 그린 뒤 정수배로 키운다 ========== */
-let SC=2, LW=0, LH=0, VW=0, VH=0, DPR=1;
+let SC=2, LW=0, LH=0, VW=0, VH=0, DPR=1, LR=1;   // LR: 버퍼를 화면 해상도로 (도트는 그대로 커지고, 사람은 고해상도로 그려진다)
 const lc=mk(1,1), lx=lc.getContext('2d');
 function resize(){ DPR=Math.min(2,devicePixelRatio||1); VW=cv.clientWidth; VH=cv.clientHeight; cv.width=Math.round(VW*DPR); cv.height=Math.round(VH*DPR);
-  SC=clamp(Math.floor(Math.min(VW/(PX*12),VH/(PX*10))),2,4); LW=Math.ceil(VW/SC); LH=Math.ceil(VH/SC); lc.width=LW; lc.height=LH; lx.imageSmoothingEnabled=false; }
+  SC=clamp(Math.floor(Math.min(VW/(PX*12),VH/(PX*10))),2,4); LW=Math.ceil(VW/SC); LH=Math.ceil(VH/SC); LR=SC; lc.width=LW*LR; lc.height=LH*LR; lx.imageSmoothingEnabled=false; }
 addEventListener('resize',()=>{ if(!$('s-game').hidden) resize(); });
 const LABEL_FONT='"Galmuri11","Galmuri9","Pretendard","Apple SD Gothic Neo",sans-serif';
 function label(txt,x,y,size,bg,fg,bd){ g.font=`${size}px ${LABEL_FONT}`; const w=Math.ceil(g.measureText(txt).width)+size*.8, h=Math.round(size*1.45);
@@ -7633,6 +7698,7 @@ function gateSprite(){ return cached('GATE',12,32,(x,c)=>{ const P=(X,Y,Wd,H,cc)
 
 /* ---------- 한 장면 그리기 ---------- */
 function draw(t){
+  lx.setTransform(LR,0,0,LR,0,0); lx.imageSmoothingEnabled=false;
   const L=G.life, out=W.map==='out', sp=spOf(L), MW=(out?OUT.w:IW)*PX, MH=(out?OUT.h:IH)*PX, hud=HUDH/SC, bottom=74/SC;
   let cx=W.x*PX-LW/2, cy=W.y*PX-(hud+(LH-hud-bottom)*.5);
   cx=MW<LW?(MW-LW)/2:clamp(cx,0,MW-LW); cy=MH<LH-hud-bottom?(MH-LH)/2-(hud-bottom)/2:clamp(cy,-hud-6,MH-LH+bottom);
@@ -7647,13 +7713,13 @@ function draw(t){
     OUT.gates.forEach(gt=>{ if(L.age>=gt[1]) return; for(let y=0;y<OUT.h;y+=2){ const yy=Y(y); if(yy>-34&&yy<LH) lx.drawImage(gateSprite(),X(gt[0])-3,yy); } }); }
   // 움직이는 것들을 아래쪽부터 그린다
   const list=(NPCMAP[W.map]||[]).slice(), spr=[];
-  for(const n of list){ if(n.kind==='v') spr.push({y:n.y,d:()=>{ dropShadow(lx,X(n.x),Y(n.y)+2,n.v==='car'?24:16); const s=vehicleSprite(n.v,n.vx>0?1:-1,n.col,n.v==='car'?null:n.look); lx.drawImage(s,X(n.x)-s.width/2,Y(n.y)-s.height+4); }});
+  for(const n of list){ if(n.kind==='v') spr.push({y:n.y,d:()=>{ dropShadow(lx,X(n.x),Y(n.y)+2,n.v==='car'?24:16); const s=vehicleSprite(n.v,n.vx>0?1:-1,n.col,n.v==='car'?null:n.look); drawSpr(lx,s,X(n.x)-sprW(s)/2,Y(n.y)-sprH(s)+4); }});
     else if(n.kind==='a') spr.push({y:n.y,d:()=>{ dropShadow(lx,X(n.x),Y(n.y)-1,9); lx.drawImage(animalSprite(n.a,n.moving?Math.floor(n.fr)%2:0,n.face||1),X(n.x)-6,Y(n.y)-10-(n.moving&&Math.floor(n.fr)%2?1:0)); }});
-    else spr.push({y:n.y,d:()=>{ const f=n.moving?[1,0,2,0][Math.floor(n.fr)%4]:0, bob=n.moving&&f===0?1:0; dropShadow(lx,X(n.x),Y(n.y)-1,n.st==='baby'?10:12); lx.drawImage(personSprite({dir:n.dir,fr:f,st:n.st,skin:n.look.skin,hair:n.st==='elder'?'#D8DCE0':n.look.hair,body:n.look.body,pants:n.look.pants,long:n.long,sty:Math.floor(hash(Math.round(n.look.body.charCodeAt(2)*7+n.look.hair.charCodeAt(3)),9)*4),blink:Math.floor(t*10+n.x*7)%41===0}),X(n.x)-8,Y(n.y)-22-bob); }}); }
+    else spr.push({y:n.y,d:()=>{ const f=n.moving?[1,0,2,0][Math.floor(n.fr)%4]:0, bob=n.moving&&f===0?1:0; dropShadow(lx,X(n.x),Y(n.y)-1,n.st==='baby'?10:12); drawSpr(lx,personSprite({dir:n.dir,fr:f,st:n.st,skin:n.look.skin,hair:n.st==='elder'?'#D8DCE0':n.look.hair,body:n.look.body,pants:n.look.pants,long:n.long,sty:Math.floor(hash(Math.round(n.look.body.charCodeAt(2)*7+n.look.hair.charCodeAt(3)),9)*4),blink:Math.floor(t*10+n.x*7)%41===0}),X(n.x)-8,Y(n.y)-22-bob); }}); }
   const a=L.age, st=stageAt(a), f=W.moving?[1,0,2,0][Math.floor(W.walk)%4]:0, lk=L.look;
-  spr.push({y:W.y,me:1,d:()=>{ if(W.car){ dropShadow(lx,X(W.x),Y(W.y)+2,C_VEH()==='car'?24:16); const s=vehicleSprite(C_VEH(),W.dir===1?-1:1,'#C2577A',C_VEH()==='car'?null:{skin:lk.skin,hair:a>=62?'#D8DCE0':lk.hair,body:'#E2703A',pants:lk.pants,st:stageAt(a),long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:0}); lx.drawImage(s,X(W.x)-s.width/2,Y(W.y)-s.height+4); }
-    else { dropShadow(lx,X(W.x),Y(W.y)-1,st==='baby'?10:12); const bob=W.moving&&f===0?1:0; lx.drawImage(personSprite({dir:W.dir,fr:f,st,skin:lk.skin,hair:a>=62?'#D8DCE0':a>=50?shade(lk.hair,1.6):lk.hair,body:'#E2703A',pants:lk.pants,long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:Math.floor(hash(lk.si*5+lk.hair.charCodeAt(3),9)*4),blink:Math.floor(t*10)%38===0}),X(W.x)-8,Y(W.y)-22-bob); } }});
-  if(out&&canDrive()&&!W.car) spr.push({y:10.9,d:()=>{ const s=vehicleSprite(C_VEH(),1,'#C2577A',null); lx.drawImage(s,X(6.2)-s.width/2,Y(10.9)-s.height+4); }});
+  spr.push({y:W.y,me:1,d:()=>{ if(W.car){ dropShadow(lx,X(W.x),Y(W.y)+2,C_VEH()==='car'?24:16); const s=vehicleSprite(C_VEH(),W.dir===1?-1:1,'#C2577A',C_VEH()==='car'?null:{skin:lk.skin,hair:a>=62?'#D8DCE0':lk.hair,body:'#E2703A',pants:lk.pants,st:stageAt(a),long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:0}); drawSpr(lx,s,X(W.x)-sprW(s)/2,Y(W.y)-sprH(s)+4); }
+    else { dropShadow(lx,X(W.x),Y(W.y)-1,st==='baby'?10:12); const bob=W.moving&&f===0?1:0; drawSpr(lx,personSprite({dir:W.dir,fr:f,st,skin:lk.skin,hair:a>=62?'#D8DCE0':a>=50?shade(lk.hair,1.6):lk.hair,body:'#E2703A',pants:lk.pants,long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:Math.floor(hash(lk.si*5+lk.hair.charCodeAt(3),9)*4),blink:Math.floor(t*10)%38===0}),X(W.x)-8,Y(W.y)-22-bob); } }});
+  if(out&&canDrive()&&!W.car) spr.push({y:10.9,d:()=>{ const s=vehicleSprite(C_VEH(),1,'#C2577A',null); drawSpr(lx,s,X(6.2)-sprW(s)/2,Y(10.9)-sprH(s)+4); }});
   spr.sort((p,q)=>p.y-q.y).forEach(s=>s.d());
   if(W.fx&&W.fx.length){ W.fx=W.fx.filter(p=>t-p.b<.45); W.fx.forEach(p=>{ const k=(t-p.b)/.45, px=X(p.x)+p.dx, py=Y(p.y)-1-Math.floor(k*4); lx.fillStyle=`rgba(244,238,220,${.75*(1-k)})`; const r=k<.4?2:1; lx.fillRect(px-r,py,r*2,r); lx.fillRect(px-r+1,py-1,r*2-2,1); }); }
   // 아플 때: 머리 위 땀방울, 화면도 조금 가라앉는다
@@ -8184,8 +8250,8 @@ function finishLife(){
     +`<p class="help">이 활동을 하며 마음이 무거워졌다면 혼자 담아 두지 마세요. 담임 선생님이나 Wee클래스 상담 선생님, 청소년상담 1388(전화·문자·카카오톡)에서 이야기를 들어 줍니다.</p>`;
   const RQ=[`${josa(nm,'과','와')} 나의 가장 큰 차이는 무엇이었나요?`,'이 삶을 살고 나서, 내 삶에서 당연하다고 여기던 것 가운데 다르게 보이는 것이 있나요?','오늘 고맙다고 말하고 싶은 사람은 누구인가요? 무엇이 고마운가요?'];
   const s6=`<p class="soft">이제 당신에게로</p>${RQ.map((q,i)=>`<label class="stack-s" for="rq${i}">${esc(q)}<textarea id="rq${i}" maxlength="100" rows="2"></textarea></label>`).join('')}
-    <label class="stack-s" for="ltitle">이 삶의 제목<input id="ltitle" maxlength="30" placeholder="예: 바다를 사랑한 어부의 일흔두 해"></label><label class="stack-s" for="epi">${esc(nm)}에게 남기는 한마디<input id="epi" maxlength="40" placeholder="예: 다음에는 더 자주 연락할게"></label>
-    <p class="soft">인생 기록</p><canvas id="card" width="720" height="1180"></canvas><div class="row"><button class="btn primary" id="btnDone">${G.teacher?'마치기':'남기고 돌아가기'}</button><button class="btn" id="btnSave">카드 저장</button></div>`;
+    <label class="stack-s" for="ltitle">이 삶의 제목<input id="ltitle" maxlength="30" placeholder="예: 바다를 사랑한 어부의 일흔두 해"></label><label class="stack-s" for="epi">${esc(nm)}에게 남기는 한마디<input id="epi" maxlength="40" placeholder="예: 다음에는 더 자주 연락할게"></label>`;
+  const s6b=`<p class="soft">인생 기록</p><canvas id="card" width="720" height="1180"></canvas><div class="row"><button class="btn primary" id="btnDone">${G.teacher?'마치기':'남기고 돌아가기'}</button><button class="btn" id="btnSave">카드 저장</button></div>`;
   // ----- 슬라이드쇼: 정보를 한 장씩 살펴보며 넘긴다. 사진은 맨 끝의 마무리 장면으로 -----
   const dr=deathRecord(L), dcut=dr.indexOf('<p class="soft" style="margin-top:14px">'), recHTML=dcut>0?dr.slice(0,dcut):dr, compsHTML=dcut>0?dr.slice(dcut).replace('<p class="soft" style="margin-top:14px">','<p class="soft">'):'';
   const strip=h=>String(h).replace(/^\s*<p class="soft">[^<]*<\/p>/,'');
@@ -8199,24 +8265,39 @@ function finishLife(){
   slides.push(SL(`${nm}의 선택 ${L.n}번`,traitHTML));
   if(!young) slides.push(SL('행복은 어디서 왔을까',strip(happyStep(L))));
   slides.push(SL('삶의 모양',shapeHTML(L)));
-  const card=(m,j)=>`<article class="ncard"><div class="nimg"><canvas data-k="${j}" width="480" height="360"></canvas><span class="nage">${m.a}살 · ${by+m.a}년</span>${three.length>1?`<span class="nno">${j+1} / ${three.length}</span>`:''}</div><div class="nbody">${m.q?`<p class="mq">${esc(m.q)}${m.l?`<span class="ml">→ ${esc(m.l)}</span>`:''}</p>`:''}<p>${esc(memT(m))}${m.rp>1?` <small class="rp">(그 뒤로도 ${m.rp-1}번 더)</small>`:''}</p><small class="cr"></small></div></article>`;
-  const phNote='<p class="note">사진은 위키백과·위키미디어 공용에 자유 이용으로 공개된 실제 사진입니다(카드 아래에 찍은 사람과 라이선스 표시). 장소·음식·재난처럼 장면이 분명한 기억은 실제 사진을, 나머지는 이 삶의 모습으로 그린 그림을 씁니다.</p>';
-  three.forEach((m,j)=>slides.push(SL('마지막으로 스쳐 간 장면',(j===0?`<p class="soft">눈을 감기 전, ${three.length>1?three.length+'개의 장면이':'한 장면이'} 사진처럼 스쳐 갑니다.</p>`:'')+card(m,j)+(j===three.length-1?(hp&&!young?`<p class="soft">가장 행복했던 해는 ${by+hp.a}년, ${hp.a}살 무렵이었습니다.</p>`:'')+phNote:''))));
+  // 스쳐 간 장면: 사진 대신 이 삶의 모습으로 움직이는 그림 (할아버지와의 이별 장면 같은 그림)
+  const scKind=m=>{ const k=m.sc||(typeof sceneKindOf==='function'?sceneKindOf(memT(m)+' '+(m.q||'')):'life'); return SCENE_TITLE[k]?k:'life'; };
+  const card=(m,j)=>`<article class="ncard anim"><div class="nimg"><canvas class="escene" data-sc="${scKind(m)}" width="640" height="320"></canvas><span class="nage">${m.a}살 · ${by+m.a}년</span>${three.length>1?`<span class="nno">${j+1} / ${three.length}</span>`:''}</div><div class="nbody">${m.q?`<p class="mq">${esc(m.q)}${m.l?`<span class="ml">→ ${esc(m.l)}</span>`:''}</p>`:''}<p>${esc(memT(m))}${m.rp>1?` <small class="rp">(그 뒤로도 ${m.rp-1}번 더)</small>`:''}</p></div></article>`;
+  three.forEach((m,j)=>slides.push(SL('마지막으로 스쳐 간 장면',(j===0?`<p class="soft">눈을 감기 전, ${three.length>1?three.length+'개의 장면이':'한 장면이'} 스쳐 갑니다.</p>`:'')+card(m,j)+(j===three.length-1&&hp&&!young?`<p class="soft">가장 행복했던 해는 ${by+hp.a}년, ${hp.a}살 무렵이었습니다.</p>`:''))));
   if(!three.length) slides.push(SL('마지막으로 스쳐 간 장면','<p class="big">엄마 품에서 방긋 웃던 날이 있었습니다.</p>'));
+  // 오각형이 가장 넓었던 때: 그 무렵의 실제 모습(사진)
+  const pk=typeof peakOf==='function'?peakOf(L):null, pkA=pk?pk.a:null, pkJ=pkA==null?null:(L.jobs||[]).filter(x=>x.a<=pkA).slice(-1)[0], pkM=pkA==null?null:(pkJ&&pkA>=19?{a:pkA,t:`${pkJ.n}${josa(pkJ.n,'으로','로').slice(pkJ.n.length)} 출근하던 나날. ${L.town||L.C.city}의 일터에서 하루를 보냈다.`,sc:'job'}:{a:pkA,t:`${L.town||L.C.city}에서 보낸 나날.`,sc:'town'});
+  if(pkM&&!young){ const jb=(L.jobs||[]).filter(x=>x.a<=pkA).slice(-1)[0], kidsN=(L.kids||[]).filter(k=>k.a!=null?k.a<=pkA:true).length, P=L.ppl||{};
+    const life=[`${pkA}살 무렵, ${esc(L.town||L.C.city)}에서`, jb?`${esc(jb.n)}${josa(jb.n,'으로','로').slice(jb.n.length)} 일하며`:'', L.f.family||L.f.widow?(kidsN?`가족과 아이 ${kidsN}명 곁에서`:'가족 곁에서'):''].filter(Boolean).join(' ');
+    slides.push(SL('가장 넓었던 때의 모습',`<p class="big">${life} 살았습니다.</p><article class="ncard"><div class="nimg"><canvas data-k="pk" width="480" height="360"></canvas><span class="nage">${pkA}살 · ${by+pkA}년</span></div><div class="nbody"><p>${esc(memT(pkM))}</p><small class="cr"></small></div></article><p class="soft">이때 오각형이 가장 넓었습니다. ${AXES.map(k=>`${AX_N[k]} ${pk[k]}`).join(' · ')}</p><p class="note">사진은 위키백과·위키미디어 공용에 자유 이용으로 공개된 실제 사진입니다(아래에 찍은 사람과 라이선스). 꼭 맞는 사진이 없으면 그림으로 대신합니다.</p>`)); }
   slides.push(SL('나에게로',s5)); slides.push(SL('이제 당신에게로',strip(s6)));
-  // 사진은 엔딩이 시작될 때 미리 받아 둔다 (사진 장면에 닿을 즈음엔 이미 준비되어 있다)
-  const pre=three.map((m,k)=>{ const c=document.createElement('canvas'); c.width=480; c.height=360; try{ drawPhoto(c,m,L,k); }catch(e){} return {c,pr:drawMemPhoto(c,m,L,k).catch(()=>null)}; });
+  // 마지막: 다른 사람의 말을 빌려, 이 삶을 단 한 문장으로
+  const oneLine=(()=>{ const v=pk||L.s, top=AXES.slice().sort((a,b)=>(v[b]||0)-(v[a]||0))[0], vs=(typeof voicesOf==='function'?voicesOf(L):[])||[], who=vs.length?vs[0][0]:'오랜 이웃', jb=(L.jobs||[]).slice(-1)[0], given=L.given||L.name;
+    const SAY={j:'작은 일에도 먼저 웃을 줄 알던 사람',k:'궁금한 것을 끝까지 그냥 넘기지 않던 사람',t:'무엇이든 손에 익을 때까지 놓지 않던 사람',e:'낯선 길로 겁내지 않고 먼저 걸어가던 사람',r:'자기보다 곁의 사람을 먼저 챙기던 사람'};
+    const pre=jb&&!young?`${L.town||L.C.city}의 ${jb.n}${josa(jb.n,'이었던','였던').slice(jb.n.length)} `:`${L.town||L.C.city}에서 ${a}년을 산 `;
+    const tail=young?'짧았지만 누구보다 많이 사랑받은 아이':SAY[top]; return {who,t:`${pre}${josa(given,'은','는')}, ${tail}${josa(tail,'이었어요','였어요').slice(tail.length)}.`}; })();
+  slides.push(SL('한 문장',`<figure class="oneline"><blockquote>“${esc(oneLine.t)}”</blockquote><figcaption>— ${esc(oneLine.who)}</figcaption></figure>${s6b}`));
+  // 사진은 엔딩이 시작될 때 미리 받아 둔다
+  const pre=[]; if(pkM&&!young){ const c=document.createElement('canvas'); c.width=480; c.height=360; try{ drawPhoto(c,pkM,L,0); }catch(e){} pre.pk={c,pr:drawMemPhoto(c,pkM,L,0).catch(()=>null)}; }
+  let sceneRAF=0; const animEnd=()=>{ cancelAnimationFrame(sceneRAF); const cs=[...$('endIn').querySelectorAll('canvas.escene')]; if(!cs.length) return; const t0=performance.now();
+    const step=()=>{ let alive=false; cs.forEach(c=>{ if(!c.isConnected) return; alive=true; const x=c.getContext('2d'); x.setTransform(c.width/160,0,0,c.width/160,0,0); x.imageSmoothingEnabled=false; x.clearRect(0,0,160,80); try{ drawScene(x,c.dataset.sc,(performance.now()-t0)/1000,L); }catch(e){} }); if(alive) sceneRAF=requestAnimationFrame(step); }; step(); };
   let i=0; const keep={}; show('end');
   const go=d=>{ const j=i+d; if(j<0||j>=slides.length) return; $('endIn').querySelectorAll('input,textarea').forEach(e=>keep[e.id]=e.value); i=j; render(); };
   const render=()=>{ const sl=slides[i];
     $('endIn').innerHTML=`<div class="slideshow"><div class="sprog" aria-hidden="true"><i style="width:${((i+1)/slides.length*100).toFixed(1)}%"></i></div><div class="shead"><span class="kick">${esc(sl.k)}${sl.t?` · ${sl.t}`:''}</span><span class="snum">${i+1} / ${slides.length}</span></div><div class="step slide">${sl.b}</div><div class="snav">${i>0?'<button class="btn" id="btnPrev">← 이전</button>':'<span></span>'}${i<slides.length-1?'<button class="btn primary" id="btnStep">다음 →</button>':''}</div></div>`;
     $('s-end').scrollTo(0,0);
     $('endIn').querySelectorAll('input,textarea').forEach(e=>{ if(keep[e.id]!=null) e.value=keep[e.id]; });
-    $('endIn').querySelectorAll('canvas[data-k]').forEach(c=>{ const p=pre[+c.dataset.k]; if(!p) return; const paint=()=>{ c.width=p.c.width; c.height=p.c.height; c.getContext('2d').drawImage(p.c,0,0); }; paint();
+    animEnd();
+    $('endIn').querySelectorAll('canvas[data-k]').forEach(c=>{ const p=pre[c.dataset.k]; if(!p) return; const paint=()=>{ c.width=p.c.width; c.height=p.c.height; c.getContext('2d').drawImage(p.c,0,0); }; paint();
       p.pr.then(src=>{ if(!c.isConnected) return; paint(); const cr=c.closest('.ncard').querySelector('.cr'); if(cr) cr.innerHTML=photoCredit(src); }); });
     if($('btnPrev')) $('btnPrev').onclick=()=>go(-1);
     if(i<slides.length-1) $('btnStep').onclick=()=>go(1);
-    else{ const val=id=>($(id)?$(id).value.trim():''), opts=()=>({title:val('ltitle').slice(0,30),epi:val('epi').slice(0,40)});
+    else{ const val=id=>String(($(id)?$(id).value:keep[id])||'').trim(), opts=()=>({title:val('ltitle').slice(0,30),epi:val('epi').slice(0,40)});
       drawCard(three).catch(()=>{});
       $('btnSave').onclick=async()=>{ try{ await drawCard(three,opts()); }catch(e){} $('card').toBlob(b=>{ const l=document.createElement('a'); l.href=URL.createObjectURL(b); l.download='인생기록_'+L.name+'.png'; document.body.appendChild(l); l.click(); l.remove(); }); };
       $('btnDone').onclick=()=>{ G.endNav=null; const {title,epi}=opts(), ans=RQ.map((q,k)=>val('rq'+k).slice(0,100)).filter(Boolean), nts=notes.map(n=>[n.a,String(n.t).slice(0,120)]);
@@ -8395,6 +8476,197 @@ function shapeHTML(L){ const pk=peakOf(L)||L.s, v={}; AXES.forEach(k=>v[k]=pk[k]
     <div class="rbox"><p class="rcap">나이에 따라 달라진 것들</p>${lineChartSVG(L,pk.a)}</div>
     <p class="soft">${sudden?`건강이 ${last.h}로 나쁘지 않았지만, 삶은 ${cause?esc(cause)+'(으)로 ':''}갑자기 끝났습니다. 건강이 좋아도 사고나 병은 예고 없이 찾아옵니다.`:'건강은 삶을 이어 가는 힘, 재산은 삶을 버티는 자원이라 오각형 밖에 따로 둡니다. 마지막 해 건강 0은 삶이 끝난 뒤의 표시입니다.'}</p>${resBars(Object.assign(Object.create(Object.getPrototypeOf(L)),L,{s:Object.assign({},L.s,{h:0})}))}
     <p class="note">오각형이 크다고 더 좋은 삶은 아닙니다. 모양이 저마다 다를 뿐입니다. 직접 고르며 산 해에는 오각형이 커지고, 그냥 지나간 해에는 조금만 자랍니다.${L.limN?` 살면서 돈이나 건강 때문에 고를 수 없던 선택이 ${L.limN}번 있었습니다.`:''}</p>`; }
+
+/* ========== 고해상도 캐릭터 ==========
+   도트 대신 매끈한 선으로 그린다. 그림은 4배 크기(64×96)로 만들어 두고, 화면에는 원래 크기(16×24)로 부드럽게 줄여 그린다.
+   몸의 비율은 나이에 따라: 걸음마(2~5살) · 어린이(6~12살) · 어른 · 노인. 걸을 때 팔다리가 엇갈려 흔들린다. */
+const HD=4;
+function drawSpr(ctx,s,x,y){ const k=s.hi||1; if(k>1){ const sm=ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high'; ctx.drawImage(s,x,y,s.width/k,s.height/k); ctx.imageSmoothingEnabled=sm; } else ctx.drawImage(s,x,y); }
+function sprW(s){ return s.width/(s.hi||1); } function sprH(s){ return s.height/(s.hi||1); }
+const PD={tod:{R:4.1,T:3.4,L:1.9,W:5.8},kid:{R:4.25,T:4.4,L:3.0,W:6.1},adult:{R:4.5,T:6,L:5.0,W:7},elder:{R:4.5,T:5.8,L:4.4,W:7.4}};
+function personSprite(o){
+  const key=['HD',o.dir,o.fr|0,o.blink?1:0,o.st,o.skin,o.hair,o.body,o.pants,o.long?1:0,o.hat||'',o.sty|0,o.half?1:0].join('|');
+  if(o.dir===2){ const c=cached(key,16*HD,24*HD,(x)=>{ x.drawImage(flipX(personSprite(Object.assign({},o,{dir:1}))),0,0); }); c.hi=HD; return c; }
+  const c=cached(key,16*HD,24*HD,(x)=>{ x.imageSmoothingEnabled=true; x.scale(HD,HD); x.lineJoin='round'; x.lineCap='round'; drawPersonHD(x,o); }); c.hi=HD; return c; }
+function drawPersonHD(x,o){
+  const sk=o.skin||'#E8B890', skD=shade(sk,.8), hr=o.hair||'#2A1E17', hrD=shade(hr,.62), hrL=shade(hr,1.35), bd=o.body||'#3E7CB8', bdD=shade(bd,.72), bdL=shade(bd,1.18),
+    pt=o.pants||'#384868', ptD=shade(pt,.72), sh='#3A2E2E', d=o.dir|0, fr=o.fr|0, st=o.st||'adult', sty=o.sty|0, ink='#2A2230', lw=.42;
+  const E=(cx,cy,rx,ry,f,s,rot)=>{ x.beginPath(); x.ellipse(cx,cy,rx,ry,rot||0,0,Math.PI*2); if(f){ x.fillStyle=f; x.fill(); } if(s){ x.strokeStyle=s; x.lineWidth=lw; x.stroke(); } };
+  const RR=(X,Y,W,H,r,f,s)=>{ x.beginPath(); x.roundRect(X,Y,W,H,r); if(f){ x.fillStyle=f; x.fill(); } if(s){ x.strokeStyle=s; x.lineWidth=lw; x.stroke(); } };
+  const limb=(x0,y0,ang,len,w,f,s)=>{ x.save(); x.translate(x0,y0); x.rotate(ang); RR(-w/2,0,w,len,w/2,f,s); x.restore(); };
+  if(st==='baby') return drawBabyHD(x,o,{sk,skD,hr,hrD,bd,bdD,bdL,E,RR,limb,ink});
+  const P=PD[st]||PD.adult, half=!!o.half, foot=23.3, legTop=half?23.4:foot-P.L, tTop=legTop-P.T+.6, hcy=tTop-P.R+1.25, cx=8, R=P.R, W2=P.W/2;
+  const sw=fr===1?1:fr===2?-1:0, stoop=st==='elder'&&d===1?-.6:0;
+  // ---- 긴 머리(뒤)
+  if(o.long&&d!==1) RR(cx-R-.1,hcy-.5,2*R+.2,(tTop-hcy)+P.T*.55,1.6,d===3?hr:hrD,shade(hr,.5));
+  // ---- 다리와 신발
+  if(!half){ const lg=P.L+.5, lw2=st==='adult'||st==='elder'?2.3:2.1;
+    if(d===1){ const a1=sw*.38, a2=-sw*.38;
+      limb(cx+.2,legTop,a2,lg,lw2,ptD,shade(pt,.5)); limb(cx-.2,legTop,a1,lg,lw2,pt,shade(pt,.5));
+      [[cx+.2,a2,shade(sh,.85)],[cx-.2,a1,sh]].forEach(([lx0,an,col])=>{ const fx=lx0-Math.sin(an)*lg, fy=legTop+Math.cos(an)*lg; E(fx-.6,fy,1.55,.85,col,null); });
+    } else { const l1=fr===1?.8:0, l2=fr===2?.8:0, gx=st==='tod'?1.15:1.3;
+      RR(cx-gx-lw2/2,legTop,lw2,lg-l1,lw2/2,pt,shade(pt,.5)); RR(cx+gx-lw2/2,legTop,lw2,lg-l2,lw2/2,d===3?pt:ptD,shade(pt,.5));
+      E(cx-gx-.15,legTop+lg-l1,1.45,.85,sh,null); E(cx+gx+.15,legTop+lg-l2,1.45,.85,sh,null); } }
+  // ---- 팔(뒤쪽) · 몸통 · 팔(앞쪽)
+  const armL=P.T-.4, aw=1.55;
+  if(d===1){ limb(cx+.6,tTop+.9,-sw*.45,armL,aw,bdD,shade(bd,.5)); }
+  RR(cx-W2+(d===1?.7:0)+stoop,tTop,P.W-(d===1?1.4:0),P.T,Math.min(2.2,P.W/2.6),bd,shade(bd,.5));
+  if(d!==3&&d!==1){ x.beginPath(); x.moveTo(cx-1.2,tTop+.05); x.lineTo(cx,tTop+1.3); x.lineTo(cx+1.2,tTop+.05); x.closePath(); x.fillStyle=skD; x.fill(); }
+  RR(cx-W2+(d===1?.7:0)+.5+stoop,tTop+.5,1.1,P.T-1.4,.55,bdL,null);                      // 빛을 받는 쪽
+  RR(cx-W2+(d===1?.7:0)+stoop,tTop+P.T-1.1,P.W-(d===1?1.4:0),1.1,.4,ptD,null);            // 허리
+  if(d===1){ limb(cx-.2,tTop+.9,sw*.45,armL,aw,bd,shade(bd,.5)); const an=sw*.45; E(cx-.2-Math.sin(an)*armL,tTop+.9+Math.cos(an)*armL,.85,.85,sk,skD); }
+  else { const a1=(fr===2?.22:fr===1?-.1:0)+.12, a2=-((fr===1?.22:fr===2?-.1:0)+.12);
+    limb(cx-W2+.35,tTop+.9,a1,armL,aw,bd,shade(bd,.5)); limb(cx+W2-.35,tTop+.9,a2,armL,aw,bd,shade(bd,.5));
+    E(cx-W2+.35-Math.sin(a1)*armL,tTop+.9+Math.cos(a1)*armL,.85,.85,sk,skD); E(cx+W2-.35-Math.sin(a2)*armL,tTop+.9+Math.cos(a2)*armL,.85,.85,sk,skD); }
+  // ---- 머리
+  const hx=cx+(d===1?-.3+stoop:0);
+  if(d===1) E(hx+R*.55,hcy+.4,.85,1.05,sk,skD);                                          // 귀
+  E(hx,hcy,R,R*.98,sk,shade(sk,.55));
+  if(d===0){ E(hx-R+.35,hcy+.6,.7,.95,sk,skD); E(hx+R-.35,hcy+.6,.7,.95,sk,skD); E(hx,hcy,R,R*.98,sk,null); }
+  // 머리카락
+  x.fillStyle=hr; x.strokeStyle=shade(hr,.5); x.lineWidth=lw;
+  if(d===3){ E(hx,hcy-.15,R+.15,R*.98+.1,hr,shade(hr,.5)); E(hx-1.2,hcy-R*.45,1.6,.7,hrL,null,-.5); if(sty===2){ E(hx-R+.3,hcy-R+.6,1.3,1.3,hr,shade(hr,.5)); E(hx+R-.3,hcy-R+.6,1.3,1.3,hr,shade(hr,.5)); } }
+  else if(d===1){ x.beginPath(); x.moveTo(hx-R*.95,hcy-.2); x.bezierCurveTo(hx-R*1.05,hcy-R*1.25,hx+R*1.25,hcy-R*1.3,hx+R*1.05,hcy+.4); x.lineTo(hx+R*.95,hcy+R*(o.long?1.1:.55)); x.lineTo(hx+R*.25,hcy+.2); x.quadraticCurveTo(hx-.4,hcy-R*.55,hx-R*.95,hcy-.2); x.closePath(); x.fill(); x.stroke();
+    E(hx+.4,hcy-R*.55,1.4,.55,hrL,null,-.3); if(sty===2) E(hx+R*.75,hcy-R*.75,1.3,1.3,hr,shade(hr,.5)); if(sty===3) E(hx+.6,hcy-R*.7,R*.85,R*.5,hr,null); }
+  else { x.beginPath(); x.moveTo(hx-R-.15,hcy+.9); x.bezierCurveTo(hx-R-.4,hcy-R*1.35,hx+R+.4,hcy-R*1.35,hx+R+.15,hcy+.9);
+    if(sty===1){ x.lineTo(hx+R-.5,hcy+1.6); x.quadraticCurveTo(hx+1.2,hcy-R*.55,hx-.2,hcy-R*.45); x.quadraticCurveTo(hx-1.6,hcy-R*.2,hx-R+.4,hcy+1.6); }
+    else if(sty===3){ x.lineTo(hx+R-.4,hcy-.2); x.quadraticCurveTo(hx,hcy-R*.75,hx-R+.4,hcy-.2); }
+    else { x.lineTo(hx+R-.5,hcy-.1); x.quadraticCurveTo(hx+1.6,hcy-R*.25,hx+.9,hcy-R*.62); x.quadraticCurveTo(hx-.6,hcy-R*.05,hx-R+.6,hcy+.2); }
+    x.closePath(); x.fill(); x.stroke();
+    if(sty===2){ E(hx-R+.2,hcy-R+.5,1.35,1.35,hr,shade(hr,.5)); E(hx+R-.2,hcy-R+.5,1.35,1.35,hr,shade(hr,.5)); }
+    if(sty===3){ [[-R+.4,-R*.5],[-1.6,-R*.95],[1.6,-R*.95],[R-.4,-R*.5]].forEach(([dx,dy])=>E(hx+dx,hcy+dy,1.5,1.3,hr,null)); }
+    if(o.long){ RR(hx-R-.3,hcy,1.3,R+1.6,.6,hr,null); RR(hx+R-1,hcy,1.3,R+1.6,.6,hr,null); }
+    E(hx-1.4,hcy-R*.62,1.5,.55,hrL,null,-.35); }
+  // 얼굴
+  if(d===0){ const ey=hcy+.75, ex=R>4.3?1.75:1.6;
+    if(o.blink){ x.strokeStyle=ink; x.lineWidth=.5; x.beginPath(); x.moveTo(hx-ex-.5,ey); x.lineTo(hx-ex+.5,ey); x.moveTo(hx+ex-.5,ey); x.lineTo(hx+ex+.5,ey); x.stroke(); }
+    else { E(hx-ex,ey,.55,.78,ink,null); E(hx+ex,ey,.55,.78,ink,null); E(hx-ex+.2,ey-.3,.2,.22,'#FFFFFF',null); E(hx+ex+.2,ey-.3,.2,.22,'#FFFFFF',null); }
+    x.globalAlpha=.45; E(hx-ex-.9,ey+1.25,.85,.45,'#F07E7E',null); E(hx+ex+.9,ey+1.25,.85,.45,'#F07E7E',null); x.globalAlpha=1;
+    x.strokeStyle='#A0504A'; x.lineWidth=.42; x.beginPath(); x.arc(hx,ey+1.2,.6,.25*Math.PI,.75*Math.PI); x.stroke();
+    if(st==='elder'){ x.strokeStyle=skD; x.lineWidth=.3; x.beginPath(); x.moveTo(hx-ex-.5,ey-1); x.lineTo(hx-ex+.5,ey-1.1); x.moveTo(hx+ex-.5,ey-1.1); x.lineTo(hx+ex+.5,ey-1); x.stroke(); } }
+  else if(d===1){ const ey=hcy+.7, ex=hx-R*.55;
+    if(o.blink){ x.strokeStyle=ink; x.lineWidth=.5; x.beginPath(); x.moveTo(ex-.45,ey); x.lineTo(ex+.45,ey); x.stroke(); } else { E(ex,ey,.5,.78,ink,null); E(ex+.18,ey-.3,.18,.2,'#FFFFFF',null); }
+    x.globalAlpha=.45; E(ex+.6,ey+1.25,.8,.42,'#F07E7E',null); x.globalAlpha=1;
+    x.strokeStyle='#A0504A'; x.lineWidth=.42; x.beginPath(); x.moveTo(hx-R+.55,ey+1.75); x.lineTo(hx-R+1.25,ey+1.85); x.stroke(); }
+  if(o.hat){ E(hx,hcy-R*.55,R+1.4,.9,o.hat,shade(o.hat,.5)); RR(hx-R*.75,hcy-R*1.25,R*1.5,R*.75,1.2,o.hat,shade(o.hat,.5)); }
+  if(st==='elder'&&!half){ x.strokeStyle='#7A5A3C'; x.lineWidth=.7; x.beginPath(); if(d===1){ x.moveTo(cx-3,tTop+P.T-.5); x.lineTo(cx-3.4,foot+.3); } else if(d===0){ x.moveTo(cx+W2+.9,tTop+P.T-.6); x.lineTo(cx+W2+1.3,foot+.3); x.moveTo(cx+W2+.9,tTop+P.T-.6); x.quadraticCurveTo(cx+W2+.9,tTop+P.T-1.8,cx+W2,tTop+P.T-1.5); } x.stroke(); }
+}
+function drawBabyHD(x,o,K){ const {sk,skD,hr,hrD,bd,bdD,bdL,E,RR,limb,ink}=K, d=o.dir|0, fr=o.fr|0, a=fr===1?1:-1, dp='#F6F1E8';
+  if(d===1){ // 기어 다닌다 (왼쪽을 본다)
+    limb(10.5,19.2,-.35*a,3.2,1.7,bdD,shade(bd,.5)); limb(5.6,19.4,.4*a,3.2,1.6,sk,skD);
+    E(9.8,18.8,4.3,2.7,bd,shade(bd,.5)); E(12.6,18.6,1.9,2.0,dp,'#C8C0B4'); E(8.6,17.4,2.2,.8,bdL,null);
+    limb(11,19.6,.35*a,3.1,1.7,bd,shade(bd,.5)); limb(6.4,19.6,-.4*a,3.0,1.6,sk,skD); E(6.4-Math.sin(-.4*a)*3,22.6,.9,.6,sk,skD);
+    E(5.2,15.4,3.6,3.5,sk,shade(sk,.55)); x.fillStyle=hr; x.beginPath(); x.arc(5.6,14.9,3.55,Math.PI*1.05,Math.PI*1.95); x.fill(); E(6.4,12.2,.9,.6,hr,null);
+    E(3.1,15.6,.42,.62,ink,null); E(3.25,15.35,.15,.16,'#FFFFFF',null); x.globalAlpha=.45; E(3.6,16.8,.7,.4,'#F07E7E',null); x.globalAlpha=1; E(6.6,15.8,.6,.8,sk,skD); return; }
+  // 앉아 있는 아기 (앞·뒤)
+  E(8,20.3,4,3,bd,shade(bd,.5)); E(8,21.6,3.2,1.6,dp,'#C8C0B4'); E(5.5,23,1.4,.9,sk,skD); E(10.5,23,1.4,.9,sk,skD);
+  limb(4.4,18.4,(a>0?2.2:.5),2.6,1.5,bd,shade(bd,.5)); limb(11.6,18.4,-(a>0?.5:2.2),2.6,1.5,bd,shade(bd,.5));
+  E(8,14.2,4.2,4.0,sk,shade(sk,.55)); E(3.9,14.8,.8,1,sk,skD); E(12.1,14.8,.8,1,sk,skD); E(8,14.2,4.2,4,sk,null);
+  if(d===3){ x.fillStyle=hr; x.beginPath(); x.arc(8,14.1,4.25,Math.PI,Math.PI*2); x.lineTo(12.2,15.5); x.quadraticCurveTo(8,17,3.8,15.5); x.closePath(); x.fill(); return; }
+  x.fillStyle=hr; x.beginPath(); x.arc(8,14,4.15,Math.PI*1.08,Math.PI*1.92); x.quadraticCurveTo(8,11.8,4.2,12.4); x.fill(); E(8.6,10.3,.9,.6,hr,null,.4);
+  if(o.blink){ x.strokeStyle=ink; x.lineWidth=.5; x.beginPath(); x.moveTo(5.9,15); x.lineTo(6.9,15); x.moveTo(9.1,15); x.lineTo(10.1,15); x.stroke(); }
+  else { E(6.4,15,.55,.75,ink,null); E(9.6,15,.55,.75,ink,null); E(6.6,14.7,.2,.22,'#FFFFFF',null); E(9.8,14.7,.2,.22,'#FFFFFF',null); }
+  x.globalAlpha=.5; E(5.2,16.3,.85,.45,'#F07E7E',null); E(10.8,16.3,.85,.45,'#F07E7E',null); x.globalAlpha=1; E(8,16.6,.55,.4,'#C8705A',null); }
+// 탈것: 탄 사람까지 고해상도로
+function vehicleSprite(kind,face,col,rider){
+  const rk=rider?[rider.skin,rider.hair,rider.body,rider.pants||'',rider.st||'',rider.long?1:0,rider.sty|0].join(','):'';
+  const key=['VHD',kind,face,col,rk].join('|'), w=kind==='car'?28:kind==='horse'?30:kind==='moto'?28:26, h=kind==='car'?18:kind==='horse'?30:28;
+  if(face<0){ const c=cached(key,w*HD,h*HD,(x)=>x.drawImage(flipX(vehicleSprite(kind,1,col,rider)),0,0)); c.hi=HD; return c; }
+  const c=cached(key,w*HD,h*HD,(x,cv)=>{ const lo=VEH_LO(kind,col,w,h); x.imageSmoothingEnabled=false; x.drawImage(lo,0,0,w*HD,h*HD);
+    if(rider){ const R=Object.assign({pants:'#384868',st:'adult'},rider), st=R.st==='baby'||R.st==='tod'?'kid':R.st, P=PD[st]||PD.adult;
+      const seat=kind==='cycle'?[10,17,[16,13],[12,23]]:kind==='moto'?[10,16,[18,12],[14,21]]:[12,14,[21,11],[14,21]], [sx,sy,hand,foot]=seat;
+      x.save(); x.scale(HD,HD); x.imageSmoothingEnabled=true; x.lineCap='round';
+      x.strokeStyle=R.pants; x.lineWidth=2.1; x.beginPath(); x.moveTo(sx,sy); x.lineTo(sx+2.8,sy+.4); x.lineTo(foot[0],foot[1]-.6); x.stroke();
+      x.fillStyle='#3A2E2E'; x.beginPath(); x.ellipse(foot[0]+.4,foot[1],1.5,.8,0,0,Math.PI*2); x.fill();
+      const half=personSprite({dir:2,fr:0,st,skin:R.skin,hair:R.hair,body:R.body,pants:R.pants,long:R.long,sty:R.sty|0,half:1}); x.drawImage(half,sx-8,sy-23,16,24);
+      x.strokeStyle=shade(R.body,.9); x.lineWidth=1.5; x.beginPath(); x.moveTo(sx+.6,sy-P.T+1.6); x.lineTo(hand[0]-.4,hand[1]+.3); x.stroke();
+      x.fillStyle=R.skin; x.beginPath(); x.arc(hand[0],hand[1]+.3,.85,0,Math.PI*2); x.fill(); x.restore(); }
+  }); c.hi=HD; return c; }
+// 탈것 몸체(도트) — 사람 없이
+function VEH_LO(kind,col,w,h){ return cached(['VLO',kind,col].join('|'),w,h,(x,c)=>{ const P=(X,Y,W,H,cc)=>pr(x,X,Y,W,H,cc), cD=shade(col,.7), cL=shade(col,1.35), tire='#303038', rim='#A8B0B8';
+    const ln=(x0,y0,x1,y1,cc)=>{ const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1); for(let i=0;i<=n;i++) P(Math.round(x0+(x1-x0)*i/n),Math.round(y0+(y1-y0)*i/n),1,1,cc); };
+    const wheel=(cx,cy,th)=>{ [[-1,-3],[0,-3],[1,-3],[-2,-2],[2,-2],[-3,-1],[3,-1],[-3,0],[3,0],[-3,1],[3,1],[-2,2],[2,2],[-1,3],[0,3],[1,3]].forEach(([dx,dy])=>P(cx+dx,cy+dy,1,1,tire)); if(th){ [[-1,-2],[0,-2],[1,-2],[-2,-1],[2,-1],[-2,0],[2,0],[-2,1],[2,1],[-1,2],[0,2],[1,2]].forEach(([dx,dy])=>P(cx+dx,cy+dy,1,1,'#484852')); } P(cx,cy,1,1,rim); };
+    if(kind==='car'){ P(1,8,26,6,col); P(1,12,26,2,cD); P(6,3,15,6,col); P(8,4,5,4,'#BFE3F5'); P(14,4,5,4,'#BFE3F5'); P(8,4,2,1,'#FFFFFF'); P(2,8,4,1,cL); P(25,9,2,2,'#FFE9A8'); P(1,10,1,2,'#E05050'); P(4,13,5,4,tire); P(19,13,5,4,tire); P(6,14,1,2,rim); P(21,14,1,2,rim); }
+    else if(kind==='cycle'){ wheel(5,23); wheel(20,23); ln(5,23,10,18,col); ln(5,23,11,23,col); ln(11,23,10,18,col); ln(10,18,17,18,col); ln(11,23,17,18,col); ln(17,18,20,23,col); P(17,14,1,4,'#505860'); P(16,14,3,1,'#505860'); P(8,17,4,1,'#3A3030'); P(10,22,3,2,'#404850'); }
+    else if(kind==='moto'){ wheel(5,23,1); wheel(22,23,1); P(7,18,13,3,col); P(8,17,10,1,col); P(8,17,4,1,cL); P(7,20,13,1,cD); P(10,21,6,2,'#4A4C54'); P(3,19,6,1,'#7A7E86'); P(19,13,1,7,'#606870'); P(18,13,3,1,'#606870'); P(21,16,2,2,'#FFE9A8'); P(7,16,6,1,'#2E2A2A'); }
+    else { const b='#9A6A40', bD=shade(b,.75), bL=shade(b,1.2); P(4,15,18,7,b); P(4,15,18,1,bL); P(4,21,18,1,bD); P(20,8,5,9,b); P(22,6,6,5,b); P(27,8,1,2,b); P(25,8,1,1,INK); P(22,4,2,3,bD); P(19,8,2,7,'#4A3020'); P(2,15,3,6,'#4A3020'); P(5,22,2,7,bD); P(9,22,2,7,b); P(16,22,2,7,bD); P(20,22,2,7,b); [5,9,16,20].forEach(xx=>P(xx,28,2,1,'#2A2020')); P(8,13,8,3,'#C04040'); P(8,15,8,1,'#8A2A2A'); }
+    outline(c); }); }
+
+/* ========== 화면 다듬기 (3판): 닫기 버튼 · 더 큰 알림 · 미니맵 아래 오각형 · 내 정보 메뉴 · 기억 카드 ========== */
+// 닫을 수 있는 창에는 오른쪽 위에 늘 보이는 ✕
+(function(){ const _sheet=sheet; sheet=function(html,cls){ _sheet(html,cls); const box=$('sheetBox'); if(!box) return; const ok=$('btnOk');
+  if(ok||/\bclosable\b/.test(cls||'')){ const b=document.createElement('button'); b.className='xclose'; b.type='button'; b.setAttribute('aria-label','닫기'); b.textContent='✕';
+    b.onclick=()=>{ const k=$('btnOk'); if(k) k.click(); else closeSheet(); }; box.insertBefore(b,box.firstChild); } }; })();
+// 작은 알림: 더 크게, 글이 길수록 더 오래, 누르면 바로 닫힘
+(function(){ const _fl=flash; flash=function(place,t,fx,tr,bad){ _fl(place,t,fx,tr,bad); const f=$('flash'); clearTimeout(flash.t); const ms=clamp(3200+String(t||'').length*55,3800,8000);
+  flash.t=setTimeout(()=>f.hidden=true,ms); f.onclick=()=>{ clearTimeout(flash.t); f.hidden=true; }; }; })();
+// ---- 미니맵 아래 작은 오각형 (최소화할 수 있다)
+function miniRadarSVG(v){ const cx=100, cy=98, R=58, ang=i=>-Math.PI/2+i*2*Math.PI/5, pt=(i,val)=>[cx+Math.cos(ang(i))*R*val/100,cy+Math.sin(ang(i))*R*val/100];
+  const poly=f=>AXES.map((k,i)=>pt(i,f(k)).map(z=>z.toFixed(1)).join(',')).join(' ');
+  let g=`<polygon points="${poly(()=>100)}" fill="rgba(124,149,174,.08)" stroke="#7C95AE" stroke-width="1.6"/><polygon points="${poly(()=>50)}" fill="none" stroke="#D8E0E8"/><polygon points="${poly(k=>clamp(v[k]||0,0,100))}" fill="rgba(226,112,58,.3)" stroke="#E2703A" stroke-width="2.4" stroke-linejoin="round"/>`;
+  AXES.forEach((k,i)=>{ const q=pt(i,128); g+=`<text x="${q[0].toFixed(1)}" y="${(q[1]+4).toFixed(1)}" text-anchor="middle" font-size="15" font-weight="700" fill="${AX_COL[k]}">${AX_N[k]} ${Math.round(v[k]||0)}</text>`; });
+  return `<svg viewBox="-28 0 256 196" class="mrad" role="img" aria-label="삶의 모양 ${AXES.map(k=>AX_N[k]+' '+Math.round(v[k]||0)).join(', ')}">${g}</svg>`; }
+let MINIRAD_OFF=false; try{ MINIRAD_OFF=localStorage.getItem('life8b_minirad')==='0'; }catch(e){}
+function renderMiniRad(){ const L=G.life, hud=$('hud'); if(!L||!hud) return; let el=$('miniRad');
+  if(!el){ el=document.createElement('div'); el.id='miniRad'; el.className='gbox'; ($('s-game')||document.body).appendChild(el);
+    el.onclick=e=>{ if(e.target.closest('.mrtog')){ MINIRAD_OFF=!MINIRAD_OFF; try{ localStorage.setItem('life8b_minirad',MINIRAD_OFF?'0':'1'); }catch(er){} renderMiniRad(); } else if(!MINIRAD_OFF&&$('sheet').hidden) openInfo('shape'); }; }
+  const mw=$('miniWrap'), r=mw?mw.getBoundingClientRect():null, pr=el.offsetParent?el.offsetParent.getBoundingClientRect():{top:0,left:0}, qs=document.querySelector('#hud ~ .qchips, #qChips, .qtags');
+  let top=r?r.bottom-pr.top+8:110; const chips=[...document.querySelectorAll('#hQuest li')].filter(x=>x.offsetParent); chips.forEach(c=>{ const b=c.getBoundingClientRect(); if(b.left<(r?r.right:200)) top=Math.max(top,b.bottom-pr.top+6); });
+  el.style.top=top+'px'; el.style.left=(r?r.left-pr.left:12)+'px'; if(r) el.style.width=MINIRAD_OFF?'auto':Math.min(r.width,190)+'px';
+  el.classList.toggle('off',MINIRAD_OFF);
+  el.innerHTML=MINIRAD_OFF?`<button class="mrtog" type="button" aria-label="삶의 모양 펼치기">⬠ 삶의 모양 ＋</button>`:`<div class="mrhd"><span>삶의 모양</span><button class="mrtog" type="button" aria-label="삶의 모양 접기">－</button></div>${miniRadarSVG(L.s)}`; }
+(function(){ const _rh=renderHud; renderHud=function(){ _rh.apply(this,arguments); try{ renderMiniRad(); }catch(e){} }; addEventListener('resize',()=>{ try{ renderMiniRad(); }catch(e){} }); })();
+// ---- 내 정보: 메뉴로 나눈다
+const INFO_TABS=[['me','개인 정보'],['others','다른 사람들'],['fam','우리 가족'],['shape','삶의 모양'],['trait','성향'],['joy','내 행복을 만드는 것']];
+function infoRow(k,v){ return `<div class="irow"><div class="ik">${k}</div><div class="iv">${v}</div></div>`; }
+function openInfo(tab){ tab=tab||'me'; const L=G.life, C=L.C, f=L.f, a=L.age, P=L.ppl||{};
+  let body='';
+  if(tab==='me'){ const sc=L.sch||{}, hi=L.tx('{high}'), school=a<7?'아직 학교에 갈 나이가 아니에요':f.univ&&f.school?`${sc.univ} 학생`:a<=12?(f.elem?`${sc.elem} ${a-6}학년`:'학교에 다니지 못하고 있어요'):a<=18?(f.sec?(a>=16&&f.hs?`${hi} 학생`:`${sc.mid} 학생`):f.elem?`${sc.elem}까지 다녔어요 · 지금은 일을 도와요`:'학교에 다니지 못했어요 · 일을 도와요'):f.univDone?`${sc.univ} 졸업`:f.sec?`${f.hs?hi:sc.mid} 졸업`:f.elem?`${sc.elem} 졸업`:'학교에 다니지 못했어요';
+    const j=L.job, ratio=L.inc/C.med, I=instOf(L), rk=rankName(L), svcNow=L._army||(f.svc&&a>=f.svc[0]&&a<f.svc[1]);
+    const job=a<19?'—':svcNow?'군 복무 중이에요':j?`<b>${esc(f.co||'')} · ${j.n}${rk&&rk!==j.n?` (${esc(rk)})`:''}</b>${f.job==='abroad'&&f.migTo?` · ${esc(f.migTo)}에서`:''}<div class="isub">한 달에 약 ${fmtPay(L.inc)} · 이 나라 보통 벌이의 ${ratio>=10?Math.round(ratio):ratio.toFixed(1)}배</div><div class="isub">${f.inf?'비공식 일자리 (계약서·사회보험이 없어요)':`공식 일자리 (${esc(I.pen||'연금')}·건강보험)`}</div>`:f.retired?`일을 내려놓았어요<div class="isub">연금·가족의 도움 한 달에 약 ${fmtPay(L.inc)}</div>`:(f.univ&&f.school?'대학생':'일을 쉬는 중');
+    const places=['집']; if(a>=6) places.push('동네'); if(a>=13) places.push('큰길 건너'); if(a>=19) places.push('일터가 있는 곳'); if(canDrive()) places.push(`${L.C.landmark}(${C.veh.n})`);
+    const wtxt=L.w>=.7?'넉넉한 편':L.w>=.45?'보통':L.w>=.25?'빠듯한 편':'어려운 편', lastM=L.money&&L.money.length?L.money[L.money.length-1]:null, adult=a>=19||f.univ;
+    body=`<section class="icard"><h3>나</h3>${infoRow('이름',`<b>${esc(L.name)}</b> · ${a}살 (${stageOf(a)})`)}${infoRow('사는 곳',`${C.n} · ${esc(L.town||'')} (${SETN[L.set]})`)}${infoRow('태어난 가정',`${FAM[L.famI].n} · 지금 살림은 ${wtxt}${L.fam&&L.fam.rel?`<div class="isub">가족의 종교: ${esc(L.fam.rel)}</div>`:''}`)}${infoRow('학교',school)}${infoRow('하는 일',job)}</section>
+      ${adult?`<section class="icard"><h3>돈</h3>${infoRow('가진 돈',`<b class="${L.cash<0?'neg':''}">${fmtWon(L.cash)}</b>${L.cash<0?' (빚)':''}`)}${infoRow('집',L.house?`${fmtWon(L.house)} · 모두 합하면 ${fmtWon(L.nw)}`:'아직 내 집이 없어요')}${lastM?infoRow(`지난 ${lastM.step>1?lastM.step+'년':'해'}`,`번 돈 ${fmtWon(lastM.inc)} · 쓴 돈 ${fmtWon(lastM.spend)}<div class="isub">이자 ${lastM.int>=0?'+':''}${fmtWon(lastM.int)}${lastM.ev?` · 큰일 ${lastM.ev>0?'+':''}${fmtWon(lastM.ev)}`:''}</div>`):''}${infoRow('빚 한도',`${fmtWon(L.debtLimit())}<div class="isub">이보다 빚이 많으면 큰돈이 드는 선택을 할 수 없어요</div>`)}${moneySvg(L)}</section>`:''}
+      <section class="icard"><h3>나라와 제도</h3>${infoRow('병원비',`직접 내는 몫 약 ${I.oop}% (WHO)${I.hi?`<div class="isub">${esc(I.hi)}</div>`:''}`)}${infoRow('일자리',`비공식 일자리 약 ${I.inf}% (ILO) · ${retAgeOf(L)?`정년 ${retAgeOf(L)}세`:'정해진 정년 없음'}`)}${I.cs&&I.cs[0]&&(I.cs[2]===2||L.sex===0)?infoRow('군 복무',I.cs[0]>=24?Math.round(I.cs[0]/12)+'년':I.cs[0]+'개월'):''}${infoRow('갈 수 있는 곳',places.join(' → '))}<p class="isub">${esc(C.fact)}</p></section>
+      <section class="icard"><h3>지금까지</h3>${infoRow('선택',`${L.n}번 · 뜻대로 안 된 일 ${L.fail||0}번 · 놓친 순간 ${L.miss}번`)}${G.room?infoRow('학급 방',esc(G.room)):''}${jobsTable(L)}</section>`; }
+  else if(tab==='others'){ body=`<section class="icard"><h3>같은 1초에 태어난 사람들 <small>지금 ${a}살 무렵</small></h3>${L.comps&&L.comps.length?`<div class="plist">${L.comps.map(p=>`<div class="pcard"><b>${esc(p.n)}</b><span class="isub">${esc(p.cn)} · ${p.sex?'여':'남'}</span><p>${esc(L.compNow(p,a))}</p></div>`).join('')}</div>`:'<p class="isub">아직 없어요</p>'}</section>
+      <section class="icard"><h3>친구와 이웃</h3>${infoRow('친구',P.friend?esc(P.friend.n):'—')}${L.f.pet?infoRow('반려동물',esc(L.f.pet.n)):''}${relBars(L,['friend','nb','coll'])}</section>`; }
+  else if(tab==='fam'){ const fam=[], rel={mom:'엄마',dad:'아빠',gran:'할머니',sib:'동생',spouse:'배우자'}; PERSON_KEYS.forEach(k=>{ if(!L.spotOK(k)||k==='kid') return; fam.push(rel[k]&&P[k]?`${rel[k]} ${P[k].n}`:L.spotName(k)); }); L.kidsHome().forEach(k=>fam.push(`${k.sex?'딸':'아들'} ${k.n}`));
+    const fs=f.widow&&P.spouse?`${esc(P.spouse.n)}님과는 ${f.widA}살에 사별했어요`:f.family?`${esc(P.spouse?P.spouse.n:'배우자')}님과 가정을 꾸렸어요${f.grandkid?' · 손주가 있어요':''}`:'아직 가정을 꾸리지 않았어요';
+    body=`<section class="icard"><h3>함께 사는 사람</h3><p class="ibig">${fam.length?fam.map(esc).join(' · '):'혼자 살아요'}</p>${infoRow('가정',fs)}${L.kids.length?infoRow('아이',L.kids.map(k=>esc(k.given)).join(', ')):''}</section>
+      ${L.fam?`<section class="icard"><h3>가족 한 사람 한 사람</h3><div class="plist">${L.famList().map(r=>`<div class="pcard"><b>${esc(r[0])}</b><span class="isub">${esc(r[1])}</span><p>${esc(r[2])}</p></div>`).join('')}</div></section>`:''}
+      <section class="icard"><h3>가까운 정도 <small>친밀도 0~100</small></h3>${relBars(L)}<p class="isub">가족은 천천히, 친구와 동료는 연락이 없으면 빨리 멀어집니다. 함께하는 선택을 하면 가까워져요.</p></section>`; }
+  else if(tab==='shape'){ const v=L.s, ov=radarOverlays(L,a), H=(L.hist||[]).filter(x=>x.a<a&&x.t!=null), prev=H.length?H[H.length-1]:null;
+    body=`<section class="icard"><h3>삶의 모양 <small>꽉 찬 정오각형이 만점(100)</small></h3>${radarSVG(v,ov)}${radarLegend(ov)}
+      <div class="axgrid">${AXES.map(k=>{ const d=prev?Math.round(v[k])-prev[k]:0; return `<div><span style="color:${AX_COL[k]}">${AX_N[k]}</span><b>${Math.round(v[k])}</b>${d?`<small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:'<small>　</small>'}</div>`; }).join('')}</div>
+      <p class="isub">직접 다가가서 고른 일은 삶의 모양을 키우고, 그냥 지나간 일은 조금만 키웁니다. 다섯 가지를 한꺼번에 키우기는 어려워요.</p></section>
+      <section class="icard"><h3>나이에 따라</h3>${lineChartSVG(L)||'<p class="isub">한 해가 지나면 그래프가 생겨요</p>'}</section>
+      <section class="icard"><h3>건강과 재산 <small>오각형 밖에 따로</small></h3>${resBars(L)}</section>`; }
+  else if(tab==='trait'){ const top=L.topTrait(), tot=Object.values(L.tr).reduce((s,x)=>s+x,0);
+    body=`<section class="icard"><h3>성향</h3><p class="ibig">${tot?`지금까지는 <b>'${TRAIT[top]}'</b>이 가장 많아요`:'아직 쌓인 것이 없어요'}</p>${traitPanel(L)}<p class="isub">어떤 성향으로 골랐는지가 쌓여, 이어지는 일의 확률을 조금씩 바꿉니다.</p></section>`; }
+  else { const s=L.s, me=L.moneyEase(), ws=L.workSat(), tg=L.joyTarget(), parts=[['건강',s.h,.25],['곁의 사람들(관계)',s.r,.25],['돈 걱정 없음',me,.15],['일과 꿈',ws,.20],['겪어 본 것들(경험)',s.e,.15]];
+    const JP=L.joyParts(), nm={n:'나라의 형편',g:'감사하는 마음',c:'함께 웃는 문화'};
+    body=`<section class="icard"><h3>올해 행복을 만드는 것 <small>지금 행복 ${Math.round(s.j)}</small></h3>${parts.map(([n,v,w])=>`<div class="jrow"><span>${n}<small> ×${Math.round(w*100)}%</small></span><div class="rt"><i style="width:${Math.round(clamp(v,0,100))}%"></i></div><b>${Math.round(v)}</b></div>`).join('')}
+      <p class="isub">이 다섯 가지를 합한 값(지금 ${Math.round(tg)})을 향해 행복이 해마다 조금씩 움직입니다. 큰 기쁨이나 슬픔은 한 번에 크게 바꾸기도 해요.</p></section>
+      <section class="icard"><h3>그 밖에 영향을 주는 것</h3>${Object.keys(nm).map(k=>`<div class="happy"><span>${nm[k]}</span><div class="hbar">${barSvg(JP[k])}</div><span class="num">${JP[k]>=0?'+':''}${JP[k].toFixed(0)}</span></div>`).join('')}<p class="isub">돈만이 아니라 곁의 사람들, 작은 일에도 감사하는 마음, 함께 웃는 문화가 행복을 크게 바꿉니다.</p></section>`; }
+  sheet(`<div class="ihead"><div class="place">내 정보</div><h2>${esc(L.name)} · ${a}살 · ${L.by+a}년</h2><nav class="itabs" role="tablist">${INFO_TABS.map(([k,n])=>`<button role="tab" data-t="${k}" class="${k===tab?'on':''}" aria-selected="${k===tab}">${n}</button>`).join('')}</nav></div><div class="ibody">${body}</div><button class="btn" id="btnOk">닫기</button>`,'info closable');
+  $('btnOk').onclick=closeSheet; $('sheetBox').querySelectorAll('.itabs button').forEach(b=>b.onclick=()=>{ openInfo(b.dataset.t); });
+  const on=$('sheetBox').querySelector('.itabs .on'); if(on) on.scrollIntoView({block:'nearest',inline:'center'}); }
+function relBars(L,only){ const rel=Object.entries(L.rel||{}).filter(([k])=>!only||only.includes(k)).sort((a,b)=>b[1]-a[1]); if(!rel.length) return '<p class="isub">아직 없어요</p>';
+  return `<div class="rels">${rel.map(([k,x])=>`<div class="rbar"><span class="rl">${REL_N[k]||k}</span><div class="rt"><i class="rel" style="width:${Math.round(x)}%"></i></div><span class="rv">${Math.round(x)}</span></div>`).join('')}</div>`; }
+$('btnInfo').onclick=()=>openInfo('me');
+// ---- 기억: 표 대신 카드
+openMem=function(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()=>true,big:m=>m.big,fam:m=>m.fam||/엄마|아빠|아내|남편|아들|딸|손주|동생|형|누나|언니|오빠|할머니|할아버지|가족/.test(m.t+(m.q||'')),pick:m=>!!m.q}[flt], list=all.filter(test).slice(0,80);
+  const tab=(k,n)=>`<button data-f="${k}" class="${flt===k?'on':''}">${n}</button>`;
+  sheet(`<div class="ihead"><div class="place">기억</div><h2>${esc(L.name)}의 기억</h2><nav class="itabs">${tab('all','전체')}${tab('big','큰 일')}${tab('pick','내가 고른 일')}${tab('fam','가족')}</nav></div>
+    <p class="isub">선택 ${L.n}번 · 놓친 순간 ${L.miss}번 · 최근 기억부터 ${list.length}개 · <span class="scmark">장면</span> 표시가 있는 기억을 누르면 그 장면을 다시 봅니다</p>
+    <div class="mlist">${list.length?list.map((m,i)=>`<article class="mcard${m.big?' big':''}${m.sc?' sc':''}" data-i="${i}"><div class="mage">${m.a}살<small>${L.by+m.a}년</small></div><div class="mtx">${m.q?`<p class="mq">${esc(m.q)}</p>`:''}${m.l?`<p class="ml">→ ${esc(m.l)}</p>`:''}<p class="mr">${esc(memT(m))}${m.rp>1?` <span class="rp">×${m.rp}</span>`:''}</p>${m.f||m.sc?`<div class="mtags">${m.f?'<span class="tag">뜻대로 안 됨</span>':''}${m.sc?'<span class="scmark">장면</span>':''}</div>`:''}</div></article>`).join(''):'<p class="isub">아직 없어요</p>'}</div>
+    <button class="btn" id="btnOk">닫기</button>`,'mem closable');
+  $('btnOk').onclick=closeSheet;
+  $('sheetBox').querySelectorAll('.itabs button').forEach(b=>b.onclick=()=>openMem(b.dataset.f));
+  $('sheetBox').querySelector('.mlist').onclick=e=>{ const c=e.target.closest('.mcard.sc'); if(!c) return; const m=list[+c.dataset.i]; popup(`${m.a}살의 기억`,memT(m),null,()=>openMem(flt),'',m.sc,m.q?`${m.q}${m.l?' → '+m.l:''}`:null); }; };
+$('btnMem').onclick=()=>openMem('all');
 
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
