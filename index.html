@@ -69,6 +69,19 @@ h3{font-size:1rem;margin:0} p{margin:0}
 .lives{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .lives li{padding:.6rem 0;border-top:1px solid var(--line)} .lives li:first-child{border-top:0}
 .lives q{display:block;color:var(--sub);font-size:.9rem}
+.lives summary{cursor:pointer}
+.ldt{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.ldt .gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:10px}
+.ldt .dbox{background:#FAF8F2;border:1px solid var(--line);border-radius:10px;padding:8px;color:#2A2622}
+.ldt .dbox .rcap{margin:0 0 2px;font-size:.82rem;font-weight:700;color:#7A6A5A}
+.ldt .kpi{grid-template-columns:repeat(auto-fit,minmax(8rem,1fr))}
+.ldt h4{margin:.5rem 0 .1rem;font-size:.95rem}
+.ldt .whoami{margin:0}
+.idrow{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between}
+.idrow .btns{display:flex;gap:6px;flex-wrap:wrap}
+.idrow .btn{padding:.35rem .7rem;min-height:0;font-size:.85rem}
+#tIds textarea{width:100%;border:2px solid #283038;border-radius:6px;padding:.5rem;font:inherit}
+#tIds input[type=text]{border:2px solid #283038;border-radius:6px;padding:.45rem .6rem;font:inherit}
 
 /* ===== 게임 화면: 게임보이 컬러 느낌의 도트 화면과 이중 테두리 창 ===== */
 #s-game{position:fixed;inset:0;background:#101418;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:"Galmuri11","Pretendard","Apple SD Gothic Neo",sans-serif;--gb-ink:#283038;--gb-paper:#F8F8F0;--gb-line:#7890A8;--gb-red:#D84848;--gb-blue:#3870D0}
@@ -6656,6 +6669,16 @@ function convCheck(){ const bad=[], AX=['h','j','k','r','t','e'], chk=(fx,big,w)
         <b>마친 삶</b>
         <ul class="lives" id="tLives"></ul>
       </div>
+      <div class="panel stack" id="tIds">
+        <h3>학생 아이디 관리</h3>
+        <p class="small sub">학생은 따로 가입하지 않습니다. 처음 적은 아이디와 비밀번호가 그대로 계정이 되고, 다음부터는 그 비밀번호를 확인합니다. 여기서 아이디 목록을 보고, 비밀번호를 잊은 학생의 비밀번호를 초기화(다음 로그인 때 새로 정함)하거나, 아이디를 지우거나, 미리 등록할 수 있습니다.</p>
+        <div class="row"><input type="text" id="tIdFilter" placeholder="아이디 찾기" autocapitalize="off"><button class="btn ghost" id="btnTIdReload">새로 불러오기</button></div>
+        <div id="tIdList"><p class="small sub">불러오는 중…</p></div>
+        <details><summary>아이디 미리 등록 · 등록된 아이디만 쓰게 하기</summary>
+          <div class="stack-s" style="margin-top:8px"><textarea id="tIdAdd" rows="4" placeholder="한 줄에 아이디 하나씩 (2~10자)"></textarea><div class="row"><button class="btn" id="btnTIdAdd">등록하기</button></div>
+          <label class="row small"><input type="checkbox" id="tIdClosed"> 등록된 아이디만 로그인할 수 있게 하기 (새 아이디 만들기 막기)</label></div></details>
+        <p class="small" id="tIdMsg" role="status"></p>
+      </div>
       <div class="panel stack">
         <h3>학급 방 운영</h3>
         <p class="small sub">방을 열면 그 반 학생들은 모두 같은 나이로 움직입니다. '다음 해로'를 누르거나 자동으로 흐르게 하면 반 전체가 함께 다음 해로 넘어갑니다. 멈춰 둔 동안에도 학생들은 그 해 안에서 계속 살 수 있습니다.</p>
@@ -6763,9 +6786,9 @@ const Store={
     catch(e){ let h=5381; for(const c of (salt||'')+t) h=((h<<5)+h+c.charCodeAt(0))>>>0; return 'x'+h.toString(16); } },
   async authCall(ep,body){ const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:${ep}?key=${CFG.FIREBASE_API_KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); const d=await r.json(); if(d.error) throw new Error(d.error.message); return d; },
   async refresh(){ const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${CFG.FIREBASE_API_KEY}`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(this.sess.rt)}); const d=await r.json(); if(d.error) throw new Error('SESSION'); this.sess.tok=d.id_token; this.sess.rt=d.refresh_token; this.sess.uid=d.user_id; if(this.sess.keep) ls('life8b_sess',{id:this.sess.id,rt:this.sess.rt,keep:1}); },
-  async db(method,path,body){ const au=this.mode==='auth'&&this.sess&&this.sess.tok, url=()=>`${CFG.FIREBASE_DB_URL.replace(/\/$/,'')}/${CFG.PATH}/${path}.json${au?'?auth='+this.sess.tok:''}`, opt={method,body:body===undefined?undefined:JSON.stringify(body)};
+  async db(method,path,body,qs){ const au=this.mode==='auth'&&this.sess&&this.sess.tok, url=()=>`${CFG.FIREBASE_DB_URL.replace(/\/$/,'')}/${CFG.PATH}/${path}.json${au||qs?'?'+[au?'auth='+this.sess.tok:'',qs||''].filter(Boolean).join('&'):''}`, opt={method,body:body===undefined?undefined:JSON.stringify(body)};
     let r=await fetch(url(),opt); if(r.status===401&&au){ await this.refresh(); r=await fetch(url(),opt); } if(!r.ok) throw new Error('DB'); return r.json(); },
-  msg(e){ const m=String(e.message||e); if(/EMAIL_EXISTS|EXISTS/.test(m)) return '이미 있는 아이디예요. 다른 아이디를 써 보세요.'; if(/INVALID|NOT_FOUND|WRONG/.test(m)) return '이미 쓰고 있는 아이디인데 비밀번호가 맞지 않아요. 내 아이디가 맞는지, 비밀번호를 다시 확인해 주세요.'; if(/WEAK/.test(m)) return '비밀번호는 6자 이상이어야 해요.'; if(/TOO_MANY/.test(m)) return '시도가 너무 많아요. 잠시 뒤에 다시 해 주세요.'; if(/Failed to fetch|Network|DB/i.test(m)) return '인터넷 연결을 확인해 주세요.'; return '문제가 생겼어요. 다시 시도해 주세요. ('+m.slice(0,40)+')'; },
+  msg(e){ const m=String(e.message||e); if(/CLOSED/.test(m)) return '선생님이 등록한 아이디만 쓸 수 있어요. 아이디를 선생님께 확인해 보세요.'; if(/EMAIL_EXISTS|EXISTS/.test(m)) return '이미 있는 아이디예요. 다른 아이디를 써 보세요.'; if(/INVALID|NOT_FOUND|WRONG/.test(m)) return '이미 쓰고 있는 아이디인데 비밀번호가 맞지 않아요. 내 아이디가 맞는지, 비밀번호를 다시 확인해 주세요.'; if(/WEAK/.test(m)) return '비밀번호는 6자 이상이어야 해요.'; if(/TOO_MANY/.test(m)) return '시도가 너무 많아요. 잠시 뒤에 다시 해 주세요.'; if(/Failed to fetch|Network|DB/i.test(m)) return '인터넷 연결을 확인해 주세요.'; return '문제가 생겼어요. 다시 시도해 주세요. ('+m.slice(0,40)+')'; },
   uid(){ return this.sess?(this.sess.uid||this.sess.id):'teacher-local'; },
   async login(id,pw,create,keep){ this.created=false;
     if(this.fb&&this.mode==='auth'){
@@ -6777,13 +6800,16 @@ const Store={
     } else if(this.fb){
       const key='d'+this.hex(id); let acc=null; try{ acc=await this.db('GET','acc/'+key); }catch(e){ throw new Error('Network'); }
       if(create==null) create=!acc;
-      if(create){ if(acc) throw new Error('EXISTS'); this.created=true; const salt=Math.random().toString(36).slice(2)+Date.now().toString(36); await this.db('PUT','acc/'+key,{salt,hash:await this.hash(pw,salt),t:Date.now()}); }
+      if(!create&&acc&&!acc.hash){ const salt=Math.random().toString(36).slice(2)+Date.now().toString(36); await this.db('PUT','acc/'+key,{salt,hash:await this.hash(pw,salt),t:acc.t||Date.now()}); this.created='reset'; }
+      else if(create){ if(acc) throw new Error('EXISTS'); if(await this.closed()) throw new Error('CLOSED'); this.created='new'; const salt=Math.random().toString(36).slice(2)+Date.now().toString(36); await this.db('PUT','acc/'+key,{salt,hash:await this.hash(pw,salt),t:Date.now()}); }
       else if(!acc||acc.hash!==await this.hash(pw,acc.salt)) throw new Error('INVALID');
+      try{ await this.db('PUT','reg/'+this.hex(id),{id,t:Date.now()}); }catch(e){}
       this.sess={id,uid:key,keep}; if(keep) ls('life8b_sess',{id,db:1,keep:1});
     } else {
       const key='life8b_acc_'+id, acc=ls(key);
       if(create==null) create=!acc;
-      if(create){ if(acc) throw new Error('EXISTS'); this.created=true; const salt=Math.random().toString(36).slice(2); ls(key,{salt,hash:await this.hash(pw,salt),data:null}); }
+      if(!create&&acc&&!acc.hash){ const salt=Math.random().toString(36).slice(2); acc.salt=salt; acc.hash=await this.hash(pw,salt); ls(key,acc); this.created='reset'; }
+      else if(create){ if(acc) throw new Error('EXISTS'); if(await this.closed()) throw new Error('CLOSED'); this.created='new'; const salt=Math.random().toString(36).slice(2); ls(key,{salt,hash:await this.hash(pw,salt),data:null}); }
       else{ if(!acc||(acc.hash!==await this.hash(pw,acc.salt)&&acc.hash!==await this.hash(acc.salt+pw))) throw new Error('INVALID'); }
       this.sess={id,keep}; if(keep) ls('life8b_sess',{id,local:1,keep:1});
     }
@@ -6801,6 +6827,22 @@ const Store={
   save(data,now){ if(!this.sess||G.teacher) return; data.t=Date.now(); clearTimeout(this.timer); const go=()=>this.flush(data); if(now) return go(); this.timer=setTimeout(go,1500); },
   async flush(data){ if(!this.sess) return; if(this.fb){ ls('life8b_cache_'+this.sess.id,data); try{ await this.db('PUT','users/'+this.sess.uid,data); }catch(e){} } else { const key='life8b_acc_'+this.sess.id, acc=ls(key); if(acc){ acc.data=data; ls(key,acc); } } },
   logout(){ this.sess=null; ls('life8b_sess',null); },
+  // ----- 교사용: 학생 아이디 관리 (인증 방식을 쓰는 프로젝트에서는 목록·초기화를 쓸 수 없다) -----
+  async closed(){ if(this.fb){ try{ return !!(await this.db('GET','idcfg/closed')); }catch(e){ return false; } } const c=ls('life8b_idcfg'); return !!(c&&c.closed); },
+  async setClosed(v){ if(this.fb) await this.db('PUT','idcfg/closed',v?1:null); else ls('life8b_idcfg',{closed:v?1:0}); },
+  decKey(k){ if(k[0]!=='d') return null; try{ const h=k.slice(1).match(/../g)||[]; return new TextDecoder().decode(new Uint8Array(h.map(x=>parseInt(x,16)))); }catch(e){ return null; } },
+  async adminList(){ const out=new Map(), add=(id,o)=>{ if(id) out.set(id,Object.assign(out.get(id)||{id},o)); };
+    if(this.fb){ let ac,us,rg; try{ ac=await this.db('GET','acc',undefined,'shallow=true'); }catch(e){ throw new Error('Network'); }
+      try{ us=await this.db('GET','users',undefined,'shallow=true'); }catch(e){} try{ rg=await this.db('GET','reg'); }catch(e){}
+      Object.keys(ac||{}).forEach(k=>add(this.decKey(k),{key:k})); Object.keys(us||{}).forEach(k=>add(this.decKey(k),{key:k,data:1})); Object.values(rg||{}).forEach(v=>v&&v.id&&add(v.id,{key:'d'+this.hex(v.id),last:v.t}));
+      await Promise.all([...out.values()].map(async o=>{ if(!o.data) return; try{ const t=await this.db('GET','users/'+o.key+'/t'); if(t) o.last=Math.max(o.last||0,t); }catch(e){} }));
+      await Promise.all([...out.values()].map(async o=>{ try{ const a=await this.db('GET','acc/'+o.key+'/hash'); o.open=!a; }catch(e){} })); }
+    else Object.keys(localStorage).filter(k=>k.startsWith('life8b_acc_')).forEach(k=>{ const id=k.slice(11), a=ls(k)||{}; add(id,{key:id,data:a.data?1:0,last:(a.data||{}).t,open:!a.hash}); });
+    return [...out.values()].sort((a,b)=>a.id.localeCompare(b.id,'ko')); },
+  async adminUser(o){ if(this.fb) return (await this.db('GET','users/'+o.key))||{}; return (ls('life8b_acc_'+o.id)||{}).data||{}; },
+  async adminReset(o){ if(this.fb) await this.db('PUT','acc/'+o.key,{t:Date.now(),reg:1}); else { const a=ls('life8b_acc_'+o.id)||{}; a.hash=null; ls('life8b_acc_'+o.id,a); } },
+  async adminDelete(o){ if(this.fb){ await this.db('PUT','acc/'+o.key,null); await this.db('PUT','users/'+o.key,null); await this.db('PUT','reg/'+this.hex(o.id),null); } else ls('life8b_acc_'+o.id,null); ls('life8b_cache_'+o.id,null); },
+  async adminAdd(ids){ let n=0; for(const id of ids){ if(this.fb){ const key='d'+this.hex(id); if(!(await this.db('GET','acc/'+key))){ await this.db('PUT','acc/'+key,{t:Date.now(),reg:1}); await this.db('PUT','reg/'+this.hex(id),{id,t:0}); n++; } } else if(!ls('life8b_acc_'+id)){ ls('life8b_acc_'+id,{salt:'',hash:null,data:null,reg:1}); n++; } } return n; },
   // 학급 방: 선생님이 열고, 반 전체가 같은 나이로 움직인다
   async roomGet(code){ if(this.fb){ try{ return await this.db('GET','rooms/'+encodeURIComponent(code)); }catch(e){ return null; } } return ls('life8b_room_'+code); },
   async roomSet(code,patch){ if(this.fb) await this.db('PATCH','rooms/'+encodeURIComponent(code),patch); else ls('life8b_room_'+code,Object.assign(ls('life8b_room_'+code)||{},patch)); },
@@ -6840,15 +6882,30 @@ async function renderTRec(){ $('tSaves').innerHTML='<p class="small sub">기록�
   const when=t=>{ const x=new Date(t); return `${x.getMonth()+1}/${x.getDate()} ${String(x.getHours()).padStart(2,'0')}:${String(x.getMinutes()).padStart(2,'0')}`; };
   $('tSaves').innerHTML=sv.length?`<ul class="lives">${sv.map(([id,s])=>`<li><b>${esc(s.name)}</b> · ${s.age}세 · ${esc((COUNTRIES[s.c]||{}).n||'')} ${SETN[s.set]||''} · ${esc((FAM[s.famI]||{}).n||'')} · 선택 ${s.n||0}번${s.room?` · ${esc(s.room)} 방`:''}<span class="small sub"> · ${when(s.t)}</span><div class="row" style="margin-top:6px"><button class="btn primary" data-go="${esc(id)}">이어서 살기</button><button class="btn ghost" data-del="${esc(id)}">지우기</button></div></li>`).join('')}</ul>`:'<p class="small sub">이어서 할 삶이 없습니다. 아래에서 새 삶을 시작하면 자동으로 저장됩니다.</p>';
   const lv=d.lives.slice().sort((a,b)=>(b.t||0)-(a.t||0));
-  $('tLives').innerHTML=lv.length?lv.map((l,i)=>`<li><details><summary><b>${esc(l.title||'제목 없는 삶')}</b> · ${esc(l.name)} · ${l.age}세 · ${esc((COUNTRIES[l.c]||{}).n||'')} ${SETN[l.set]||''}${l.cause?' · '+esc(l.cause):''}</summary>
-      <dl class="whoami" style="margin-top:8px">${(l.rows||[]).map(r=>`<dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd>`).join('')}</dl>
-      ${(l.mem||[]).length?`<p class="soft" style="margin-top:8px">기억에 남은 일</p><ul class="small" style="padding-left:18px">${l.mem.map(m=>`<li>${m[0]}살 · ${esc(m[1])}</li>`).join('')}</ul>`:''}
-      ${(l.notes||[]).length?`<p class="soft" style="margin-top:8px">삶의 중간에 남긴 말</p><ul class="small" style="padding-left:18px">${l.notes.map(n=>`<li>${n[0]}살 · ${esc(n[1])}</li>`).join('')}</ul>`:''}${(l.ans||[]).length?`<p class="soft" style="margin-top:8px">마지막 질문의 답</p><ul class="small" style="padding-left:18px">${l.ans.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
-      <q>${esc(l.epi||'남긴 말 없음')}</q><div class="row" style="margin-top:6px"><button class="btn ghost" data-ldel="${i}">이 기록 지우기</button></div></details></li>`).join(''):'<li class="sub">아직 마친 삶이 없습니다.</li>';
+  $('tLives').innerHTML=lv.length?lv.map((l,i)=>`<li><details><summary>${lifeSummaryHTML(l)}</summary>${lifeDetailHTML(l)}<div class="row" style="margin-top:6px"><button class="btn ghost" data-ldel="${i}">이 기록 지우기</button></div></details></li>`).join(''):'<li class="sub">아직 마친 삶이 없습니다.</li>';
   $('tSaves').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const id=b.dataset.go, s=d.saves[id]; if(!s) return; G.teacher=true; G.tid=id; G.sec=s.sec||60; G.troom=s.room&&TR.code===s.room?s.room:null; G.life=Life.load(s.dump); startGame(); });
   $('tSaves').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ if(b.dataset.armed!=='1'){ b.dataset.armed='1'; b.textContent='정말 지울까요?'; return; } delete d.saves[b.dataset.del]; TStore.save(true,b.dataset.del); renderTRec(); });
   $('tLives').querySelectorAll('[data-ldel]').forEach(b=>b.onclick=()=>{ if(b.dataset.armed!=='1'){ b.dataset.armed='1'; b.textContent='정말 지울까요?'; return; } const l=lv[+b.dataset.ldel]; d.lives=d.lives.filter(x=>x!==l); TStore.save(true,'lives'); renderTRec(); }); }
-function openTeacherBody(){ $('tGate').hidden=true; $('tBody').hidden=false; show('teacher'); renderTRoom(); renderTRec(); }
+function openTeacherBody(){ $('tGate').hidden=true; $('tBody').hidden=false; show('teacher'); renderTRoom(); renderTRec(); renderTIds(true); }
+// 학생 아이디 관리
+const TI={list:[],loaded:0};
+async function renderTIds(reload){ const box=$('tIdList'); if(!box) return;
+  if(Store.fb&&Store.mode==='auth'){ box.innerHTML='<p class="small sub">이 프로젝트는 Firebase 인증 방식이라 아이디 목록을 볼 수 없습니다. (인증을 끈 방식에서 쓸 수 있어요)</p>'; return; }
+  if(reload||!TI.loaded){ box.innerHTML='<p class="small sub">불러오는 중…</p>'; try{ TI.list=await Store.adminList(); TI.loaded=1; $('tIdClosed').checked=await Store.closed(); }catch(e){ box.innerHTML=`<p class="err">${esc(Store.msg(e))}</p>`; return; } }
+  const f=$('tIdFilter').value.trim().toLowerCase(), fl=TI.list.filter(o=>!f||o.id.toLowerCase().includes(f)), when=t=>{ if(!t) return ''; const x=new Date(t); return `${x.getMonth()+1}/${x.getDate()} ${String(x.getHours()).padStart(2,'0')}:${String(x.getMinutes()).padStart(2,'0')}`; };
+  box.innerHTML=fl.length?`<p class="small sub">아이디 ${TI.list.length}개${f?` · 검색 ${fl.length}개`:''}</p><ul class="lives">${fl.map(o=>`<li><div class="idrow"><span><b>${esc(o.id)}</b>${o.open?' <span class="small" style="color:#B4501E">· 비밀번호 정하는 중</span>':''}<span class="small sub">${o.last?' · 마지막 저장 '+when(o.last):''}${!o.data?' · 기록 없음':''}</span></span><span class="btns"><button class="btn ghost" data-iv="${esc(o.id)}">기록 보기</button><button class="btn ghost" data-ir="${esc(o.id)}">비밀번호 초기화</button><button class="btn ghost" data-id="${esc(o.id)}">아이디 지우기</button></span></div><div class="stack-s" data-ibox="${esc(o.id)}" hidden></div></li>`).join('')}</ul>`:`<p class="small sub">${TI.list.length?'찾는 아이디가 없습니다.':'아직 만들어진 아이디가 없습니다.'}</p>`;
+  const get=id=>TI.list.find(o=>o.id===id), say=(t,bad)=>{ const m=$('tIdMsg'); m.textContent=t; m.style.color=bad?'#B3261E':'#2F6B3A'; };
+  box.querySelectorAll('[data-iv]').forEach(b=>b.onclick=async()=>{ const o=get(b.dataset.iv), bx=box.querySelector(`[data-ibox="${CSS.escape(o.id)}"]`); if(!bx.hidden){ bx.hidden=true; return; } bx.hidden=false; bx.innerHTML='<p class="small sub">불러오는 중…</p>';
+    try{ const d=await Store.adminUser(o), lv=(d.lives||[]).slice().reverse(), sv=d.save;
+      bx.innerHTML=`${sv?`<p class="small"><b>지금 살고 있는 삶</b> · ${esc(sv.name)} · ${sv.age}세 · ${esc((COUNTRIES[sv.c||'KR']||COUNTRIES.KR).n)} ${SETN[sv.set]||''} · 선택 ${sv.n||0}번</p>`:'<p class="small sub">지금 살고 있는 삶은 없습니다.</p>'}${lv.length?`<ul class="lives">${lv.map(l=>`<li><details><summary>${lifeSummaryHTML(l)}</summary>${lifeDetailHTML(l)}</details></li>`).join('')}</ul>`:'<p class="small sub">마친 삶이 아직 없습니다.</p>'}`; }catch(e){ bx.innerHTML=`<p class="err">${esc(Store.msg(e))}</p>`; } });
+  box.querySelectorAll('[data-ir],[data-id]').forEach(b=>b.onclick=async()=>{ const isR=!!b.dataset.ir, o=get(b.dataset.ir||b.dataset.id);
+    if(b.dataset.armed!=='1'){ b.dataset.armed='1'; b.textContent=isR?'정말 초기화?':'정말 지울까요? (기록도 함께 사라져요)'; return; }
+    try{ if(isR){ await Store.adminReset(o); o.open=true; say(`‘${o.id}’의 비밀번호를 초기화했습니다. 다음에 그 아이디로 들어올 때 적는 비밀번호가 새 비밀번호가 됩니다.`); } else { await Store.adminDelete(o); TI.list=TI.list.filter(x=>x!==o); say(`‘${o.id}’ 아이디와 그 기록을 지웠습니다.`); } renderTIds(); }catch(e){ say(Store.msg(e),1); } }); }
+$('tIdFilter').oninput=()=>renderTIds(); $('btnTIdReload').onclick=()=>renderTIds(true);
+$('btnTIdAdd').onclick=async()=>{ const ids=[...new Set($('tIdAdd').value.split(/[\n,]+/).map(x=>x.trim()).filter(Boolean))], bad=ids.filter(x=>x.length<2||x.length>10), ok=ids.filter(x=>x.length>=2&&x.length<=10), m=$('tIdMsg');
+  if(!ids.length){ m.style.color='#B3261E'; m.textContent='등록할 아이디를 한 줄에 하나씩 적어 주세요.'; return; }
+  try{ const n=await Store.adminAdd(ok); $('tIdAdd').value=bad.join('\n'); m.style.color='#2F6B3A'; m.textContent=`${n}개를 등록했습니다.${ok.length-n?` (이미 있는 ${ok.length-n}개는 그대로 둠)`:''}${bad.length?` 2~10자가 아닌 ${bad.length}개는 남겨 두었어요.`:''} 학생이 그 아이디로 들어와 처음 적는 비밀번호가 비밀번호가 됩니다.`; renderTIds(true); }catch(e){ m.style.color='#B3261E'; m.textContent=Store.msg(e); } };
+$('tIdClosed').onchange=async()=>{ const m=$('tIdMsg'); try{ await Store.setClosed($('tIdClosed').checked); m.style.color='#2F6B3A'; m.textContent=$('tIdClosed').checked?'이제 등록한 아이디로만 들어올 수 있습니다. (새 아이디는 만들어지지 않아요)':'이제 처음 쓰는 아이디도 그대로 만들어집니다.'; }catch(e){ m.style.color='#B3261E'; m.textContent=Store.msg(e); $('tIdClosed').checked=!$('tIdClosed').checked; } };
 
 /* ========== 로그인 · 계정 홈 ========== */
 $('modeNote').textContent=Store.fb?'기록은 내 계정에 저장되어, 집에서도 같은 아이디로 이어서 할 수 있어요.':'지금은 이 기기에만 저장됩니다. (Firebase 미설정)';
@@ -6857,7 +6914,7 @@ async function doLogin(create){
   if(id.length<2){ $('loginErr').textContent='아이디는 2자 이상으로 적어 주세요.'; return; }
   if(pw.length<6){ $('loginErr').textContent='비밀번호는 6자 이상이어야 해요.'; return; }
   $('btnLogin').disabled=true;
-  try{ G.data=await Store.login(id,pw,create,$('keep').checked); G.teacher=false; G.troom=null; $('upw').value=''; openHub(); if(Store.created&&$('hubNow')) $('hubNow').insertAdjacentHTML('afterbegin',`<p class="small" style="margin:0;padding:8px 10px;border-radius:8px;background:#FFF4E0;color:#6A4A10">‘${esc(id)}’ 아이디를 새로 만들었어요. 다음부터는 방금 정한 비밀번호로 들어오면 돼요.</p>`); }
+  try{ G.data=await Store.login(id,pw,create,$('keep').checked); G.teacher=false; G.troom=null; $('upw').value=''; openHub(); if(Store.created&&$('hubNow')) $('hubNow').insertAdjacentHTML('afterbegin',`<p class="small" style="margin:0;padding:8px 10px;border-radius:8px;background:#FFF4E0;color:#6A4A10">${Store.created==='reset'?`‘${esc(id)}’의 비밀번호를 새로 정했어요.`:`‘${esc(id)}’ 아이디를 새로 만들었어요.`} 다음부터는 방금 정한 비밀번호로 들어오면 돼요.</p>`); }
   catch(e){ $('loginErr').textContent=Store.msg(e); }
   $('btnLogin').disabled=false;
 }
@@ -6873,7 +6930,7 @@ function openHub(){
   G.teacher=false; G.troom=null;
   if(sv) $('btnResume').onclick=()=>{ G.life=Life.load(sv); G.sec=secOf(G.life); startGame(); }; else if($('btnNew')) $('btnNew').onclick=()=>birth(); else $('btnBrowse').onclick=openBrowse;
   const lv=G.data.lives||[];
-  $('hubLives').outerHTML=`<div id="hubLives">${lv.length?`<div class="tscroll"><table class="dtbl"><thead><tr><th>삶의 제목 · 이름</th><th>태어난 곳 · 향년</th><th>성향 · 남긴 말</th></tr></thead><tbody>${lv.slice().reverse().map(l=>`<tr><td><b>${esc(l.title||'제목 없는 삶')}</b><br>${esc(l.name)}</td><td>${(COUNTRIES[l.c||'KR']||COUNTRIES.KR).n} ${SETN[l.set]||''}<br><b>${l.age}세</b>${l.cause?` <span class="small sub">(${esc(l.cause)})</span>`:''}</td><td>${TRAIT[l.top]||'—'}<br><span class="q">“${esc(l.epi||'남긴 말 없음')}”</span></td></tr>`).join('')}</tbody></table></div>`:'<p class="sub">아직 마친 삶이 없습니다.</p>'}</div>`;
+  $('hubLives').outerHTML=`<div id="hubLives">${lv.length?`<ul class="lives">${lv.slice().reverse().map(l=>`<li><details><summary>${lifeSummaryHTML(l)}</summary>${lifeDetailHTML(l)}</details></li>`).join('')}</ul>`:'<p class="sub">아직 마친 삶이 없습니다.</p>'}</div>`;
   renderHubRoom(); show('hub');
 }
 // 다른 삶 둘러보기: 내가 방금 산 삶과 같은 1초에 태어난 사람들 · 우리 반 친구들이 '보여 줘도 좋아요'라고 한 삶
@@ -8006,7 +8063,7 @@ function targets(){
   return out;
 }
 function loop(t){
-  if(!G.running) return; const dt=Math.min(.05,(t-lastT)/1000); lastT=t; const L=G.life;
+  if(!G.running||!G.life) return; const dt=Math.min(.05,(t-lastT)/1000); lastT=t; const L=G.life;
   if(G.room){ G.syncT-=dt; if(G.syncT<=0){ G.syncT=4; syncRoom(); } G.memT-=dt; if(G.memT<=0){ G.memT=30; memberBeat(); } }
   if(!paused&&L.cur){
     let dx=IN.jx, dy=IN.jy; const k=IN.keys;
@@ -8785,7 +8842,7 @@ function finishLife(){
           d.lives=d.lives.concat(lifeRecord(L,{title,epi,top,kids:kidN.length,ans,notes:nts})).slice(-60); TStore.save(true,'lives');
           G.teacher=false; G.life=null; G.tid=null; if(G.afterEnd){ const f=G.afterEnd; G.afterEnd=null; G.teacher=true; G.tid=tNewId(); f(); return; } openTeacherBody(); return; }
         const tNow=Date.now(), share=!!(($('shareOK')&&$('shareOK').checked)||keep.shareOK), comps=(L.comps||[]).map(p=>({n:p.n,cn:p.cn,sex:p.sex,ls:p.ls,cause:p.cause,fam:p.fam,town:p.town,set:p.set,jobs:(p.jobs||[]).map(j=>j[1]).slice(-2),kids:(p.kb||[]).length,mar:p.marA?1:0}));
-        G.data.lives=(G.data.lives||[]).concat({name:L.name,c:L.c,set:L.set,famI:L.famI,age:a,top,n:L.n,by,town:L.town,nw:Math.round(L.nw),kids:kidN.length,title,epi,ans,notes:nts,cause:causeOf(L).n,comps,room:G.data.room||null,t:tNow}).slice(-30); G.data.save=null; G.life=null;
+        G.data.lives=(G.data.lives||[]).concat(Object.assign(lifeRecord(L,{title,epi,top,kids:kidN.length,ans,notes:nts}),{comps,room:G.data.room||null,t:tNow})).slice(-20); G.data.save=null; G.life=null;
         if(G.data.room){ (G.data.roomDone||(G.data.roomDone={}))[G.data.room]=tNow; } Store.save(G.data,true);
         if(G.data.room&&Store.sess){ const rec={name:L.name,age:a,n:L.n,c:L.c,cause:causeOf(L).n,title,epi,ans,share:share?1:0,t:tNow}; Store.memberPatch(G.data.room,Object.assign({id:Store.sess.id,name:L.name,age:a,n:L.n,dead:1,c:L.c,t:tNow,title:null,epi:null,ans:null,cause:null},{['past/'+tNow]:rec})); } if(G.afterEnd){ const f=G.afterEnd; G.afterEnd=null; f(); } else openHub(); }; } };
   G.endNav=go;
@@ -8883,8 +8940,29 @@ function lifeRecord(L,o){ const a=L.lifespan, cz=causeOf(L), by=L.by||2026; let 
   try{ const doc=new DOMParser().parseFromString(lifeStory(L).replace(/<br\s*\/?>/gi,' · ').replace(/<\/(li|p|div|span|b)>/gi,'$& '),'text/html'); const dts=[...doc.querySelectorAll('dt')]; rows=dts.map(dt=>[dt.textContent.trim(),(dt.nextElementSibling?dt.nextElementSibling.textContent:'').replace(/\s+/g,' ').trim()]).filter(r=>r[0]&&r[1]); }catch(e){}
   rows.splice(Math.min(2,rows.length),0,['사인',cz.n],['향년',`${a}세 (${L.C.n} 기대수명 약 ${L.C.le}세)`]);
   const big=L.mem.filter(m=>m.big&&m.t), pick=[]; const n=Math.min(14,big.length); for(let i=0;i<n;i++) pick.push(big[Math.floor(i*big.length/n)]);
-  return {name:L.name,c:L.c,set:L.set,famI:L.famI,age:a,by,top:o.top,n:L.n,town:L.town,nw:Math.round(L.nw||0),kids:o.kids,title:o.title,epi:o.epi,cause:cz.n,
-    rows:rows.slice(0,24).map(r=>[r[0].slice(0,30),r[1].slice(0,240)]),mem:pick.map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,140)]),ans:o.ans||[],notes:o.notes||[],t:Date.now()}; }
+  // 오각형이 가장 넓었던 때, 나이에 따른 흐름(최대 24점), 평균 행복, 돈
+  const H=(L.hist||[]).filter(h=>h.t!=null), st=Math.max(1,Math.ceil(H.length/24)), hs=H.filter((h,i)=>i%st===0||i===H.length-1).map(h=>[h.a,h.j,h.k,h.t,h.e,h.r,h.h]), pk=peakOf(L);
+  const avgJ=H.length?Math.round(H.reduce((x,h)=>x+(h.j||0),0)/H.length):null;
+  return {name:L.name,c:L.c,set:L.set,famI:L.famI,age:a,by,top:o.top,n:L.n,town:L.town,nw:Math.round(L.nw||0),kids:o.kids,title:o.title,epi:o.epi,cause:cz.n,sex:L.sex,
+    peak:pk?[pk.a,pk.j,pk.k,pk.t,pk.e,pk.r,pk.h]:null,hist:hs,avgJ,earned:Math.round(L.earned||0),maxNW:Math.round(L.maxNW||0),le:L.C.le,
+    rows:rows.slice(0,24).map(r=>[r[0].slice(0,30),r[1].slice(0,200)]),mem:pick.map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,140)]),ans:o.ans||[],notes:o.notes||[],t:Date.now()}; }
+
+// 마친 삶 하나를 자세히: 숫자 요약 · 오각형 · 나이에 따른 흐름 · 이야기 표 · 기억에 남은 일 · 남긴 말 (교사용 기록과 내 기록에서 함께 쓴다)
+function lifeDetailHTML(l){
+  const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, mk=x=>x&&{a:x[0],j:x[1],k:x[2],t:x[3],e:x[4],r:x[5],h:x[6]};
+  const H=(l.hist||[]).map(mk), pk=mk(l.peak), nw=l.nw||0;
+  const kp=[[`${l.age}세`,`향년 · ${C.n} 기대수명 약 ${l.le||C.le}세`],[l.cause||'—','삶을 마친 이유'],[`${l.n||0}번`,'직접·자동으로 한 선택'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산']];
+  if(l.avgJ!=null) kp.push([`${l.avgJ}점`,'평생 평균 행복']); if(l.earned) kp.push([fmtWon(l.earned),'평생 번 돈']); if(l.maxNW&&l.maxNW>nw) kp.push([fmtWon(l.maxNW),'재산이 가장 많았을 때']);
+  if(l.kids) kp.push([`${l.kids}명`,'아이']); if(l.top&&TRAIT[l.top]) kp.push([TRAIT[l.top],'가장 많이 고른 성향']);
+  let g=''; if(pk){ const v={}; AXES.forEach(k=>v[k]=pk[k]); g+=`<div class="dbox"><p class="rcap">오각형이 가장 넓었던 때 · ${pk.a}살 무렵</p>${radarSVG(v,[])}</div>`; }
+  if(H.length>1){ try{ g+=`<div class="dbox"><p class="rcap">나이에 따라 달라진 것들</p>${lineChartSVG({hist:H},pk?pk.a:null)}</div>`; }catch(e){} }
+  return `<div class="ldt"><div class="kpi">${kp.map(c=>`<div><b>${esc(c[0])}</b><span>${esc(c[1])}</span></div>`).join('')}</div>${g?`<div class="gr">${g}</div>`:''}
+    ${(l.rows||[]).length?`<h4>이 사람의 이야기</h4><dl class="whoami">${l.rows.map(r=>`<dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd>`).join('')}</dl>`:''}
+    ${(l.mem||[]).length?`<h4>기억에 남은 일</h4><ul class="small" style="padding-left:18px;margin:0">${l.mem.map(m=>`<li>${m[0]}살 · ${esc(m[1])}</li>`).join('')}</ul>`:''}
+    ${(l.notes||[]).length?`<h4>삶의 중간에 남긴 말</h4><ul class="small" style="padding-left:18px;margin:0">${l.notes.map(n=>`<li>${n[0]}살 · ${esc(n[1])}</li>`).join('')}</ul>`:''}
+    ${(l.ans||[]).length?`<h4>마지막 질문의 답</h4><ul class="small" style="padding-left:18px;margin:0">${l.ans.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
+    <q>${esc(l.epi?'“'+l.epi+'”':'남긴 말 없음')}</q></div>`; }
+function lifeSummaryHTML(l){ const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR; return `<b>${esc(l.title||'제목 없는 삶')}</b> · ${esc(l.name)} · ${l.age}세 · ${esc(C.n)} ${SETN[l.set]||''}${l.cause?' · '+esc(l.cause):''}`; }
 
 /* ========== 능력치 2판 화면: 오각형 · 건강/재산 막대 · 제한된 선택지 · 엔딩의 삶의 모양 ========== */
 const AX_COL={j:'#E2703A',k:'#3870D0',t:'#7A5AC8',e:'#2F8F7A',r:'#C2577A'};
