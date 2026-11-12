@@ -1,6 +1,7 @@
 /* ========== 그림 자원 (제미나이로 그린 건물·나무·탈것·바닥·장면) ========== */
 // 그림이 다 오기 전이나 못 받으면 예전 도트 그림으로 그린다
 const WR=3;   // 바깥·방 바닥 그림의 해상도 배율
+const WRO=2.5;   // 넓어진 바깥 지도는 조금 낮춰 (휴대폰 캔버스 크기 한도)
 const ART={ok:false,spr:null,tex:null,M:ART_MAP,T:{},P:{}};
 function artLoad(src){ return new Promise((res,rej)=>{ const im=new Image(); im.decoding='async'; im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
 Promise.all([artLoad('art/spr.webp'),artLoad('art/tex.webp')]).then(([s,t])=>{ ART.spr=s; ART.tex=t; ART.ok=true; worldLayer.k=null; roomLayer.k=null; CACHE.forEach((v,k)=>{ if(/^(VHD|VLO|AHD)/.test(k)) CACHE.delete(k); }); }).catch(()=>{});
@@ -33,8 +34,8 @@ function softShadow(x,cx,cy,rx,ry,a){ x.fillStyle=`rgba(20,40,24,${a||.22})`; x.
 const _worldLayer=worldLayer;
 worldLayer=function(){ if(!ART.ok) return _worldLayer(); const L=G.life, key=worldKey(); if(worldLayer.k===key) return worldLayer.c;
   const T=terrain(), sp=spOf(L), U=visU(L), W0=OUT.w*PX, H0=OUT.h*PX+LAYER_TOP;
-  const c=worldLayer.c&&worldLayer.c.wr===WR&&worldLayer.c.width===W0*WR?worldLayer.c:mk(W0*WR,H0*WR), x=c.getContext('2d'); c.wr=WR;
-  x.setTransform(1,0,0,1,0,0); x.clearRect(0,0,c.width,c.height); x.setTransform(WR,0,0,WR,0,0); x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high';
+  const c=worldLayer.c&&worldLayer.c.wr===WRO&&worldLayer.c.width===Math.round(W0*WRO)?worldLayer.c:mk(Math.round(W0*WRO),Math.round(H0*WRO)), x=c.getContext('2d'); c.wr=WRO;
+  x.setTransform(1,0,0,1,0,0); x.clearRect(0,0,c.width,c.height); x.setTransform(WRO,0,0,WRO,0,0); x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high';
   const oy=LAYER_TOP;
   // 맨 위 여백도 풀밭으로
   x.fillStyle=groundFill(x,'g',sp); x.fillRect(0,0,W0,oy);
@@ -48,18 +49,18 @@ worldLayer=function(){ if(!ART.ok) return _worldLayer(); const L=G.life, key=wor
     if(t==='r'){ const kk=nb(0,-1)==='k'||nb(0,-1)==='p', kb=nb(0,1)==='k'||nb(0,1)==='p'; if(kk){ x.fillStyle='#E4E4DC'; x.fillRect(px,py,PX,1.6); } if(kb){ x.fillStyle='#4A525A'; x.fillRect(px,py+PX-1.4,PX,1.4); } }
     if(t==='w'){ if(nb(0,-1)!=='w'&&nb(0,-1)!=='x'){ x.fillStyle='rgba(255,255,255,.55)'; x.fillRect(px,py,PX,1.4); } } }
   const poleKind=(U&&L.C.tier>1&&!(L.C.tier===2&&L.C.gni<2))||L.C.tier>=3?'lamp':'pole';
-  for(let y=1;y<OUT.h-1;y++) for(let i=1;i<OUT.w-1&&i<46;i++){ if(T[y][i]!=='k'&&T[y][i]!=='p') continue; const nr=['r','d'].some(q=>T[y+1][i]===q||T[y-1][i]===q); if(!nr||(i*5+y*3)%13!==0) continue;
+  for(let y=1;y<OUT.h-1;y++) for(let i=1;i<OUT.w-1&&i<OUT.hw[0];i++){ if(T[y][i]!=='k'&&T[y][i]!=='p') continue; const nr=['r','d'].some(q=>T[y+1][i]===q||T[y-1][i]===q); if(!nr||(i*5+y*3)%13!==0) continue;
     const px=i*PX+4, py=y*PX+oy+PX-1; softShadow(x,px+3,py,5,1.6,.18); artDraw(x,poleKind,px,py+1,14,poleKind==='lamp'?27:29); }
-  for(let i=0;i<OUT.w;i+=2){ if(i>=15&&i<=17||i>=30&&i<=32||(i>=46&&i<=50)) continue; if((U&&L.C.tier>1)||L.C.tier>=3||i>=50){ x.fillStyle='#F0F0E8'; x.fillRect(i*PX+4,12*PX+oy-1,8,1.6); } }
-  for(let y=0;y<OUT.h;y+=2){ x.fillStyle='#F2C14E'; x.fillRect(48*PX-1,y*PX+oy+4,1.6,8); }
+  for(let i=0;i<OUT.w;i+=2){ if(roadGap(i)) continue; if((U&&L.C.tier>1)||L.C.tier>=3||i>=OUT.hw[0]+4){ x.fillStyle='#F0F0E8'; x.fillRect(i*PX+4,(OUT.RY+1)*PX+oy-1,8,1.6); } }
+  for(let y=0;y<OUT.h;y+=2){ x.fillStyle='#F2C14E'; x.fillRect((OUT.hw[0]+OUT.hw[2]/2)*PX-1,y*PX+oy+4,1.6,8); }
   // 먼 곳의 명소
   const lt=L.C.lt, mp=OUT.patch.mount, LMA={mt:'lm_mt',wt:'lm_mt',cs:'lm_mt',tp:'lm_tp',ct:'lm_ct',ds:'lm_ds'};
   if(LMA[lt]&&artHas(LMA[lt])) artDraw(x,LMA[lt],mp[0]*PX+44,mp[1]*PX+oy+82,96,100);
   else if(lt==='mt'||lt==='wt'||lt==='cs'||lt==='ct'||lt==='tp'||lt==='ds'||lt==='fr'){ x.imageSmoothingEnabled=false; x.drawImage(landmarkSprite(lt==='wt'||lt==='cs'?'mt':lt,sp),mp[0]*PX,mp[1]*PX+oy-14); x.imageSmoothingEnabled=true; }
-  if(lt==='wt'){ x.imageSmoothingEnabled=false; x.drawImage(cached('FALL',40,60,(fx)=>{ const P=(X,Y,Wd,H,cc)=>pr(fx,X,Y,Wd,H,cc); P(0,0,40,60,'#8A8070'); P(12,0,16,60,'#9ACCF8'); for(let i=0;i<8;i++) P(14+(i%3)*4,i*8,2,6,'#FFFFFF'); P(0,0,40,3,'#6A6050'); }),58*PX,oy-8); x.imageSmoothingEnabled=true; }
+  if(lt==='wt'){ x.imageSmoothingEnabled=false; x.drawImage(cached('FALL',40,60,(fx)=>{ const P=(X,Y,Wd,H,cc)=>pr(fx,X,Y,Wd,H,cc); P(0,0,40,60,'#8A8070'); P(12,0,16,60,'#9ACCF8'); for(let i=0;i<8;i++) P(14+(i%3)*4,i*8,2,6,'#FFFFFF'); P(0,0,40,3,'#6A6050'); }),(OUT.patch.mount[0]+7)*PX,oy-8); x.imageSmoothingEnabled=true; }
   // 건물
-  const ks=Object.keys(OUT.b).sort((a,b)=>OUT.b[a][1]+OUT.b[a][3]-(OUT.b[b][1]+OUT.b[b][3]));
-  for(const k of ks){ const b=OUT.b[k], w=Math.round(b[2]*PX), h=Math.round(b[3]*PX), bx=Math.round(b[0]*PX), by=Math.round(b[1]*PX)+oy;
+  const ks=bldList().sort((p,q)=>p.b[1]+p.b[3]-(q.b[1]+q.b[3]));
+  for(const {k,b} of ks){ const w=Math.round(b[2]*PX), h=Math.round(b[3]*PX), bx=Math.round(b[0]*PX), by=Math.round(b[1]*PX)+oy;
     if(k==='bus'){ softShadow(x,bx+17,by+15,16,3); artDraw(x,'busstop',bx+16,by+16,36,30); continue; }
     const enter=k in ENTER&&(k!=='work'||!!L.f.job)&&(k!=='elem'||(L.age>=7&&L.age<=12&&L.f.elem));
     const kd=kindOf(k), an=bldArt(kd,L.C.pal[kd]);
@@ -97,7 +98,7 @@ roomLayer=function(map){ if(!ART.ok) return _roomLayer(map); const L=G.life, kin
     x.fillStyle='#E8B8B0'; x.fillRect(wx-3,oy-8,4,17); x.fillRect(wx+21,oy-8,4,17); x.fillStyle='#C89088'; x.fillRect(wx-3,oy-9,28,2); x.fillStyle='#F0E8D8'; x.fillRect(wx-2,oy+9,26,2); }
   x.fillStyle='#4A3A30'; x.fillRect(0,4,W0,1.4);
   x.fillStyle='#8A6A48'; x.fillRect(IDOOR[0]*PX-12,oy+IH*PX-8,24,8); x.fillStyle='#C8A070'; x.fillRect(IDOOR[0]*PX-10,oy+IH*PX-6,20,2);
-  const fl=map==='home'?HOME.f:INT.f;
+  const fl=furnOf(map);
   const gs=x.createLinearGradient(0,oy+PX*1.15+3,0,oy+PX*1.15+12); gs.addColorStop(0,'rgba(40,30,20,.24)'); gs.addColorStop(1,'rgba(40,30,20,0)'); x.fillStyle=gs; x.fillRect(0,oy+PX*1.15+3,W0,9);
   const items=fl.map(f=>[ph&&FURN_POOR[f[0]]||f[0],f[1],f[2],f[3],f[4]]); if(map==='home'&&L.famI===0) items.push(['piano',12,4.2,1.5,.7]);
   items.sort((a,b)=>(a[2]+a[4])-(b[2]+b[4])).forEach(([t,fx,fy,fw,fh])=>{ const X0=fx*PX, Y0=fy*PX+oy, w=fw*PX, h=fh*PX;

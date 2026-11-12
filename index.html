@@ -1623,7 +1623,8 @@ const SPOTS = {
   mid:{z:'B',n:'중·고등학교'}, study:{z:'B',n:['학원','읍내 도서관']}, market:{z:'B',n:['번화가','읍내 시장']}, bus:{z:'B',n:'버스 정류장'},
   work:{z:'C',n:'일터'}, cafe:{z:'C',n:['카페','읍내 식당']}, hosp:{z:'C',n:['병원','보건소']},
   hall:{z:'C',n:['주민센터','마을회관']}, station:{z:'C',n:['지하철역','버스 터미널']},
-  sea:{z:'D',n:'바닷가'}, mount:{z:'D',n:'산 전망대'}, far:{z:'D',n:['시골 장터','큰 도시']}
+  sea:{z:'D',n:'바닷가'}, mount:{z:'D',n:'산 전망대'}, far:{z:'D',n:['시골 장터','큰 도시']},
+  lib:{z:'A',n:['도서관','마을 도서관']}, rest:{z:'B',n:['식당','동네 식당']}, gym:{z:'B',n:['체육관','마을 운동장']}, bank:{z:'C',n:['은행','마을 은행']}, post:{z:'C',n:['우체국','우편 취급소']}
 };
 const ZONE_AGE = {H:0,A:6,B:13,C:19,D:19};   // D: 자동차로만 갈 수 있는 먼 곳 (19~74세)
 const ageOfPi = pi => pi<19 ? pi : 19+2*(pi-19);   // 몇 번째 해인지 → 나이 (어른은 두 해씩 흐른다)
@@ -6689,7 +6690,7 @@ function convCheck(){ const bad=[], AX=['h','j','k','r','t','e'], chk=(fx,big,w)
           <div class="kpi" id="rNow"></div>
           <div class="row" id="rCtl">
             <button class="btn primary" data-a="next">다음 해로</button><button class="btn" data-a="prev">이전 해로</button><button class="btn" data-a="pause">멈춤</button>
-            <label class="row small" for="rAuto">한 해의 길이 <select id="rAuto"><option value="1">1분</option><option value="2">2분</option><option value="3" selected>3분</option><option value="5">5분</option><option value="10">10분</option></select></label>
+            <label class="row small" for="rAuto">한 해의 길이 <select id="rAuto"><option value="1">1분</option><option value="2">2분</option><option value="3" selected>3분</option><option value="5">5분</option><option value="10">10분</option><option value="20">20분</option><option value="30">30분</option><option value="60">1시간</option></select></label>
             <button class="btn" data-a="auto">자동으로 흐르게</button><button class="btn ghost" data-a="reset">0살로 되돌리기</button>
           </div>
           <div class="stack-s" id="rCfg"><b>학생 화면 설정 <span class="small sub">· 이 방에 들어온 학생 모두에게 적용</span></b>
@@ -6715,7 +6716,7 @@ function convCheck(){ const bad=[], AX=['h','j','k','r','t','e'], chk=(fx,big,w)
         <div class="stack-s"><b>성별</b><div class="seg" data-k="sex"><button data-v="0" class="on">남자</button><button data-v="1">여자</button></div></div>
         <div class="stack-s"><b>함께 사는 가족</b><div class="seg" data-k="home"><button data-v="11" class="on">할머니·동생</button><button data-v="10">할머니</button><button data-v="01">동생</button><button data-v="00">부모님만</button></div></div>
         <div class="stack-s"><b>시작 나이</b><span class="small sub">그 나이까지의 삶은 자동으로 채워집니다.</span><div class="seg" data-k="age"><button data-v="0" class="on">0세</button><button data-v="6">6세</button><button data-v="13">13세</button><button data-v="19">19세</button><button data-v="37">37세</button><button data-v="61">61세</button><button data-v="79">79세</button></div></div>
-        <div class="stack-s"><b>시간의 빠르기</b><div class="seg" data-k="sec"><button data-v="60" class="on">보통 (60초)</button><button data-v="20">빠르게 (20초)</button><button data-v="8">시연용 (8초)</button></div></div>
+        <div class="stack-s"><b>시간의 빠르기</b><div class="seg" data-k="sec"><button data-v="8">시연 8초</button><button data-v="20">20초</button><button data-v="35">35초</button><button data-v="60" class="on">1분</button><button data-v="120">2분</button><button data-v="300">5분</button><button data-v="600">10분</button><button data-v="1800">30분</button><button data-v="3600">1시간</button></div><p class="small sub">한 해(어른은 두 해)의 길이예요. 100살까지 1분이면 1시간, 1시간이면 60시간이 걸려요.</p></div>
         <button class="btn primary" id="btnTStart">이 삶으로 시작하기</button>
         <p class="small sub">이 삶도 '내 체험 기록'에 저장되어 이어서 할 수 있습니다.</p>
       </div>
@@ -6730,11 +6731,11 @@ function convCheck(){ const bad=[], AX=['h','j','k','r','t','e'], chk=(fx,big,w)
   <canvas id="cv"></canvas>
   <div class="hud" id="hud">
     <div class="htop">
-      <div class="gbox" id="miniWrap" title="지도 크게 보기"><canvas id="mini" width="248" height="104"></canvas><span id="miniTag">지도</span></div>
+      <div class="gbox" id="miniWrap" title="지도 크게 보기"><canvas id="mini" width="364" height="268"></canvas><span id="miniTag">지도</span></div>
       <div class="gbox hinfo">
         <div class="hl"><b id="hAge" class="num"></b><button id="hMon" class="hmon" title="올해의 일 보기">1월</button><span id="hName"></span></div>
         <div class="hmoney" id="hMoney" hidden></div>
-        <div class="hbtns"><button class="hbtn me" id="btnInfo">내 정보</button><button class="hbtn" id="btnMem">기억</button><button class="hbtn pz" id="btnPause" title="시간 멈추기 (키보드 P)">멈춤</button><button class="hbtn" id="btnExit">나가기</button></div>
+        <div class="hbtns"><button class="hbtn me" id="btnInfo">내 정보</button><button class="hbtn" id="btnMem">기억</button><button class="hbtn pz" id="btnPause" title="저장하고 쉬기 (키보드 P)">저장하기</button><button class="hbtn" id="btnExit">나가기</button></div>
       </div>
     </div>
     <div class="timer"><i id="hTimer"></i></div>
@@ -7014,7 +7015,7 @@ function birth(o){
   $('bCmp').innerHTML=cmpHTML(L); renderBSet();
   if(!L.look) L.look=randLook(C.rg); show('birth'); pixLoop('birthCv','country');
 }
-$('btnLive').onclick=()=>{ const L=G.life; L.setGiven($('bName').value.trim()||L.given); if(L.mem[0]) L.mem[0].t=`${L.birthText()} 이름은 ${L.name}.`; L.opt={card:G.opts.card,ask:G.opts.ask,soft:G.opts.soft==null?1:G.opts.soft}; L.pace=G.opts.pace; G.sec=secOf(L); persist(true); startGame(); };
+$('btnLive').onclick=()=>{ const L=G.life; L.setGiven($('bName').value.trim()||L.given); if(L.mem[0]) L.mem[0].t=`${L.birthText()} 이름은 ${L.name}.`; L.opt={card:G.opts.card,ask:0,soft:G.opts.soft==null?1:G.opts.soft}; L.yl=+G.opts.yl||60; L.pace=L.yl<=35?'short':'normal'; G.sec=secOf(L); persist(true); startGame(); };
 
 /* ========== 교사용 모드: 학급 방 운영 + 삶 골라 체험 ========== */
 const TSEL={c:'KR',set:'U',famI:'1',sex:'0',home:'11',age:'0',sec:'60'};
@@ -7551,20 +7552,58 @@ function buildingSprite(kind,w,h,pal,enter){
 /* ========== 세계 ==========
    단위는 칸(16×16 도트). 바깥은 왼쪽부터 동네(A) → 큰길 건너(B) → 일터가 있는 곳(C) → 탈것 전용 길 → 먼 곳(D, 그 나라의 명소).
    우리 집 · 초등학교 · 중·고등학교 · 일터는 문으로 들어갈 수 있다. */
-const OUT={w:62,h:26,
-  b:{ home:[2,3,5,4], friend:[10,3,4,3.4], shop:[9,15,4,3], elem:[9,20,6,4],
-      mid:[18,2,7,5], study:[26,3,4,4], market:[18,15,6,4], bus:[27,15.2,2,1.2],
-      work:[33,2,6,6], cafe:[41,4,4,3], hosp:[33,15,5,4], hall:[40,15,5,3.4], station:[38,21,6,3], far:[53,15,6,4] },
-  s:{ play:[4.5,17], nature:[4,22.5], mount:[53.7,9.8], sea:[59.5,10] },
-  patch:{ play:[2,15,5,4], nature:[1,20,6,5], mount:[51,2,5.5,7], sea:[57.5,0,4.5,9], sand:[56.8,9,5.2,1.6] },
-  roads:[[0,11,62,2],[15.6,0,1.4,26],[30.6,0,1.4,26]], hw:[46,0,4,26],
-  fields:[[7,9,7,1.8],[18,8.2,7,1.8],[24.5,19.5,5.5,5],[39.5,9,6,1.8],[51,20,9,4]],
-  gates:[[16,13,'큰길 건너편은 열세 살이 되면 갈 수 있어요.'],[31,19,'저 너머는 어른이 되면 갈 수 있어요.']],
-  trees:[[7.5,4],[8.5,9],[1,10],[14.5,9],[7.5,21],[14.5,14],[17.5,9.5],[25.5,9.5],[30,2],[24.5,20.5],[29.5,21],[25,24],[32.5,10],[39.5,10],[45,10],[45,14.5],[33,22.5],[36,23.5],[44.5,22],[51,14.5],[60.5,14.5],[52,22],[60,22],[57,3]] };
+const OUT={w:124,h:52, RY:24,
+  // 동네(왼쪽 위, 6살부터) → 큰길 아래 동네(10살부터) → 큰길 건너(13살부터) → 일터가 있는 곳(어른) → 탈것 전용 길 → 먼 곳(탈것)
+  b:{ home:[3,3,5,4], friend:[12,3,4,3.4], shop:[21,4,4,3], elem:[19,12,6,4],
+      lib:[12,30,5,4],
+      mid:[36,3,7,5], study:[47,4,4,4], gym:[53,11,6,4], market:[35,29,6,4], rest:[46,29,4,3.4], bus:[44,26.3,2,1.2],
+      work:[66,3,6,6], cafe:[76,5,4,3], bank:[84,4,5,4], hosp:[66,29,5,4], hall:[76,29,5,3.4], post:[85,29,4,3.4], station:[74,44,6,3],
+      far:[103,30,6,4] },
+  // 들어갈 수 없는 이웃집·건물 (동네를 채운다) [x, y, 너비, 높이, 구역]
+  deco:[[12,11,3.6,3,'A'],[26,10,3.6,3,'A'],[13,17,3.6,3,'A'],[25,17,3.6,3,'A'],
+        [3,30,3.6,3,'A'],[21,30,3.6,3,'A'],[3,44,4,3,'A'],[13,44.5,3.6,3,'A'],[22,44,4,3.4,'A'],
+        [36,12,4,3,'B'],[45,13,4,3.4,'B'],[53,29,4,3.4,'B'],[36,44,5,4,'B'],[47,44,4,3.4,'B'],[54,44,4,3,'B'],
+        [66,13,4,4,'C'],[77,13,5,4,'C'],[85,13,4,3.4,'C'],[65,44,4,3.4,'C'],[85,44,4,3,'C'],
+        [100,42,4,3,'D'],[110,42,4,3,'D'],[116,30,4,3,'D']],
+  s:{ play:[5.5,13], nature:[5,19], mount:[102.7,10.8], sea:[119.5,18.8] },
+  patch:{ play:[3,11,5,4], nature:[2,16.5,7,5], mount:[100,3,6,8], sea:[115,0,9,18], sand:[114.3,18,9.7,1.6] },
+  roads:[[0,24,124,2],[31.2,0,1.4,52],[61.2,0,1.4,52],[0,41,92,1.4]], hw:[92,0,4,52],
+  fields:[[9,8.5,9,1.6],[26,14.2,4,1.4],[3,36,8,2.4],[20,36,8,2.4],[41,18,8,1.8],[52,36,6,2],[78,19,8,2],[64,36,8,2],[100,20,9,3],[110,36,8,3]],
+  trees:[] };
 for(const k in OUT.b){ const b=OUT.b[k]; if(!OUT.s[k]) OUT.s[k]=[b[0]+b[2]/2,b[1]+b[3]+.6]; }
-// 지도 가장자리를 두르는 나무 줄 (드나드는 길은 비워 둔다)
-(function(){ for(let x=0;x<46;x++){ if(x>=15&&x<=17||x>=30&&x<=32) continue; OUT.trees.push([x+.5,.45]); OUT.trees.push([x+.5,25.55]); } for(let y=1;y<25;y++){ if(y>=10&&y<=13) continue; OUT.trees.push([.45,y+.5]); } })();
-const ENTER={home:'',elem:'초등학교는 일곱 살부터, 학교에 다니는 동안 들어갈 수 있어요.',mid:'',work:'일터가 생기면 들어갈 수 있어요.'};
+const natureWater=()=>{ const p=OUT.patch.nature; return [p[0]+.6,p[1]+.6,p[2]-1.2,p[3]-1.2]; };
+// 나이에 따라 갈 수 있는 곳: 처음 집 밖에 나서면 동네 한 귀퉁이만, 자랄수록 넓어진다 (갈 수 없는 곳은 가려 둔다)
+function reachOf(a){ return a<10?[0,0,31.9,23.75]:a<13?[0,0,31.9,OUT.h]:a<19?[0,0,61.9,OUT.h]:[0,0,OUT.w,OUT.h]; }
+function inReach(x,y){ const r=reachOf(G.life.age); return x>=r[0]&&x<=r[0]+r[2]&&y>=r[1]&&y<=r[1]+r[3]; }
+function reachMsg(x,y){ const a=G.life.age, r=reachOf(a); if(y>r[1]+r[3]) return '큰길 아래쪽 동네는 열 살이 되면 갈 수 있어요.'; return a<13?'큰길 건너편은 열세 살이 되면 갈 수 있어요.':'저 너머는 어른이 되면 갈 수 있어요.'; }
+const reachAge=a=>a<10?10:a<13?13:a<19?19:null;
+const roadGap=i=>OUT.roads.some(r=>r[3]>r[2]&&i+1>=r[0]-.6&&i<=r[0]+r[2]+.6)||(i>=OUT.hw[0]-1&&i<=OUT.hw[0]+OUT.hw[2]+1);
+function viewRect(){ const r=reachOf(G.life.age), x0=Math.max(0,r[0]-1.5), y0=Math.max(0,r[1]-1.5), x1=Math.min(OUT.w,r[0]+r[2]+1.5), y1=Math.min(OUT.h,r[1]+r[3]+1.5); return [x0,y0,x1-x0,y1-y0]; }
+// 아직 갈 수 없는 곳은 구름처럼 가려 둔다 (가장자리는 부드럽게)
+function drawFog(c,X,Y){ const r=reachOf(G.life.age); if(r[2]>=OUT.w&&r[3]>=OUT.h) return;
+  const xr=X(r[0]+r[2]), yb=Y(r[1]+r[3]), L0=X(0)-80, T0=Y(0)-80, R0=X(OUT.w)+80, B0=Y(OUT.h)+80, col='28,40,52', E=14;
+  c.save(); c.fillStyle=`rgba(${col},.95)`;
+  if(r[2]<OUT.w){ c.fillRect(xr+E,T0,R0-xr-E,B0-T0); const g1=c.createLinearGradient(xr,0,xr+E,0); g1.addColorStop(0,`rgba(${col},0)`); g1.addColorStop(1,`rgba(${col},.95)`); c.fillStyle=g1; c.fillRect(xr,T0,E,B0-T0); }
+  if(r[3]<OUT.h){ c.fillStyle=`rgba(${col},.95)`; c.fillRect(L0,yb+E,Math.min(xr,R0)-L0,B0-yb-E); const g2=c.createLinearGradient(0,yb,0,yb+E); g2.addColorStop(0,`rgba(${col},0)`); g2.addColorStop(1,`rgba(${col},.95)`); c.fillStyle=g2; c.fillRect(L0,yb,Math.min(xr,R0)-L0,E); }
+  c.restore(); }
+// 건물 목록: 이름 있는 건물 + 이웃집
+function bldList(){ return Object.keys(OUT.b).map(k=>({k,b:OUT.b[k]})).concat(OUT.deco.map((d,i)=>({k:'deco'+i,b:d,deco:1}))); }
+// 방 안의 가구: 집 · 학교/일터 · 동네 건물마다
+function furnOf(m){ return m==='home'?HOME.f:(typeof PLACE_IN!=='undefined'&&PLACE_IN[m]&&PLACE_IN[m].f)||INT.f; }
+// 나무: 가장자리를 두르고, 동네 곳곳에 고정된 자리로 (드나드는 길·건물·밭은 비운다)
+(function(){ const T=OUT.trees, near=(x,y,r,p)=>x>r[0]-p&&x<r[0]+r[2]+p&&y>r[1]-p&&y<r[1]+r[3]+p;
+  const vr=OUT.roads.filter(r=>r[3]>r[2]), hr=OUT.roads.filter(r=>r[2]>r[3]);
+  for(let x=0;x<OUT.hw[0]-1;x++){ if(vr.some(r=>x+.5>r[0]-1.2&&x+.5<r[0]+r[2]+1.2)) continue; T.push([x+.5,.45]); T.push([x+.5,OUT.h-.45]); }
+  for(let y=1;y<OUT.h-1;y++){ if(hr.some(r=>y+.5>r[1]-1.4&&y+.5<r[1]+r[3]+1.4)) continue; T.push([.45,y+.5]); }
+  const bl=bldList().map(o=>o.b), pats=Object.values(OUT.patch);
+  for(let gy=3;gy<OUT.h-2;gy+=3.4) for(let gx=2.5;gx<OUT.w-2;gx+=3.6){ const x=gx+(hash(Math.round(gx*10),Math.round(gy*10))-.5)*1.6, y=gy+(hash(Math.round(gy*10),Math.round(gx*10)+7)-.5)*1.4;
+    if(hash(Math.round(x*3),Math.round(y*3)+11)>.42) continue;
+    if(bl.some(b=>near(x,y,b,1.3))||bl.some(b=>x>b[0]+b[2]/2-1.4&&x<b[0]+b[2]/2+1.4&&y>b[1]+b[3]&&y<b[1]+b[3]+3)) continue;
+    if(pats.some(p=>near(x,y,p,1))||OUT.fields.some(f=>near(x,y,f,.7))||OUT.roads.some(r=>near(x,y,r,1.7))||near(x,y,OUT.hw,1.6)) continue;
+    if(Object.values(OUT.s).some(p=>Math.hypot(p[0]-x,p[1]-y)<1.6)) continue;
+    T.push([Math.round(x*10)/10,Math.round(y*10)/10]); } })();
+const ENTER={home:'',elem:'초등학교는 일곱 살부터, 학교에 다니는 동안 들어갈 수 있어요.',mid:'',work:'일터가 생기면 들어갈 수 있어요.',
+  friend:'',shop:'',lib:'',study:'',gym:'',market:'',rest:'',cafe:'',bank:'',hosp:'',hall:'',post:'',station:''};   // 동네 건물도 들어가서 사람·물건과 만날 수 있다
 const doorOf=k=>{ const b=OUT.b[k]; return [b[0]+b[2]/2,b[1]+b[3]]; };
 const HOME={ s:{ mom:[2.6,2.7], table:[5.6,2.9], dad:[9,2.7], tv:[11.8,2.7], gran:[2.4,6.9], sib:[5.4,7.2], desk:[9,7.3], yard:[12.2,7.2], spouse:[7.4,4.8], kid:[4,5] },
   f:[['counter',1,1,3,.8],['table',4.8,1.1,1.6,.9],['sofa',8,1,2.2,.8],['tv',11,1,1.7,.5],['bed',.9,8.1,2.2,1],['desk',8.3,8.3,1.6,.7]] };
@@ -7576,8 +7615,8 @@ const INT={ P:[[7,3],[3.2,5.2],[10.7,5.2],[12.6,3.3],[2.2,7.4],[11.6,7.5]],
       hosp:['선배','진료실','동료','창가','약품실','휴게실'], dream:['선배','내 작업대','동료','창가','자료실','쉼터'], fish:['선장님','그물 손질대','동료 어부','창가','얼음 창고','쉼터'],
       mine:['반장님','장비대','동료 광부','환기구','장비 창고','쉼터'], tour:['손님','안내 데스크','동료','창가','지도 보관함','쉼터'], part:['사장님','내 자리','동료','창가','창고','휴게실'] } };
 const IW=14, IH=10, IDOOR=[7,9.5];
-const intKind=m=>m==='work'?((G.life.job||{}).kind||'part'):m==='home'?'home':'school';
-const intNames=m=>INT.n[intKind(m)]||INT.n.part;
+const intKind=m=>m==='work'?((G.life.job||{}).kind||'part'):m==='home'?'home':(typeof PLACE_IN!=='undefined'&&PLACE_IN[m])?PLACE_IN[m].kind:'school';
+const intNames=m=>(typeof PLACE_IN!=='undefined'&&PLACE_IN[m]&&PLACE_IN[m].n)||INT.n[intKind(m)]||INT.n.part;
 const W={map:'home',x:7,y:5,dir:0,walk:0,car:false};
 const PERSON_KEYS=['mom','dad','gran','sib','spouse','kid'];
 // 장면·사람이 있는 위치: 사람은 돌아다니므로 지금 서 있는 곳
@@ -7593,10 +7632,9 @@ const onRoad=(x,y,pad)=>OUT.roads.some(r=>inRect(x,y,r,pad));
 function solidsFor(map){
   const L=G.life, a=L.age, out=[];
   if(map==='home'){ HOME.f.forEach(f=>out.push(f.slice(1))); if(L.famI===0) out.push([12,4.2,1.5,.7]); }
-  else if(map!=='out') INT.f.forEach(f=>out.push(f.slice(1)));
-  else{ for(const k in OUT.b) out.push(OUT.b[k]); OUT.trees.forEach(t=>out.push([t[0]-.3,t[1]-.25,.6,.55])); out.push(OUT.patch.sea);
-    if(L.set==='R') out.push([1.6,20.6,4.8,3.8]);
-    OUT.gates.forEach(g=>{ if(a<g[1]) out.push([g[0],0,.6,OUT.h,g[2]]); });
+  else if(map!=='out') furnOf(map).forEach(f=>out.push(f.slice(1,5)));
+  else{ bldList().forEach(o=>out.push(o.b.slice(0,4))); OUT.trees.forEach(t=>out.push([t[0]-.3,t[1]-.25,.6,.55])); out.push(OUT.patch.sea);
+    if(L.set==='R') out.push(natureWater());
     if(!(W.car&&C_VEH()==='horse')) out.push(OUT.hw.concat(`여기부터는 ${josa(L.C.veh.n,'을','를')} 타야 갈 수 있어요.`)); }
   return out;
 }
@@ -7605,11 +7643,11 @@ const C_VEH=()=>G.life.C.veh.kind;
 function blocked(map,x,y,r,sol){
   if(map!=='out'){ const inDoor=Math.abs(x-IDOOR[0])<.7&&y>9; if(x<.7||x>IW-.7||y<1.25||(y>9.2&&!inDoor)) return 1; }
   else if(x<.4||x>OUT.w-.4||y<.4||y>OUT.h-.4) return 1;
+  else if(!inReach(x,y)) return [0,0,0,0,reachMsg(x,y)];
   for(const s of sol) if(x+r>s[0]&&x-r<s[0]+s[2]&&y+r>s[1]&&y-r<s[1]+s[3]) return s; return 0; }
 function tryMove(dx,dy){
   const L=G.life, r=.3, vk=C_VEH();
-  if(W.car&&vk!=='horse'){ const nx=clamp(W.x+dx,.6,OUT.w-.6); let stop=L.age<19&&nx>45.3; OUT.gates.forEach(gt=>{ if(L.age<gt[1]&&nx>gt[0]-.5) stop=true; }); if(stop) say('아직은 여기까지만 갈 수 있어요.'); else if(onRoad(nx,W.y,-.25)) W.x=nx; if(onRoad(W.x,W.y+dy,-.25)) W.y+=dy; return; }
-  if(W.car&&L.age<19&&W.x+dx>45.3){ say('먼 곳은 어른이 되면 갈 수 있어요.'); return; }
+  if(W.car&&vk!=='horse'){ const nx=clamp(W.x+dx,.6,OUT.w-.6); let stop=!inReach(nx,W.y); if(stop) say('아직은 여기까지만 갈 수 있어요.'); else if(onRoad(nx,W.y,-.25)) W.x=nx; if(onRoad(W.x,W.y+dy,-.25)) W.y+=dy; return; }
   const sol=solidsFor(W.map), inside=W.map!=='out';
   let h=blocked(W.map,W.x+dx,W.y,r,sol); if(!h) W.x+=dx; else if(h[4]) say(h[4]);
   h=blocked(W.map,W.x,W.y+dy,r,sol); if(!h) W.y+=dy; else if(h[4]) say(h[4]);
@@ -7646,19 +7684,26 @@ function npcBuild(map){
     // 아이가 여럿이면 둘째·셋째도 집 안을 돌아다닌다
     if(!L.f.dying) L.kidsHome().slice(1,3).forEach((k,i)=>{ const age=a-k.b, lk=famLook('kid'+(i+2)); P({key:'kidx'+i,label:k.given,x:3+i*2.2,y:6.3,ax:3+i*2.2,ay:6.3,look:lk,st:stageAt(Math.max(0,age)),long:k.sex===1,r:1.5,spd:age<2?.4:1.3}); });
     if(L.set==='R'||L.C.tier<=2) list.push({kind:'a',a:'cat',x:12.2,y:6.5,ax:12.2,ay:6.8,r:1,wt:1,tx:null,spd:1,face:1,fr:0});
+  } else if(map!=='out'&&typeof PLACE_IN!=='undefined'&&PLACE_IN[map]){ const PI=PLACE_IN[map], peer=L.age<13?'kid':L.age>=62?'elder':'adult';
+    P({key:'p0',x:PI.p0[0],y:PI.p0[1],ax:PI.p0[0],ay:PI.p0[1],look:famLook('t_'+map),st:'adult',long:famLook('t_'+map).si%2===0,r:PI.r0||1.2});
+    if(PI.p2) P({key:'p2',x:PI.p2[0],y:PI.p2[1],ax:PI.p2[0],ay:PI.p2[1],look:famLook('f_'+map),st:PI.peer?peer:'adult',long:famLook('f_'+map).si%2===1,r:2});
+    (PI.seats||[]).forEach((p,i)=>list.push({kind:'p',key:'seat'+i,x:p[0],y:p[1],look:famLook('s'+i+map),st:p[2]==='peer'?peer:(p[2]||'adult'),dir:p[3]!=null?p[3]:0,fr:0,static:1,long:i%2===1}));
   } else if(map!=='out'){ const kind=intKind(map), kidSt=map==='work'?'adult':L.age<13?'kid':'adult';
     P({key:'p0',x:INT.P[0][0],y:INT.P[0][1],ax:INT.P[0][0],ay:INT.P[0][1]+.4,look:famLook('t_'+map),st:map==='work'?'adult':'adult',long:famLook('t_'+map).si%2===0,r:2.2});
     P({key:'p2',x:INT.P[2][0],y:INT.P[2][1],ax:INT.P[2][0],ay:INT.P[2][1],look:famLook('f_'+map),st:kidSt,long:famLook('f_'+map).si%2===1,r:1.6});
     [[4.8,5.3],[8.2,5.3],[6.5,6.9]].forEach((p,i)=>list.push({kind:'p',key:'seat'+i,x:p[0],y:p[1],look:famLook('s'+i+map),st:kidSt,dir:3,fr:0,static:1,long:i===1}));
   } else {
-    const U=L.set==='U', n=U?9:6, walk=[[3,13.6],[12,13.6],[20,13.6],[27,13.6],[36,13.6],[42,10.4],[13,8.5],[22,14],[35,13.8],[40,20.5],[28,24],[5,14]];
+    const U=L.set==='U', n=U?22:14, RY=OUT.RY, walk=[]; for(let x=5;x<OUT.w-3;x+=8) walk.push([x,RY-.65],[x+4,RY+2.65]);
+    bldList().forEach(o=>{ if(o.deco||o.k==='home'||o.k==='bus') return; walk.push([o.b[0]+o.b[2]/2+1.2,o.b[1]+o.b[3]+1.3]); });
+    for(let i=walk.length-1;i>0;i--){ const j=Math.floor(hash(i,7)*(i+1)); [walk[i],walk[j]]=[walk[j],walk[i]]; }
     for(let i=0;i<n;i++){ const p=walk[i%walk.length], lk=randLook(L.C.rg); P({key:'w'+i,x:p[0],y:p[1],ax:p[0],ay:p[1],look:lk,st:R()<.2?'kid':R()<.15?'elder':'adult',long:R()<.5,r:3.5,spd:1+R()*.6}); }
-    for(let i=0;i<2;i++){ const lk=randLook(L.C.rg); P({key:'k'+i,x:3.5+i*2,y:17.5,ax:4.5,ay:17,look:lk,st:'kid',long:i===1,r:1.6,spd:1.8}); }
-    if(!U) for(let i=0;i<3;i++) list.push({kind:'a',a:'chick',x:8+i*.7,y:8.3,ax:8.5,ay:8.3,r:1.6,wt:R(),tx:null,spd:.8,face:1,fr:0});
-    else list.push({kind:'a',a:'cat',x:12.5,y:7.6,ax:12.5,ay:7.6,r:2,wt:1,tx:null,spd:1,face:1,fr:0});
-    if(L.C.tier<=2&&R()<.7) list.push({kind:'a',a:'dog',x:21,y:14.3,ax:21,ay:14.3,r:3,wt:1,tx:null,spd:1.4,face:1,fr:0});
+    const pl=OUT.patch.play, eb=OUT.b.elem, lb=OUT.b.lib; [[pl[0]+2.5,pl[1]+4.6],[pl[0]+4.5,pl[1]+4.4],[eb[0]+eb[2]/2+2,eb[1]+eb[3]+1.4],[lb[0]+lb[2]/2+2,lb[1]+lb[3]+1.4]].forEach((p,i)=>{ const lk=randLook(L.C.rg); P({key:'k'+i,x:p[0],y:p[1],ax:p[0],ay:p[1],look:lk,st:'kid',long:i%2===1,r:1.6,spd:1.8}); });
+    const hb=OUT.b.home; if(!U){ const fd=OUT.fields[0]; for(let i=0;i<3;i++) list.push({kind:'a',a:'chick',x:fd[0]+2+i*.7,y:fd[1]+fd[3]+.8,ax:fd[0]+2.5,ay:fd[1]+fd[3]+.8,r:1.6,wt:R(),tx:null,spd:.8,face:1,fr:0}); }
+    else list.push({kind:'a',a:'cat',x:hb[0]+hb[2]+1.5,y:hb[1]+hb[3]+.6,ax:hb[0]+hb[2]+1.5,ay:hb[1]+hb[3]+.6,r:2,wt:1,tx:null,spd:1,face:1,fr:0});
+    if(L.C.tier<=2&&R()<.7) list.push({kind:'a',a:'dog',x:22,y:OUT.RY-1.4,ax:22,ay:OUT.RY-1.4,r:3,wt:1,tx:null,spd:1.4,face:1,fr:0});
+    if(L.C.tier<=2&&R()<.6) list.push({kind:'a',a:'dog',x:48,y:OUT.RY+3,ax:48,ay:OUT.RY+3,r:3,wt:1,tx:null,spd:1.4,face:1,fr:0});
     const vk=L.C.veh.kind, kinds=L.C.tier>=3?['car','car','car',vk]:[vk,vk,'cycle','car'];
-    for(let i=0;i<(U?4:2);i++){ const right=i%2===0, k=kinds[i%kinds.length]; list.push({kind:'v',v:k,x:(i*15+3)%44,y:right?11.62:12.58,vx:(right?1:-1)*(k==='car'?3.2:2.4),col:pickOne(CLOTHES),look:randLook(L.C.rg)}); }
+    for(let i=0;i<(U?8:4);i++){ const right=i%2===0, k=kinds[i%kinds.length]; list.push({kind:'v',v:k,x:(i*29+3)%OUT.w,y:right?OUT.RY+.62:OUT.RY+1.58,vx:(right?1:-1)*(k==='car'?3.2:2.4),col:pickOne(CLOTHES),look:randLook(L.C.rg)}); }
   }
   NPCMAP[map]=list; return list;
 }
@@ -7666,7 +7711,7 @@ function npcUpdate(dt){
   const list=NPCMAP[W.map]||npcBuild(W.map), sol=solidsFor(W.map), tkeys=new Set(targets().filter(t=>t.m===W.map).map(t=>t.key));
   for(const n of list){
     if(n.static) continue;
-    if(n.kind==='v'){ n.x+=n.vx*dt; const near=Math.abs(n.x-W.x)<1.4&&Math.abs(n.y-W.y)<.8&&!W.car; if(near) n.x-=n.vx*dt; if(n.x>45) n.x=-1.5; if(n.x<-1.5) n.x=45; n.fr=(n.fr||0)+dt; continue; }
+    if(n.kind==='v'){ n.x+=n.vx*dt; const near=Math.abs(n.x-W.x)<1.4&&Math.abs(n.y-W.y)<.8&&!W.car; if(near) n.x-=n.vx*dt; if(n.x>OUT.w+1.5) n.x=-1.5; if(n.x<-1.5) n.x=OUT.w+1.5; n.fr=(n.fr||0)+dt; continue; }
     const pd=Math.hypot(n.x-W.x,n.y-W.y);
     if(paused||(n.kind==='p'&&pd<1.3)||(n.key&&tkeys.has(n.key)&&pd<2.2)){ n.moving=false; if(n.kind==='p'&&pd<2.4) n.dir=Math.abs(W.x-n.x)>Math.abs(W.y-n.y)?(W.x<n.x?1:2):(W.y<n.y?3:0); continue; }
     if(n.wt>0){ n.wt-=dt; n.moving=false; continue; }
@@ -7692,18 +7737,19 @@ addEventListener('keyup',e=>{ IN.keys[e.key.toLowerCase()]=0; });
 
 /* ========== 이번 삶의 설정 (빠르기 · 한 해 돌아보기 · 멈춤 질문 · 이별 장면) ========== */
 const PACE_PICKS={short:7,normal:10};   // 한 해(어른은 두 해)에 고르는 일의 평균 수 (자동 진행 200번으로 잰 값)
-G.opts=Object.assign({pace:'normal',card:1,ask:1,soft:1,prob:1,read:1},ls('life8b_opts')||{});   // 중학생 수업: 무거운 장면은 처음부터 '짧고 담담하게'
-const secOf=L=>L&&L.pace==='short'?35:CFG.PERIOD_SEC;
+G.opts=Object.assign({pace:'normal',yl:60,card:1,ask:0,soft:1,prob:1,read:1},ls('life8b_opts')||{});   // 중학생 수업: 무거운 장면은 처음부터 '짧고 담담하게'
+const secOf=L=>L&&L.yl?L.yl:L&&L.pace==='short'?35:CFG.PERIOD_SEC;   // 한 해(어른은 두 해)의 길이(초): 시작할 때 고른 값
+// 100살까지 산다면 걸리는 시간 (어린 시절 19번 + 어른은 두 해씩 41번 = 60번)
+function lifeTimeText(yl){ const m=Math.round(60*yl/60), h=Math.floor(m/60), mm=m%60; return h?`${h}시간${mm?' '+mm+'분':''}`:`${m}분`; }
 // 기대수명까지 사는 데 드는 대략의 시간(분): 한 해의 길이 + 창을 읽고 고르는 시간 (자동 진행으로 잰 평균 선택 수 × 약 4초)
 function paceMin(L,pace){ const le=L.C.le, per=Math.min(19,le)+Math.max(0,Math.ceil((le-19)/2)), sec=pace==='short'?35:CFG.PERIOD_SEC, pick=pace==='short'?PACE_PICKS.short:PACE_PICKS.normal; return Math.round(per*(sec+pick*4)/60/5)*5; }
 function renderBSet(){ const o=G.opts, L=G.life, seg=(k,arr)=>`<div class="seg" data-o="${k}">${arr.map(([v,t])=>`<button data-v="${v}" class="${String(o[k])===String(v)?'on':''}">${t}</button>`).join('')}</div>`;
   $('bSet').innerHTML=`<h3>이번 삶의 설정</h3>
-    <div class="stack-s"><b>삶의 빠르기</b>${seg('pace',[['short','짧게 (수업용)'],['normal','보통']])}<p class="small sub">${o.pace==='short'?`한 해 35초(어른은 두 해), 달마다 일어나는 일과 큰 사건이 절반입니다.`:`한 해 60초(어른은 두 해), 일어나는 일을 모두 겪습니다.`}${L?` 기대수명(${L.C.le}세)까지 살면 대략 ${paceMin(L,o.pace)}분 안팎이 걸려요. 나가기를 누르면 저장되어 다음 시간에 이어서 살 수 있어요.`:''}</p></div>
+    <div class="stack-s"><b>시간의 빠르기</b>${seg('yl',[[35,'한 해 35초'],[60,'한 해 1분'],[120,'한 해 2분'],[300,'한 해 5분']])}<p class="small sub">100살까지 산다면 <b>${lifeTimeText(o.yl||60)}</b>이 걸려요 (어른이 되면 한 번에 두 해씩 흘러요). 선택을 고르는 동안에도 시간은 흐르고, 오래 고르지 않으면 저절로 정해져요.${(o.yl||60)<=35?' 한 해 35초는 달마다 일어나는 일과 큰 사건이 절반입니다.':''} '저장하기'를 누르면 다음 시간에 이어서 살 수 있어요.</p></div>
     <div class="stack-s"><b>한 해를 돌아보는 카드</b>${seg('card',[[1,'켜기'],[0,'끄기']])}<p class="small sub">해가 바뀔 때 지난해의 한 장면과 이 나라의 숫자 한 가지를 보여 줍니다.</p></div>
-    <div class="stack-s"><b>삶의 중간에 멈춰 생각하기</b>${seg('ask',[[1,'켜기'],[0,'끄기']])}<p class="small sub">5·15·30·50·70세에 질문 하나에 짧게 답합니다. 답은 마지막 장면에서 다시 보여 줍니다.</p></div>
     <div class="stack-s"><b>무거운 장면 (가족과의 이별 · 큰 병 · 분쟁)</b>${seg('soft',[[0,'그대로 보기'],[1,'짧고 담담하게']])}<p class="small sub">'짧고 담담하게'를 고르면 가족과의 이별은 짧은 알림으로, 큰 병과 분쟁은 그림 없이 글로만 보여 줍니다. 일어나는 일 자체는 실제 통계 그대로입니다.</p></div>
     <div class="stack-s"><b>선택지에 '될 가능성' 보여 주기</b>${seg('prob',[[0,'보이지 않기'],[1,'큰 일만 높음·보통·낮음'],[2,'모두 숫자로']])}<p class="small sub">숫자가 보이면 '가장 높은 숫자 고르기'가 되기 쉬워요. 기본은 큰 갈림길과 큰 사건에서만 높음·보통·낮음으로 보여 줍니다.</p></div>
-    <div class="stack-s"><b>글이 떠 있는 시간</b>${seg('read',[[1,'보통'],[1.8,'길게 (천천히 읽기)']])}<p class="small sub">잠깐 나타났다 사라지는 글을 더 오래 보여 줍니다. 살아가는 중에도 위쪽의 '멈춤'을 누르면 언제든 시간이 멈춥니다.</p></div>
+    <div class="stack-s"><b>글이 떠 있는 시간</b>${seg('read',[[1,'보통'],[1.8,'길게 (천천히 읽기)']])}<p class="small sub">잠깐 나타났다 사라지는 글을 더 오래 보여 줍니다. 살아가는 중에는 위쪽의 '저장하기'로 저장하고 쉬었다가 이어서 할 수 있어요.</p></div>
     ${!G.teacher&&G.data&&G.data.room?`<p class="small sub notice">지금 '${esc(G.data.room)}' 반에 들어가 있어요. 선생님이 반 설정을 정해 두었다면 그 설정이 먼저 적용됩니다.</p>`:''}`; }
 $('bSet').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const sg=b.closest('.seg'); if(!sg) return; const k=sg.dataset.o; G.opts[k]=k==='pace'?b.dataset.v:+b.dataset.v; if(G.life&&G.life.opt&&k==='soft') G.life.opt.soft=G.opts.soft; ls('life8b_opts',G.opts); renderBSet(); };
 // 지금 태어나는 아기 평균 (나라별 출생아 수로 가중)
@@ -7761,7 +7807,7 @@ const ASKS=[[5,L=>`${josa(L.name,'이','가')} 다섯 살이 되었습니다. �
   [30,L=>`서른 무렵입니다. 지금까지 ${L.name}의 선택 가운데 가장 잘한 선택은 무엇이었을까요?`,'예: 그때 공부를 포기하지 않은 것'],
   [50,L=>`쉰 무렵입니다. ${josa(L.name,'이','가')} 가장 고마워해야 할 사람은 누구일까요? 왜 그런가요?`,'예: 늘 곁에 있어 준 친구'],
   [70,L=>`일흔 무렵입니다. ${josa(L.name,'이','가')} 단 한 사람에게만 말을 건넬 수 있다면, 누구에게 무슨 말을 할까요?`,'예: 엄마에게, 고마웠다고']];
-function askSheet(L,done){ if(!L.opt||L.opt.ask===0||L.f.dying||L.dead){ done(); return; } L.asked=L.asked||{};
+function askSheet(L,done){ if(!G.askOn){ done(); return; } if(!L.opt||L.opt.ask===0||L.f.dying||L.dead){ done(); return; } L.asked=L.asked||{};
   const x=ASKS.find(([m])=>L.age>=m&&L.age<m+4&&!L.asked[m]); if(!x){ done(); return; } const m=x[0], q=x[1](L); L.asked[m]=1;
   sheet(`<div class="place">잠시 멈춤 · ${L.age}살</div><h2>${esc(q)}</h2><label class="field" for="askIn">짧게 적어 보세요 <span class="sub small">· 마지막 장면에서 다시 보여 드려요</span><textarea id="askIn" maxlength="120" rows="3" placeholder="${esc(x[2])}"></textarea></label><div class="row"><button class="btn primary" id="btnAskOk">남기기</button><button class="btn" id="btnAskNo">건너뛰기</button></div>`,'ask');
   const fin=save=>{ const t=$('askIn').value.trim().slice(0,120); if(save&&t) (L.notes||(L.notes=[])).push({a:L.age,m,q,t}); closeSheet(); persist(); done(); };
@@ -7791,7 +7837,7 @@ function beginPeriod(first){
   if(L.f.dying) goHomeBed();
   if(L.age<6&&W.map!=='home'){ W.map='home'; W.x=7; W.y=5; }
   if(W.map==='elem'&&!(L.age<=12&&L.f.elem)){ W.map='out'; const d=doorOf('elem'); W.x=d[0]; W.y=d[1]+.9; }
-  if(!canDrive()&&(W.car||(W.map==='out'&&W.x>45.5))){ W.car=false; W.map='home'; W.x=7; W.y=8; }
+  if(!canDrive()&&(W.car||(W.map==='out'&&W.x>OUT.hw[0]-.5))){ W.car=false; W.map='home'; W.x=7; W.y=8; }
   if(first&&L.n===0&&L.age===0) toast('느낌표가 뜬 곳으로 기어가 보세요.');
   renderHud(); persist(); memberBeat();
   const bigs=news.filter(n=>n.big); let bi=0;                        // 중요한 일은 하나씩 장면 그림과 함께 큰 창으로
@@ -7832,14 +7878,14 @@ function renderHud(){
   $('hQuest').innerHTML=L.cur?L.cur.scenes.filter(c=>!c.done).map(c=>`<li>${esc(scenePos(c.i).n)}</li>`).join(''):'';
   const q=L.q, m=$('hMission');
   if(q&&q.st>0){ const d=QUESTS[q.i]; m.textContent=q.st===1?`? 미션 · ${L.spotName(d.target)}에 다녀오기`:`? 미션 · ${giverName(d.giver)}에게 돌아가기`; m.hidden=false; } else m.hidden=true;
-  $('btnNext').hidden=!!caughtUp(); $('hWait').hidden=!caughtUp();
+  $('btnNext').hidden=!!caughtUp()||!G.teacher; $('hWait').hidden=!caughtUp();
   if(caughtUp()) $('hWait').textContent=G.roomInfo&&G.roomInfo.auto>0&&!G.roomInfo.paused?'반 전체가 같은 해를 살고 있어요':'선생님이 다음 해를 열 때까지 이 해를 살아요';
   requestAnimationFrame(()=>{ const hh=$('hud').offsetHeight; $('s-game').style.setProperty('--hudH',(hh+6)+'px'); HUDH=hh; });
 }
 let HUDH=150;
 function toast(t,cls,fx,tr){
   const d=document.createElement('div'); d.className='toast'+(cls?' '+cls:''); d.innerHTML=esc(t)+chips(fx,tr); $('toasts').appendChild(d);
-  while($('toasts').children.length>3) $('toasts').firstChild.remove(); setTimeout(()=>d.remove(),(cls==='year'?2000:/money/.test(cls||'')?6000:4500)*RD());
+  while($('toasts').children.length>4) $('toasts').firstChild.remove(); const dur=(cls==='year'?3500:/money/.test(cls||'')?8000:8500)*RD(); d.style.setProperty('--dur',dur+'ms'); setTimeout(()=>{ d.classList.add('out'); setTimeout(()=>d.remove(),450); },dur);
 }
 function chips(fx,tr){ let h=''; if(fx) for(const k in fx){ const v=fx[k]; if(!v) continue;
     if(k==='$') h+=`<span class="chip pay">월급 ${v>0?'+':'−'}${Math.abs(v)}%</span>`; else if(k==='x') h+=`<span class="chip dn">일자리를 잃음</span>`;
@@ -7852,7 +7898,7 @@ function sceneHTML(kind){ return kind?`<canvas class="scene" width="640" height=
 function animScenes(){ const cs=[...$('sheetBox').querySelectorAll('canvas.scene')]; if(!cs.length) return; const t0=performance.now();
   const step=()=>{ if($('sheet').hidden) return; let alive=false; cs.forEach(c=>{ if(!c.isConnected) return; alive=true; const x=c.getContext('2d'); x.setTransform(c.width/160,0,0,c.width/160,0,0); x.imageSmoothingEnabled=false; x.clearRect(0,0,160,80); drawScene(x,c.dataset.sc,(performance.now()-t0)/1000,G.life); }); if(alive) requestAnimationFrame(step); }; step(); }
 function popup(tag,txt,fx,after,cls,sc,nt){ if(softOn()&&/^(farewell|sick|hosp|unrest)$/.test(sc||'')) sc=null; if(G.life&&G.life.pv) txt=G.life.pv(txt); sheet(`${sceneHTML(sc)}<div class="place">${esc(tag)}</div><p class="evt">${esc(txt)}</p>${nt?`<p class="nt">${esc(nt)}</p>`:''}${chips(fx)}<button class="btn primary" id="btnOk">확인 ▶</button>`,'event '+(cls||'')); renderHud(); $('btnOk').onclick=()=>{ closeSheet(); if(after) after(); }; }
-function flash(place,t,fx,tr,bad){ if(G.life&&G.life.pv) t=G.life.pv(t); const f=$('flash'); f.className='gbox'+(bad?' bad':''); f.innerHTML=`<div class="place">${esc(place)}</div><p>${esc(t)}</p>${chips(fx,tr)}`; f.hidden=false; f.style.animation='none'; void f.offsetWidth; f.style.animation=''; clearTimeout(flash.t); flash.t=setTimeout(()=>f.hidden=true,2600*RD()); }
+function flash(place,t,fx,tr,bad){ if(G.life&&G.life.pv) t=G.life.pv(t); const f=$('flash'); f.className='gbox'+(bad?' bad':''); f.innerHTML=`<div class="place">${esc(place)}</div><p>${esc(t)}</p>${chips(fx,tr)}`; f.hidden=false; f.style.animation='none'; void f.offsetWidth; f.style.animation=''; clearTimeout(flash.t); flash.t=setTimeout(()=>f.hidden=true,4500*RD()); }
 function sheet(html,cls){ $('sheetBox').className='box gbox '+(cls||''); $('sheetBox').innerHTML=html; $('sheet').hidden=false; paused=true; IN.jx=IN.jy=0; IN.id=null; animScenes(); }
 function closeSheet(){ $('sheet').hidden=true; paused=false; lastT=performance.now(); }
 // 선택지의 '될 가능성' 표시: 0 숨김 · 1 큰 갈림길·큰 사건만 높음/보통/낮음(기본) · 2 모두 숫자. 학급 방의 선생님 설정이 먼저
@@ -7898,7 +7944,7 @@ function endPeriod(){
 function finishPeriod(){ const L=G.life; if(!L||L.dead) return; const res=L.endPeriod(); G.sickT=0;
   if(res.dead){ G.running=false; memberBeat(true); finishLife(); return; }
   beginPeriod(); }
-$('btnNext').onclick=()=>{ if($('sheet').hidden&&!caughtUp()) endPeriod(); };
+$('btnNext').onclick=()=>{ if(!G.teacher) return; if($('sheet').hidden&&!caughtUp()) endPeriod(); };
 // 교사용: 그해의 중요 사건을 시간을 건너뛰어 바로 고른다
 $('btnImp').onclick=()=>{ const L=G.life; if(!L||!L.cur||!$('sheet').hidden) return; if(L.pending){ openCross(); return; }
   if(!L.majorLeft()){ toast("올해 남은 중요 사건이 없어요. '다음 해로'를 눌러 보세요."); return; }
@@ -7912,7 +7958,7 @@ function ymOf(m){ const L=G.life; return {y:L.by+L.age+(m>12?1:0),m:m>12?m-12:m}
 function calTag(){ const L=G.life, st=L.stageOf(), sch=L.sch||{}; return st==='e'?sch.elem:st==='m'?sch.mid:st==='h'?(L.f.hs==='voc'?sch.voc:sch.high):st==='u'?sch.univ:st==='rt'?'다시 도전하는 한 해':L.f.job?(L.f.co||'일터'):L.age<7?'우리 집':'우리 동네'; }
 function renderMon(){ const L=G.life, el=$('hMon'); if(!L||!el) return; const cal=L.cur&&L.cur.cal, ym=ymOf(monthNow()); el.textContent=`${ym.m}월${cal&&cal.length?` · 올해의 일 ${cal.filter(x=>x.done).length}/${cal.length}`:''}`; }
 function calToast(m,t,fx,nt,fam){ const d=document.createElement('div'); d.className='toast cal'+(fam?' fam':''); d.innerHTML=`<b class="mb">${m}월${fam?' · 가족':''}</b>${esc(t)}${nt?`<small class="nt">${esc(nt)}</small>`:''}${chips(fx)}`; $('toasts').appendChild(d);
-  while($('toasts').children.length>3) $('toasts').firstChild.remove(); setTimeout(()=>d.remove(),(nt?8500:6500)*RD()); }
+  while($('toasts').children.length>4) $('toasts').firstChild.remove(); const dur=(nt?14000:11000)*RD(); d.style.setProperty('--dur',dur+'ms'); setTimeout(()=>{ d.classList.add('out'); setTimeout(()=>d.remove(),450); },dur); }
 function fireCal(k){ const L=G.life, it=L.cur.cal[k], ev=L.calEv(it), ym=ymOf(it.m), head=`${ym.y}년 ${ym.m}월 · ${it.dyn?'가족':calTag()}`;
   if(!ev){ it.done=1; return; }
   if(ev.opts){ const v=L.calVars(ev,it), q=L.fillV(v.__t||ev.txt,v);
@@ -7935,8 +7981,8 @@ function majorAt(k){ const L=G.life, n=L.cur.plan; if(caughtUp()) return 10+k*40
 $('hMon').onclick=openCal;
 $('btnAct').onclick=()=>{ if(!near||!$('sheet').hidden) return; if(near.type==='s') openScene(near.k); else if(near.type==='t') openTalk(near); else if(near.type==='o') openTouch(near); else openQuest(); };
 $('btnCar').onclick=()=>{ const vk=C_VEH();
-  if(!W.car){ if(vk==='horse'){ W.car=true; return; } if(onRoad(W.x,W.y,.7)){ W.car=true; W.y=W.y<12?11.6:12.6; if(!onRoad(W.x,W.y,-.25)) W.x=clamp(W.x,16,16.6); } }
-  else { if(W.x>45.4&&W.x<50.6) return say('여기서는 내릴 수 없어요.'); W.car=false; if(blocked('out',W.x,W.y,.3,solidsFor('out'))) W.y+=W.y<12?-.6:.6; } };
+  if(!W.car){ if(vk==='horse'){ W.car=true; return; } const rd=OUT.roads.find(r=>inRect(W.x,W.y,r,.7)); if(rd){ W.car=true; if(rd===OUT.roads[0]) W.y=W.y<OUT.RY+1?OUT.RY+.6:OUT.RY+1.6; else { W.x=clamp(W.x,rd[0]+.35,rd[0]+rd[2]-.35); W.y=clamp(W.y,rd[1]+.35,rd[1]+rd[3]-.35); } } }
+  else { if(inRect(W.x,W.y,OUT.hw,.6)) return say('여기서는 내릴 수 없어요.'); W.car=false; const rd=OUT.roads.find(r=>inRect(W.x,W.y,r,.1)); if(rd&&blocked('out',W.x,W.y,.3,solidsFor('out'))){ if(rd[2]>rd[3]) W.y=W.y<rd[1]+rd[3]/2?rd[1]-.5:rd[1]+rd[3]+.5; else W.x=W.x<rd[0]+rd[2]/2?rd[0]-.5:rd[0]+rd[2]+.5; } } };
 // 내 정보: 지금 어떤 삶을 살고 있는지
 $('btnInfo').onclick=()=>{
   const L=G.life, C=L.C, f=L.f, a=L.age;
@@ -8005,7 +8051,7 @@ function openPause(){ if(!G.life||!G.running||!$('sheet').hidden) return; const 
   $('pRead').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; G.opts.read=+b.dataset.v; ls('life8b_opts',G.opts); [...$('pRead').children].forEach(x=>x.classList.toggle('on',x===b)); };
   $('btnOk').onclick=closeSheet; $('btnPMem').onclick=()=>{ closeSheet(); $('btnMem').click(); }; }
 $('btnPause').onclick=openPause;
-addEventListener('keydown',e=>{ if($('s-game').hidden||/^(INPUT|TEXTAREA|SELECT)$/.test((e.target&&e.target.tagName)||'')) return; if(e.key!=='p'&&e.key!=='P'&&e.key!=='ㅔ') return; e.preventDefault(); if($('sheet').hidden) openPause(); else if($('sheetBox').classList.contains('pause')) closeSheet(); });
+addEventListener('keydown',e=>{ if($('s-game').hidden||/^(INPUT|TEXTAREA|SELECT)$/.test((e.target&&e.target.tagName)||'')) return; if(e.key!=='p'&&e.key!=='P'&&e.key!=='ㅔ') return; e.preventDefault(); if($('sheet').hidden) $('btnPause').click(); else if($('sheetBox').classList.contains('pause')) closeSheet(); });
 // 동네와 나라 사이: 내가 사는 도시(시골이면 둘레 마을과 읍내)를 그림 지도로 보여 준다
 function regionSVG(L){ const C=L.C, U=L.set==='U', sch=L.sch||{}, f=L.f||{}, town=L.town||C.city;
   let sd=0; for(const ch of town+L.c) sd=(sd*31+ch.charCodeAt(0))>>>0; const rnd=()=>((sd=(sd*1664525+1013904223)>>>0)/4294967296);
@@ -8099,6 +8145,7 @@ function loopBody(t){
     const car=$('btnCar'), showCar=W.map==='out'&&canDrive()&&(W.car||C_VEH()==='horse'||onRoad(W.x,W.y,.7)); car.hidden=!showCar; if(showCar) car.textContent=W.car?'내리기':L.C.veh.n+' 타기';
     if(!caughtUp()&&L.cur.t<=0&&!paused) endPeriod();
   }
+  else if(L.cur&&typeof flowTick==='function') flowTick(dt);
   if(G.running) draw(t/1000);
   requestAnimationFrame(loop);
 }
@@ -8125,16 +8172,16 @@ function terrain(){ const L=G.life, key=['T',(L.f.vSet||L.set),L.f.placeN||0,L.C
     if(hash(x+placeOff(L),y)<.035) t='f'; else if(!U&&hash(y,x+40+placeOff(L))<.03) t='t';
     if(!U) OUT.fields.forEach(r=>{ if(inRect(cx,cy,r)) t='c'; });
     if(inRect(cx,cy,OUT.patch.play)) t=U&&!poor?'k':'p';
-    if(inRect(cx,cy,OUT.patch.nature)) t=U?(hash(x,y)<.3?'f':'g'):(inRect(cx,cy,[1.6,20.6,4.8,3.8])?'w':'s');
+    if(inRect(cx,cy,OUT.patch.nature)) t=U?(hash(x,y)<.3?'f':'g'):(inRect(cx,cy,natureWater())?'w':'s');
     if(inRect(cx,cy,OUT.patch.mount)) t=L.C.lt==='ds'?'z':L.C.lt==='fr'?'t':'g';
     if(inRect(cx,cy,OUT.patch.sea)) t='w'; else if(inRect(cx,cy,OUT.patch.sand)) t='s';
-    if(onRoad(cx,cy,0)) t=(U&&!poor)||L.C.tier>=3||x>=46?'r':'d';
+    if(onRoad(cx,cy,0)) t=(U&&!poor)||L.C.tier>=3||x>=OUT.hw[0]?'r':'d';
     if(inRect(cx,cy,OUT.hw)) t='h';
-    if(U&&!poor&&t!=='r'&&t!=='h'&&x<46&&onRoad(cx,cy,1.05)&&!inRect(cx,cy,OUT.patch.nature)) t=L.C.tier===2&&L.C.gni<2?'p':'k';   // 살림이 빠듯한 나라의 도시: 길가는 흙
+    if(U&&!poor&&t!=='r'&&t!=='h'&&x<OUT.hw[0]&&onRoad(cx,cy,1.05)&&!inRect(cx,cy,OUT.patch.nature)) t=L.C.tier===2&&L.C.gni<2?'p':'k';   // 살림이 빠듯한 나라의 도시: 길가는 흙
     row.push(t); } T.push(row); }
   // 건물과 나무 밑에는 꽃을 두지 않는다 (꽃은 살랑거리며 다시 그려지므로)
   for(let y=0;y<OUT.h;y++) for(let x=0;x<OUT.w;x++){ if(T[y][x]!=='f') continue; const cx=x+.5, cy=y+.5;
-    if(Object.values(OUT.b).some(b=>inRect(cx,cy,b,.6))||OUT.trees.some(tr=>Math.abs(tr[0]-cx)<1&&Math.abs(tr[1]-cy)<1.2)||inRect(cx,cy,OUT.patch.play,.2)) T[y][x]='g'; }
+    if(bldList().some(o=>inRect(cx,cy,o.b,.6))||OUT.trees.some(tr=>Math.abs(tr[0]-cx)<1&&Math.abs(tr[1]-cy)<1.2)||inRect(cx,cy,OUT.patch.play,.2)) T[y][x]='g'; }
   for(const k in OUT.b){ const d=doorOf(k); for(let i=0;i<2;i++){ const yy=Math.floor(d[1]+i), xx=Math.floor(d[0]-.5); for(const x2 of [xx,xx+1]) if(T[yy]&&T[yy][x2]&&'gftc'.includes(T[yy][x2])) T[yy][x2]=U&&!poor?'k':'p'; } }
   terrain.k=key; terrain.v=T; return T; }
 const LAYER_TOP=24;   // 지도 위쪽 여백(지붕·산이 칸 위로 솟는 부분)
@@ -8151,19 +8198,19 @@ function worldLayer(){ const L=G.life, key=worldKey(); if(worldLayer.k===key) re
       if(soft(nb(0,-1))) pr(x,px,py-1,PX,1,'rgba(30,60,20,.18)'); }
     if(t==='r'||t==='d'){ const kk=nb(0,-1)==='k'||nb(0,-1)==='p', kb=nb(0,1)==='k'||nb(0,1)==='p'; if(kk) pr(x,px,py,PX,1,t==='r'?'#E4E4DC':'#D8BC88'); if(kb) pr(x,px,py+PX-1,PX,1,t==='r'?'#4E565E':'#A88858'); } }
   const poleKind=(visU(L)&&L.C.tier>1&&!(L.C.tier===2&&L.C.gni<2))||L.C.tier>=3?'lamp':'pole';
-  for(let y=1;y<OUT.h-1;y++) for(let i=1;i<OUT.w-1&&i<46;i++){ if(T[y][i]!=='k'&&T[y][i]!=='p') continue; const nr=['r','d'].some(q=>T[y+1][i]===q||T[y-1][i]===q); if(!nr||(i*5+y*3)%13!==0) continue;
+  for(let y=1;y<OUT.h-1;y++) for(let i=1;i<OUT.w-1&&i<OUT.hw[0];i++){ if(T[y][i]!=='k'&&T[y][i]!=='p') continue; const nr=['r','d'].some(q=>T[y+1][i]===q||T[y-1][i]===q); if(!nr||(i*5+y*3)%13!==0) continue;
     const px=i*PX+4, py=y*PX+oy+PX-1; if(poleKind==='lamp') x.drawImage(cached('LAMP',8,22,(lx2,cc)=>{ const P=(X,Y,Wd,H,c2)=>pr(lx2,X,Y,Wd,H,c2); P(3,6,2,15,'#5A6068'); P(3,6,1,15,'#7A8088'); P(1,3,6,3,'#5A6068'); P(2,4,4,2,'#FFF0B0'); P(2,3,4,1,'#8A9098'); P(2,20,4,1,'#484E54'); outline(cc); }),px-4,py-21);
     else x.drawImage(cached('POLE',10,24,(lx2,cc)=>{ const P=(X,Y,Wd,H,c2)=>pr(lx2,X,Y,Wd,H,c2); P(4,2,2,22,'#8A6A48'); P(4,2,1,22,'#A88860'); P(0,4,10,2,'#6A4A30'); P(1,3,1,2,'#D8D8D0'); P(8,3,1,2,'#D8D8D0'); outline(cc); }),px-5,py-23); }
   // 큰길 가운데 선
-  for(let i=0;i<OUT.w;i+=2){ if(i>=15&&i<=17||i>=30&&i<=32||(i>=46&&i<=50)) continue; if((visU(L)&&L.C.tier>1)||L.C.tier>=3||i>=50) pr(x,i*PX+4,12*PX+oy-1,8,2,'#F0F0E8'); }
-  for(let y=0;y<OUT.h;y+=2){ pr(x,48*PX-1,y*PX+oy+4,2,8,'#F2C14E'); }
+  for(let i=0;i<OUT.w;i+=2){ if(roadGap(i)) continue; if((visU(L)&&L.C.tier>1)||L.C.tier>=3||i>=OUT.hw[0]+4) pr(x,i*PX+4,(OUT.RY+1)*PX+oy-1,8,2,'#F0F0E8'); }
+  for(let y=0;y<OUT.h;y+=2){ pr(x,(OUT.hw[0]+OUT.hw[2]/2)*PX-1,y*PX+oy+4,2,8,'#F2C14E'); }
   // 먼 곳의 명소
   const lt=L.C.lt, mp=OUT.patch.mount;
   if(lt==='mt'||lt==='wt'||lt==='cs'||lt==='ct'||lt==='tp'||lt==='ds'||lt==='fr') x.drawImage(landmarkSprite(lt==='wt'||lt==='cs'?'mt':lt,sp),mp[0]*PX,mp[1]*PX+oy-14);
-  if(lt==='wt') x.drawImage(cached('FALL',40,60,(fx)=>{ const P=(X,Y,Wd,H,cc)=>pr(fx,X,Y,Wd,H,cc); P(0,0,40,60,'#8A8070'); P(12,0,16,60,'#9ACCF8'); for(let i=0;i<8;i++) P(14+(i%3)*4,i*8,2,6,'#FFFFFF'); P(0,0,40,3,'#6A6050'); }),58*PX,oy-8);
+  if(lt==='wt') x.drawImage(cached('FALL',40,60,(fx)=>{ const P=(X,Y,Wd,H,cc)=>pr(fx,X,Y,Wd,H,cc); P(0,0,40,60,'#8A8070'); P(12,0,16,60,'#9ACCF8'); for(let i=0;i<8;i++) P(14+(i%3)*4,i*8,2,6,'#FFFFFF'); P(0,0,40,3,'#6A6050'); }),(OUT.patch.mount[0]+7)*PX,oy-8);
   // 건물
-  const ks=Object.keys(OUT.b).sort((a,b)=>OUT.b[a][1]+OUT.b[a][3]-(OUT.b[b][1]+OUT.b[b][3]));
-  for(const k of ks){ const b=OUT.b[k], w=Math.round(b[2]*PX), h=Math.round(b[3]*PX), bx=Math.round(b[0]*PX), by=Math.round(b[1]*PX)+oy;
+  const ks=bldList().sort((p,q)=>p.b[1]+p.b[3]-(q.b[1]+q.b[3]));
+  for(const {k,b} of ks){ const w=Math.round(b[2]*PX), h=Math.round(b[3]*PX), bx=Math.round(b[0]*PX), by=Math.round(b[1]*PX)+oy;
     if(k==='bus'){ x.drawImage(cached('BUS',34,30,(bx2,cc)=>{ const P=(X,Y,Wd,H,c2)=>pr(bx2,X,Y,Wd,H,c2); P(2,8,2,20,'#5A6A78'); P(28,8,2,20,'#5A6A78'); P(0,4,32,5,'#3870D0'); P(0,4,32,1,'#78A8F0'); P(4,20,24,3,'#B08968'); P(13,0,6,5,'#F8F8F0'); P(14,1,4,3,'#3870D0'); outline(cc); }),bx,by-14); continue; }
     const enter=k in ENTER&&(k!=='work'||!!L.f.job)&&(k!=='elem'||(L.age>=7&&L.age<=12&&L.f.elem));
     const kd=kindOf(k); if(BSTYLE[kd]&&BSTYLE[kd].rt!=='ger'){ x.fillStyle='rgba(20,40,24,.20)'; x.fillRect(bx+5,by+h-4,w,6); x.fillRect(bx+w,by+h*.45|0,5,h*.55-2|0); x.fillStyle='rgba(20,40,24,.12)'; x.fillRect(bx+w+5,by+h*.55|0,2,h*.45-2|0); }
@@ -8195,7 +8242,11 @@ function kindOf(key){ const L=G.life, U=visU(L), C=L.C, rg=C.rg, code=C.code, T=
     case 'market': return 'market';
     case 'work': { const j=L.job, k=j?j.kind:'part'; return {office:'office',factory:'factory',farm:'barn',herd:'barn',shop:poor?'tin':'shop',school:poor||R2?'schoolS':'school',hosp:poor||R2?'clinic':'hospital',dream:'studio',fish:'port',mine:'mine',tour:'kiosk',part:U&&!poor?(T===2&&C.gni<2?'tin':'office'):T>=3?'barn':'tin'}[k]||'shop'; }
     case 'cafe': return poor||R2?'kiosk':'cafe'; case 'hosp': return poor||R2?'clinic':'hospital'; case 'hall': return rg==='ME'||rg==='CA'?'dome':'hall'; case 'station': return 'station';
-    case 'far': return U?(poor?(mud?'adobe':'tinS'):C.home[1]):'office'; }
+    case 'far': return U?(poor?(mud?'adobe':'tinS'):C.home[1]):'office';
+    case 'lib': return poor?'hall':'studio'; case 'rest': return poor||R2?'kiosk':'cafe'; case 'gym': return U&&!poor?'factory':'barn'; case 'bank': return U&&!poor?'office':'hall'; case 'post': return poor||R2?'kiosk':'hall'; }
+  if(String(key).startsWith('deco')){ const i=+key.slice(4), d=OUT.deco[i], z=d&&d[4], hm=kindOf('home');
+    if(z==='A') return poor||!U?hm:['apt','house','flat'][i%3]===hm?hm:(i%2?hm:(T>=3?'house':'flat'));
+    if(z==='B') return U&&!poor?(T>=3?(i%2?'apt':'flat'):'flat'):hm; if(z==='C') return U&&!poor?(i%2?'office':'apt'):hm; return kindOf('far')==='office'?hm:kindOf('far'); }
   return 'house'; }
 // 살림이 어려운 집 안: 소파·텔레비전 대신 돗자리·라디오, 부엌은 숯불 화덕
 function poorHome(L){ return L.C.tier<=1||(L.C.tier===2&&L.famI===2&&L.set==='R'); }
@@ -8215,7 +8266,7 @@ function roomLayer(map){ const L=G.life, kind=intKind(map), ph=map==='home'&&poo
   const wall={home:['#F0E4C8','#D8C8A0'],school:['#E8EEDC','#C8D4B8'],office:['#DCE4EC','#B8C4D0'],factory:['#C8CCD0','#A8ACB0'],farm:['#C8A070','#A88050'],herd:['#C8A070','#A88050'],shop:['#F8ECD8','#E0CCB0'],hosp:['#F4F8FC','#D8E4EC'],mine:['#7A6A58','#5A4A38'],fish:['#C8D8E0','#A8B8C8'],tour:['#F8ECD8','#E0CCB0'],dream:['#EDE0F0','#D0C0D8']}[kind]||['#F0E4C8','#D8C8A0'];
   pr(x,0,oy-LAYER_TOP+4,IW*PX,PX*1.3+LAYER_TOP-4,wall[0]); pr(x,0,oy+PX*1.15,IW*PX,3,wall[1]); for(let i=0;i<3;i++){ const wx=(1.4+i*4.4)*PX; pr(x,wx,oy-6,22,14,'#5A6878'); pr(x,wx+2,oy-4,18,10,'#9ED0F0'); pr(x,wx+2,oy-4,8,2,'#E0F4FF'); pr(x,wx+10,oy-3,1,10,'#5A6878'); pr(x,wx-2,oy-8,4,17,'#E8B8B0'); pr(x,wx+20,oy-8,4,17,'#E8B8B0'); pr(x,wx-2,oy-8,24,2,'#C89088'); pr(x,wx-1,oy+9,22,2,'#F0E8D8'); }
   pr(x,0,oy-LAYER_TOP+4,IW*PX,2,'#283038'); pr(x,IDOOR[0]*PX-12,oy+IH*PX-8,24,8,'#B08968'); pr(x,IDOOR[0]*PX-10,oy+IH*PX-6,20,2,'#D8B080');
-  const fl=map==='home'?HOME.f:INT.f;
+  const fl=furnOf(map);
   pr(x,0,oy+PX*1.15+3,IW*PX,5,'rgba(40,30,20,.20)'); pr(x,0,oy+PX*1.15+8,IW*PX,3,'rgba(40,30,20,.09)');
   fl.forEach(f=>{ pr(x,Math.round(f[1]*PX)+2,Math.round(f[2]*PX)+oy+Math.round(f[4]*PX)-1,Math.round(f[3]*PX),3,'rgba(40,30,20,.20)'); });
   fl.forEach(f=>x.drawImage(furnSprite(ph&&FURN_POOR[f[0]]||f[0],Math.round(f[3]*PX),Math.round(f[4]*PX),kind),Math.round(f[1]*PX)-1,Math.round(f[2]*PX)+oy-1));
@@ -8234,9 +8285,9 @@ function gateSprite(){ return cached('GATE',12,32,(x,c)=>{ const P=(X,Y,Wd,H,cc)
 /* ---------- 한 장면 그리기 ---------- */
 function draw(t){
   lx.setTransform(LR,0,0,LR,0,0); lx.imageSmoothingEnabled=false;
-  const L=G.life, out=W.map==='out', sp=spOf(L), MW=(out?OUT.w:IW)*PX, MH=(out?OUT.h:IH)*PX, hud=HUDH/SC, bottom=74/SC;
+  const L=G.life, out=W.map==='out', sp=spOf(L), RV=out?viewRect():[0,0,IW,IH], vx0=RV[0]*PX, vy0=RV[1]*PX, MW=RV[2]*PX, MH=RV[3]*PX, hud=HUDH/SC, bottom=74/SC;
   let cx=W.x*PX-LW/2, cy=W.y*PX-(hud+(LH-hud-bottom)*.5);
-  cx=MW<LW?(MW-LW)/2:clamp(cx,0,MW-LW); cy=MH<LH-hud-bottom?(MH-LH)/2-(hud-bottom)/2:clamp(cy,-hud-6,MH-LH+bottom);
+  cx=MW<LW?vx0+(MW-LW)/2:clamp(cx,vx0,vx0+MW-LW); cy=MH<LH-hud-bottom?vy0+(MH-LH)/2-(hud-bottom)/2:clamp(cy,vy0-hud-6,vy0+MH-LH+bottom);
   { const dtc=Math.min(.05,Math.max(.001,t-(draw.lt||t))); draw.lt=t; const cm=draw.cam;
     if(!cm||cm.m!==W.map||Math.abs(cm.x-cx)>LW||Math.abs(cm.y-cy)>LH) draw.cam={m:W.map,x:cx,y:cy}; else { const k=1-Math.exp(-dtc*10); cm.x+=(cx-cm.x)*k; cm.y+=(cy-cm.y)*k; cx=cm.x; cy=cm.y; } }
   cx=Math.round(cx); cy=Math.round(cy);
@@ -8246,7 +8297,7 @@ function draw(t){
   if(out){ const T=terrain(); const x0=Math.max(0,Math.floor(cx/PX)), x1=Math.min(OUT.w,Math.ceil((cx+LW)/PX)), y0=Math.max(0,Math.floor(cy/PX)), y1=Math.min(OUT.h,Math.ceil((cy+LH)/PX));
     if(layer.wr){ lx.fillStyle='rgba(255,255,255,.38)'; for(let y=y0;y<y1;y++) for(let i=x0;i<x1;i++){ if(T[y][i]!=='w') continue; for(let q=0;q<2;q++){ const o=(t*(5+q*2)+i*5+y*3+q*7)%16; lx.fillRect(i*PX-cx+o*.8,y*PX-cy+((i*7+y*5+q*8)%13)+1.5,3.2,.55); } } }
     else for(let y=y0;y<y1;y++) for(let i=x0;i<x1;i++){ const tt=T[y][i]; if(tt==='w') lx.drawImage(groundTile('w',sp,(i*7+y*3)%4,fr%4),i*PX-cx,y*PX-cy); else if(tt==='f'&&fr%2) lx.drawImage(groundTile('f',sp,(i*7+y*3)%4,1),i*PX-cx,y*PX-cy); }
-    OUT.gates.forEach(gt=>{ if(L.age>=gt[1]) return; for(let y=0;y<OUT.h;y+=2){ const yy=Y(y); if(yy>-34&&yy<LH) lx.drawImage(gateSprite(),X(gt[0])-3,yy); } }); }
+  }
   // 움직이는 것들을 아래쪽부터 그린다
   const list=(NPCMAP[W.map]||[]).slice(), spr=[];
   for(const n of list){ if(n.kind==='v') spr.push({y:n.y,d:()=>{ dropShadow(lx,X(n.x),Y(n.y)+2,n.v==='car'?24:16); const s=vehicleSprite(n.v,n.vx>0?1:-1,n.col,n.v==='car'?null:n.look); drawSpr(lx,s,X(n.x)-sprW(s)/2,Y(n.y)-sprH(s)+4); }});
@@ -8255,8 +8306,10 @@ function draw(t){
   const a=L.age, st=stageAt(a), f=W.moving?[1,0,2,0][Math.floor(W.walk)%4]:0, lk=L.look;
   spr.push({y:W.y,me:1,d:()=>{ if(W.car){ dropShadow(lx,X(W.x),Y(W.y)+2,C_VEH()==='car'?24:16); const s=vehicleSprite(C_VEH(),W.dir===1?-1:1,'#C2577A',C_VEH()==='car'?null:{skin:lk.skin,hair:a>=62?'#D8DCE0':lk.hair,body:'#E2703A',pants:lk.pants,st:stageAt(a),long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:0}); drawSpr(lx,s,X(W.x)-sprW(s)/2,Y(W.y)-sprH(s)+4); }
     else { dropShadow(lx,X(W.x),Y(W.y)-1,st==='baby'?10:12); const bob=W.moving&&f===0?1:0; drawSpr(lx,personSprite({dir:W.dir,fr:f,st,skin:lk.skin,hair:a>=62?'#D8DCE0':a>=50?shade(lk.hair,1.6):lk.hair,body:'#E2703A',pants:lk.pants,long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:Math.floor(hash(lk.si*5+lk.hair.charCodeAt(3),9)*4),blink:Math.floor(t*10)%38===0}),X(W.x)-8,Y(W.y)-22-bob); } }});
-  if(out&&canDrive()&&!W.car) spr.push({y:10.9,d:()=>{ const s=vehicleSprite(C_VEH(),1,'#C2577A',null); drawSpr(lx,s,X(6.2)-sprW(s)/2,Y(10.9)-sprH(s)+4); }});
+  const pk=[OUT.b.home[0]+OUT.b.home[2]/2+2,OUT.RY-.15];
+  if(out&&canDrive()&&!W.car) spr.push({y:pk[1],d:()=>{ const s=vehicleSprite(C_VEH(),1,'#C2577A',null); drawSpr(lx,s,X(pk[0])-sprW(s)/2,Y(pk[1])-sprH(s)+4); }});
   spr.sort((p,q)=>p.y-q.y).forEach(s=>s.d());
+  if(out) drawFog(lx,X,Y);
   if(W.fx&&W.fx.length){ W.fx=W.fx.filter(p=>t-p.b<.45); W.fx.forEach(p=>{ const k=(t-p.b)/.45, px=X(p.x)+p.dx, py=Y(p.y)-1-Math.floor(k*4); lx.fillStyle=`rgba(244,238,220,${.75*(1-k)})`; const r=k<.4?2:1; lx.fillRect(px-r,py,r*2,r); lx.fillRect(px-r+1,py-1,r*2-2,1); }); }
   // 아플 때: 머리 위 땀방울, 화면도 조금 가라앉는다
   if(isSick()){ const hx=X(W.x)+4, hy=Y(W.y)-(st==='baby'?12:st==='tod'?14:st==='kid'?17:23)+Math.round(Math.sin(t*4)*1); lx.fillStyle='#283038'; lx.fillRect(hx-1,hy-1,4,6); lx.fillStyle='#9ACCF8'; lx.fillRect(hx,hy+1,2,4); lx.fillRect(hx+.5|0,hy,1,1); lx.fillStyle='#FFFFFF'; lx.fillRect(hx,hy+2,1,1);
@@ -8273,9 +8326,11 @@ function draw(t){
   g.setTransform(DPR,0,0,DPR,0,0); g.imageSmoothingEnabled=false; g.drawImage(lc,0,0,LW*SC,LH*SC);
   // 글자는 선명하게 (건물·사람 이름)
   const S=v=>v*SC;
-  if(out){ for(const k in OUT.b){ const b=OUT.b[k], lxp=S(X(b[0]+b[2]/2)), lyp=S(Y(b[1])-4); if(lxp<-60||lxp>VW+60||lyp<HUDH-20||lyp>VH) continue; label(k==='home'?'우리 집':L.spotName(k),lxp,lyp,11,'#F8F8F0','#283038'); }
-    [['play',4.5,15.2],['nature',4,20.2],['mount',53.7,1.4],['sea',59.7,9.6]].forEach(([k,xx,yy])=>{ const lxp=S(X(xx)), lyp=S(Y(yy)); if(lxp>-80&&lxp<VW+80&&lyp>HUDH-10&&lyp<VH) label(L.spotName(k),lxp,lyp,11,'#FFF6DC','#5A4030'); });
-    OUT.gates.forEach(gt=>{ if(L.age>=gt[1]) return; const lxp=S(X(gt[0]+.3)), lyp=S(Y(12)); if(lxp>-40&&lxp<VW+40) label(gt[1]+'살부터',lxp,lyp,10,'#283038','#F8F8F0','#F2C14E'); }); }
+  if(out){ for(const k in OUT.b){ const b=OUT.b[k], lxp=S(X(b[0]+b[2]/2)), lyp=S(Y(b[1])-4); if(lxp<-60||lxp>VW+60||lyp<HUDH-20||lyp>VH||!inReach(b[0]+b[2]/2,b[1]+b[3])) continue; label(k==='home'?'우리 집':L.spotName(k),lxp,lyp,11,'#F8F8F0','#283038'); }
+    patchLabels().forEach(([k,xx,yy])=>{ if(!inReach(xx,yy+1)) return; const lxp=S(X(xx)), lyp=S(Y(yy)); if(lxp>-80&&lxp<VW+80&&lyp>HUDH-10&&lyp<VH) label(L.spotName(k),lxp,lyp,11,'#FFF6DC','#5A4030'); });
+    { const r=reachOf(a), na=reachAge(a); if(na){ const msg=`${na}살이 되면 갈 수 있어요`;
+        if(r[2]<OUT.w){ const lxp=Math.min(VW-120,S(X(r[0]+r[2]+.9))+60), lyp=clamp(S(Y(W.y)),HUDH+20,VH-90); if(S(X(r[0]+r[2]))<VW-20) label(msg,lxp,lyp,11,'#283038','#F8F8F0','#F2C14E'); }
+        if(r[3]<OUT.h){ const lxp=clamp(S(X(W.x)),140,VW-140), lyp=Math.min(VH-110,S(Y(r[1]+r[3]+.9))+16); if(S(Y(r[1]+r[3]))<VH-40) label(na===10?'큰길 아래쪽 동네 · '+msg:msg,lxp,lyp,11,'#283038','#F8F8F0','#F2C14E'); } } } }
   for(const n of list){ if(n.kind!=='p'||!n.key||n.static) continue; const pd=Math.hypot(n.x-W.x,n.y-W.y), isT=tg.some(k=>k.key===n.key&&k.m===W.map); if(pd>3.2&&!isT) continue;
     const nm=n.label||(W.map==='home'?L.spotName(n.key):n.key==='p0'?intNames(W.map)[0]:n.key==='p2'?intNames(W.map)[2]:null); if(nm) label(nm,S(X(n.x)),S(Y(n.y)-(n.st==='kid'?21:n.st==='tod'?17:n.st==='baby'?14:27)),10,'#F8F8F0','#283038'); }
   if(!out){ const nm=W.map==='home'?'현관 · 밖으로':L.spotName(W.map)+' · 밖으로'; label(W.map==='home'&&a<6?'현관 (아직 못 나가요)':nm,S(X(IDOOR[0])),S(Y(9.1)),10,'#283038','#F8F8F0'); }
@@ -8292,25 +8347,29 @@ function draw(t){
 function miniBase(){ const L=G.life, key=worldKey()+'|'+L.age; if(miniBase.k===key) return miniBase.c; const T=terrain(), c=miniBase.c||mk(OUT.w*4,OUT.h*4), x=c.getContext('2d');
   for(let y=0;y<OUT.h;y++) for(let i=0;i<OUT.w;i++){ x.fillStyle=TCOL[T[y][i]]||TCOL.g; x.fillRect(i*4,y*4,4,4); }
   x.fillStyle='#3A6A30'; OUT.trees.forEach(tr=>x.fillRect(Math.round(tr[0]*4)-1,Math.round(tr[1]*4)-1,3,3));
+  OUT.deco.forEach(b=>{ x.fillStyle='#B49A82'; x.fillRect(Math.round(b[0]*4),Math.round(b[1]*4),Math.round(b[2]*4),Math.round(b[3]*4)); });
   for(const k in OUT.b){ const b=OUT.b[k]; x.fillStyle=k==='home'?'#E2703A':'#A04838'; x.fillRect(Math.round(b[0]*4),Math.round(b[1]*4),Math.round(b[2]*4),Math.round(b[3]*4)); x.fillStyle='#283038'; x.fillRect(Math.round(b[0]*4),Math.round((b[1]+b[3])*4)-1,Math.round(b[2]*4),1); }
-  x.fillStyle='rgba(40,48,56,.55)'; if(L.age<13) x.fillRect(16*4,0,(OUT.w-16)*4,OUT.h*4); else if(L.age<19) x.fillRect(31*4,0,(OUT.w-31)*4,OUT.h*4);
+  { const r=reachOf(L.age); x.fillStyle='rgba(28,40,52,.9)'; if(r[2]<OUT.w) x.fillRect(r[2]*4,0,(OUT.w-r[2])*4,OUT.h*4); if(r[3]<OUT.h) x.fillRect(0,r[3]*4,r[2]*4,(OUT.h-r[3])*4); }
   miniBase.k=key; miniBase.c=c; return c; }
 function drawMini(t){ const c=$('mini'), x=c.getContext('2d'), L=G.life; x.imageSmoothingEnabled=false; x.fillStyle='#283038'; x.fillRect(0,0,c.width,c.height);
   const blink=Math.floor(t*3)%2===0, tg=targets();
-  if(W.map==='out'){ x.drawImage(miniBase(),0,0); $('miniTag').textContent='동네 지도';
-    tg.forEach(k=>{ const p=k.m==='out'?k.p:doorOf(k.m==='home'?'home':k.m); x.fillStyle='#283038'; x.fillRect(Math.round(p[0]*4)-3,Math.round(p[1]*4)-3,7,7); x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(Math.round(p[0]*4)-2,Math.round(p[1]*4)-2,5,5); });
-    x.fillStyle=blink?'#FFFFFF':'#283038'; x.fillRect(Math.round(W.x*4)-3,Math.round(W.y*4)-3,6,6); x.fillStyle='#E2703A'; x.fillRect(Math.round(W.x*4)-1,Math.round(W.y*4)-1,2,2); }
+  if(W.map==='out'){ const v=viewRect(), k=Math.min(c.width/v[2],c.height/v[3]), ox=(c.width-v[2]*k)/2, oy=(c.height-v[3]*k)/2, P=(px,py)=>[Math.round(ox+(px-v[0])*k),Math.round(oy+(py-v[1])*k)], q=Math.max(4,Math.round(k*1.2));
+    x.drawImage(miniBase(),v[0]*4,v[1]*4,v[2]*4,v[3]*4,ox,oy,v[2]*k,v[3]*k); $('miniTag').textContent='동네 지도';
+    tg.forEach(t=>{ const p=P(...(t.m==='out'?t.p:doorOf(t.m==='home'?'home':t.m))); x.fillStyle='#283038'; x.fillRect(p[0]-q,p[1]-q,q*2+1,q*2+1); x.fillStyle=t.type==='q'?'#5890F0':'#F08A50'; x.fillRect(p[0]-q+1,p[1]-q+1,q*2-1,q*2-1); });
+    const me=P(W.x,W.y); x.fillStyle=blink?'#FFFFFF':'#283038'; x.fillRect(me[0]-q,me[1]-q,q*2,q*2); x.fillStyle='#E2703A'; x.fillRect(me[0]-Math.floor(q/2),me[1]-Math.floor(q/2),q,q); }
   else { const s=7, ox=Math.round((c.width-IW*s)/2), oy=Math.round((c.height-IH*s)/2); x.fillStyle='#D8C8A8'; x.fillRect(ox,oy,IW*s,IH*s); x.fillStyle='#8A643C';
-    (W.map==='home'?HOME.f:INT.f).forEach(f=>x.fillRect(ox+Math.round(f[1]*s),oy+Math.round(f[2]*s),Math.max(2,Math.round(f[3]*s)),Math.max(2,Math.round(f[4]*s)))); x.fillStyle='#E2703A'; x.fillRect(ox+IDOOR[0]*s-6,oy+IH*s-3,12,3);
+    furnOf(W.map).forEach(f=>x.fillRect(ox+Math.round(f[1]*s),oy+Math.round(f[2]*s),Math.max(2,Math.round(f[3]*s)),Math.max(2,Math.round(f[4]*s)))); x.fillStyle='#E2703A'; x.fillRect(ox+IDOOR[0]*s-6,oy+IH*s-3,12,3);
     (NPCMAP[W.map]||[]).forEach(n=>{ if(n.kind!=='p') return; x.fillStyle='#5A6878'; x.fillRect(ox+Math.round(n.x*s)-2,oy+Math.round(n.y*s)-2,4,4); });
     tg.forEach(k=>{ if(k.m!==W.map) return; x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(ox+Math.round(k.p[0]*s)-3,oy+Math.round(k.p[1]*s)-3,6,6); });
     x.fillStyle=blink?'#FFFFFF':'#283038'; x.fillRect(ox+Math.round(W.x*s)-3,oy+Math.round(W.y*s)-3,6,6);
     $('miniTag').textContent=W.map==='home'?'집 안':W.map==='work'?L.spotName('work')+' 안':L.spotName(W.map)+' 안'; } }
-function drawBigMap(c){ const x=c.getContext('2d'), L=G.life, s=16; x.imageSmoothingEnabled=false; x.drawImage(miniBase(),0,0,OUT.w*s,OUT.h*s);
-  x.font=`26px ${LABEL_FONT}`; x.textAlign='center'; x.textBaseline='middle';
-  const tag=(t,px,py,bg)=>{ const w=x.measureText(t).width+12; x.fillStyle='#283038'; x.fillRect(px-w/2-3,py-19,w+6,38); x.fillStyle=bg||'#F8F8F0'; x.fillRect(px-w/2,py-16,w,32); x.fillStyle='#283038'; x.fillText(t,px,py+1); };
-  for(const k in OUT.b){ const b=OUT.b[k]; tag(k==='home'?'우리 집':L.spotName(k),(b[0]+b[2]/2)*s,(b[1]+b[3]/2)*s); }
-  [['play',4.5,17],['nature',4,22.5],['mount',53.7,5],['sea',59.7,4]].forEach(([k,xx,yy])=>tag(L.spotName(k),xx*s,yy*s,'#FFF6DC'));
+const patchLabels=()=>{ const p=OUT.patch; return [['play',p.play[0]+p.play[2]/2,p.play[1]+.2],['nature',p.nature[0]+p.nature[2]/2,p.nature[1]+.2],['mount',p.mount[0]+p.mount[2]/2,p.mount[1]-.6],['sea',p.sea[0]+p.sea[2]/2,p.sea[1]+p.sea[3]-1]]; };
+function drawBigMap(c){ const x=c.getContext('2d'), L=G.life, s=c.width/OUT.w; x.imageSmoothingEnabled=false; x.drawImage(miniBase(),0,0,OUT.w*s,OUT.h*s);
+  x.font=`17px ${LABEL_FONT}`; x.textAlign='center'; x.textBaseline='middle';
+  const tag=(t,px,py,bg)=>{ const w=x.measureText(t).width+10; x.fillStyle='#283038'; x.fillRect(px-w/2-2,py-13,w+4,26); x.fillStyle=bg||'#F8F8F0'; x.fillRect(px-w/2,py-11,w,22); x.fillStyle='#283038'; x.fillText(t,px,py+1); };
+  for(const k in OUT.b){ const b=OUT.b[k]; if(k==='bus'||!inReach(b[0]+b[2]/2,b[1]+b[3])) continue; tag(k==='home'?'우리 집':L.spotName(k),(b[0]+b[2]/2)*s,(b[1]+b[3]/2)*s); }
+  patchLabels().forEach(([k,xx,yy])=>{ if(inReach(xx,yy+1)) tag(L.spotName(k),xx*s,(yy+1.5)*s,'#FFF6DC'); });
+  { const r=reachOf(L.age), na=reachAge(L.age); if(na){ x.fillStyle='#F8F8F0'; x.font=`20px ${LABEL_FONT}`; if(r[2]<OUT.w) x.fillText(`${na}살이 되면 갈 수 있어요`,(r[2]+OUT.w)/2*s,OUT.h/2*s); if(r[3]<OUT.h) x.fillText(na===10?'열 살이 되면 갈 수 있어요':'',r[2]/2*s,(r[3]+OUT.h)/2*s); } }
   targets().forEach(k=>{ const p=k.m==='out'?k.p:doorOf(k.m==='home'?'home':k.m); x.fillStyle='#283038'; x.fillRect(p[0]*s-13,p[1]*s-13,26,26); x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(p[0]*s-10,p[1]*s-10,20,20); });
   const p=W.map==='out'?[W.x,W.y]:doorOf(W.map==='home'?'home':W.map); x.fillStyle='#283038'; x.fillRect(p[0]*s-15,p[1]*s-15,30,30); x.fillStyle='#FFFFFF'; x.fillRect(p[0]*s-12,p[1]*s-12,24,24); x.fillStyle='#E2703A'; x.fillRect(p[0]*s-6,p[1]*s-6,12,12); }
 /* 실제 사진 목록 — 위키백과 문서의 대표 사진(위키미디어 공용, 자유 이용). [파일 이름, 저장 위치(!는 원본 크기), 찍은 사람, 라이선스] */
@@ -8812,6 +8871,8 @@ function finishLife(){
     const life=[`${pkA}살 무렵, ${esc(L.town||L.C.city)}에서`, jb?`${esc(jb.n)}${josa(jb.n,'으로','로').slice(jb.n.length)} 일하며`:'', L.f.family||L.f.widow?(kidsN?`가족과 아이 ${kidsN}명 곁에서`:'가족 곁에서'):''].filter(Boolean).join(' ');
     slides.push(SL('가장 넓었던 때의 모습',`<p class="big">${life} 살았습니다.</p><article class="ncard"><div class="nimg"><canvas data-k="pk" width="480" height="360"></canvas><span class="nage">${pkA}살 · ${by+pkA}년</span></div><div class="nbody"><p>${esc(memT(pkM))}</p><small class="cr"></small></div></article><p class="soft">이때 오각형이 가장 넓었습니다. ${AXES.map(k=>`${AX_N[k]} ${pk[k]}`).join(' · ')}</p><p class="note">사진은 위키백과·위키미디어 공용에 자유 이용으로 공개된 실제 사진입니다(아래에 찍은 사람과 라이선스). 꼭 맞는 사진이 없으면 그림으로 대신합니다.</p>`)); }
   slides.push(SL('나에게로',s5)); slides.push(SL('이제 당신에게로',strip(s6)));
+  // 마지막 장 앞: 가장 기억에 남는 순간 3가지 · 대표 장면 · 한 마디 요약을 고른다 (개인 기록에도 남는다)
+  const PKC=pickCands(L), PK={sel:[],fav:null}; slides.push(SL('나의 기록 고르기',pickSlideHTML(L,PKC,scKind)));
   // 마지막: 다른 사람의 말을 빌려, 이 삶을 단 한 문장으로
   const oneLine=(()=>{ const v=pk||L.s, top=AXES.slice().sort((a,b)=>(v[b]||0)-(v[a]||0))[0], vs=(typeof voicesOf==='function'?voicesOf(L):[])||[], who=vs.length?vs[0][0]:'오랜 이웃', jb=(L.jobs||[]).slice(-1)[0], given=L.given||L.name;
     const SAY={j:'작은 일에도 먼저 웃을 줄 알던 사람',k:'궁금한 것을 끝까지 그냥 넘기지 않던 사람',t:'무엇이든 손에 익을 때까지 놓지 않던 사람',e:'낯선 길로 겁내지 않고 먼저 걸어가던 사람',r:'자기보다 곁의 사람을 먼저 챙기던 사람'};
@@ -8830,28 +8891,28 @@ function finishLife(){
     $('endIn').innerHTML=`<div class="slideshow"><div class="sprog" aria-hidden="true"><i style="width:${((i+1)/slides.length*100).toFixed(1)}%"></i></div><div class="shead"><span class="kick">${esc(sl.k)}${sl.t?` · ${sl.t}`:''}</span><span class="snum">${i+1} / ${slides.length}</span></div><div class="step slide">${sl.b}</div><div class="snav">${i>0?'<button class="btn" id="btnPrev">← 이전</button>':'<span></span>'}${i<slides.length-1?'<button class="btn primary" id="btnStep">다음 →</button>':''}</div></div>`;
     $('s-end').scrollTo(0,0); endWide();
     $('endIn').querySelectorAll('input,textarea').forEach(e=>{ if(keep[e.id]!=null){ if(e.type==='checkbox') e.checked=!!keep[e.id]; else e.value=keep[e.id]; } });
-    animEnd();
+    animEnd(); if($('pkBox')) pickWire($('pkBox'),PK);
     $('endIn').querySelectorAll('canvas[data-k]').forEach(c=>{ const p=pre[c.dataset.k]; if(!p) return; const paint=()=>{ c.width=p.c.width; c.height=p.c.height; c.getContext('2d').drawImage(p.c,0,0); }; paint();
       p.pr.then(src=>{ if(!c.isConnected) return; paint(); const cr=c.closest('.ncard').querySelector('.cr'); if(cr) cr.innerHTML=photoCredit(src); }); });
     if($('btnPrev')) $('btnPrev').onclick=()=>go(-1);
     if(i<slides.length-1) $('btnStep').onclick=()=>go(1);
-    else{ const val=id=>String(($(id)?$(id).value:keep[id])||'').trim(), opts=()=>({title:val('ltitle').slice(0,30),epi:val('epi').slice(0,40)});
+    else{ const val=id=>String(($(id)?$(id).value:keep[id])||'').trim(), PO=pickOut(PK,PKC,scKind,val('lsum')), opts=()=>({title:val('ltitle').slice(0,30),epi:val('epi').slice(0,40),sum:PO.sum}), cardM=PO.mems.length?PO.mems:three;
       { const ans0=RQ.map((q,k)=>val('rq'+k).slice(0,100)).filter(Boolean), nts0=notes.map(n=>[n.a,String(n.t).slice(0,120)]);   // 인생 기록: 카드 + 내 정보처럼 위쪽 메뉴로 넘겨 보기
-        $('recBox').innerHTML=lifeTabs(Object.assign(lifeRecord(L,{...opts(),top,kids:kidN.length,ans:ans0,notes:nts0}),{name:L.name}),{card:'<canvas id="card" width="720" height="1180"></canvas>'}); }
-      drawCard(three,opts()).catch(()=>{});
-      $('btnSave').onclick=async()=>{ try{ await drawCard(three,opts()); }catch(e){} $('card').toBlob(b=>{ const l=document.createElement('a'); l.href=URL.createObjectURL(b); l.download='인생기록_'+L.name+'.png'; document.body.appendChild(l); l.click(); l.remove(); }); };
+        $('recBox').innerHTML=lifeTabs(Object.assign(lifeRecord(L,{...opts(),top,kids:kidN.length,ans:ans0,notes:nts0,top3:PO.top3,fav:PO.fav}),{name:L.name}),{card:'<canvas id="card" width="720" height="1180"></canvas>'}); }
+      drawCard(cardM,opts()).catch(()=>{});
+      $('btnSave').onclick=async()=>{ try{ await drawCard(cardM,opts()); }catch(e){} $('card').toBlob(b=>{ const l=document.createElement('a'); l.href=URL.createObjectURL(b); l.download='인생기록_'+L.name+'.png'; document.body.appendChild(l); l.click(); l.remove(); }); };
       if($('btnAgainC')) $('btnAgainC').onclick=()=>{ G.afterEnd=()=>birth({c:longC.c,set:longC.set,sex:longC.sex}); $('btnDone').click(); };
       if($('btnBrowseE')) $('btnBrowseE').onclick=()=>{ G.afterEnd=()=>openBrowse(); $('btnDone').click(); };
       if($('btnAgain')) $('btnAgain').onclick=()=>{ G.afterEnd=()=>birth(); $('btnDone').click(); };
       $('btnDone').onclick=()=>{ G.endNav=null; if(G.dev){ G.dev=false; G.teacher=false; G.life=null; if(Store.sess&&G.data) openHub(); else show('login'); openDev(); return; }   // 개발자 모드: 저장하지 않고 개발자 메뉴로
         const {title,epi}=opts(), ans=RQ.map((q,k)=>val('rq'+k).slice(0,100)).filter(Boolean), nts=notes.map(n=>[n.a,String(n.t).slice(0,120)]);
         if(G.teacher){ const d=TStore.data||(TStore.data=TStore.fresh(null)); if(G.tid){ delete d.saves[G.tid]; TStore.dirty.add(G.tid); }
-          d.lives=d.lives.concat(lifeRecord(L,{title,epi,top,kids:kidN.length,ans,notes:nts})).slice(-60); TStore.save(true,'lives');
+          d.lives=d.lives.concat(lifeRecord(L,{title,epi,top,kids:kidN.length,ans,notes:nts,sum:PO.sum,top3:PO.top3,fav:PO.fav})).slice(-60); TStore.save(true,'lives');
           G.teacher=false; G.life=null; G.tid=null; if(G.afterEnd){ const f=G.afterEnd; G.afterEnd=null; G.teacher=true; G.tid=tNewId(); f(); return; } openTeacherBody(); return; }
         const tNow=Date.now(), share=!!(($('shareOK')&&$('shareOK').checked)||keep.shareOK), comps=(L.comps||[]).map(p=>({n:p.n,cn:p.cn,sex:p.sex,ls:p.ls,cause:p.cause,fam:p.fam,town:p.town,set:p.set,jobs:(p.jobs||[]).map(j=>j[1]).slice(-2),kids:(p.kb||[]).length,mar:p.marA?1:0}));
-        G.data.lives=(G.data.lives||[]).concat(Object.assign(lifeRecord(L,{title,epi,top,kids:kidN.length,ans,notes:nts}),{comps,room:G.data.room||null,t:tNow})).slice(-20); G.data.save=null; G.life=null;
+        G.data.lives=(G.data.lives||[]).concat(Object.assign(lifeRecord(L,{title,epi,top,kids:kidN.length,ans,notes:nts,sum:PO.sum,top3:PO.top3,fav:PO.fav}),{comps,room:G.data.room||null,t:tNow})).slice(-20); G.data.save=null; G.life=null;
         if(G.data.room){ (G.data.roomDone||(G.data.roomDone={}))[G.data.room]=tNow; } Store.save(G.data,true);
-        if(G.data.room&&Store.sess){ const rec={name:L.name,age:a,n:L.n,c:L.c,cause:causeOf(L).n,title,epi,ans,share:share?1:0,t:tNow}; Store.memberPatch(G.data.room,Object.assign({id:Store.sess.id,name:L.name,age:a,n:L.n,dead:1,c:L.c,t:tNow,title:null,epi:null,ans:null,cause:null},{['past/'+tNow]:rec})); } if(G.afterEnd){ const f=G.afterEnd; G.afterEnd=null; f(); } else openHub(); }; } };
+        if(G.data.room&&Store.sess){ const rec={name:L.name,age:a,n:L.n,c:L.c,cause:causeOf(L).n,title,epi,ans,sum:PO.sum||'',share:share?1:0,t:tNow}; Store.memberPatch(G.data.room,Object.assign({id:Store.sess.id,name:L.name,age:a,n:L.n,dead:1,c:L.c,t:tNow,title:null,epi:null,ans:null,cause:null},{['past/'+tNow]:rec})); } if(G.afterEnd){ const f=G.afterEnd; G.afterEnd=null; f(); } else openHub(); }; } };
   G.endNav=go;
   const ei=$('endIn'); let tx0=null, ty0=0; ei.ontouchstart=e=>{ const t=e.touches[0]; tx0=t.clientX; ty0=t.clientY; };
   ei.ontouchend=e=>{ if(tx0==null) return; const t=e.changedTouches[0], dx=t.clientX-tx0, dy=t.clientY-ty0; tx0=null; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5&&!/INPUT|TEXTAREA|CANVAS/.test(e.target.tagName)) go(dx<0?1:-1); };
@@ -8952,7 +9013,7 @@ function lifeRecord(L,o){ const a=L.lifespan, cz=causeOf(L), by=L.by||2026; let 
   const avgJ=H.length?Math.round(H.reduce((x,h)=>x+(h.j||0),0)/H.length):null;
   return {name:L.name,c:L.c,set:L.set,famI:L.famI,age:a,by,top:o.top,n:L.n,town:L.town,nw:Math.round(L.nw||0),kids:o.kids,title:o.title,epi:o.epi,cause:cz.n,sex:L.sex,
     peak:pk?[pk.a,pk.j,pk.k,pk.t,pk.e,pk.r,pk.h]:null,hist:hs,avgJ,earned:Math.round(L.earned||0),maxNW:Math.round(L.maxNW||0),le:L.C.le,
-    rows:rows.slice(0,24).map(r=>[r[0].slice(0,30),r[1].slice(0,200)]),mem:pick.map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,140)]),ans:o.ans||[],notes:o.notes||[],t:Date.now()}; }
+    rows:rows.slice(0,24).map(r=>[r[0].slice(0,30),r[1].slice(0,200)]),mem:pick.map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,140)]),ans:o.ans||[],notes:o.notes||[],sum:o.sum||'',top3:o.top3&&o.top3.length?o.top3:null,fav:o.fav!=null?o.fav:null,t:Date.now()}; }
 
 // 마친 삶 하나를 자세히: 숫자 요약 · 오각형 · 나이에 따른 흐름 · 이야기 표 · 기억에 남은 일 · 남긴 말 (교사용 기록과 내 기록에서 함께 쓴다)
 function lifeDetailHTML(l){
@@ -9238,6 +9299,7 @@ $('btnMem').onclick=()=>openMem('all');
 /* ========== 그림 자원 (제미나이로 그린 건물·나무·탈것·바닥·장면) ========== */
 // 그림이 다 오기 전이나 못 받으면 예전 도트 그림으로 그린다
 const WR=3;   // 바깥·방 바닥 그림의 해상도 배율
+const WRO=2.5;   // 넓어진 바깥 지도는 조금 낮춰 (휴대폰 캔버스 크기 한도)
 const ART_MAP={"spr": {"office": [0, 0, 250, 270], "apt": [252, 0, 227, 261], "lm_ct": [481, 0, 192, 258], "flat": [675, 0, 270, 230], "house": [947, 0, 270, 229], "lm_tp": [1219, 0, 267, 222], "shop": [1488, 0, 268, 211], "school": [1758, 0, 270, 205], "thatch": [0, 272, 270, 205], "cafe": [272, 272, 270, 200], "hospital": [544, 272, 270, 200], "hall": [816, 272, 270, 200], "ger": [1088, 272, 270, 199], "stilt": [1360, 272, 270, 199], "kiosk": [1632, 272, 270, 193], "schoolS": [0, 479, 270, 193], "barn": [272, 479, 270, 192], "busstop": [544, 479, 270, 188], "dome": [816, 479, 270, 183], "mine": [1088, 479, 270, 179], "clinic": [1360, 479, 270, 177], "play": [1632, 479, 270, 175], "factory": [0, 674, 270, 174], "studio": [272, 674, 270, 171], "desk": [544, 674, 156, 170], "shelf": [702, 674, 133, 170], "tin": [837, 674, 270, 169], "house_eu": [1109, 674, 270, 169], "lm_mt": [1381, 674, 300, 168], "tinS": [1683, 674, 270, 164], "piano": [0, 850, 170, 162], "market": [172, 850, 270, 160], "hanok": [444, 850, 270, 158], "port": [716, 850, 270, 153], "w_easel": [988, 850, 81, 150], "radio": [1071, 850, 88, 145], "tv": [1161, 850, 154, 143], "hearth": [1317, 850, 155, 142], "adobe": [1474, 850, 270, 140], "palm": [1746, 850, 117, 140], "w_desk": [1865, 850, 150, 137], "lm_ds": [0, 1014, 300, 136], "horse": [302, 1014, 150, 133], "tree": [454, 1014, 116, 130], "tree_sp": [572, 1014, 122, 130], "tree_au": [696, 1014, 121, 130], "tree_wi": [819, 1014, 115, 130], "pine": [936, 1014, 104, 130], "pine_sn": [1042, 1014, 105, 130], "board": [1149, 1014, 170, 129], "w_cart": [1321, 1014, 150, 129], "w_goods": [1473, 1014, 150, 127], "w_white": [1625, 1014, 150, 121], "cactus": [1777, 1014, 75, 120], "w_rack": [1854, 1014, 150, 120], "bed": [0, 1152, 170, 119], "w_machine": [172, 1152, 150, 118], "table": [324, 1152, 170, 117], "station": [496, 1152, 270, 110], "lamp": [768, 1152, 35, 110], "pole": [805, 1152, 54, 110], "w_hay": [861, 1152, 150, 110], "w_bed": [1013, 1152, 150, 106], "counter": [1165, 1152, 170, 105], "w_fish": [1337, 1152, 150, 104], "sofa": [1489, 1152, 170, 101], "moto": [1661, 1152, 130, 98], "bus": [1793, 1152, 200, 97], "w_fence": [0, 1273, 150, 90], "truck": [152, 1273, 170, 89], "bush": [324, 1273, 110, 87], "w_belt": [436, 1273, 150, 85], "car": [588, 1273, 150, 81], "cycle": [740, 1273, 130, 80], "cat": [872, 1273, 79, 80], "mat": [953, 1273, 170, 76], "dog": [1125, 1273, 80, 66], "chick": [1207, 1273, 50, 56]}, "tex": ["g", "f", "p", "w", "r", "k", "s", "c", "d", "wood", "tile", "earth", "tatami", "carpet", "lino", "concrete", "rock"]};
 const ART={ok:false,spr:null,tex:null,M:ART_MAP,T:{},P:{}};
 function artLoad(src){ return new Promise((res,rej)=>{ const im=new Image(); im.decoding='async'; im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
@@ -9271,8 +9333,8 @@ function softShadow(x,cx,cy,rx,ry,a){ x.fillStyle=`rgba(20,40,24,${a||.22})`; x.
 const _worldLayer=worldLayer;
 worldLayer=function(){ if(!ART.ok) return _worldLayer(); const L=G.life, key=worldKey(); if(worldLayer.k===key) return worldLayer.c;
   const T=terrain(), sp=spOf(L), U=visU(L), W0=OUT.w*PX, H0=OUT.h*PX+LAYER_TOP;
-  const c=worldLayer.c&&worldLayer.c.wr===WR&&worldLayer.c.width===W0*WR?worldLayer.c:mk(W0*WR,H0*WR), x=c.getContext('2d'); c.wr=WR;
-  x.setTransform(1,0,0,1,0,0); x.clearRect(0,0,c.width,c.height); x.setTransform(WR,0,0,WR,0,0); x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high';
+  const c=worldLayer.c&&worldLayer.c.wr===WRO&&worldLayer.c.width===Math.round(W0*WRO)?worldLayer.c:mk(Math.round(W0*WRO),Math.round(H0*WRO)), x=c.getContext('2d'); c.wr=WRO;
+  x.setTransform(1,0,0,1,0,0); x.clearRect(0,0,c.width,c.height); x.setTransform(WRO,0,0,WRO,0,0); x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high';
   const oy=LAYER_TOP;
   // 맨 위 여백도 풀밭으로
   x.fillStyle=groundFill(x,'g',sp); x.fillRect(0,0,W0,oy);
@@ -9286,18 +9348,18 @@ worldLayer=function(){ if(!ART.ok) return _worldLayer(); const L=G.life, key=wor
     if(t==='r'){ const kk=nb(0,-1)==='k'||nb(0,-1)==='p', kb=nb(0,1)==='k'||nb(0,1)==='p'; if(kk){ x.fillStyle='#E4E4DC'; x.fillRect(px,py,PX,1.6); } if(kb){ x.fillStyle='#4A525A'; x.fillRect(px,py+PX-1.4,PX,1.4); } }
     if(t==='w'){ if(nb(0,-1)!=='w'&&nb(0,-1)!=='x'){ x.fillStyle='rgba(255,255,255,.55)'; x.fillRect(px,py,PX,1.4); } } }
   const poleKind=(U&&L.C.tier>1&&!(L.C.tier===2&&L.C.gni<2))||L.C.tier>=3?'lamp':'pole';
-  for(let y=1;y<OUT.h-1;y++) for(let i=1;i<OUT.w-1&&i<46;i++){ if(T[y][i]!=='k'&&T[y][i]!=='p') continue; const nr=['r','d'].some(q=>T[y+1][i]===q||T[y-1][i]===q); if(!nr||(i*5+y*3)%13!==0) continue;
+  for(let y=1;y<OUT.h-1;y++) for(let i=1;i<OUT.w-1&&i<OUT.hw[0];i++){ if(T[y][i]!=='k'&&T[y][i]!=='p') continue; const nr=['r','d'].some(q=>T[y+1][i]===q||T[y-1][i]===q); if(!nr||(i*5+y*3)%13!==0) continue;
     const px=i*PX+4, py=y*PX+oy+PX-1; softShadow(x,px+3,py,5,1.6,.18); artDraw(x,poleKind,px,py+1,14,poleKind==='lamp'?27:29); }
-  for(let i=0;i<OUT.w;i+=2){ if(i>=15&&i<=17||i>=30&&i<=32||(i>=46&&i<=50)) continue; if((U&&L.C.tier>1)||L.C.tier>=3||i>=50){ x.fillStyle='#F0F0E8'; x.fillRect(i*PX+4,12*PX+oy-1,8,1.6); } }
-  for(let y=0;y<OUT.h;y+=2){ x.fillStyle='#F2C14E'; x.fillRect(48*PX-1,y*PX+oy+4,1.6,8); }
+  for(let i=0;i<OUT.w;i+=2){ if(roadGap(i)) continue; if((U&&L.C.tier>1)||L.C.tier>=3||i>=OUT.hw[0]+4){ x.fillStyle='#F0F0E8'; x.fillRect(i*PX+4,(OUT.RY+1)*PX+oy-1,8,1.6); } }
+  for(let y=0;y<OUT.h;y+=2){ x.fillStyle='#F2C14E'; x.fillRect((OUT.hw[0]+OUT.hw[2]/2)*PX-1,y*PX+oy+4,1.6,8); }
   // 먼 곳의 명소
   const lt=L.C.lt, mp=OUT.patch.mount, LMA={mt:'lm_mt',wt:'lm_mt',cs:'lm_mt',tp:'lm_tp',ct:'lm_ct',ds:'lm_ds'};
   if(LMA[lt]&&artHas(LMA[lt])) artDraw(x,LMA[lt],mp[0]*PX+44,mp[1]*PX+oy+82,96,100);
   else if(lt==='mt'||lt==='wt'||lt==='cs'||lt==='ct'||lt==='tp'||lt==='ds'||lt==='fr'){ x.imageSmoothingEnabled=false; x.drawImage(landmarkSprite(lt==='wt'||lt==='cs'?'mt':lt,sp),mp[0]*PX,mp[1]*PX+oy-14); x.imageSmoothingEnabled=true; }
-  if(lt==='wt'){ x.imageSmoothingEnabled=false; x.drawImage(cached('FALL',40,60,(fx)=>{ const P=(X,Y,Wd,H,cc)=>pr(fx,X,Y,Wd,H,cc); P(0,0,40,60,'#8A8070'); P(12,0,16,60,'#9ACCF8'); for(let i=0;i<8;i++) P(14+(i%3)*4,i*8,2,6,'#FFFFFF'); P(0,0,40,3,'#6A6050'); }),58*PX,oy-8); x.imageSmoothingEnabled=true; }
+  if(lt==='wt'){ x.imageSmoothingEnabled=false; x.drawImage(cached('FALL',40,60,(fx)=>{ const P=(X,Y,Wd,H,cc)=>pr(fx,X,Y,Wd,H,cc); P(0,0,40,60,'#8A8070'); P(12,0,16,60,'#9ACCF8'); for(let i=0;i<8;i++) P(14+(i%3)*4,i*8,2,6,'#FFFFFF'); P(0,0,40,3,'#6A6050'); }),(OUT.patch.mount[0]+7)*PX,oy-8); x.imageSmoothingEnabled=true; }
   // 건물
-  const ks=Object.keys(OUT.b).sort((a,b)=>OUT.b[a][1]+OUT.b[a][3]-(OUT.b[b][1]+OUT.b[b][3]));
-  for(const k of ks){ const b=OUT.b[k], w=Math.round(b[2]*PX), h=Math.round(b[3]*PX), bx=Math.round(b[0]*PX), by=Math.round(b[1]*PX)+oy;
+  const ks=bldList().sort((p,q)=>p.b[1]+p.b[3]-(q.b[1]+q.b[3]));
+  for(const {k,b} of ks){ const w=Math.round(b[2]*PX), h=Math.round(b[3]*PX), bx=Math.round(b[0]*PX), by=Math.round(b[1]*PX)+oy;
     if(k==='bus'){ softShadow(x,bx+17,by+15,16,3); artDraw(x,'busstop',bx+16,by+16,36,30); continue; }
     const enter=k in ENTER&&(k!=='work'||!!L.f.job)&&(k!=='elem'||(L.age>=7&&L.age<=12&&L.f.elem));
     const kd=kindOf(k), an=bldArt(kd,L.C.pal[kd]);
@@ -9335,7 +9397,7 @@ roomLayer=function(map){ if(!ART.ok) return _roomLayer(map); const L=G.life, kin
     x.fillStyle='#E8B8B0'; x.fillRect(wx-3,oy-8,4,17); x.fillRect(wx+21,oy-8,4,17); x.fillStyle='#C89088'; x.fillRect(wx-3,oy-9,28,2); x.fillStyle='#F0E8D8'; x.fillRect(wx-2,oy+9,26,2); }
   x.fillStyle='#4A3A30'; x.fillRect(0,4,W0,1.4);
   x.fillStyle='#8A6A48'; x.fillRect(IDOOR[0]*PX-12,oy+IH*PX-8,24,8); x.fillStyle='#C8A070'; x.fillRect(IDOOR[0]*PX-10,oy+IH*PX-6,20,2);
-  const fl=map==='home'?HOME.f:INT.f;
+  const fl=furnOf(map);
   const gs=x.createLinearGradient(0,oy+PX*1.15+3,0,oy+PX*1.15+12); gs.addColorStop(0,'rgba(40,30,20,.24)'); gs.addColorStop(1,'rgba(40,30,20,0)'); x.fillStyle=gs; x.fillRect(0,oy+PX*1.15+3,W0,9);
   const items=fl.map(f=>[ph&&FURN_POOR[f[0]]||f[0],f[1],f[2],f[3],f[4]]); if(map==='home'&&L.famI===0) items.push(['piano',12,4.2,1.5,.7]);
   items.sort((a,b)=>(a[2]+a[4])-(b[2]+b[4])).forEach(([t,fx,fy,fw,fh])=>{ const X0=fx*PX, Y0=fy*PX+oy, w=fw*PX, h=fh*PX;
@@ -9472,6 +9534,10 @@ addEventListener('keydown',e=>{ if(!dlgOpen()) return; const k=e.key; e.preventD
 function whoOf(n){ const L=G.life, m=W.map;
   if(n.kind==='a') return {role:'pet',n:{cat:'고양이',dog:'강아지',chick:'병아리'}[n.a]||'동물'};
   if(m==='home'){ if(PERSON_KEYS.includes(n.key)) return {role:'fam',k:n.key,n:L.spotName(n.key)}; return {role:'fam',k:'kid',n:n.label||'아이'}; }
+  if(typeof PLACE_IN!=='undefined'&&PLACE_IN[m]){ const PI=PLACE_IN[m];
+    if(n.key==='p0') return {role:PI.role,n:PI.n[0]};
+    if(n.key==='p2') return PI.peer&&L.age<19?{role:L.age<13?'kid':'mate',n:PI.n[2]}:{role:'nb',n:PI.n[2]};
+    return n.st==='elder'?{role:'elder',n:'어르신'}:n.st==='kid'?{role:'kid',n:'아이'}:{role:'nb',n:PI.n[2]}; }
   if(m!=='out'){ const work=m==='work';
     if(n.key==='p0') return {role:work?'boss':'teacher',n:intNames(m)[0]};
     return {role:work?'coll':'mate',n:work?'동료':'반 친구'}; }
@@ -9518,12 +9584,39 @@ const TALK={
     ['Y',"'공부하느라 힘들지?'",[['요즘 이야기를 한다','"그래도 젊을 때가 제일 좋은 때야." 하고 웃으셨다.'],['괜찮다고 한다','"밥 잘 먹고 다녀라." 하셨다.']]],
     ['A',"'젊은 사람이 바쁘겠구먼.'",[['안부를 여쭌다','건강하게 지내신다며 손을 잡아 주셨다.'],['무거운 짐을 들어 드린다','"고맙네, 복 받을 거야." 하셨다.']]],
     ['O',"'우리도 많이 늙었지요?'",[['옛 친구 이야기를 나눈다','함께 알던 사람들 이야기로 오후가 지나갔다.'],['같이 웃는다','"그래도 이렇게 만나니 좋네요." 하셨다.']]]],
+  fparent:[['K',"'어서 와라, {me}. 간식 줄까?'",[['고맙다고 한다','"천천히 놀다 가렴." 하고 웃으셨다.'],['괜찮다고 한다','"그래도 목마르면 말하렴." 하셨다.']]],
+    ['Y',"'요즘 학교는 어떠니? 우리 애랑 사이좋게 지내 줘서 고맙다.'",[['요즘 이야기를 한다','끝까지 들으시고 "너희 때가 좋을 때다." 하셨다.'],['고맙다고 인사한다','"언제든 놀러 와." 하셨다.']]],
+    ['A',"'오랜만이구나! 잘 지내지?'",[['요즘 일을 이야기한다','"우리 애한테도 자주 연락해 줘." 하셨다.'],['건강하시냐고 여쭌다','"그럭저럭 잘 지낸다." 하고 웃으셨다.']]]],
+  shopk:[['K',"'뭐 찾는 거 있니?'",[['과자를 찾는다고 한다','"맨 아래 칸에 있어." 하고 알려 주었다.'],['구경만 한다고 한다','"천천히 보렴." 하고 웃었다.']]],
+    ['Y',"'요즘 학생들은 이게 인기더라.'",[['같이 이야기한다','가게에 오는 손님 이야기를 한참 들려주었다.'],['인사만 한다','"또 와!" 하고 손을 흔들었다.']]],
+    ['A',"'늘 사던 거 드릴까요?'",[['요즘 장사는 어떠냐고 묻는다','"요즘은 손님이 좀 줄었어요." 하며 웃었다.'],['고맙다고 한다','"또 오세요!" 하고 인사했다.']]]],
+  libn:[['K',"'읽고 싶은 책이 있니?'",[['동물 책을 찾는다고 한다','그림이 많은 동물 책을 골라 주었다.'],['추천해 달라고 한다','요즘 아이들이 좋아하는 책을 알려 주었다.']]],
+    ['Y',"'시험 기간이라 자리가 꽉 찼네.'",[['진로 책을 묻는다','관심 있는 일에 관한 책 세 권을 찾아 주었다.'],['조용히 인사한다','고개를 끄덕여 인사를 받아 주었다.']]],
+    ['A',"'새로 들어온 책이 있어요.'",[['구경해 보겠다고 한다','신간 서가로 안내해 주었다.'],['아이 책을 묻는다','아이 나이에 맞는 책을 골라 주었다.']]]],
+  coach:[['K',"'몸 풀었니? 오늘은 달리기부터 하자!'",[['힘차게 대답한다','"좋아, 그 기운이야!" 하고 웃었다.'],['힘들다고 한다','"천천히 해도 괜찮아." 하고 같이 뛰어 주었다.']]],
+    ['Y',"'대회에 나가 볼 생각 있니?'",[['나가 보겠다고 한다','"그럼 주말에 따로 연습하자." 하고 계획을 짜 주었다.'],['아직 자신 없다고 한다','"하는 데까지 해 보자." 하고 어깨를 두드렸다.']]],
+    ['A',"'요즘 운동 꾸준히 하세요?'",[['꾸준히 한다고 한다','"좋아요, 무리하지 말고요." 하고 웃었다.'],['다시 시작하겠다고 한다','가벼운 운동부터 알려 주었다.']]]],
+  merchant:[['K',"'꼬마야, 하나 맛볼래?'",[['고맙다고 받는다','달고 시원한 맛이 났다.'],['엄마한테 물어본다고 한다','"착하구나." 하고 웃었다.']]],
+    ['Y',"'오늘 들어온 게 제일 좋아요!'",[['값을 물어본다','값을 알려 주고 하나를 덤으로 얹어 주었다.'],['구경만 한다고 한다','"구경도 환영이야!" 하고 웃었다.']]],
+    ['A',"'싸게 해 드릴게요, 보고 가세요!'",[['흥정해 본다','조금 깎아 주며 "다음에 또 와요." 했다.'],['단골이라고 인사한다','"그럼 덤을 드려야지!" 하고 하나 더 얹었다.']]]],
+  cook:[['K',"'배고프지? 오늘은 이게 맛있어.'",[['그걸로 먹겠다고 한다','"잘 골랐다!" 하고 엄지를 들었다.'],['매운 거 없냐고 묻는다','안 매운 음식을 따로 만들어 주었다.']]],
+    ['Y',"'공부하느라 배고프지? 많이 먹어.'",[['고맙다고 한다','밥을 한 주걱 더 얹어 주었다.'],['요리를 배우고 싶다고 한다','"방학에 와서 거들어 볼래?" 하고 웃었다.']]],
+    ['A',"'오늘도 고생 많았어요.'",[['오늘 있었던 일을 이야기한다','고개를 끄덕이며 반찬을 하나 더 내주었다.'],['맛있다고 한다','"그 말이 제일 기분 좋아요." 하고 웃었다.']]]],
+  cafek:[['K',"'달콤한 거 줄까?'",[['좋다고 한다','과일 음료를 만들어 주었다.'],['물만 달라고 한다','시원한 물을 따라 주었다.']]],
+    ['Y',"'공부하러 왔어요? 콘센트는 저쪽이에요.'",[['고맙다고 한다','창가 자리를 알려 주었다.'],['추천 음료를 묻는다','요즘 잘 나가는 음료를 알려 주었다.']]],
+    ['A',"'늘 드시던 걸로요?'",[['그렇다고 한다','말하지 않아도 내 취향대로 만들어 주었다.'],['새 메뉴를 시켜 본다','"어떤지 나중에 알려 주세요." 하고 웃었다.']]]],
+  clerk:[['K',"'무엇을 도와줄까?'",[['어른을 따라왔다고 한다','"그럼 저기 앉아서 기다리렴." 하고 사탕을 주었다.'],['궁금한 걸 묻는다','친절하게 하나하나 설명해 주었다.']]],
+    ['Y',"'처음 오셨어요? 이 종이부터 써 주세요.'",[['쓰는 법을 묻는다','칸마다 무엇을 쓰는지 알려 주었다.'],['혼자 써 보겠다고 한다','다 쓰고 나니 "잘했어요." 하고 받아 주었다.']]],
+    ['A',"'무엇을 도와드릴까요?'",[['일을 차근차근 묻는다','필요한 것을 하나하나 챙겨 주었다.'],['짧게 볼일만 본다','금방 일이 끝났다.']]]],
+  doc:[['K',"'어디가 아파서 왔니?'",[['배가 아프다고 한다','배를 살살 눌러 보고 "금방 나을 거야." 하셨다.'],['주사가 무섭다고 한다','"따끔하고 끝이야." 하고 손을 잡아 주셨다.']]],
+    ['Y',"'요즘 잠은 잘 자니?'",[['솔직하게 말한다','"쉬는 것도 공부야." 하고 잠자는 습관을 알려 주셨다.'],['괜찮다고 한다','"밥은 꼭 챙겨 먹어라." 하셨다.']]],
+    ['A',"'검사 결과는 괜찮아요. 운동은 하세요?'",[['조금씩 한다고 한다','"꾸준히가 제일 중요해요." 하셨다.'],['바빠서 못 한다고 한다','하루 10분 걷기부터 권해 주셨다.']]]],
   pet:[['*','{pet}가 나를 빤히 쳐다본다.',[['살살 쓰다듬는다','{pet}가 눈을 가늘게 뜨고 가만히 있었다.'],['손을 내밀어 기다린다','{pet}가 다가와 냄새를 킁킁 맡았다.']]]]
 };
 // 같은 해에 다시 말을 걸면: 짧은 인사만
-const TALK_AGAIN={fam:['"또 왔어? 이리 와."','"배고프면 말해."','"오늘 하루도 고생했어."'],teacher:['"또 궁금한 거 있니?"','"복도에서 뛰지 마라!"'],boss:['"오늘도 잘 부탁해."','"잠깐 쉬었다 해."'],
+const TALK_AGAIN={fparent:['"또 왔구나!"','"놀다 가렴."'],shopk:['"또 왔네!"','"천천히 봐."'],libn:['(조용히 고개를 끄덕였다.)','"반납일 잊지 마세요."'],coach:['"한 바퀴 더!"','"물 마시고 해."'],merchant:['"골라 봐요!"','"덤 줄게요!"'],cook:['"또 왔네!"','"맛있게 먹어요."'],cafek:['"또 오셨네요!"','"자리 편하게 앉으세요."'],clerk:['"다음 분!"','"조심히 가세요."'],doc:['"물 많이 마시고."','"푹 쉬어야 해요."'],fam:['"또 왔어? 이리 와."','"배고프면 말해."','"오늘 하루도 고생했어."'],teacher:['"또 궁금한 거 있니?"','"복도에서 뛰지 마라!"'],boss:['"오늘도 잘 부탁해."','"잠깐 쉬었다 해."'],
   mate:['"아까 그거 재밌었지?"','"내일 보자!"'],coll:['"오늘도 힘냅시다."','"퇴근까지 조금만!"'],nb:['"또 보네요!"','"좋은 하루!"'],kid:['"또 놀자!"','"안녕!"'],elder:['"그래, 또 보자꾸나."','"조심히 다니거라."'],pet:['꼬리를 살랑 흔들었다.','하품을 크게 했다.']};
-const TALK_WHY={fam:'가족',teacher:'선생님',boss:'선배',mate:'친구',coll:'동료',nb:'이웃',kid:'동네',elder:'이웃',pet:''};
+const TALK_WHY={fparent:'친구',shopk:'이웃',libn:'선생님',coach:'선배',merchant:'이웃',cook:'이웃',cafek:'이웃',clerk:'이웃',doc:'',fam:'가족',teacher:'선생님',boss:'선배',mate:'친구',coll:'동료',nb:'이웃',kid:'동네',elder:'이웃',pet:''};
 function talkFill(L,s,pet){ return String(s).replace(/\{me\}/g,L.given||L.name).replace(/\{town\}/g,L.town||L.C.city||'우리 동네').replace(/\{cn\}/g,L.C.n).replace(/\{pet\}/g,pet||'동물'); }
 const unq=t=>String(t).replace(/^'(.*)'$/,'$1');
 function openTalk(nr){ if(dlgOpen()) return; const L=G.life, n=nr.npc, w=whoOf(n), st=stg(L.age), Y=tkYear(L), id=W.map+':'+(n.key||n.a||'');
@@ -9533,7 +9626,7 @@ function openTalk(nr){ if(dlgOpen()) return; const L=G.life, n=nr.npc, w=whoOf(n
   let pool=(TALK[w.role]||TALK.nb).filter(d=>d[0]==='*'||d[0]===st); if(!pool.length) pool=(TALK[w.role]||TALK.nb).filter(d=>'BTKYAO'.indexOf(d[0])<='BTKYAO'.indexOf(st)); if(!pool.length) pool=TALK.nb;
   const d=pool[Math.floor(R()*pool.length)], q=unq(talkFill(L,d[1],w.n));
   dlgRun([{who:w.role==='pet'?'':w.n,t:q,opts:d[2].map(o=>talkFill(L,o[0],w.n)),then:i=>{ Y.who[id]=1; const o=d[2][i], ans=talkFill(L,o[1],w.n); let up=[];
-    if(Y.n<TK_CAP[st]){ Y.n++; const g={j:.3}; if(w.role==='pet') g.j=.6; else if(w.role==='teacher') g.k=.5; else if(w.role==='boss') g.t=.5; else g.r=.8; up=tinyGain(L,g,famWhy); }
+    if(Y.n<TK_CAP[st]){ Y.n++; const g={j:.3}; if(w.role==='pet') g.j=.6; else if(w.role==='teacher'||w.role==='libn') g.k=.5; else if(w.role==='boss'||w.role==='coach'||w.role==='cook') g.t=.5; else if(w.role==='doc') g.h=.6; else g.r=.8; up=tinyGain(L,g,famWhy); }
     renderHud(); persist(); return [{who:w.role==='pet'?'':w.n,t:ans,up}]; }}]); }
 
 /* ---------- 2) 만져 보기 · 가지고 놀기 · 해 보기 ---------- */
@@ -9575,10 +9668,13 @@ const PLAY={
     Y:[['나무 그늘에 앉아 풍경을 스케치했다.','t e'],['나무 아래서 친구와 악기 연습을 했다.','t r']]},
   field:{n:'밭',K:[['어른들 옆에서 김매기를 도왔다.','t h'],['밭에 씨앗을 줄 맞춰 심었다.','t k']],Y:[['수확한 채소를 시장에 낼 만큼 골라 담았다.','t k'],['물 대는 도랑을 고쳤다.','t h']]}
 };
-const VERB={B:'만져 보기',T:'가지고 놀기',K:'해 보기',Y:'해 보기'};
+const VERB={B:'만져 보기',T:'가지고 놀기',K:'해 보기',Y:'해 보기',A:'해 보기',O:'해 보기'};
+const playPool=(k,st)=>{ const P=PLAY[k]; if(!P) return []; return P[st]||(st==='O'?P.A:null)||[]; };
 function playOK(L,c){ if(!c) return true; const tier=L.C.tier||2; return c==='U'?L.set==='U':c==='R'?L.set==='R':c==='r'?tier>=3:c==='p'?tier<=2:true; }
 // 지금 가지고 놀 수 있는 것들: [키, 위치(사각형 또는 점)]
-function touchables(){ const L=G.life, a=L.age, m=W.map, out=[]; if(a>=19) return out;
+function touchables(){ const L=G.life, a=L.age, m=W.map, out=[], st=stg(a);
+  if(typeof PLACE_IN!=='undefined'&&PLACE_IN[m]){ PLACE_IN[m].f.forEach(f=>{ if(f[5]&&playPool(f[5],st).length) out.push({k:f[5],r:f.slice(1,5)}); }); return out; }
+  if(a>=19) return out;
   if(m==='home'){ HOME.f.forEach(f=>out.push({k:f[0],r:f.slice(1)})); out.push({k:'yard',p:HOME.s.yard}); }
   else if(m==='elem'||m==='mid'){ if(a>=6) INT.f.forEach(f=>{ const k=f[0]==='table'?'table2':f[0]; if(PLAY[k]) out.push({k,r:f.slice(1)}); }); }
   else if(m==='out'){ if(a>=2) OUT.trees.forEach(t=>out.push({k:'tree',p:t})); if(a>=6&&L.set==='R') OUT.fields.forEach(f=>out.push({k:'field',r:f})); }
@@ -9588,12 +9684,96 @@ function nearExtra(){ const L=G.life; if(!L||W.car) return null; const st=stg(L.
   for(const n of (NPCMAP[W.map]||[])){ if(n.kind==='v') continue; const d=Math.hypot(n.x-W.x,n.y-W.y); if(d<bd){ bd=d; const w=whoOf(n); best={type:'t',npc:n,n:w.n,lab:`${w.n} · ${n.kind==='a'?'쓰다듬기':'말 걸기'}`}; } }
   for(const o of touchables()){ const d=distTo(o)+(o.p?.2:.35); if(d<bd){ bd=d; const P=PLAY[o.k], nm=o.k==='tv'&&(L.C.tier||2)<=1?'라디오':o.k==='yard'?L.spotName('yard'):P.n; best={type:'o',k:o.k,n:nm,lab:`${nm} · ${VERB[st]}`}; } }
   return best; }
-function openTouch(nr){ if(dlgOpen()) return; const L=G.life, st=stg(L.age), P=PLAY[nr.k]; if(!P||!P[st]) return; const Y=tkYear(L);
-  const all=P[st].filter(x=>playOK(L,x[2])), seen=Y.obj[nr.k]||[], fresh=all.filter(x=>!seen.includes(x[0])), it=(fresh.length?fresh:all)[Math.floor(R()*(fresh.length?fresh:all).length)];
+function openTouch(nr){ if(dlgOpen()) return; const L=G.life, st=stg(L.age), P=PLAY[nr.k], pool=playPool(nr.k,st); if(!pool.length) return; const Y=tkYear(L);
+  const all=pool.filter(x=>playOK(L,x[2])), seen=Y.obj[nr.k]||[], fresh=all.filter(x=>!seen.includes(x[0])), it=(fresh.length?fresh:all)[Math.floor(R()*(fresh.length?fresh:all).length)];
   if(!it) return; Y.obj[nr.k]=seen.concat(it[0]); let up=[];
-  if(fresh.length&&Y.o<TK_CAP[st]){ Y.o++; const m={B:.25,T:.3,K:.38,Y:.42}[st]||.3, g={}; it[1].split(' ').forEach(k=>{ g[k]=k==='j'?.4:k==='r'?.6:k==='t'?m:m*.6; }); up=tinyGain(L,g,nr.k==='counter'||nr.k==='table'?'가족':'');
+  if(fresh.length&&Y.o<TK_CAP[st]){ Y.o++; const m={B:.25,T:.3,K:.38,Y:.42,A:.3,O:.25}[st]||.3, g={}; it[1].split(' ').forEach(k=>{ g[k]=k==='j'?.4:k==='r'?.6:k==='t'?m:m*.6; }); up=tinyGain(L,g,nr.k==='counter'||nr.k==='table'?'가족':'');
     if(Y.o===1&&st!=='B') L.remember({a:L.age,t:it[0],sp:'desk'}); }
   renderHud(); persist(); dlgRun([{who:nr.n,t:it[0],up}]); }
+
+
+/* ---------- 2-1) 동네 건물 안: 가구 · 사람 · 만질 수 있는 것 (방 14×10칸, 문은 아래 가운데) ----------
+   f: [가구 그림, x, y, 너비, 높이, 놀이 이름] · p0 주인(말 걸기 역할 role) · p2 다른 사람(peer면 내 또래) · seats 앉아 있는 사람 [x,y,나이대,방향] */
+const PLACE_IN={
+  friend:{kind:'home',role:'fparent',n:['친구 부모님','친구 방','친구','창가','책장','부엌'],p0:[3,2.6],p2:[10.4,4.8],peer:1,
+    f:[['counter',1,1,3,.8,'f_kitchen'],['table',4.8,1.1,1.6,.9,'f_table'],['sofa',8,1,2.2,.8,'f_sofa'],['tv',11,1,1.7,.5,'f_tv'],['bed',.9,8.1,2.2,1,'f_bed'],['desk',10.5,8.3,1.6,.7,'f_desk']]},
+  shop:{kind:'shop',role:'shopk',n:['가게 주인','계산대','손님','창가','진열대','창고'],p0:[2.5,2.4],p2:[9,4.8],
+    f:[['counter',1,1,3,.8,'s_counter'],['w_goods',5.2,1.1,3,.8,'s_goods'],['w_goods',9.6,1.1,3,.8,'s_goods'],['shelf',.9,6.6,2.6,.7,'s_shelf'],['w_rack',10.4,6.6,2.6,.7,'s_goods']]},
+  lib:{kind:'school',role:'libn',n:['사서','책상','책 읽는 사람','창가','책장','열람실'],p0:[11.8,7.1],p2:[5,4.4],peer:1,seats:[[9.7,4.5,'adult',0]],
+    f:[['shelf',.9,1,2.6,.7,'l_shelf'],['shelf',4,1,2.6,.7,'l_shelf'],['shelf',10.4,1,2.6,.7,'l_shelf'],['table',3.5,5,2.6,.8,'l_table'],['table',8.4,5,2.6,.8,'l_table'],['counter',10.6,7.7,2.4,.7,'l_desk']]},
+  study:{kind:'school',role:'teacher',n:['선생님','책상','같이 공부하는 사람','창가','책꽂이','자습실'],p0:[7,2.4],p2:[10.8,6.2],peer:1,seats:[[4.8,5.2,'peer',3],[8.2,6.8,'peer',3]],
+    f:[['board',4,.62,6,.45,'st_board'],['desk',4.3,4.3,1,.6,'st_desk'],['desk',7.7,4.3,1,.6,'st_desk'],['desk',4.3,5.9,1,.6,'st_desk'],['desk',7.7,5.9,1,.6,'st_desk'],['shelf',.9,8.3,2.6,.7,'st_shelf']]},
+  gym:{kind:'dream',role:'coach',n:['코치','운동 기구','같이 운동하는 사람','창가','매트','탈의실'],p0:[7,2.6],p2:[6.6,6.4],peer:1,
+    f:[['w_machine',1,1,2.4,.8,'g_machine'],['board',5,.62,4,.45,'g_board'],['w_rack',10.4,1,2.6,.8,'g_rack'],['mat',1.6,4,3,1.4,'g_mat'],['mat',9.4,4,3,1.4,'g_mat']]},
+  market:{kind:'shop',role:'merchant',n:['상인','가게','손님','창가','과일 좌판','생선 가게'],p0:[6.4,2.4],p2:[7.8,6.4],seats:[[3,6.4,'elder',3]],
+    f:[['w_goods',1,1,3,.8,'m_fruit'],['w_fish',5.2,1,2.4,.8,'m_fish'],['w_goods',9.6,1,3,.8,'m_goods'],['w_goods',1,5,3,.8,'m_goods'],['w_rack',10,5,3,.8,'m_cloth']]},
+  rest:{kind:'shop',role:'cook',n:['식당 주인','주방','손님','창가','식탁','계산대'],p0:[3,2.4],p2:[7,6.6],seats:[[2.6,4.2,'adult',3],[10.6,4.2,'adult',3]],
+    f:[['counter',1,1,4,.8,'r_kitchen'],['counter',10.4,1,2.6,.7,'r_pay'],['table',2,4.6,2,.9,'r_table'],['table',6,4.6,2,.9,'r_table'],['table',10,4.6,2,.9,'r_table']]},
+  cafe:{kind:'shop',role:'cafek',n:['주인','계산대','손님','창가','탁자','소파'],p0:[3,2.4],p2:[9.4,4.4],seats:[[3.8,4.6,'adult',3]],
+    f:[['counter',1,1,4,.8,'c_counter'],['sofa',10.4,1,2.6,.8,'c_sofa'],['table',3,5,1.6,.9,'c_table'],['table',8.6,5,1.6,.9,'c_table']]},
+  bank:{kind:'office',role:'clerk',n:['은행원','창구','손님','창가','상담 책상','대기 의자'],p0:[7,2.4],p2:[4.5,4.4],seats:[[1.8,5.6,'elder',0]],
+    f:[['counter',2,1,10,.8,'b_counter'],['desk',6,5,2,.7,'b_desk'],['sofa',1,6.2,2.6,.8,'b_wait'],['sofa',10.4,6.2,2.6,.8,'b_wait']]},
+  hosp:{kind:'hosp',role:'doc',n:['의사 선생님','진료실','간호사','창가','약 선반','대기실'],p0:[11.4,2.6],p2:[5,3.6],seats:[[1.6,7.3,'elder',0]],
+    f:[['w_bed',1,1,2.4,1,'h_bed'],['w_bed',4.4,1,2.4,1,'h_bed'],['desk',10.4,1.2,2,.7,'h_desk'],['shelf',10.4,7.6,2.6,.7,'h_shelf'],['sofa',1,7.8,2.6,.8,'h_wait']]},
+  hall:{kind:'office',role:'clerk',n:['직원','창구','주민','창가','게시판','회의 탁자'],p0:[3.4,2.4],p2:[9,4],seats:[[4.6,4.6,'elder',3],[7,4.6,'adult',3]],
+    f:[['counter',1,1,5,.8,'ha_counter'],['board',8,.62,5,.45,'ha_board'],['table',4,5,4,.9,'ha_table'],['sofa',10.4,7.4,2.6,.8,'ha_wait']]},
+  post:{kind:'office',role:'clerk',n:['우체국 직원','창구','손님','창가','소포 선반','편지 쓰는 탁자'],p0:[5,2.4],p2:[8,5.6],
+    f:[['counter',2,1,6,.8,'p_counter'],['shelf',10.4,1,2.6,.7,'p_shelf'],['table',2,5.5,2.4,.8,'p_table'],['w_rack',10.4,6,2.6,.8,'p_rack']]},
+  station:{kind:'tour',role:'clerk',n:['역무원','매표소','여행객','창가','안내판','대기 의자'],p0:[3,2.4],p2:[7,6.6],seats:[[3,4.6,'adult',3],[10,4.6,'elder',3]],
+    f:[['counter',1,1,4,.8,'t_ticket'],['w_rack',6,1,3,.8,'t_board'],['shelf',10.4,1,2.6,.7,'t_shop'],['sofa',2,5,3,.8,'t_wait'],['sofa',9,5,3,.8,'t_wait']]}
+};
+// 건물 안의 물건: [글, 오르는 것] · 어린이(K) · 청소년(Y) · 어른(A, 노인도)
+const PL=(n,K,Y,A)=>({n,K,Y,A});
+Object.assign(PLAY,{
+  f_kitchen:PL('친구네 부엌',[['친구 엄마가 내 준 간식을 같이 만들었다.','r j'],['친구네 부엌에서 처음 보는 음식을 맛보았다.','e j']],[['친구와 국수를 끓여 나눠 먹었다.','t r']],[['친구 부모님께 음식을 만들어 드렸다.','t r']]),
+  f_table:PL('친구네 식탁',[['친구와 보드게임을 했다. 아깝게 졌다.','k r']],[['친구와 시험공부를 같이 했다.','k r']],[['친구와 밤늦게까지 이야기를 나눴다.','r j']]),
+  f_sofa:PL('친구네 소파',[['친구와 만화책을 나눠 읽었다.','j r']],[['친구와 좋아하는 노래를 같이 들었다.','j r']],[['친구네 아이와 놀아 주었다.','r j']]),
+  f_tv:PL('친구네 텔레비전',[['친구와 같은 만화를 보며 깔깔 웃었다.','j r']],[['친구와 경기를 같이 보며 응원했다.','j r']],[['친구와 옛날 사진을 보며 웃었다.','r j']]),
+  f_bed:PL('친구 방',[['친구 방에서 베개 싸움을 했다.','j h']],[['친구 방에서 서로의 꿈 이야기를 했다.','r e']],[['친구가 쓰던 방이 그대로라 웃음이 났다.','r j']]),
+  f_desk:PL('친구 책상',[['친구와 같이 숙제를 끝냈다.','k r']],[['친구와 함께 만들기 과제를 완성했다.','t r']],[['친구와 같이 새 일을 계획해 보았다.','t r']]),
+  s_counter:PL('계산대',[['처음으로 혼자 물건을 사고 거스름돈을 셌다.','k t']],[['가게 주인에게 물건 값 매기는 법을 물었다.','k t']],[['단골이 되어 주인과 안부를 나눴다.','r j']]),
+  s_goods:PL('진열대',[['과자 봉지 뒤의 글씨를 읽어 보았다.','k e']],[['비슷한 물건 두 개의 값을 비교해 보았다.','k t']],[['살림에 필요한 물건을 꼼꼼히 골랐다.','t k']]),
+  s_shelf:PL('선반',[['주인을 도와 물건을 줄 맞춰 놓았다.','t r']],[['진열 정리를 도와 드렸다.','t r']],[['새로 들어온 물건을 구경했다.','e j']]),
+  l_shelf:PL('책장',[['처음 보는 나라 이야기책을 골랐다.','k e']],[['진로 책을 한 권 빌렸다.','k e']],[['일에 도움이 되는 책을 빌렸다.','k t']]),
+  l_table:PL('열람실 책상',[['그림책을 끝까지 읽었다.','k j']],[['조용한 책상에서 공부에 집중했다.','k t']],[['신문을 펼쳐 세상 소식을 읽었다.','k e']]),
+  l_desk:PL('대출 창구',[['사서 선생님께 도서 대출증을 만들었다.','k r']],[['도서관 봉사 활동을 신청했다.','t r']],[['아이에게 읽어 줄 책을 추천받았다.','k r']]),
+  st_board:PL('칠판',[['칠판의 문제를 앞에 나가 풀었다.','k t']],[['어려운 문제를 칠판에 풀며 설명했다.','k r']],[['저녁 강좌에서 새로운 기술을 배웠다.','t k']]),
+  st_desk:PL('책상',[['문제집을 한 장 끝까지 풀었다.','k']],[['모르는 문제를 표시하고 다시 풀었다.','k t']],[['자격증 문제를 풀어 보았다.','t k']]),
+  st_shelf:PL('책꽂이',[['참고서를 빌려 보았다.','k']],[['합격 수기를 읽고 다짐했다.','k j']],[['외국어 교재를 골랐다.','k e']]),
+  g_mat:PL('매트',[['매트 위에서 앞구르기를 했다.','h t']],[['스트레칭으로 몸을 풀었다.','h']],[['가벼운 체조 수업을 따라 했다.','h j']]),
+  g_machine:PL('운동 기구',[['줄넘기 대회 연습을 했다.','h t']],[['체력 단련 기구로 운동했다.','h t']],[['일을 마치고 땀을 흘렸다.','h j']]),
+  g_rack:PL('공 바구니',[['공을 빌려 친구들과 놀았다.','h r']],[['라켓을 빌려 시합을 했다.','h r']],[['동호회 사람들과 경기를 했다.','h r']]),
+  g_board:PL('게시판',[['운동 시간표를 보고 배울 운동을 골랐다.','k e']],[['대회 공고를 보고 신청했다.','t e']],[['동호회 모집 공고에 이름을 적었다.','r e']]),
+  m_fruit:PL('과일 좌판',[['처음 보는 과일을 맛보았다.','e j']],[['흥정하는 법을 옆에서 배웠다.','k t']],[['제철 과일을 싸게 샀다.','k j']]),
+  m_fish:PL('생선 가게',[['물고기 이름을 하나하나 물어보았다.','k e']],[['생선 손질하는 모습을 한참 구경했다.','e t']],[['상인과 흥정해 저녁거리를 샀다.','t r']]),
+  m_goods:PL('좌판',[['장 보는 가족을 따라 짐을 들었다.','r h']],[['장 볼 목록대로 혼자 장을 보았다.','t k']],[['이웃 상인과 인사를 나눴다.','r j']]),
+  m_cloth:PL('옷감 가게',[['알록달록한 옷감을 구경했다.','e j']],[['명절에 입을 옷을 골랐다.','j e']],[['가족에게 줄 선물을 골랐다.','r j']]),
+  r_kitchen:PL('주방',[['요리하는 모습을 창 너머로 구경했다.','e k']],[['식당 주인이 요리 비법을 하나 알려 주었다.','t e']],[['주방 일손이 모자라 잠깐 거들었다.','t r']]),
+  r_table:PL('식탁',[['가족과 외식을 했다. 처음 먹어 보는 음식이었다.','e j']],[['친구들과 맛있는 집을 찾아 먹으러 왔다.','j r']],[['동료들과 저녁을 먹으며 이야기를 나눴다.','r j']]),
+  r_pay:PL('계산대',[['차림표의 값을 더해 보았다.','k']],[['처음으로 내 돈으로 밥값을 냈다.','t j']],[['오랜 친구의 밥값을 대신 냈다.','r j']]),
+  c_counter:PL('주문대',[['달콤한 음료를 하나 시켰다.','j']],[['처음으로 혼자 음료를 주문했다.','e j']],[['음료 만드는 법을 물어보았다.','t e']]),
+  c_table:PL('탁자',[['가족 옆에서 그림을 그렸다.','t j']],[['친구와 마주 앉아 고민을 나눴다.','r j']],[['자리를 잡고 밀린 일을 했다.','t k']]),
+  c_sofa:PL('소파',[['소파에 앉아 그림책을 보았다.','k j']],[['창밖을 보며 일기를 썼다.','e j']],[['오랜만에 아무것도 안 하고 쉬었다.','j h']]),
+  b_counter:PL('창구',[['저금통의 돈을 통장에 넣었다.','k j']],[['처음으로 내 통장을 만들었다.','k t']],[['적금과 빌리는 돈의 이자를 꼼꼼히 비교했다.','k t']]),
+  b_desk:PL('상담 책상',[['저금하는 법을 배웠다.','k r']],[['용돈을 나눠 모으는 법을 배웠다.','k t']],[['나이 들어 쓸 돈을 어떻게 모을지 상담받았다.','k e']]),
+  b_wait:PL('대기 의자',[['번호표를 뽑고 차례를 기다렸다.','k']],[['돈 관리 안내문을 읽어 보았다.','k']],[['기다리며 가계부를 정리했다.','k t']]),
+  h_bed:PL('진료 침대',[['예방 주사를 꾹 참고 맞았다.','h e']],[['건강 검진을 받았다.','h k']],[['미루던 검진을 받았다.','h k']]),
+  h_desk:PL('진료 책상',[['손 씻는 법을 배웠다.','h k']],[['다친 곳을 치료받았다.','h']],[['생활 습관 상담을 받았다.','h k']]),
+  h_shelf:PL('약 선반',[['약 이름을 소리 내어 읽어 보았다.','k']],[['응급 처치 안내문을 읽었다.','k t']],[['집에 둘 상비약을 챙겼다.','h k']]),
+  h_wait:PL('대기 의자',[['대기실에서 다른 아이와 놀았다.','r j']],[['기다리며 건강 안내문을 읽었다.','k h']],[['아픈 가족 곁을 지켰다.','r']]),
+  ha_counter:PL('창구',[['어른을 따라 서류 떼는 곳에 가 보았다.','k e']],[['청소년 봉사 활동을 신청했다.','r t']],[['필요한 서류를 혼자 떼었다.','t k']]),
+  ha_board:PL('게시판',[['게시판의 동네 행사 안내를 읽었다.','k e']],[['동네 축제 자원봉사 모집에 지원했다.','r e']],[['주민 모임 공지를 보고 가 보기로 했다.','r e']]),
+  ha_table:PL('회의 탁자',[['그리기 교실에 참여했다.','t j']],[['주민 회의를 구경했다.','k e']],[['주민 회의에서 의견을 냈다.','r k']]),
+  ha_wait:PL('대기 의자',[['어르신들 이야기를 옆에서 들었다.','r k']],[['어르신께 휴대폰 쓰는 법을 알려 드렸다.','r t']],[['이웃과 동네 소식을 나눴다.','r']]),
+  p_counter:PL('창구',[['할머니께 보낼 편지를 부쳤다.','r j']],[['처음으로 소포를 혼자 보냈다.','t e']],[['멀리 사는 가족에게 선물을 보냈다.','r j']]),
+  p_shelf:PL('우표 진열대',[['다른 나라 우표를 구경했다.','e k']],[['기념우표를 하나 샀다.','e j']],[['상자를 골라 짐을 꾸렸다.','t']]),
+  p_table:PL('편지 쓰는 탁자',[['삐뚤빼뚤 편지를 썼다.','t r']],[['고마운 선생님께 엽서를 썼다.','r']],[['오랜 친구에게 손편지를 썼다.','r j']]),
+  p_rack:PL('소포 선반',[['주소 쓰는 법을 배웠다.','k']],[['택배 상자 크기를 재 보았다.','k t']],[['보낼 짐의 무게를 달아 보았다.','k']]),
+  t_ticket:PL('매표소',[['처음으로 표를 사 보았다.','e k']],[['혼자 떠날 여행 표를 끊었다.','e t']],[['고향 가는 표를 미리 샀다.','e r']]),
+  t_board:PL('노선 안내판',[['노선도에서 처음 듣는 도시 이름을 찾아보았다.','k e']],[['노선도를 보고 여행 계획을 세웠다.','k e']],[['일 때문에 갈 길을 미리 살펴보았다.','k t']]),
+  t_wait:PL('대기 의자',[['떠나는 사람들을 구경했다.','e']],[['기다리며 처음 보는 사람과 이야기했다.','r e']],[['배웅 나온 가족과 인사를 나눴다.','r j']]),
+  t_shop:PL('기념품 가게',[['기념품을 구경했다.','e j']],[['여행지 지도를 한 장 샀다.','e k']],[['기차에서 먹을 간식을 샀다.','j']])
+});
 
 /* ---------- 3) 학교 밖 활동 (6~18살 작은 선택) ---------- */
 { const cc0=CC; CC=null;
@@ -9671,7 +9851,7 @@ function openDev(){ const d=devEl(); d.hidden=false;
     <div class="drow"><label>성별</label>${seg('sex',[[0,'남자'],[1,'여자']])}</div>
     <div class="drow"><label for="devA">시작 나이</label><input type="number" id="devA" min="0" max="100" value="${DEV.age}" style="width:6rem"><span class="q">${[0,1,3,6,10,13,16,19,25,35,45,60,75].map(a=>`<button data-a="${a}">${a}</button>`).join(' ')}</span></div>
     <p class="note">그 나이까지의 삶은 자동으로 채워집니다(무작위). 일찍 세상을 떠나는 나라라면 그 나이까지 산 삶이 나올 때까지 다시 뽑습니다.</p>
-    <div class="drow"><label>한 해 길이</label>${seg('sec',[[60,'보통 60초'],[20,'빠르게 20초'],[8,'시연 8초']])}</div>
+    <div class="drow"><label>한 해 길이</label>${seg('sec',[[8,'8초'],[20,'20초'],[35,'35초'],[60,'1분'],[120,'2분'],[300,'5분'],[600,'10분'],[1800,'30분'],[3600,'1시간']])}</div>
     <div class="drow"><button class="btn primary" id="devPlay">이 나이에서 플레이</button><button class="btn" id="devEndHere">이 나이에서 끝난 삶의 엔딩</button><button class="btn" id="devEndAll">끝까지 자동으로 살고 엔딩</button></div>
     <p class="err" id="devErr"></p>
     <p class="note">플레이 중에는 화면 위의 개발자 막대로 1년·5년 건너뛰기, 원하는 나이로 가기, 큰 사건 바로 열기, 엔딩 보기를 할 수 있어요. 엔딩에서는 처음 장·마지막 장으로 바로 갈 수 있어요.</p>
@@ -9727,6 +9907,161 @@ function reportErr(e,where){ try{ const msg=String(e&&e.message||e||'알 수 없
     b.innerHTML=`<b>화면에 문제가 생겼어요 (${esc(where)}). 게임은 계속 이어집니다.</b>이 상자를 캡처해서 알려 주시면 고칠 수 있어요.<code>${esc(msg)}${at?' · '+esc(at):''}</code><button type="button">닫기</button>`; b.hidden=false; b.querySelector('button').onclick=()=>b.hidden=true; }catch(_){ } }
 addEventListener('error',ev=>{ if(ev&&ev.target&&ev.target!==window&&ev.target.tagName) return; reportErr(ev.error||ev.message,'화면'); });
 addEventListener('unhandledrejection',ev=>reportErr(ev.reason,'저장·불러오기'));
+
+/* ---------- 시간은 멈추지 않는다 (학생): 선택 창이 떠 있어도 한 해가 흐르고, 제한 시간이 지나면 저절로 정해진다 ----------
+   큰 사건·큰 갈림길·달력의 고르는 일: 제한 시간(한 해 길이의 1/5, 최소 12초)이 지나면 무작위로 정해진다.
+   작은 선택·미션: 제한 시간이 지나면 창이 닫히고, 그해가 끝날 때까지 하지 않으면 '놓친 순간'이 된다.
+   교사용·개발자 모드와 '저장하기'·'나가기' 창에서는 예전처럼 시간이 멈춘다. */
+const DEC={on:0,left:0,total:0,mode:null,next:null,tt:0};
+const flowOn=()=>!!(G.life&&!G.teacher&&!G.hardPause);
+const decWin=()=>Math.max(12,yearLen()*.2)*Math.min(2,RD());
+function decStart(){ const m=DEC.next; DEC.next=null; if(!m||!flowOn()||!$('sheetBox').querySelector('.opts button')){ DEC.on=0; return; }
+  DEC.on=1; DEC.mode=m; DEC.total=DEC.left=decWin(); DEC.tt=0;
+  $('sheetBox').insertAdjacentHTML('afterbegin',`<div class="decbar" role="timer"><i></i><span></span></div>`); decRender(true); }
+function decRender(force){ const b=$('sheetBox').querySelector('.decbar'); if(!b) return; b.querySelector('i').style.width=Math.max(0,DEC.left/DEC.total*100)+'%';
+  const sec=Math.ceil(Math.max(0,DEC.left)); if(force||sec!==DEC.tt){ DEC.tt=sec; b.querySelector('span').textContent=DEC.mode==='auto'?`${sec}초 안에 고르지 않으면 저절로 정해져요`:`${sec}초 안에 고르지 않으면 이 순간은 지나가요`; b.classList.toggle('hot',sec<=5); } }
+function decAuto(){ const m=DEC.mode; DEC.on=0; if(m==='auto'){ const bs=[...$('sheetBox').querySelectorAll('.opts button:not([disabled])')]; if(bs.length){ G.autoPicked=1; bs[Math.floor(Math.random()*bs.length)].click(); G.autoPicked=0; toast('시기를 놓쳐 저절로 정해졌어요.','news'); return; } }
+  closeSheet(); if(m==='close') toast('고르지 않아 이 순간은 지나갔어요. 그해가 가기 전에 다시 다가갈 수 있어요.'); }
+// 열려 있는 창을 정리한다 (해가 끝날 때)
+function resolveOpen(){ for(let i=0;i<8;i++){ if(dlgOpen()){ dlgClose(); continue; } if($('sheet').hidden) return; if(DEC.on){ decAuto(); continue; }
+    const ok=$('btnOk')||$('sheetBox').querySelector('.btn.primary'); if(ok){ ok.click(); continue; } closeSheet(); } }
+function flowTick(dt){ const L=G.life; if(!flowOn()||!L.cur) return;
+  if(!caughtUp()){ L.cur.t-=dt; $('hTimer').style.width=Math.max(0,L.cur.t/G.sec*100)+'%'; }
+  else { const r=G.roomInfo; $('hTimer').style.width=(r&&r.auto>0&&!r.paused?100-((Date.now()-r.t0)%(r.auto*60000))/(r.auto*600):100)+'%'; }
+  L.cur.el=(L.cur.el||0)+dt; { const mn=monthNow(); if(mn!==G.mon){ G.mon=mn; renderMon(); } }
+  if(G.sickT>0&&!L.f.dying){ G.sickT-=dt; if(G.sickT<=0){ G.sickT=0; L.getWell(); renderHud(); } }
+  if(DEC.on&&!$('sheet').hidden){ DEC.left-=dt; decRender(); if(DEC.left<=0) decAuto(); }
+  if(!caughtUp()&&L.cur&&L.cur.t<=0){ resolveOpen(); if(!paused&&!L.dead) endPeriod(); } }
+(function(){ const _sh=sheet; sheet=function(html,cls){ _sh(html,cls); decStart(); };
+  const _cs=closeSheet; closeSheet=function(){ DEC.on=0; G.hardPause=0; return _cs.apply(this,arguments); };
+  const tag=(name,mode)=>{ const f=window[name]; if(typeof f!=='function') return; window[name]=function(){ DEC.next=mode; try{ return f.apply(this,arguments); } finally{ DEC.next=null; } }; };
+  tag('openMajor','auto'); tag('openCross','auto'); tag('fireCal','auto'); tag('openScene','close'); tag('openQuest','close'); })();
+
+/* ---------- 저장하기 (예전 '멈춤'): 저장하고 쉬었다가 이어서 한다. 이 창에서는 시간이 멈춘다 ---------- */
+function openSave(){ if(!G.life||!G.running||!$('sheet').hidden||dlgOpen()) return; persist(true); G.hardPause=1; const L=G.life, r=+(G.opts.read||1);
+  sheet(`<div class="place">저장했어요 · ${L.age}살</div><h2>지금까지의 삶을 저장했어요</h2><p class="sub">${G.teacher?"교사용 모드의 '내 체험 기록'에 남아요.":'여기서 그만두고 나중에 같은 아이디로 들어오면 이어서 살 수 있어요.'}${caughtUp()?' 학급 방에서는 반 전체의 시간(선생님의 시계)은 계속 흐릅니다.':' 이 창이 열려 있는 동안은 시간이 멈춰 있어요.'}</p>
+    <div class="stack-s"><b>글이 떠 있는 시간</b><div class="seg" id="pRead"><button data-v="1" class="${r>1?'':'on'}">보통</button><button data-v="1.8" class="${r>1?'on':''}">길게 (천천히 읽기)</button></div></div>
+    <div class="row"><button class="btn primary" id="btnOk">▶ 이어서 살기</button><button class="btn" id="btnSaveQuit">저장하고 나가기</button><button class="btn" id="btnPMem">지난 기억 보기</button></div>`,'pause');
+  $('pRead').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; G.opts.read=+b.dataset.v; ls('life8b_opts',G.opts); [...$('pRead').children].forEach(x=>x.classList.toggle('on',x===b)); };
+  $('btnOk').onclick=closeSheet; $('btnPMem').onclick=()=>{ closeSheet(); $('btnMem').click(); };
+  $('btnSaveQuit').onclick=()=>{ closeSheet(); $('btnExit').click(); setTimeout(()=>{ const q=$('btnQuit'); if(q) q.click(); },30); }; }
+$('btnPause').onclick=openSave;
+{ const ex=$('btnExit').onclick; $('btnExit').onclick=function(){ G.hardPause=1; return ex.apply(this,arguments); }; }
+
+/* ---------- 화면 다듬기: 미니맵·상태란 폭을 줄이고 반투명하게, 작은 사건은 오른쪽 위에서 충분히 오래 ---------- */
+document.head.insertAdjacentHTML('beforeend',`<style>
+#mini{width:168px!important;height:124px!important}
+@media (min-width:900px) and (min-height:560px){ #mini{width:182px!important;height:134px!important} .hud{max-width:660px!important} }
+.hud{max-width:600px!important}
+.hud .gbox,#miniRad,#hQuest li,#hMission,#hSick{background:rgba(253,251,245,.74)!important;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.hud .gbox{box-shadow:0 4px 14px rgba(0,0,0,.18)!important}
+#toasts{left:auto!important;right:max(12px,env(safe-area-inset-right,0px))!important;transform:none!important;top:calc(12px + env(safe-area-inset-top,0px))!important;width:min(31vw,25rem)!important;gap:8px!important;z-index:12!important}
+#toasts .toast{position:relative;overflow:hidden;font-size:1rem;line-height:1.55;padding:10px 14px 13px;border-radius:12px;background:rgba(255,253,246,.95);box-shadow:0 8px 22px rgba(0,0,0,.28);animation:tin .35s ease-out}
+#toasts .toast.year{background:rgba(30,40,50,.92);color:#fff;font-size:1.06rem}
+#toasts .toast::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:#E2703A;opacity:.85;animation:tbar var(--dur,8s) linear forwards}
+#toasts .toast.out{opacity:0;transform:translateX(30px);transition:opacity .4s,transform .4s}
+@keyframes tin{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes tbar{from{width:100%}to{width:0}}
+@media (max-height:460px){ #toasts{width:min(36vw,20rem)!important} #toasts .toast{font-size:.86rem;padding:7px 10px 9px} #mini{width:120px!important;height:88px!important} }
+.decbar{position:relative;height:26px;border-radius:999px;background:#EEE7D8;overflow:hidden;margin:-4px 0 8px}
+.decbar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#9CC9A6,#5FA374);transition:width .25s linear}
+.decbar.hot i{background:linear-gradient(90deg,#F2A08A,#D9573C)}
+.decbar span{position:relative;display:block;text-align:center;font-size:.84rem;font-weight:700;line-height:26px;color:#283038}
+</style>`);
+
+/* ---------- 엔딩: 나의 기록 고르기 (마지막 장 앞) · 개인 기록에 장면과 한 마디로 남기기 ---------- */
+// 장면 그림 (기록에는 나라·사는 곳·성별만 있으므로 그것으로 그림 이름을 정한다)
+function scThumb(kind,who,cls){ let n=null; try{ n=scArtName(kind,who)||scArtName('life',who); }catch(e){}
+  const tt=(typeof SCENE_TITLE!=='undefined'&&SCENE_TITLE[kind])||'삶';
+  return `<span class="${cls||'scimg'}" data-t="${esc(tt)}">${n?`<img src="art/sc/${n}.webp" alt="${esc(tt)}" loading="lazy" onerror="this.remove()">`:''}</span>`; }
+const recWho=l=>({C:COUNTRIES[l.c||'KR']||COUNTRIES.KR,set:l.set,sex:l.sex,f:{}});
+// 고를 거리: 큰 일·내가 고른 일·장면이 있는 기억을 앞에, 삶 전체에서 고르게 12개
+function pickCands(L){ const M=(L.mem||[]).filter(m=>m.a>0&&m.t&&!/^(몸이 많이 약해져|크게 아파 집에서)/.test(m.t));
+  const sc=m=>(m.big?3:0)+(m.q?2:0)+(m.sc?1:0)+(m.f?-1:0); const top=M.slice().sort((a,b)=>sc(b)-sc(a)).slice(0,30).sort((a,b)=>a.a-b.a);
+  if(top.length<=12) return top; const out=[]; for(let i=0;i<12;i++){ const m=top[Math.floor(i*top.length/12)]; if(!out.includes(m)) out.push(m); } return out; }
+function pickSlideHTML(L,C,scKind){ const cut=(t,n)=>t.length>n?t.slice(0,n-1)+'…':t;
+  return `<div id="pkBox" class="pkbox"><p class="soft">이 삶을 정리해요. 고른 것은 마지막 기록 카드와 '지나온 삶'에 남아요.</p>
+    <h3 class="pkh">1. 가장 기억에 남는 순간 3가지 <small id="pkN">0 / 3</small></h3>
+    <div class="pkgrid">${C.map((m,i)=>`<button type="button" class="pk" data-i="${i}">${scThumb(scKind(m),L,'pkimg')}<span class="pka">${m.a}살</span><span class="pkt">${esc(cut(memT(m),70))}</span><span class="pkno"></span><span class="pkstar" data-s="${i}" title="가장 기억에 남는 한 장면">★ 대표 장면</span></button>`).join('')||'<p class="small">고를 만한 기억이 없어요.</p>'}</div>
+    <p class="small sub">고른 순간에서 <b>★ 대표 장면</b>을 누르면 그 장면이 이 삶을 대표하는 그림이 돼요. 고르지 않으면 첫 번째로 고른 순간이 대표가 돼요.</p>
+    <label class="stack-s pksum" for="lsum"><b>2. 이 삶을 한 마디로 요약하자면?</b><input id="lsum" maxlength="40" placeholder="예: 바다를 사랑해 끝까지 바다 곁에 산 사람"></label></div>`; }
+function pickWire(box,PK){ const paint=()=>{ box.querySelectorAll('.pk').forEach(b=>{ const i=+b.dataset.i, k=PK.sel.indexOf(i); b.classList.toggle('on',k>=0); b.classList.toggle('fav',PK.fav===i&&k>=0); b.querySelector('.pkno').textContent=k>=0?k+1:''; }); const n=$('pkN'); if(n) n.textContent=`${PK.sel.length} / 3`; };
+  box.querySelectorAll('.pk').forEach(b=>b.onclick=e=>{ const i=+b.dataset.i;
+    if(e.target.closest('.pkstar')){ if(!PK.sel.includes(i)){ if(PK.sel.length>=3) return; PK.sel.push(i); } PK.fav=i; paint(); return; }
+    const k=PK.sel.indexOf(i); if(k>=0){ PK.sel.splice(k,1); if(PK.fav===i) PK.fav=null; } else { if(PK.sel.length>=3){ toast('세 가지까지 고를 수 있어요. 고른 것을 한 번 더 누르면 빠져요.'); return; } PK.sel.push(i); } paint(); });
+  paint(); }
+function pickOut(PK,C,scKind,sum){ const mems=PK.sel.map(i=>C[i]).filter(Boolean), top3=mems.map(m=>[m.a,String(memT(m)).replace(/\s+/g,' ').slice(0,140),scKind(m)]);
+  const fi=PK.fav!=null?PK.sel.indexOf(PK.fav):-1; return {mems,top3,fav:top3.length?(fi>=0?fi:0):null,sum:String(sum||'').slice(0,40)}; }
+// 기록 안에서: '나의 기록' 장 (대표 장면 · 한 마디 · 세 순간)
+function mineHTML(l){ const T=l.top3||[]; if(!T.length&&!l.sum) return ''; const who=recWho(l), f=T[l.fav!=null?l.fav:0];
+  return `<section class="icard mine">${f?`<figure class="mcover">${scThumb(f[2],who,'mimg')}<figcaption>${f[0]}살 · ${esc(f[1])}</figcaption></figure>`:''}
+    ${l.sum?`<p class="msum">“${esc(l.sum)}”</p>`:''}${T.length?`<h3>가장 기억에 남는 순간</h3><ol class="mlist3">${T.map((m,i)=>`<li>${scThumb(m[2],who,'mthumb')}<div><b>${m[0]}살${i===(l.fav!=null?l.fav:0)?' · ★ 대표 장면':''}</b><span>${esc(m[1])}</span></div></li>`).join('')}</ol>`:''}</section>`; }
+{ const _lt=lifeTabs; lifeTabs=function(l,o){ const h=_lt(l,o), mine=mineHTML(l); if(!mine) return h;
+    // '나의 기록'을 맨 앞 장으로 끼워 넣는다
+    const wrap=document.createElement('div'); wrap.innerHTML=h; const w=wrap.firstElementChild, nav=w.querySelector('.rtabs'), first=nav.querySelector('button');
+    nav.insertAdjacentHTML('afterbegin','<button type="button" role="tab" data-r="mine" class="on" aria-selected="true">나의 기록</button>'); first.classList.remove('on'); first.setAttribute('aria-selected','false');
+    w.querySelectorAll(':scope>.rpane').forEach(p=>p.hidden=true); nav.insertAdjacentHTML('afterend',`<div class="rpane" data-r="mine">${mine}<button type="button" class="btn rnext" data-go="${first.dataset.r}">다음: ${first.textContent} ▶</button></div>`);
+    return wrap.innerHTML; }; }
+lifeDetailHTML=function(l){ return lifeTabs(l); };
+// 지나온 삶 목록: 대표 장면 + 한 마디 (눌러서 펼치면 자세히)
+lifeSummaryHTML=function(l){ const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, T=l.top3||[], f=T[l.fav!=null?l.fav:0];
+  const kind=f?f[2]:'life'; return `<span class="lsrow">${scThumb(kind,recWho(l),'lsimg')}<span class="lstx"><b>${esc(l.title||'제목 없는 삶')}</b><span>${esc(l.name)} · ${l.age}세 · ${esc(C.n)} ${SETN[l.set]||''}${l.cause?' · '+esc(l.cause):''}</span>${l.sum?`<q>${esc(l.sum)}</q>`:''}<em>눌러서 자세히 보기</em></span></span>`; };
+document.head.insertAdjacentHTML('beforeend',`<style>
+.pkbox{display:flex;flex-direction:column;gap:10px}.pkh{margin:4px 0 0;font-size:1.05rem}.pkh small{font-weight:400;opacity:.8;margin-left:6px}
+.pkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(13.5rem,1fr));gap:8px}
+.pk{all:unset;cursor:pointer;position:relative;display:grid;grid-template-columns:76px 1fr;grid-template-rows:auto 1fr auto;gap:2px 10px;padding:8px;border-radius:12px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);min-height:72px}
+.pk:hover{border-color:rgba(255,201,168,.7)} .pk.on{border-color:#FFC9A8;background:rgba(255,201,168,.16)} .pk.fav{border-color:#F2C14E;box-shadow:0 0 0 2px rgba(242,193,78,.5)}
+.pkimg{grid-row:1/4;width:76px;height:52px;border-radius:8px;overflow:hidden;background:rgba(255,255,255,.12);display:block;position:relative}
+.pkimg img,.mthumb img,.lsimg img,.mimg img{width:100%;height:100%;object-fit:cover;display:block}
+.pkimg:empty::after,.mthumb:empty::after,.lsimg:empty::after,.mimg:empty::after{content:attr(data-t);position:absolute;inset:0;display:grid;place-items:center;font-size:.72rem;opacity:.75}
+.pka{font-weight:800;font-size:.85rem;color:#FFC9A8}.pkt{font-size:.88rem;line-height:1.4}
+.pkno{position:absolute;top:-8px;left:-8px;width:24px;height:24px;border-radius:50%;background:#FFC9A8;color:#2A2622;font-weight:800;display:none;place-items:center;font-size:.85rem}.pk.on .pkno{display:grid}
+.pkstar{display:none;justify-self:end;font-size:.75rem;font-weight:800;padding:2px 8px;border-radius:999px;border:1px solid #F2C14E;color:#F2C14E}.pk.on .pkstar{display:inline-block}.pk.fav .pkstar{background:#F2C14E;color:#2A2622}
+.pksum input{font:inherit;padding:10px 12px;border-radius:10px;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.95);color:#1E2B37}
+.mine .mcover{margin:0;display:flex;flex-direction:column;gap:6px}.mimg{display:block;position:relative;width:100%;aspect-ratio:2/1;border-radius:12px;overflow:hidden;background:#E8E2D4}
+.mine figcaption{font-size:.88rem;opacity:.8}.msum{font-size:1.25rem;font-weight:800;margin:6px 0;color:#B4501E}
+.mlist3{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}.mlist3 li{display:flex;gap:10px;align-items:center}
+.mthumb{flex:none;width:84px;height:56px;border-radius:8px;overflow:hidden;position:relative;background:#E8E2D4;display:block}.mlist3 div{display:flex;flex-direction:column;font-size:.9rem}
+.lsrow{display:inline-flex;gap:12px;align-items:center;vertical-align:middle;width:calc(100% - 24px)}.lsimg{flex:none;width:96px;height:64px;border-radius:10px;overflow:hidden;position:relative;background:#E8E2D4;display:block}
+.lstx{display:flex;flex-direction:column;gap:2px;min-width:0}.lstx q{font-weight:700;color:#B4501E}.lstx em{font-size:.78rem;opacity:.65;font-style:normal}
+</style>`);
+
+/* ---------- 휴대폰 가로(낮은 화면): 글씨·창을 작게, 화면 가운데는 비워 둔다 ---------- */
+document.head.insertAdjacentHTML('beforeend',`<style>
+@media (orientation:landscape) and (max-height:560px){
+  .hud{max-width:min(54vw,440px)!important}
+  #mini{width:104px!important;height:76px!important} #miniWrap::after{font-size:.5rem!important;padding:1px 3px!important;top:5px!important;right:5px!important} #miniWrap span{font-size:.55rem!important}
+  #miniRad{width:96px!important}
+  #hQuest li{font-size:.62rem;padding:2px 6px}
+  #toasts{width:min(29vw,16rem)!important;gap:4px!important;top:calc(6px + env(safe-area-inset-top,0px))!important}
+  #toasts .toast{font-size:.7rem;line-height:1.38;padding:5px 8px 7px;border-radius:9px;box-shadow:0 4px 10px rgba(0,0,0,.25)}
+  #toasts .toast.year{font-size:.74rem}
+  #toasts .toast:nth-last-child(n+3){display:none}
+  #toasts .toast .chip,#toasts .toast .mb{font-size:.6rem} #toasts .toast .nt{font-size:.62rem}
+  #flash{top:auto!important;bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;transform:translateX(-50%)!important;animation:none!important;width:min(46vw,22rem)!important;padding:6px 10px!important;border-width:2px!important}
+  #flash p{font-size:.76rem!important;line-height:1.4!important;margin:2px 0!important} #flash .place{font-size:.66rem!important} #flash .chip,#flash .tchips span{font-size:.6rem!important}
+  #dlg{font-size:.84rem;padding:8px 14px 9px;width:min(560px,calc(100% - 40px));bottom:calc(6px + env(safe-area-inset-bottom,0px))} #dlg .dt{min-height:2.2em} #dlg .dn{font-size:.7rem;top:-13px}
+  #dlg .dopts{min-width:9rem;padding:5px} #dlg .dopts button{font-size:.8rem;padding:5px 10px 5px 22px}
+  #devBar{top:auto;bottom:calc(6px + env(safe-area-inset-bottom,0px));left:6px;transform:none;padding:3px 5px;gap:3px;max-width:62vw}
+  #devBar button{font-size:.64rem;padding:3px 6px} #devBar b{font-size:.62rem}
+  #sheet .box{padding:10px 14px!important;gap:6px!important}
+  #sheet canvas.scene{max-height:30vh;width:auto!important;max-width:100%;display:block;margin:0 auto}
+  #sheet .scene-cap{font-size:.62rem;margin-top:-2px}
+  #sheet h2{font-size:1rem!important;line-height:1.4} #sheet .place{font-size:.7rem}
+  #sheet .opts button{min-height:34px!important;font-size:.82rem!important;padding:6px 10px!important}
+  .decbar{height:20px;margin:-2px 0 4px} .decbar span{font-size:.68rem;line-height:20px}
+  #errBox{font-size:.68rem;padding:6px 10px;max-width:60vw}
+  .ihead h2{font-size:.95rem} .itabs button{font-size:.76rem;padding:5px 10px}
+  .hinfo{font-size:.68rem!important;padding:3px 7px!important} .hl b{font-size:.9rem!important} #hName,.hmon{font-size:.62rem!important}
+  .hbtn{font-size:.64rem!important;padding:2px 6px!important;min-height:0!important}
+  #miniWrap::after{display:none!important}
+  #btnImp,#btnNext{font-size:.68rem!important;padding:5px 9px!important;min-height:0!important}
+  #btnAct,#btnCar{font-size:.74rem!important;padding:6px 10px 6px 6px!important}
+  #sheet .opts button span.pl{font-size:.6rem!important}
+}
+</style>`);
+// 휴대폰에서는 개발자 막대를 처음부터 접어 둔다
+{ const _db=devBar; devBar=function(){ const b=$('devBar'); if(b&&!b.dataset.init){ b.dataset.init=1; if(matchMedia('(max-height:560px)').matches) b.classList.add('mini'); } return _db.apply(this,arguments); }; }
 
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
