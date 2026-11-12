@@ -8,7 +8,7 @@
 
 ## 작업 방법
 ```bash
-python3 dev/rebuild.py                 # dev/src/template.html에 조각 50개를 끼워 index.html 생성 (+이름 겹침 검사, -v: 감싸기 목록)
+python3 dev/rebuild.py                 # dev/src/template.html에 조각 57개를 끼워 index.html 생성 (+이름 겹침 검사, -v: 감싸기 목록)
 python3 -m http.server 8765            # 저장소 맨 위에서. http://localhost:8765/index.html 로 확인
 python3 dev/tests/aplay.py KR          # 한 삶을 끝까지 직접 고르며 도는 시험 (나라 코드를 여러 개 줄 수 있음)
 python3 dev/tests/aendshow.py          # 엔딩 슬라이드를 모두 넘겨 보는 시험
@@ -16,16 +16,19 @@ python3 dev/tests/endL.py x            # 엔딩을 컴퓨터(1366×768)·휴대�
 ```
 시험 스크립트는 Playwright를 쓴다 (`pip install playwright && playwright install chromium`). 외부(https) 요청은 막고 돌리므로 Firebase 없이 **이 기기 저장(localStorage) 방식**으로 동작한다. 로그인·아이디 관리 시험은 `ids.py`가 `Store.fb=false`로 바꿔서 한다.
 
-### 파일 구조 (2026-11-12에 큰 파일 v.html을 조각 50개로 나눔. **v.html은 없다**)
+### 파일 구조 (2026-11-12에 큰 파일 v.html을 조각으로 나눔, 같은 날 밤 54-talk를 단위별로 더 나눔(57개). **v.html은 없다**)
 - `dev/src/template.html` — 빈 틀(head·`<style>`·`<script>` 태그). `<!--#include 경로-->` 줄마다 조각이 들어간다. 이 순서가 실행 순서다.
 - `dev/src/css/` 4개(01-base, 02-ending, 03-warm, 04-readable — 뒤의 것이 앞을 덮어씀). `html/screens.html` — 모든 화면의 뼈대.
 - `dev/src/engine/` 26개 — 화면과 무관한 자료·계산. 01-base(설정·나라 특색), 02-countries(193개국 표), 03-names-places, 04-scenes-base, 10-kr-only, 11-common, 12-regional, 13-jobs, 14-world-map, 15-life-data, 16-result-text, **20-life-class(Life, 저장 호환 — 가장 조심)**, 30-calendar(153KB), 31-family, 32-final-record, 33-institutions, 34-variety, 35-adult-days, 36-country-life2, 37-epidemic, 38-country-events, 39-job-region-events, 40-job-fit, 50-stats2, 51-new-events, 52-convert.
-- `dev/src/ui/` 19개 — 화면 동작. 01-common-store(Store), 02-teacher-records(교사 기록·아이디 관리), 03-login-home(로그인·birthReveal·endWide), 04-teacher-mode, 10/11-pixel-art, 12-world-people(동네 지도 OUT·reachOf·ENTER·조작), 20-life-settings(시간 배율), 21-game-flow(진행·사건 창·저장하기), 30-render(그리기·가림막·미니맵), 31-memory-photos, 40-ending(엔딩 슬라이드), 41-start(시작 + lifeRecord·lifeDetailHTML), 50-stats-ui, 51-hd-character, 52-polish, 53-art-loader(그림·scArtName, atlas.json은 빌드 때 끼움), **54-talk(말 걸기·건물 안·흐르는 시간·나의 기록·개발자 모드·오류 알림·휴대폰 화면 스타일)**, 90-visual-enhancer.
+- `dev/src/ui/` 26개 — 화면 동작. 01-common-store(Store), 02-teacher-records(교사 기록·아이디 관리), 03-login-home(로그인·birthReveal·endWide), 04-teacher-mode, 10/11-pixel-art, 12-world-people(동네 지도 OUT·reachOf·ENTER·조작), 20-life-settings(시간 배율), 21-game-flow(진행·사건 창·저장하기), 30-render(그리기·가림막·미니맵), 31-memory-photos, 40-ending(엔딩 슬라이드), 41-start(시작 + lifeRecord·lifeDetailHTML), 50-stats-ui, 51-hd-character, 52-polish, 53-art-loader(그림·scArtName, atlas.json은 빌드 때 끼움), **54-talk(말 걸기·만져 보기·건물 안·학교 밖 활동)**, 55-life-record-menu(인생 기록 위쪽 메뉴), 56-dev-mode(개발자 모드), 57-error-box(오류 알림), 58-time-flow(흐르는 시간·저절로 정해지는 선택·저장하기), 59-hud-style(미니맵·상태란·알림 카드 스타일), 60-end-picks(엔딩 '나의 기록 고르기'), 61-phone-style(휴대폰 가로 스타일), 90-visual-enhancer.
 - 번호는 폴더 안의 순서일 뿐이고 실제 순서는 template.html이 정한다. 새 조각을 만들면 template.html에 include 줄을 넣는다.
 - 모든 조각은 한 스크립트로 합쳐진다. **맨 바깥 `function 이름`이 두 조각에 있으면 rebuild.py가 멈춘다**(뒤의 것이 앞의 것까지 몰래 덮어써서 예전에 `scImg`로 장면 그림이 깨졌다). 앞 조각의 함수를 일부러 바꿀 때는 `const _x=이름; 이름=function(...){...}` 처럼 감싸고, 감싸는 조각이 뒤에 와야 한다(`python3 dev/rebuild.py -v`로 목록 확인). 예외 `treeSprite`(10번 것은 안 쓰임).
-- 휴대폰 가로 화면·대화창·알림 카드 스타일은 css/가 아니라 ui/54-talk.js·52-polish.js 안에 있다.
+- 휴대폰 가로 화면·대화창·알림 카드 스타일은 css/가 아니라 스크립트가 끼워 넣는다(ui/54·59·61, 52-polish). 54~61은 한 파일이던 talk.js를 순서 그대로 자른 것이라 이름을 공유하고, 순서를 바꾸면 안 된다.
 - `art/` — `spr.webp`(건물·나무·탈것·동물·가구 아틀라스), `tex.webp`(바닥 무늬), `atlas.json`(좌표), `sc/*.webp`(장면 그림, 필요할 때만 받음). `ph/` — 엔딩 사진(GitHub Actions가 `ph/list.json`을 보고 받아 옴).
 - `dev/art-tools/` — 제미나이 그림에서 스프라이트를 잘라 아틀라스를 만드는 스크립트(`cut.py`, `build.py`). 경로가 옛 작업 환경 기준이라 쓰려면 고쳐야 한다.
+
+## 개발 단위 (채팅 하나에 한 단위씩 맡긴다)
+계획서·구조 안내서 아티팩트에 자세히 있다. 요약: **1 운영**(로그인·교사용·학생 아이디·개발자 모드: ui/01~04, 56, 57) / **2 게임 진행** — 2-1 세계·화면(ui/10·11·12·30·52·59·61), 2-2 상호작용(ui/54), 2-3 시간·사건 진행(ui/20·21·58), 2-4 그림(ui/53, art/, dev/art-tools) / **3 엔딩·기록**(ui/40·41·55·60, css/02) / **4 내용(자료)**(engine/ 전체). 단위가 함께 쓰는 곳(저장 형식 `Life.load`, 기록 카드 `lifeRecord`, 건물 `OUT`·`ENTER`·`PLACE_IN`, 사건 형식)을 바꿀 때는 영향받는 단위를 먼저 확인한다.
 
 ## 꼭 지킬 것 (사용자 결정)
 - **본 주소(index.html)에 바로 올린다.** 현재 사이트 버전을 기준으로 고치고, 올리기 전에 `git pull --rebase origin main`을 한다(사진 받기 Actions가 `ph/`에 커밋을 남긴다).

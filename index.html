@@ -9490,11 +9490,11 @@ sceneHTML=function(kind){ const b=scBase(kind); return kind?`<canvas class="scen
 const _popupSc=popup;
 popup=function(tag,txt,fx,after,cls,sc,nt){ if((sc==='life'||sc==='town')&&G.life){ const m=/^(\d+)살/.exec(String(tag||'')); sc=scVar(sc,txt,m?+m[1]:G.life.age,G.life); } return _popupSc(tag,txt,fx,after,cls,sc,nt); };
 
-/* ========== 말 걸기 · 만져 보기 · 학교 밖 활동 · 인생 기록 메뉴 ==========
+/* ========== [2-2 상호작용] 말 걸기 · 만져 보기 · 건물 안 · 학교 밖 활동 ==========
    1) 다가가 말 걸기: 퀘스트가 없어도 가족·선생님·친구·동료·동네 사람·동물과 짧은 말이 오간다 (한 해에 몇 번만 능력치가 조금 오른다)
    2) 만져 보기: 집 안의 물건(부엌·식탁·소파·텔레비전·침대·책상·마당), 학교의 칠판·책장·탁자, 밖의 나무와 밭을 나이에 맞게 가지고 논다
    3) 학교 밖 활동: 6~18살의 작은 선택에 동네·친구·시장·도서관에서 하는 활동을 더한다 (기술)
-   4) 인생 기록: 엔딩의 기록 카드와 '지나온 삶'을 내 정보처럼 위쪽 메뉴로 넘겨 본다 */
+   이 조각 뒤로 같은 번호대의 조각들(55 기록 메뉴 · 56 개발자 모드 · 57 오류 알림 · 58 시간 흐름 · 59 화면 스타일 · 60 나의 기록 고르기 · 61 휴대폰 스타일)이 이어진다. 한 스크립트라 이름을 공유한다. */
 document.head.insertAdjacentHTML('beforeend',`<style>
 #btnAct.t{background:linear-gradient(180deg,#3FA06B 0%,#2E8355 100%)} #btnAct.t::before{content:"A";color:#2E8355}
 .tchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.tchips span{font-size:.78rem;font-weight:700;padding:2px 8px;border-radius:999px;background:#E5F3EA;color:#2F7A4F}
@@ -9820,7 +9820,7 @@ S(13,18,'*','bus','정류장에 청소년 강좌 안내가 붙었다.',[['요리
 S(13,18,'R','nature','마을 어른이 바구니(그물) 짜는 법을 알려 주겠다고 하신다.',[['배운다','t3 r1 D','손끝이 갈라졌지만 한 줄을 끝까지 짰다.'],['다음에 배우겠다고 한다','','다음에 배우겠다고 했다.']]);
 CC=cc0; }
 
-/* ---------- 4) 인생 기록: 위쪽 메뉴로 넘겨 본다 ---------- */
+/* ---------- [3 엔딩·기록] 인생 기록: 위쪽 메뉴로 넘겨 본다 ---------- */
 const REC_TABS=[['sum','한눈에'],['shape','삶의 모양'],['story','이야기'],['mem','기억에 남은 일'],['words','남긴 말']];
 function lifeTabs(l,o){ o=o||{}; const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, mk=x=>x&&{a:x[0],j:x[1],k:x[2],t:x[3],e:x[4],r:x[5],h:x[6]}, H=(l.hist||[]).map(mk), pk=mk(l.peak), nw=l.nw||0;
   const kp=[[`${l.age}세`,`향년 · ${C.n} 기대수명 약 ${l.le||C.le}세`],[l.cause||'—','삶을 마친 이유'],[`${l.n||0}번`,'직접·자동으로 한 선택'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산']];
@@ -9847,7 +9847,7 @@ document.addEventListener('click',e=>{ const b=e.target&&e.target.closest?e.targ
 // '지나온 삶'과 교사용 기록에서도 같은 메뉴로
 lifeDetailHTML=function(l){ return lifeTabs(l); };
 
-/* ---------- 5) 개발자 모드: 나라·나이를 골라 바로 플레이, 엔딩 바로 보기 (저장하지 않는다) ---------- */
+/* ---------- [1 운영] 개발자 모드: 나라·나이를 골라 바로 플레이, 엔딩 바로 보기 (저장하지 않는다) ---------- */
 document.head.insertAdjacentHTML('beforeend',`<style>
 #devP{position:fixed;inset:0;z-index:200;background:rgba(10,16,24,.72);display:grid;place-items:center;padding:16px}#devP[hidden]{display:none}
 #devP .dbox{background:#FBFAF6;color:#1E2B37;border-radius:16px;max-width:44rem;width:100%;max-height:92vh;overflow:auto;padding:18px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
@@ -9920,7 +9920,7 @@ function devAct(a){ const L=G.life;
 
 (function(){ const _rh=renderHud; renderHud=function(){ _rh.apply(this,arguments); if(G.dev&&G.life){ const e=document.querySelector('#devBar .dage'); if(e) e.textContent=`개발자 · ${G.life.age}살`; } }; })();
 
-/* ---------- 오류 알림: 화면에 무엇이 잘못됐는지 보여 주고, 최근 오류를 개발자 모드에서 볼 수 있게 남긴다 ---------- */
+/* ---------- [1 운영] 오류 알림: 화면에 무엇이 잘못됐는지 보여 주고, 최근 오류를 개발자 모드에서 볼 수 있게 남긴다 ---------- */
 document.head.insertAdjacentHTML('beforeend',`<style>#errBox{position:fixed;left:12px;bottom:12px;z-index:400;max-width:min(36rem,92vw);background:#FFF4F2;color:#5A1E18;border:2px solid #C0392B;border-radius:12px;padding:10px 14px;font-size:.85rem;box-shadow:0 10px 26px rgba(0,0,0,.35)}#errBox[hidden]{display:none}#errBox b{display:block;margin-bottom:4px}#errBox code{font-size:.78rem;word-break:break-all;display:block;max-height:6em;overflow:auto}#errBox button{margin-top:6px;font:inherit;font-size:.8rem;padding:3px 10px;border-radius:8px;border:1px solid #C0392B;background:#fff;cursor:pointer}</style>`);
 const ERR_SEEN=new Set();
 function reportErr(e,where){ try{ const msg=String(e&&e.message||e||'알 수 없는 오류').slice(0,200), at=(e&&e.stack?String(e.stack).split('\n').slice(1,3).join(' ').replace(/\s+/g,' ').slice(0,220):''), key=where+msg;
@@ -9932,7 +9932,7 @@ function reportErr(e,where){ try{ const msg=String(e&&e.message||e||'알 수 없
 addEventListener('error',ev=>{ if(ev&&ev.target&&ev.target!==window&&ev.target.tagName) return; reportErr(ev.error||ev.message,'화면'); });
 addEventListener('unhandledrejection',ev=>reportErr(ev.reason,'저장·불러오기'));
 
-/* ---------- 시간은 멈추지 않는다 (학생): 선택 창이 떠 있어도 한 해가 흐르고, 제한 시간이 지나면 저절로 정해진다 ----------
+/* ---------- [2-3 시간·사건 진행] 시간은 멈추지 않는다 (학생): 선택 창이 떠 있어도 한 해가 흐르고, 제한 시간이 지나면 저절로 정해진다 ----------
    큰 사건·큰 갈림길·달력의 고르는 일: 제한 시간(한 해 길이의 1/5, 최소 12초)이 지나면 무작위로 정해진다.
    작은 선택·미션: 제한 시간이 지나면 창이 닫히고, 그해가 끝날 때까지 하지 않으면 '놓친 순간'이 된다.
    교사용·개발자 모드와 '저장하기'·'나가기' 창에서는 예전처럼 시간이 멈춘다. */
@@ -9972,7 +9972,7 @@ function openSave(){ if(!G.life||!G.running||!$('sheet').hidden||dlgOpen()) retu
 $('btnPause').onclick=openSave;
 { const ex=$('btnExit').onclick; $('btnExit').onclick=function(){ G.hardPause=1; return ex.apply(this,arguments); }; }
 
-/* ---------- 화면 다듬기: 미니맵·상태란 폭을 줄이고 반투명하게, 작은 사건은 오른쪽 위에서 충분히 오래 ---------- */
+/* ---------- [2-1 세계·화면] 화면 다듬기: 미니맵·상태란 폭을 줄이고 반투명하게, 작은 사건은 오른쪽 위에서 충분히 오래 ---------- */
 document.head.insertAdjacentHTML('beforeend',`<style>
 #mini{width:168px!important;height:124px!important}
 @media (min-width:900px) and (min-height:560px){ #mini{width:182px!important;height:134px!important} .hud{max-width:660px!important} }
@@ -9993,7 +9993,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .decbar span{position:relative;display:block;text-align:center;font-size:.84rem;font-weight:700;line-height:26px;color:#283038}
 </style>`);
 
-/* ---------- 엔딩: 나의 기록 고르기 (마지막 장 앞) · 개인 기록에 장면과 한 마디로 남기기 ---------- */
+/* ---------- [3 엔딩·기록] 엔딩: 나의 기록 고르기 (마지막 장 앞) · 개인 기록에 장면과 한 마디로 남기기 ---------- */
 // 장면 그림 (기록에는 나라·사는 곳·성별만 있으므로 그것으로 그림 이름을 정한다)
 function scThumb(kind,who,cls){ let n=null; try{ n=scArtName(kind,who)||scArtName('life',who); }catch(e){}
   const tt=(typeof SCENE_TITLE!=='undefined'&&SCENE_TITLE[String(kind||'').split('@')[0]])||'삶';
@@ -10050,7 +10050,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .lstx{display:flex;flex-direction:column;gap:2px;min-width:0}.lstx q{font-weight:700;color:#B4501E}.lstx em{font-size:.78rem;opacity:.65;font-style:normal}
 </style>`);
 
-/* ---------- 휴대폰 가로(낮은 화면): 글씨·창을 작게, 화면 가운데는 비워 둔다 ---------- */
+/* ---------- [2-1 세계·화면] 휴대폰 가로(낮은 화면): 글씨·창을 작게, 화면 가운데는 비워 둔다 ---------- */
 document.head.insertAdjacentHTML('beforeend',`<style>
 @media (orientation:landscape) and (max-height:560px){
   .hud{max-width:min(54vw,440px)!important}
