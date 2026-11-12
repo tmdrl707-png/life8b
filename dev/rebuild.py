@@ -6,7 +6,7 @@ import os
 H=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(H,'src'); ROOT=os.path.dirname(H)
 rd=lambda p:open(p,encoding='utf8').read()
 s=rd(os.path.join(SRC,'v.html'))
-PIECES=[('stats2.js','/* ========== 능력치 2판'),('new_ev.js','/* ===== 새 사건 (능력치 2판)'),('conv.js','/* ===== 기존 사건의 효과를 새 체계로'),('ui2.js','/* ========== 능력치 2판 화면'),('hd.js','/* ========== 고해상도 캐릭터'),('ui3.js','/* ========== 화면 다듬기 (3판)'),('art.js','/* ========== 그림 자원 (제미나이')]
+PIECES=[('stats2.js','/* ========== 능력치 2판'),('new_ev.js','/* ===== 새 사건 (능력치 2판)'),('conv.js','/* ===== 기존 사건의 효과를 새 체계로'),('ui2.js','/* ========== 능력치 2판 화면'),('hd.js','/* ========== 고해상도 캐릭터'),('ui3.js','/* ========== 화면 다듬기 (3판)'),('art.js','/* ========== 그림 자원 (제미나이'),('talk.js','/* ========== 말 걸기 · 만져 보기')]
 ENDS=[m for _,m in PIECES]+['</script>']
 for name,mark in PIECES:
     a=s.index(mark)
