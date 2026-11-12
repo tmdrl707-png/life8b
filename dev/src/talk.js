@@ -233,7 +233,7 @@ function lifeTabs(l,o){ o=o||{}; const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, mk=
     ${tabs.map(([k],i)=>`<div class="rpane" data-r="${k}"${i?' hidden':''}>${panes[k]}${i<tabs.length-1?`<button type="button" class="btn rnext" data-go="${tabs[i+1][0]}">다음: ${tabs[i+1][1]} ▶</button>`:''}</div>`).join('')}</div>`; }
 function recTab(w,k){ w.querySelectorAll(':scope>.rtabs button').forEach(x=>{ const on=x.dataset.r===k; x.classList.toggle('on',on); x.setAttribute('aria-selected',on); if(on) x.scrollIntoView({block:'nearest',inline:'center'}); });
   w.querySelectorAll(':scope>.rpane').forEach(p=>p.hidden=p.dataset.r!==k); }
-document.addEventListener('click',e=>{ const b=e.target.closest('.rtabs button, .rpane .rnext'); if(!b) return; const w=b.closest('.rtabs-wrap'); if(!w) return; e.preventDefault(); recTab(w,b.dataset.r||b.dataset.go); });
+document.addEventListener('click',e=>{ const b=e.target&&e.target.closest?e.target.closest('.rtabs button, .rpane .rnext'):null; if(!b) return; const w=b.closest('.rtabs-wrap'); if(!w) return; e.preventDefault(); recTab(w,b.dataset.r||b.dataset.go); });
 // '지나온 삶'과 교사용 기록에서도 같은 메뉴로
 lifeDetailHTML=function(l){ return lifeTabs(l); };
 
@@ -269,7 +269,9 @@ function openDev(){ const d=devEl(); d.hidden=false;
     <div class="drow"><button class="btn primary" id="devPlay">이 나이에서 플레이</button><button class="btn" id="devEndHere">이 나이에서 끝난 삶의 엔딩</button><button class="btn" id="devEndAll">끝까지 자동으로 살고 엔딩</button></div>
     <p class="err" id="devErr"></p>
     <p class="note">플레이 중에는 화면 위의 개발자 막대로 1년·5년 건너뛰기, 원하는 나이로 가기, 큰 사건 바로 열기, 엔딩 보기를 할 수 있어요. 엔딩에서는 처음 장·마지막 장으로 바로 갈 수 있어요.</p>
+    ${(()=>{ const L=ls('life8b_errs')||[]; return L.length?`<details><summary class="note">이 기기에서 최근에 난 오류 ${L.length}개</summary><ul class="note">${L.map(x=>`<li>${new Date(x.t).toLocaleString('ko-KR')} · ${esc(x.w)} · ${esc(x.m)} <small>${esc(x.at||'')} [${esc(x.scr||'')}]</small></li>`).join('')}</ul><button class="btn ghost" id="devErrClr">오류 기록 지우기</button></details>`:''; })()}
     <div class="drow"><button class="btn ghost" id="devX">닫기</button></div></div>`;
+  if($('devErrClr')) $('devErrClr').onclick=()=>{ ls('life8b_errs',null); openDev(); };
   $('devC').value=DEV.c; $('devC').onchange=()=>DEV.c=$('devC').value; $('devA').oninput=()=>DEV.age=clamp(+$('devA').value||0,0,100);
   d.querySelectorAll('.seg').forEach(sg=>sg.onclick=e=>{ const b=e.target.closest('button'); if(!b) return; DEV[sg.dataset.k]=sg.dataset.k==='set'?b.dataset.v:+b.dataset.v; [...sg.children].forEach(x=>x.classList.toggle('on',x===b)); });
   d.querySelector('.q').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; DEV.age=+b.dataset.a; $('devA').value=DEV.age; };
@@ -307,3 +309,15 @@ function devAct(a){ const L=G.life;
   const _sh=show; show=function(n){ _sh(n); if(G.dev&&n!=='game'&&n!=='end'){ G.dev=false; } setTimeout(devBar,0); }; })();
 
 (function(){ const _rh=renderHud; renderHud=function(){ _rh.apply(this,arguments); if(G.dev&&G.life){ const e=document.querySelector('#devBar .dage'); if(e) e.textContent=`개발자 · ${G.life.age}살`; } }; })();
+
+/* ---------- 오류 알림: 화면에 무엇이 잘못됐는지 보여 주고, 최근 오류를 개발자 모드에서 볼 수 있게 남긴다 ---------- */
+document.head.insertAdjacentHTML('beforeend',`<style>#errBox{position:fixed;left:12px;bottom:12px;z-index:400;max-width:min(36rem,92vw);background:#FFF4F2;color:#5A1E18;border:2px solid #C0392B;border-radius:12px;padding:10px 14px;font-size:.85rem;box-shadow:0 10px 26px rgba(0,0,0,.35)}#errBox[hidden]{display:none}#errBox b{display:block;margin-bottom:4px}#errBox code{font-size:.78rem;word-break:break-all;display:block;max-height:6em;overflow:auto}#errBox button{margin-top:6px;font:inherit;font-size:.8rem;padding:3px 10px;border-radius:8px;border:1px solid #C0392B;background:#fff;cursor:pointer}</style>`);
+const ERR_SEEN=new Set();
+function reportErr(e,where){ try{ const msg=String(e&&e.message||e||'알 수 없는 오류').slice(0,200), at=(e&&e.stack?String(e.stack).split('\n').slice(1,3).join(' ').replace(/\s+/g,' ').slice(0,220):''), key=where+msg;
+    if(/Failed to fetch|NetworkError|Load failed|network/i.test(msg)) return; console.error('[80억 분의 1]',where,e);
+    const log=ls('life8b_errs')||[]; if(!ERR_SEEN.has(key)){ log.unshift({t:Date.now(),w:where,m:msg,at,scr:[...document.querySelectorAll('section,#s-game,#s-end')].filter(x=>!x.hidden).map(x=>x.id).join(',')}); ls('life8b_errs',log.slice(0,10)); }
+    if(ERR_SEEN.has(key)) return; ERR_SEEN.add(key);
+    let b=$('errBox'); if(!b){ b=document.createElement('div'); b.id='errBox'; document.body.appendChild(b); }
+    b.innerHTML=`<b>화면에 문제가 생겼어요 (${esc(where)}). 게임은 계속 이어집니다.</b>이 상자를 캡처해서 알려 주시면 고칠 수 있어요.<code>${esc(msg)}${at?' · '+esc(at):''}</code><button type="button">닫기</button>`; b.hidden=false; b.querySelector('button').onclick=()=>b.hidden=true; }catch(_){ } }
+addEventListener('error',ev=>{ if(ev&&ev.target&&ev.target!==window&&ev.target.tagName) return; reportErr(ev.error||ev.message,'화면'); });
+addEventListener('unhandledrejection',ev=>reportErr(ev.reason,'저장·불러오기'));
