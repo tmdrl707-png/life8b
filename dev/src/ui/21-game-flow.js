@@ -291,7 +291,7 @@ addEventListener('visibilitychange',()=>{ if(document.hidden&&G.running) persist
 function targets(){
   const L=G.life, out=[]; if(!L||!L.cur) return out;
   L.cur.scenes.forEach((c,k)=>{ if(!c.done){ const sp=SCENES[c.i].spot, p=scenePos(c.i); out.push({type:'s',k,m:p.m,p:p.p,n:p.n,key:SPOTS[sp].z==='H'?sp:(sp==='elem'||sp==='mid'||sp==='work')?'p'+(c.i%INT.P.length):null}); } });
-  if(L.q){ const d=QUESTS[L.q.i], p=L.q.st===1?{m:'out',p:OUT.s[d.target],n:L.spotName(d.target)}:posOfSpot(d.giver,0); out.push({type:'q',m:p.m,p:p.p,n:L.q.st===1?p.n:giverName(d.giver),key:L.q.st===1?null:(SPOTS[d.giver].z==='H'?d.giver:'p0')}); }
+  if(L.q){ const d=QUESTS[L.q.i], p=L.q.st===1?Object.assign(posOfSpot(d.target,0),{n:L.spotName(d.target)}):posOfSpot(d.giver,0); out.push({type:'q',m:p.m,p:p.p,n:L.q.st===1?p.n:giverName(d.giver),key:L.q.st===1?null:(SPOTS[d.giver].z==='H'?d.giver:'p0')}); }
   return out;
 }
 // 한 프레임에서 오류가 나도 게임이 멈추지 않게: 오류는 화면에 알리고 다음 프레임을 이어 간다

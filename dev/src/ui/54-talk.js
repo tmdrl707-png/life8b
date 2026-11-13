@@ -342,7 +342,7 @@ openQuest=function(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return
                 :[{who,t:pickOne(['그래, 다음에 부탁할게.','괜찮아, 바쁘구나.'])}]; }}]);
   } else if(q.st===1){
     const p=L.questP();
-    dlgRun([{who:'',t:L.tx(d.at),opts:['해 본다'+qPctText(p)],then:()=>{ const r=L.questDo(); renderHud(); persist();
+    dlgRun([{who:W.map!=='out'&&W.map!=='home'&&typeof PLACE_IN!=='undefined'&&PLACE_IN[W.map]?PLACE_IN[W.map].n[0]:'',t:L.tx(d.at),opts:['해 본다'+qPctText(p)],then:()=>{ const r=L.questDo(); renderHud(); persist();
       return [{who:'',t:r.ok?`잘 해냈다. ${who}에게 돌아가 알리자.`:`뜻대로 되지 않았다. 일단 ${who}에게 돌아가자.`}]; }}]);
   } else {
     const s0=Object.assign({},L.s), r=L.questEnd(), up=qChips(s0,L.s); renderHud(); persist();

@@ -47,3 +47,7 @@ function miniRect(){ const r=reachOf(G.life.age), c=$('mini'), asp=c?c.height/c.
   const x=RW<=w?x0+(RW-w)/2:clamp(cx-w/2,x0,x1-w), y=RH<=h?y0+(RH-h)/2:clamp(cy-h/2,y0,y1-h);
   return [x,y,w,h]; }
 (()=>{ const _dmF=drawMini; drawMini=function(t){ const vr=viewRect; viewRect=miniRect; try{ return _dmF.apply(this,arguments); } finally{ viewRect=vr; } }; })();
+// 4) 미션·작은 선택의 장소가 들어갈 수 있는 건물(가게·도서관·식당 …)이면, 밖의 문 앞이 아니라 건물 안 주인 곁에서 한다
+(()=>{ const _pos=posOfSpot; posOfSpot=function(key,idx){ const r=_pos(key,idx);
+  try{ if(r.m==='out'&&typeof PLACE_IN!=='undefined'&&PLACE_IN[key]&&(key in ENTER)&&OUT.b[key]){ const PI=PLACE_IN[key], n=npcFind(key,'p0'); return {m:key,p:n?[n.x,n.y]:PI.p0.slice(),n:G.life.spotName(key)+' · '+PI.n[0]}; } }catch(e){}
+  return r; }; })();
