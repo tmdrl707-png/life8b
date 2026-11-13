@@ -37,7 +37,7 @@ class Life{
       spouse:P.spouse?P.spouse.n:'배우자', kid:k?k.n:'아이', town:this.town||C.city, elem:sch.elem||'초등학교', mid:sch.mid||'중학교', high:(this.f.hs==='voc'?sch.voc:sch.high)||'고등학교', univ:sch.univ||'대학교', co:this.f.co||'일터', veh:C.veh.n, sea:this.spotName('sea'), lwork:this.set==='R'&&!/농|어부|고기|양식|목동|양치기|가축|목장|가우초|재배|낙타|순록/.test(C.work)?'농사':C.work};
     return this.relTag(String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|과\(와\)|를\(을\)|가\(이\)|는\(은\))?/g,(m,k,p)=>{ const w=map[k]; if(w==null) return m; if(!p) return w;
       const pair={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로'],'과(와)':['과','와'],'를(을)':['을','를'],'가(이)':['이','가'],'는(은)':['은','는']}[p]; return josa(w,pair[0],pair[1]); }).split(C.fest+' 날').join(/(날|일)$/.test(C.fest)?C.fest:C.fest+' 날')); }
-  static load(o){ const L=Object.assign(Object.create(Life.prototype),o); L.pending=null;
+  static load(o){ const L=Object.assign(Object.create(Life.prototype),o); L.pending=null; if(!Array.isArray(L.recent)) L.recent=[];
     if(!L.c){ L.c='KR'; L.f.elem=L.age>=7?1:0; L.f.sec=L.age>=13?1:0; }
     if(!COUNTRIES[L.c]) L.c='KR';
     if(!L.fam){ try{ initFamily(L,{sib:L.sib,dad:1,keep:1}); L.fam.sibs.forEach(s=>{ if(s.d<=L.age) s.born=1; }); L.refreshSib(); }catch(e){} }
@@ -87,7 +87,7 @@ class Life{
     const a=this.age, n=n0||(a<3?2:3), el=[], dy=!!this.f.dying;
     SCENES.forEach((sc,i)=>{ if((sc.req==='dying')!==dy) return; if(this.inC(sc)&&a>=sc.a[0]&&a<=sc.a[1]&&(sc.set==='*'||sc.set===this.set)&&this.spotOK(sc.spot)&&this.reqOK(sc.req)&&(!this.sick||SPOTS[sc.spot].z==='H')) el.push(i); });
     for(let i=el.length-1;i>0;i--){ const j=Math.floor(R()*(i+1)); [el[i],el[j]]=[el[j],el[i]]; }
-    el.sort((x,y)=>this.recent.indexOf(x)-this.recent.indexOf(y));   // 안 해 본 것(-1)이 먼저
+    const rc=this.recent||(this.recent=[]); el.sort((x,y)=>rc.indexOf(x)-rc.indexOf(y));   // 안 해 본 것(-1)이 먼저
     // 여섯 살부터는 집 안의 일을 한 해에 하나까지만 골라, 밖으로 나가 보게 한다
     const out=[], spots=Object.assign({},skip||{}); let home=Object.keys(spots).filter(k=>SPOTS[k].z==='H').length;
     for(const pass of [0,1]) for(const i of el){ const sp=SCENES[i].spot, isH=SPOTS[sp].z==='H'; if(spots[sp]||out.length>=n) continue; if(pass===0&&a>=6&&isH&&home>=1&&!dy&&!this.sick) continue; spots[sp]=1; if(isH) home++; out.push(i); }
