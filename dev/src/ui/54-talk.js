@@ -208,7 +208,7 @@ function touchables(){ const L=G.life, a=L.age, m=W.map, out=[], st=stg(a);
   if(typeof PLACE_IN!=='undefined'&&PLACE_IN[m]){ PLACE_IN[m].f.forEach(f=>{ if(f[5]&&playPool(f[5],st).length) out.push({k:f[5],r:f.slice(1,5)}); }); return out; }
   if(a>=19) return out;
   if(m==='home'){ HOME.f.forEach(f=>out.push({k:f[0],r:f.slice(1)})); out.push({k:'yard',p:HOME.s.yard}); }
-  else if(m==='elem'||m==='mid'){ if(a>=6) INT.f.forEach(f=>{ const k=f[0]==='table'?'table2':f[0]; if(PLAY[k]) out.push({k,r:f.slice(1)}); }); }
+  else if(m==='elem'||m==='mid'||m==='high'){ if(a>=6) INT.f.forEach(f=>{ const k=f[0]==='table'?'table2':f[0]; if(PLAY[k]) out.push({k,r:f.slice(1)}); }); }
   else if(m==='out'){ if(a>=2) OUT.trees.forEach(t=>out.push({k:'tree',p:t})); if(a>=6&&L.set==='R') OUT.fields.forEach(f=>out.push({k:'field',r:f})); }
   return out.filter(o=>PLAY[o.k]&&PLAY[o.k][stg(a)]); }
 const distTo=o=>o.p?Math.hypot(o.p[0]-W.x,o.p[1]-W.y):Math.hypot(Math.max(o.r[0]-W.x,0,W.x-o.r[0]-o.r[2]),Math.max(o.r[1]-W.y,0,W.y-o.r[1]-o.r[3]));

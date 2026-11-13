@@ -22,7 +22,8 @@ const OUT={w:124,h:52, RY:24,
 for(const k in OUT.b){ const b=OUT.b[k]; if(!OUT.s[k]) OUT.s[k]=[b[0]+b[2]/2,b[1]+b[3]+.6]; }
 const natureWater=()=>{ const p=OUT.patch.nature; return [p[0]+.6,p[1]+.6,p[2]-1.2,p[3]-1.2]; };
 // 나이에 따라 갈 수 있는 곳: 처음 집 밖에 나서면 동네 한 귀퉁이만, 자랄수록 넓어진다 (갈 수 없는 곳은 가려 둔다)
-function reachOf(a){ return a<10?[0,0,31.9,23.75]:a<13?[0,0,31.9,OUT.h]:a<19?[0,0,61.9,OUT.h]:[0,0,OUT.w,OUT.h]; }
+// 갈 수 있는 곳(11-13 다시 짬): 9살까지 동네 위쪽 → 12살까지 동네 아래쪽(아래 큰길 전까지) → 15살까지 큰길 건너(중학교) → 18살까지 아래 큰길 너머(고등학교) → 어른은 모두
+function reachOf(a){ return a<10?[0,0,31.9,23.75]:a<13?[0,0,31.9,40.5]:a<16?[0,0,61.9,40.5]:a<19?[0,0,61.9,OUT.h]:[0,0,OUT.w,OUT.h]; }
 function inReach(x,y){ const r=reachOf(G.life.age); return x>=r[0]&&x<=r[0]+r[2]&&y>=r[1]&&y<=r[1]+r[3]; }
 function reachMsg(x,y){ const a=G.life.age, r=reachOf(a); return '아직은 혼자 가기엔 먼 곳이에요.'; }
 const reachAge=a=>a<10?10:a<13?13:a<19?19:null;
@@ -71,11 +72,11 @@ const PERSON_KEYS=['mom','dad','gran','sib','spouse','kid'];
 // 장면·사람이 있는 위치: 사람은 돌아다니므로 지금 서 있는 곳
 function posOfSpot(key,idx){
   if(SPOTS[key].z==='H'){ const n=PERSON_KEYS.includes(key)?npcFind('home',key):null; return {m:'home',p:n?[n.x,n.y]:HOME.s[key],n:G.life.spotName(key)}; }
-  if(key==='elem'||key==='mid'||key==='work'){ const i=(idx||0)%INT.P.length, n=(i===0||i===2)?npcFind(key,'p'+i):null; return {m:key,p:n?[n.x,n.y]:INT.P[i],n:G.life.spotName(key)+' · '+intNames(key)[i]}; }
+  if(key==='elem'||key==='mid'||key==='high'||key==='work'){ const i=(idx||0)%INT.P.length, n=(i===0||i===2)?npcFind(key,'p'+i):null; return {m:key,p:n?[n.x,n.y]:INT.P[i],n:G.life.spotName(key)+' · '+intNames(key)[i]}; }
   return {m:'out',p:OUT.s[key],n:G.life.spotName(key)};
 }
 const scenePos=i=>posOfSpot(SCENES[i].spot,i);
-const giverName=k=>(k==='elem'||k==='mid')?'선생님':k==='work'?intNames('work')[0]:G.life.spotName(k);
+const giverName=k=>(k==='elem'||k==='mid'||k==='high')?'선생님':k==='work'?intNames('work')[0]:G.life.spotName(k);
 const inRect=(x,y,r,p)=>x>r[0]-(p||0)&&x<r[0]+r[2]+(p||0)&&y>r[1]-(p||0)&&y<r[1]+r[3]+(p||0);
 const onRoad=(x,y,pad)=>OUT.roads.some(r=>inRect(x,y,r,pad));
 function solidsFor(map){
@@ -105,7 +106,7 @@ function tryMove(dx,dy){
     else if(W.map==='home'&&isSick()){ W.y=9.1; say(L.f.dying?'몸이 많이 약해져 집 밖으로 나갈 수 없어요.':'몸이 아파 집에서 쉬어야 해요. 나을 때까지 기다려요.'); }
     else { const d=doorOf(W.map); W.map='out'; W.x=d[0]; W.y=d[1]+.9; W.dir=0; } }
   else if(!inside&&dy<0) for(const k in ENTER){ const d=doorOf(k); if(Math.abs(W.x-d[0])<.6&&W.y>d[1]&&W.y<d[1]+.45){   // 문 안으로
-    if(k==='elem'&&!(L.age>=7&&L.age<=12&&L.f.elem)){ say(ENTER.elem); break; } if(k==='work'&&!L.f.job){ say(ENTER.work); break; }
+    if(k==='elem'&&!(L.age>=7&&L.age<=12&&L.f.elem)){ say(ENTER.elem); break; } if(k==='high'&&!(L.age>=16&&L.age<=18&&L.f.hs)){ say('고등학교는 그 학교 학생만 들어갈 수 있어요.'); break; } if(k==='work'&&!L.f.job){ say(ENTER.work); break; }
     W.map=k; W.x=IDOOR[0]; W.y=8.6; W.dir=3; W.car=false; break; } }
 }
 let lastSay=0; function say(t){ const n=Date.now(); if(n-lastSay<2600) return; lastSay=n; toast(t); }

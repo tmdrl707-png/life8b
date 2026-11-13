@@ -84,7 +84,7 @@ function kindOf(key){ const L=G.life, U=visU(L), C=L.C, rg=C.rg, code=C.code, T=
       if(!U&&rg==='AF'&&T>=3) return 'flat';                                  // 아프리카에서 살림이 나은 나라의 시골: 시멘트 집
       if(!U&&rg==='LA'&&T<=2) return 'tin';
       return C.home[U?0:1];
-    case 'elem': case 'mid': return poor||R2?'schoolS':'school';
+    case 'elem': case 'mid': case 'high': return poor||R2?'schoolS':'school';
     case 'shop': return (tin&&!U)||poor?'tin':'shop';
     case 'study': return U&&T>=2&&!(T===2&&C.gni<2)?'office':'hall';
     case 'market': return 'market';

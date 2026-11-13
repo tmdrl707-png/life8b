@@ -86,7 +86,7 @@ function qzSpotAt(){ const L=G.life, m=W.map; if(!L||W.car) return null;
 })();
 // 학교에 처음 다닐 때(그리고 중학교·고등학교에 올라갈 때) 한 번만: 내 자리를 파란 표시로 알려 준다
 const qzBand=a=>a<=12?'e':a<=15?'m':'h';
-function qzIntro(L){ if(!qzCan(L)) return null; const a=L.age, sch=a<=12?'elem':'mid'; if(a<=12?!L.f.elem:!L.f.sec) return null;
+function qzIntro(L){ if(!qzCan(L)) return null; const a=L.age, sch=a<=12?'elem':a>=16&&L.f.hs?'high':'mid'; if(a<=12?!L.f.elem:a>=16?!L.f.hs:!L.f.sec) return null;
   const Q=L.f.quiz||{}; if(Q.band===qzBand(a)) return null; const d=INT.f[MY_DESK];
   return {type:'q',qz:1,mode:'s',m:sch,p:[d[1]+d[3]/2,d[2]+d[4]+.75],n:'내 자리 · 문제 풀기',lab:'내 자리 · 문제 풀기',key:null}; }
 (()=>{ const _tg=targets; targets=function(){ const out=_tg(); try{ const L=G.life, t=L&&L.cur&&qzIntro(L); if(t){ out.push(t);
