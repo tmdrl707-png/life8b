@@ -157,3 +157,7 @@
 - 빈 곳 채움: `grad_AF`(글자 없는 판으로 바꿈), `pet_WE`·`pet_SE`·`pet_ME`, `harvest_WE`, `house_WE`, `noschool_SE`·`noschool_ME`·`noschool_LA`.
 - 지역별 재난 13장: `flood_`SA·SE·AF·LA, `drought_`AF·SA·SE, `storm_`LA·SE·SA·ME·WE, `fire_WE`. 지역판이 있으면 그것을, 없으면 예전 그림을 쓴다.
 - 확인: 10개 지역 × 4개 나이 × 16개 종류(640가지)에서 빠진 그림 0, 엔딩·말 걸기·시간 흐름 시험 통과.
+
+### 장면 그림 14장 더하기 (11월 13일 낮, 계정 3개를 번갈아 씀)
+- 제미나이 계정 tmdrl101·404·505(모두 프로, 한 크롬 프로필에 로그인)를 한 탭에서 `/u/1`·`/u/2`·`/u/3`로 바꿔 가며 만들었다(배경 탭은 멈춰서 동시 작업이 안 된다).
+- 지역별 지진 5장(`quake_`LA·ME·SE·WE·SA), 더위 6장(`heat_`AF·SA·ME·SE·LA·WE), 추위 3장(`cold_`WE·SA·LA). 전체 292장. 지역판이 없는 지역은 예전 그림을 쓴다.
