@@ -94,7 +94,7 @@ function qzIntro(L){ if(!qzCan(L)) return null; const a=L.age, sch=a<=12?'elem':
 function openQuiz(nr){ if(dlgOpen()) return; const L=G.life, gen=nr.mode==='g'; if(!gen&&!qzCan(L)) return;
   const Q=L.f.quiz||(L.f.quiz={n:0,ok:0,u:''}), Y=tkYear(L); Y.qz=Y.qz||0; if(!gen) Q.band=qzBand(L.age);
   const p=gen?qzMakeGen(L):qzMake(L), who=gen?`${nr.n||'도서관'} · 상식 · ${p.unit}`:`${nr.n||'내 자리'} · ${qzGradeName(p.g)} ${p.unit}`;
-  dlgRun([{who,t:p.q,opts:p.opts,then:i=>{ const ok=p.opts[i]===p.ans; Q.n++; if(gen) Q.gu=p.unit; else Q.u=p.unit; if(ok) Q.ok++;
+  dlgRun([{who,t:p.q,opts:p.opts,then:i=>{ const ok=p.opts[i]===p.ans; if(ok&&!gen&&typeof L.acInit==='function'){ L.acInit(); L.ac=clamp(L.ac+.6,5,98); } Q.n++; if(gen) Q.gu=p.unit; else Q.u=p.unit; if(ok) Q.ok++;
     let up=[], tail=''; if(Y.qz<QZ_CAP){ Y.qz++; up=tinyGain(L,gen?{k:ok?.4:.1,e:ok?.25:0}:{k:ok?.55:.12},''); } else tail=' (올해는 문제로 오르는 지식이 다 찼어요)';
     if(Y.qz===1&&ok) L.remember({a:L.age,t:gen?`도서관에서 책을 읽다가 ${p.unit}에 대해 새로 알았다.`:`내 자리에서 ${p.unit} 문제를 풀었다.`,sp:gen?'lib':'desk'});
     renderHud(); persist();

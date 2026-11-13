@@ -1819,7 +1819,7 @@ M(9,12,'*',null,'과학 발명 대회가 열린다.',[['엉뚱한 아이디어�
 M(8,14,'R',null,'다니던 학교가 학생이 줄어 문을 닫는다고 한다.',[['먼 학교까지 버스로 다닌다','h D','먼 길이었지만 새 친구들을 만났다.','r4 k2','통학이 길어 늘 피곤했다.','h-4'],['마을 어른들과 학교 살리기에 나선다','r B','이야기가 알려져 학교가 한 해 더 열렸다.','r6 j5','끝내 학교는 문을 닫았다. 마지막 졸업식에서 모두 울었다.','j-5 r3']]);
 M(8,14,'U',null,'살던 동네가 재개발되어 이사를 가야 한다.',[['새 동네에서 먼저 인사한다','r B','새 동네에서 금세 친구를 사귀었다.','r5 j3','한동안 혼자 등교했다.','r-4 j-2'],['옛 친구들과 계속 연락한다','r K','멀어져도 이어지는 우정이 있다는 걸 알았다.','r4 j2','연락은 점점 뜸해졌다.','r-3']]);
 M(13,15,'*',null,'좋아하는 사람이 생겼다.',[['용기 내어 고백한다','j r B','서툰 고백이 받아들여졌다.','j9 r3','거절당했다. 며칠 동안 밥맛이 없었다.','j-6'],['마음을 간직한다','D','마음을 간직한 채 좋은 친구로 남았다.','r3 j2','말 한마디 못 한 것이 오래 아쉬웠다.','j-3']]);
-M(13,18,'*',null,'성적이 갑자기 떨어졌다.',[['공부 방법을 바꿔 본다','k D','새 방법이 맞아 성적이 올랐다.','k6 j4','쉽게 오르지 않았다. 그래도 포기하지 않았다.','k2 j-2'],['선생님께 상담을 청한다','r B','선생님이 내게 맞는 길을 함께 찾아 주셨다.','k4 r3','용기 내 찾아갔지만 뾰족한 수는 없었다.','j-2']]);
+M(13,18,'*',null,'성적이 갑자기 떨어졌다. 지난 시험보다 평균이 10점 넘게 내려갔다.',[['공부 방법을 바꿔 본다','k D','새 방법이 맞아 성적이 올랐다.','k6 j4','쉽게 오르지 않았다. 그래도 포기하지 않았다.','k2 j-2'],['선생님께 상담을 청한다','r B','선생님이 내게 맞는 길을 함께 찾아 주셨다.','k4 r3','용기 내 찾아갔지만 뾰족한 수는 없었다.','j-2']]);
 M(13,18,'*',null,'집안 형편이 갑자기 어려워졌다.',[['일을 도와 집에 보탠다','h D','힘들었지만 집에 보탬이 되었다.','r5 j2 h-2','무리하다 몸살이 났다.','h-5 k-2'],['장학금에 도전한다','k D','장학금을 받았다. 부모님이 눈물을 보이셨다.','k4 j6 r3','장학금 심사에서 아깝게 떨어졌다.','j-4']]);
 M(14,18,'*',null,'큰 대회에 나갈 기회가 왔다.',[['도전한다','k B','본선에 올랐다. 세상이 넓다는 걸 알았다.','j7 k4','예선에서 떨어졌다. 그래도 그 무대는 잊히지 않았다.','j-2 k2'],['실력을 더 쌓고 다음을 노린다','k D','조용히 쌓은 실력이 자신감이 되었다.','k5','망설이는 사이 기회가 지나갔다.','j-3']]);
 M(15,18,'*',null,'친구들이 수업을 빠지고 놀러 가자고 한다.',[['거절하고 수업에 들어간다','k D','친구들은 투덜댔지만 다음 날 아무 일 없었다.','k3','거절한 뒤 한동안 어색했다.','r-3 k2'],['다 같이 선생님께 솔직히 말한다','r B','선생님이 현장 학습으로 바꿔 주셨다.','r5 j4','혼이 났다. 그래도 속은 시원했다.','j-2 r2'],['같이 수업을 빠지고 놀러 간다','j C','아무도 모르게 실컷 놀았다. 그런데 그날 배운 부분이 시험에 나왔다.','j5 r3 k-3','선생님께 들켜 반성문을 썼다. 집에도 연락이 갔다.','j-4 k-2 r-1']]);
@@ -2856,7 +2856,7 @@ class Life{
       if(KR&&f.hsWish==='sp'){ const nm=`${this.town||C.city} ${pickOne(['과학','외국어','국제'])}고등학교`; opts.unshift(o(`${nm}(특목고)에 지원한다`,clamp(.08+Phi((this.acInit()-62)/12)*.7,.05,.85),[`${nm}에 합격했다! 합격 문자를 받고 가족 모두가 소리를 질렀다.`,{k:5,j:6},()=>{f.hs='gen'; sch.high=nm}],[`${nm}에는 떨어졌다. ${sch.high}(일반고)로 배정되었다.`,{j:-4},()=>{f.hs='gen'}])); }
       if(KR&&f.hsWish==='voc') opts.reverse();
       if(!U){ const city=C.city; opts.push(o(`${city}의 고등학교로 떠난다`,.3+s.k/100*.4+L.w*.15+cap(t.B,30)*.005,[`${city}의 고등학교에 합격해 기숙사 생활을 시작했다.`,{k:5,r:-4},()=>{f.hs='gen'; sch.high=`${city} ${pickOne(['중앙','제1','국립'])} 고등학교`}],[`합격하지 못해 ${sch.high}에 갔다.`,{j:-4},()=>{f.hs='gen'}])); }
-      return {q:'어느 고등학교에 갈까?',opts}; }
+      return {q:`${josa(sch.mid,'을','를')} 마쳤다. 어느 고등학교에 갈까?`,opts}; }
     if(a===19||(a===21&&f.retry)){ const sy=sysOf(this), KR=this.c==='KR', q0=f.uex!=null?f.uex:Phi((this.acInit()-50)/17)*.9+.05, again=a===21;
       const base=KR?.3:[-.15,-.02,.15,.3][C.tier-1], pU=base+q0*.5+L.w*.12+cap(t.D,40)*.004+(f.hs==='gen'?.05:0)+(again?.05:0), un=pickUnivQ(this,q0), mj=f.major||pickOne(MAJORS_U);
       const enter=(nm)=>()=>{ f.univ=1; f.school=1; f.univA=a; f.retry=0; sch.univ=nm; f.major=mj; };
@@ -3456,7 +3456,7 @@ Object.assign(Life.prototype,{
     if(kind==='dict'){ const s=Math.round(clamp(55+p*50+gauss()*6,30,100)/10)*10; return {p,t:`받아쓰기 ${s}점.${s===100?' 처음으로 100점을 받아 냉장고에 붙였다.':s<60?' 틀린 글자를 열 번씩 다시 썼다.':''}`}; }
     if(kind==='unit') return {p,t:`${v.sub} ${sc(52+p*46)}점.`};
     if(kind==='sch'){ const subs=['국어','수학','영어'].sort(()=>R()-.5).slice(0,2).concat([pickOne(SUBJ_M.slice(3))]), N=v.N||sy.n, rk=Math.max(1,Math.min(N,Math.round((1-p)*N+.5)));
-      return {p,t:`${subs.map(s=>`${s} ${sc(40+p*56)}`).join(' · ')}점. 반 ${N}명 중 ${rk}등.${KR&&this.stageOf()==='h'?` 내신 ${gr5(p)}등급.`:''}`}; }
+      return {p,t:`${subs.map(s=>`${s} ${sc(KR?56+p*42:48+p*48)}`).join(' · ')}점. 반 ${N}명 중 ${rk}등.${KR&&this.stageOf()==='h'?` 내신 ${gr5(p)}등급.`:''}`}; }
     if(kind==='mock') return {p,t:KR?`국어 ${gr9(p+gauss()*.07)} · 수학 ${gr9(p+gauss()*.07)} · 영어 ${gr9(p+gauss()*.07)} · 탐구 ${gr9(p+gauss()*.07)}·${gr9(p+gauss()*.07)}등급.`:`${sc(40+p*56)}점.`};
     if(kind==='x1'&&sy.x1){ f.mex=p; return {p,t:`${sy.x1.n} 결과: ${EXF[sy.x1.f](p)}.`}; }
     if(kind==='x2'&&sy.x2){ f.uex=f.retry&&f.uex!=null?Math.max(p,f.uex*.5+p*.5):p; return {p,t:`${KR?'수능 성적':sy.x2.n+' 결과'}: ${EXF[sy.x2.f](p)}.`}; }
@@ -3862,7 +3862,7 @@ Y(3,8,'','*','높은 곳에서 뛰어내리다 이마가 찢어져 세 바늘을
 Y(6,14,'','*','자전거를 타다 내리막에서 넘어졌다. 무릎과 팔꿈치가 다 까졌다.','h-2',{cd:4,sc:'sick'});
 Y(7,16,'','*','계단에서 미끄러져 팔이 부러졌다. 한 달 동안 깁스를 했다. 친구들이 깁스에 낙서를 해 주었다.','h-4 r2',{once:1,sc:'hosp'});
 Y(5,16,'coast|R','*','물놀이를 하다 깊은 곳에 빠졌다. 근처에 있던 어른이 끌어내 주었다.',[['그 뒤로 수영을 배운다','h3 D','수영 강습에 다니기 시작했다.'],['한동안 물가에 가지 않는다','j-1','한동안 물가에 가지 않았다.']],{once:1,sc:'sea',nt:'물에 빠져 해마다 약 23만 6천 명이 숨지고, 특히 어린이·청소년에게 많습니다 (WHO)'});
-Y(4,14,'t2','*','동네 개에게 다리를 물렸다. 보건소에서 광견병 주사를 여러 번 맞았다.','h-3',{once:1,sc:'hosp',nt:'광견병으로 해마다 약 5만 9천 명이 숨지며, 거의 모두 개에게 물린 경우입니다 (WHO)'});
+Y(4,14,'t2','*','동네 개에게 다리를 물렸다. 보건소에서 광견병 주사를 여러 번 맞았고, 제때 맞은 덕분에 탈이 나지 않았다.','h-3',{once:1,sc:'hosp',nt:'광견병으로 해마다 약 5만 9천 명이 숨지며, 거의 모두 개에게 물린 경우입니다 (WHO)'});
 Y(8,60,'R rg:AF|SA|SE|LA','*','밭으로 가는 길에 뱀에게 물렸다. 마을 사람들이 오토바이로 보건소까지 데려다주었다.','h-6',{once:1,sc:'hosp',nt:'뱀에게 물려 해마다 8만~14만 명이 숨지고, 그 세 배쯤이 장애를 얻습니다 (WHO)'});
 Y(13,75,'U','*','붐비는 버스(지하철)에서 지갑(휴대폰)을 소매치기당했다.','j-3 @-1',{once:1,sc:'money'});
 Y(19,85,'','*','길에서 지갑을 주웠다. 안에 현금과 신분증이 들어 있다.',[['주인을 찾아 돌려준다','K r2','경찰서에 맡겼다. 며칠 뒤 주인이 고맙다며 연락해 왔다.'],['못 본 척 지나간다','j-1','그냥 지나쳤다. 마음이 한동안 찜찜했다.']],{once:1});
@@ -7337,6 +7337,13 @@ Q(16,18,'*','dad','"이번 주말에 일하는 곳 구경 같이 갈래? {bus}�
 // 장소 이름 자리표({lib} {gym} {market} {rest} {study} {bus} {yard} …)를 그 삶의 장소 이름으로
 (()=>{ const P=Life.prototype, _tx=P.tx, SPK=/\{(lib|gym|market|rest|study|bus|yard|shop|play|nature|cafe|bank|hosp|hall|post|station)\}/g;
   P.tx=function(s){ if(s&&typeof s==='string'&&s.indexOf('{')>=0) s=s.replace(SPK,(m,k)=>{ try{ return this.spotName(k); }catch(e){ return m; } }); return _tx.call(this,s); }; })();
+// 대학 지원(19살): 형편이 어려운 나라·가정이면 학비 때문에 붙을 확률이 낮아지고, 성적이 많이 모자라면 '도전' 원서는 내지 않는다(11-13 점검)
+(()=>{ const P=Life.prototype, _ca=P.choiceAt;
+  P.choiceAt=function(a){ const ch=_ca.apply(this,arguments); try{ if(!ch||!ch.opts||!ch.opts.some(o=>/^(도전|적정|안정) · /.test(o.label||''))) return ch;
+    const C=this.C, w=clamp(this.w,0,1), afford=C.tier>=3?1:clamp(.3+.6*w+(C.tier-1)*.12,.3,1), ac=typeof this.acInit==='function'?this.acInit():50;
+    if(ac<25) ch.opts=ch.opts.filter(o=>!/^도전 · /.test(o.label||''));
+    if(afford<1){ ch.opts.forEach(o=>{ if(o.p!=null&&/^(도전|적정|안정) · /.test(o.label||'')) o.p=clamp(o.p*afford,.03,.97); }); if(afford<.7) ch.q+=' 학비를 마련하는 것도 큰 걱정이다.'; }
+  }catch(e){} return ch; }; })();
 </script>
 
 <!-- =====================================================================
@@ -11280,7 +11287,7 @@ function qzIntro(L){ if(!qzCan(L)) return null; const a=L.age, sch=a<=12?'elem':
 function openQuiz(nr){ if(dlgOpen()) return; const L=G.life, gen=nr.mode==='g'; if(!gen&&!qzCan(L)) return;
   const Q=L.f.quiz||(L.f.quiz={n:0,ok:0,u:''}), Y=tkYear(L); Y.qz=Y.qz||0; if(!gen) Q.band=qzBand(L.age);
   const p=gen?qzMakeGen(L):qzMake(L), who=gen?`${nr.n||'도서관'} · 상식 · ${p.unit}`:`${nr.n||'내 자리'} · ${qzGradeName(p.g)} ${p.unit}`;
-  dlgRun([{who,t:p.q,opts:p.opts,then:i=>{ const ok=p.opts[i]===p.ans; Q.n++; if(gen) Q.gu=p.unit; else Q.u=p.unit; if(ok) Q.ok++;
+  dlgRun([{who,t:p.q,opts:p.opts,then:i=>{ const ok=p.opts[i]===p.ans; if(ok&&!gen&&typeof L.acInit==='function'){ L.acInit(); L.ac=clamp(L.ac+.6,5,98); } Q.n++; if(gen) Q.gu=p.unit; else Q.u=p.unit; if(ok) Q.ok++;
     let up=[], tail=''; if(Y.qz<QZ_CAP){ Y.qz++; up=tinyGain(L,gen?{k:ok?.4:.1,e:ok?.25:0}:{k:ok?.55:.12},''); } else tail=' (올해는 문제로 오르는 지식이 다 찼어요)';
     if(Y.qz===1&&ok) L.remember({a:L.age,t:gen?`도서관에서 책을 읽다가 ${p.unit}에 대해 새로 알았다.`:`내 자리에서 ${p.unit} 문제를 풀었다.`,sp:gen?'lib':'desk'});
     renderHud(); persist();

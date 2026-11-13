@@ -115,7 +115,7 @@ class Life{
       if(KR&&f.hsWish==='sp'){ const nm=`${this.town||C.city} ${pickOne(['과학','외국어','국제'])}고등학교`; opts.unshift(o(`${nm}(특목고)에 지원한다`,clamp(.08+Phi((this.acInit()-62)/12)*.7,.05,.85),[`${nm}에 합격했다! 합격 문자를 받고 가족 모두가 소리를 질렀다.`,{k:5,j:6},()=>{f.hs='gen'; sch.high=nm}],[`${nm}에는 떨어졌다. ${sch.high}(일반고)로 배정되었다.`,{j:-4},()=>{f.hs='gen'}])); }
       if(KR&&f.hsWish==='voc') opts.reverse();
       if(!U){ const city=C.city; opts.push(o(`${city}의 고등학교로 떠난다`,.3+s.k/100*.4+L.w*.15+cap(t.B,30)*.005,[`${city}의 고등학교에 합격해 기숙사 생활을 시작했다.`,{k:5,r:-4},()=>{f.hs='gen'; sch.high=`${city} ${pickOne(['중앙','제1','국립'])} 고등학교`}],[`합격하지 못해 ${sch.high}에 갔다.`,{j:-4},()=>{f.hs='gen'}])); }
-      return {q:'어느 고등학교에 갈까?',opts}; }
+      return {q:`${josa(sch.mid,'을','를')} 마쳤다. 어느 고등학교에 갈까?`,opts}; }
     if(a===19||(a===21&&f.retry)){ const sy=sysOf(this), KR=this.c==='KR', q0=f.uex!=null?f.uex:Phi((this.acInit()-50)/17)*.9+.05, again=a===21;
       const base=KR?.3:[-.15,-.02,.15,.3][C.tier-1], pU=base+q0*.5+L.w*.12+cap(t.D,40)*.004+(f.hs==='gen'?.05:0)+(again?.05:0), un=pickUnivQ(this,q0), mj=f.major||pickOne(MAJORS_U);
       const enter=(nm)=>()=>{ f.univ=1; f.school=1; f.univA=a; f.retry=0; sch.univ=nm; f.major=mj; };

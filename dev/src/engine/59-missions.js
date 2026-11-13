@@ -38,3 +38,10 @@ Q(16,18,'*','dad','"이번 주말에 일하는 곳 구경 같이 갈래? {bus}�
 // 장소 이름 자리표({lib} {gym} {market} {rest} {study} {bus} {yard} …)를 그 삶의 장소 이름으로
 (()=>{ const P=Life.prototype, _tx=P.tx, SPK=/\{(lib|gym|market|rest|study|bus|yard|shop|play|nature|cafe|bank|hosp|hall|post|station)\}/g;
   P.tx=function(s){ if(s&&typeof s==='string'&&s.indexOf('{')>=0) s=s.replace(SPK,(m,k)=>{ try{ return this.spotName(k); }catch(e){ return m; } }); return _tx.call(this,s); }; })();
+// 대학 지원(19살): 형편이 어려운 나라·가정이면 학비 때문에 붙을 확률이 낮아지고, 성적이 많이 모자라면 '도전' 원서는 내지 않는다(11-13 점검)
+(()=>{ const P=Life.prototype, _ca=P.choiceAt;
+  P.choiceAt=function(a){ const ch=_ca.apply(this,arguments); try{ if(!ch||!ch.opts||!ch.opts.some(o=>/^(도전|적정|안정) · /.test(o.label||''))) return ch;
+    const C=this.C, w=clamp(this.w,0,1), afford=C.tier>=3?1:clamp(.3+.6*w+(C.tier-1)*.12,.3,1), ac=typeof this.acInit==='function'?this.acInit():50;
+    if(ac<25) ch.opts=ch.opts.filter(o=>!/^도전 · /.test(o.label||''));
+    if(afford<1){ ch.opts.forEach(o=>{ if(o.p!=null&&/^(도전|적정|안정) · /.test(o.label||'')) o.p=clamp(o.p*afford,.03,.97); }); if(afford<.7) ch.q+=' 학비를 마련하는 것도 큰 걱정이다.'; }
+  }catch(e){} return ch; }; })();
