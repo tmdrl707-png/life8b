@@ -233,11 +233,11 @@ function moneyStep(L){ const C=L.C, h=(L.money||[]), nw=L.nw, yr=C.med*12;
   return `<p class="soft">돈 이야기</p><div class="msum">${cards.map(c=>`<div><b>${c[0]}</b><span>${c[1]}</span></div>`).join('')}</div>${svg}<p>${msg}</p><p class="note">${C.n}의 보통 한 해 벌이는 약 ${fmtWon(yr)}입니다. 모든 돈은 그 나라 돈을 한국 돈으로 바꾼 근사치이고, 집을 살 때 빌린 돈은 '가진 돈'에서 마이너스로 셉니다.</p>`; }
 // 행복은 어디서 왔을까: 한 삶 동안 행복을 받쳐 준 것들의 평균
 function happyStep(L){
-  const hp=L.hp||{}, n=Math.max(1,hp.cnt||1), nm={m:'살림(돈)',n:'나라의 형편',r:'곁의 사람들',g:'감사하는 마음',c:'함께 웃는 문화',h:'건강'}, avg={}; for(const k in nm) avg[k]=(hp[k]||0)/n;
+  const hp=L.hp||{}, n=Math.max(1,hp.cnt||1), nm={m:'살림(돈)',n:'나라의 형편',r:'곁의 사람들',c:'함께 웃는 문화',h:'건강'}, avg={}; for(const k in nm) avg[k]=(hp[k]||0)/n;
   const aj=L.hist.length?Math.round(L.hist.reduce((s,x)=>s+x.j,0)/L.hist.length):Math.round(L.s.j), ks=Object.keys(nm).sort((a,b)=>avg[b]-avg[a]), best=ks[0], mx=Math.max(...Object.values(avg).map(Math.abs),1);
   const fmt=v=>{ const r=Math.round(v); return (r>0?'+':'')+(r===0?0:r); };
   const bars=Object.keys(nm).map(k=>`<div class="tbar hp"><span>${nm[k]}</span><i style="width:${Math.max(2,Math.abs(avg[k])/mx*100)}%;background:${avg[k]>=0?'#8FD3B0':'#E8A0A0'}"></i><span class="num">${fmt(avg[k])}</span></div>`).join('');
-  const poor=L.C.tier<=2, moneyLow=avg.m<0, msg = best==='m'||best==='n' ? '이 삶에서는 넉넉한 살림이 행복을 크게 받쳐 주었습니다. 그래도 곁의 사람들과 감사하는 마음이 없었다면 그 행복은 훨씬 작았을 거예요.'
+  const poor=L.C.tier<=2, moneyLow=avg.m<0, msg = best==='m'||best==='n' ? '이 삶에서는 넉넉한 살림이 행복을 크게 받쳐 주었습니다. 그래도 곁의 사람들이 없었다면 그 행복은 훨씬 작았을 거예요.'
     : moneyLow ? '살림은 넉넉하지 않았습니다. 그래도 '+josa(nm[best],'이','가')+' 행복을 더 크게 받쳐 주었습니다. 가진 것이 적어도 행복할 수 있었습니다.'
     : josa(nm[best],'이','가')+' 이 삶의 행복을 가장 크게 받쳐 주었습니다.';
   const job=L.jobs&&L.jobs.length?`<p class="soft">거쳐 온 일: ${L.jobs.map(x=>esc(x.n)).join(' → ')}${L.maxInc?` · 가장 많이 벌 때 한 달 약 ${fmtPay(L.maxInc)} (이 나라 보통 벌이 약 ${fmtPay(L.C.med)})`:''}</p>`:'';

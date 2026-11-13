@@ -13,7 +13,7 @@ function lifeTabs(l,o){ o=o||{}; const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, mk=
   const panes={card:o.card||'',
     sum:`<section class="icard"><h3>${esc(l.title||'제목 없는 삶')} <small>${esc(l.name||'')} · ${esc(C.n)} ${SETN[l.set]||''}</small></h3><div class="kpi">${kp.map(c=>`<div><b>${esc(c[0])}</b><span>${esc(c[1])}</span></div>`).join('')}</div></section>`,
     shape:shape||none('그래프로 볼 만큼 긴 기록이 없어요.'),
-    life:(()=>{ const HN={m:'살림(돈)',n:'나라의 형편',r:'곁의 사람들',g:'감사하는 마음',c:'함께 웃는 문화',h:'건강'}, f=l.hpf, mx=f?Math.max(1,...Object.values(f).map(Math.abs)):1;
+    life:(()=>{ const HN={m:'살림(돈)',n:'나라의 형편',r:'곁의 사람들',c:'함께 웃는 문화',h:'건강'}, f=l.hpf, mx=f?Math.max(1,...Object.values(f).map(Math.abs)):1;
       const mk=[[fmtWon(l.earned||0),'평생 번 돈 (배우자 포함)'],[fmtWon(l.maxNW||0),'재산이 가장 많았을 때'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산 (집 포함)']].concat(l.avgJ!=null?[[`${l.avgJ}점`,'평생 평균 행복 (100점 만점)']]:[]);
       return (l.earned||l.maxNW?`<section class="icard"><h3>돈</h3><div class="kpi">${mk.map(c=>`<div><b>${esc(c[0])}</b><span>${esc(c[1])}</span></div>`).join('')}</div><p class="small">그 나라 돈을 한국 돈으로 바꾼 근사치입니다.</p></section>`:'')
         +(f?`<section class="icard"><h3>행복을 더하거나 깎은 것 <small>한 해 평균</small></h3>${Object.keys(HN).map(k=>`<div class="hbar"><span>${HN[k]}</span><i style="width:${Math.max(2,Math.abs(f[k])/mx*100)}%;background:${f[k]>=0?'#8FD3B0':'#E8A0A0'}"></i><b>${f[k]>0?'+':''}${f[k]}</b></div>`).join('')}<p class="small">무엇이 이 삶의 행복을 받쳐 주었고 무엇이 깎았는지 견주어 보세요.</p></section>`:''); })(),

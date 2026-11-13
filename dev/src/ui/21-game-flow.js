@@ -178,7 +178,7 @@ $('btnInfo').onclick=()=>{
   const job = a<19?'—' : svcNow?'군 복무 중이에요' : j?`${esc(f.co||'')} · ${j.n}${rk&&rk!==j.n?` (${esc(rk)})`:''}${f.job==='abroad'&&f.migTo?` · ${esc(f.migTo)}에서`:''}<br><span class="sub">한 달에 약 ${fmtPay(L.inc)} · 이 나라 보통 벌이(${fmtPay(C.med)})의 ${ratio>=10?Math.round(ratio):ratio.toFixed(1)}배<br>${f.inf?'비공식 일자리 (계약서·사회보험이 없어요)':`공식 일자리 (${esc(I.pen||'연금')}·건강보험에 가입되어 있어요)`}</span>` : f.retired?`일을 내려놓았어요<br><span class="sub">연금·가족의 도움 한 달에 약 ${fmtPay(L.inc)}</span>` : (f.univ&&f.school?'대학생':'일을 쉬는 중');
   const places=['집']; if(a>=6) places.push('동네'); if(a>=13) places.push('큰길 건너'); if(a>=19) places.push('일터가 있는 곳'); if(canDrive()) places.push(`${L.C.landmark}(${C.veh.n})`);
   const wtxt=L.w>=.7?'넉넉한 편':L.w>=.45?'보통':L.w>=.25?'빠듯한 편':'어려운 편', top=L.topTrait(), tot=Object.values(L.tr).reduce((s,v)=>s+v,0);
-  const JP=L.joyParts(), nm={m:'살림',n:'나라의 형편',r:'곁의 사람들',g:'감사하는 마음',c:'함께 웃는 문화',h:'건강'};
+  const JP=L.joyParts(), nm={m:'살림',n:'나라의 형편',r:'곁의 사람들',c:'함께 웃는 문화',h:'건강'};
   const bars=Object.keys(nm).map(k=>`<div class="happy"><span>${nm[k]}</span><div class="hbar">${barSvg(JP[k])}</div><span class="num">${JP[k]>=0?'+':''}${JP[k].toFixed(0)}</span></div>`).join('');
   const lastM=L.money&&L.money.length?L.money[L.money.length-1]:null, adult=a>=19||f.univ;
   const money=adult?`<dt>가진 돈</dt><dd><b class="${L.cash<0?'neg':''}">${fmtWon(L.cash)}</b>${L.cash<0?' (빚)':''}${L.house?`<br>집 ${fmtWon(L.house)} · 모두 합하면 ${fmtWon(L.nw)}`:'<br><span class="sub">아직 내 집이 없어요</span>'}${lastM?`<br><span class="sub">지난 ${lastM.step>1?lastM.step+'년':'해'}: 번 돈 ${fmtWon(lastM.inc)} · 쓴 돈 ${fmtWon(lastM.spend)} · 이자 ${lastM.int>=0?'+':''}${fmtWon(lastM.int)}${lastM.ev?` · 큰일 ${lastM.ev>0?'+':''}${fmtWon(lastM.ev)}`:''}</span>`:''}${moneySvg(L)}</dd>`:'';
@@ -190,7 +190,7 @@ $('btnInfo').onclick=()=>{
     ${L.comps&&L.comps.length?`<div class="stack-s"><b style="font-weight:400">같은 1초에 태어난 사람들 · 지금 ${a}살 무렵</b><table class="famtbl">${L.comps.map(p=>`<tr><th>${esc(p.n)}</th><td>${esc(p.cn)} · ${p.sex?'여':'남'}</td><td>${esc(L.compNow(p,a))}</td></tr>`).join('')}</table></div>`:''}
     ${L.fam?`<div class="stack-s"><b style="font-weight:400">우리 가족</b><table class="famtbl">${L.famList().map(r=>`<tr><th>${esc(r[0])}</th><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('')}</table></div>`:''}
     ${statPanel(L)}${jobsTable(L)}
-    <div class="stack-s"><b style="font-weight:400">지금 내 행복을 만드는 것</b>${bars}<p class="small sub">돈(살림)만이 아니라 곁의 사람들, 작은 일에도 감사하는 마음, 함께 웃는 문화가 행복을 크게 바꿉니다.</p></div>
+    <div class="stack-s"><b style="font-weight:400">지금 내 행복을 만드는 것</b>${bars}<p class="small sub">돈(살림)만이 아니라 곁의 사람들과 함께 웃는 문화가 행복을 크게 바꿉니다.</p></div>
     <p class="small sub">${esc(C.fact)} 물가가 나라마다 달라서 같은 돈으로 살 수 있는 것도 다릅니다.</p><button class="btn" id="btnOk">닫기</button>`);
   $('btnOk').onclick=closeSheet;
 };

@@ -8871,7 +8871,7 @@ $('btnInfo').onclick=()=>{
   const job = a<19?'—' : svcNow?'군 복무 중이에요' : j?`${esc(f.co||'')} · ${j.n}${rk&&rk!==j.n?` (${esc(rk)})`:''}${f.job==='abroad'&&f.migTo?` · ${esc(f.migTo)}에서`:''}<br><span class="sub">한 달에 약 ${fmtPay(L.inc)} · 이 나라 보통 벌이(${fmtPay(C.med)})의 ${ratio>=10?Math.round(ratio):ratio.toFixed(1)}배<br>${f.inf?'비공식 일자리 (계약서·사회보험이 없어요)':`공식 일자리 (${esc(I.pen||'연금')}·건강보험에 가입되어 있어요)`}</span>` : f.retired?`일을 내려놓았어요<br><span class="sub">연금·가족의 도움 한 달에 약 ${fmtPay(L.inc)}</span>` : (f.univ&&f.school?'대학생':'일을 쉬는 중');
   const places=['집']; if(a>=6) places.push('동네'); if(a>=13) places.push('큰길 건너'); if(a>=19) places.push('일터가 있는 곳'); if(canDrive()) places.push(`${L.C.landmark}(${C.veh.n})`);
   const wtxt=L.w>=.7?'넉넉한 편':L.w>=.45?'보통':L.w>=.25?'빠듯한 편':'어려운 편', top=L.topTrait(), tot=Object.values(L.tr).reduce((s,v)=>s+v,0);
-  const JP=L.joyParts(), nm={m:'살림',n:'나라의 형편',r:'곁의 사람들',g:'감사하는 마음',c:'함께 웃는 문화',h:'건강'};
+  const JP=L.joyParts(), nm={m:'살림',n:'나라의 형편',r:'곁의 사람들',c:'함께 웃는 문화',h:'건강'};
   const bars=Object.keys(nm).map(k=>`<div class="happy"><span>${nm[k]}</span><div class="hbar">${barSvg(JP[k])}</div><span class="num">${JP[k]>=0?'+':''}${JP[k].toFixed(0)}</span></div>`).join('');
   const lastM=L.money&&L.money.length?L.money[L.money.length-1]:null, adult=a>=19||f.univ;
   const money=adult?`<dt>가진 돈</dt><dd><b class="${L.cash<0?'neg':''}">${fmtWon(L.cash)}</b>${L.cash<0?' (빚)':''}${L.house?`<br>집 ${fmtWon(L.house)} · 모두 합하면 ${fmtWon(L.nw)}`:'<br><span class="sub">아직 내 집이 없어요</span>'}${lastM?`<br><span class="sub">지난 ${lastM.step>1?lastM.step+'년':'해'}: 번 돈 ${fmtWon(lastM.inc)} · 쓴 돈 ${fmtWon(lastM.spend)} · 이자 ${lastM.int>=0?'+':''}${fmtWon(lastM.int)}${lastM.ev?` · 큰일 ${lastM.ev>0?'+':''}${fmtWon(lastM.ev)}`:''}</span>`:''}${moneySvg(L)}</dd>`:'';
@@ -8883,7 +8883,7 @@ $('btnInfo').onclick=()=>{
     ${L.comps&&L.comps.length?`<div class="stack-s"><b style="font-weight:400">같은 1초에 태어난 사람들 · 지금 ${a}살 무렵</b><table class="famtbl">${L.comps.map(p=>`<tr><th>${esc(p.n)}</th><td>${esc(p.cn)} · ${p.sex?'여':'남'}</td><td>${esc(L.compNow(p,a))}</td></tr>`).join('')}</table></div>`:''}
     ${L.fam?`<div class="stack-s"><b style="font-weight:400">우리 가족</b><table class="famtbl">${L.famList().map(r=>`<tr><th>${esc(r[0])}</th><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('')}</table></div>`:''}
     ${statPanel(L)}${jobsTable(L)}
-    <div class="stack-s"><b style="font-weight:400">지금 내 행복을 만드는 것</b>${bars}<p class="small sub">돈(살림)만이 아니라 곁의 사람들, 작은 일에도 감사하는 마음, 함께 웃는 문화가 행복을 크게 바꿉니다.</p></div>
+    <div class="stack-s"><b style="font-weight:400">지금 내 행복을 만드는 것</b>${bars}<p class="small sub">돈(살림)만이 아니라 곁의 사람들과 함께 웃는 문화가 행복을 크게 바꿉니다.</p></div>
     <p class="small sub">${esc(C.fact)} 물가가 나라마다 달라서 같은 돈으로 살 수 있는 것도 다릅니다.</p><button class="btn" id="btnOk">닫기</button>`);
   $('btnOk').onclick=closeSheet;
 };
@@ -9897,11 +9897,11 @@ function moneyStep(L){ const C=L.C, h=(L.money||[]), nw=L.nw, yr=C.med*12;
   return `<p class="soft">돈 이야기</p><div class="msum">${cards.map(c=>`<div><b>${c[0]}</b><span>${c[1]}</span></div>`).join('')}</div>${svg}<p>${msg}</p><p class="note">${C.n}의 보통 한 해 벌이는 약 ${fmtWon(yr)}입니다. 모든 돈은 그 나라 돈을 한국 돈으로 바꾼 근사치이고, 집을 살 때 빌린 돈은 '가진 돈'에서 마이너스로 셉니다.</p>`; }
 // 행복은 어디서 왔을까: 한 삶 동안 행복을 받쳐 준 것들의 평균
 function happyStep(L){
-  const hp=L.hp||{}, n=Math.max(1,hp.cnt||1), nm={m:'살림(돈)',n:'나라의 형편',r:'곁의 사람들',g:'감사하는 마음',c:'함께 웃는 문화',h:'건강'}, avg={}; for(const k in nm) avg[k]=(hp[k]||0)/n;
+  const hp=L.hp||{}, n=Math.max(1,hp.cnt||1), nm={m:'살림(돈)',n:'나라의 형편',r:'곁의 사람들',c:'함께 웃는 문화',h:'건강'}, avg={}; for(const k in nm) avg[k]=(hp[k]||0)/n;
   const aj=L.hist.length?Math.round(L.hist.reduce((s,x)=>s+x.j,0)/L.hist.length):Math.round(L.s.j), ks=Object.keys(nm).sort((a,b)=>avg[b]-avg[a]), best=ks[0], mx=Math.max(...Object.values(avg).map(Math.abs),1);
   const fmt=v=>{ const r=Math.round(v); return (r>0?'+':'')+(r===0?0:r); };
   const bars=Object.keys(nm).map(k=>`<div class="tbar hp"><span>${nm[k]}</span><i style="width:${Math.max(2,Math.abs(avg[k])/mx*100)}%;background:${avg[k]>=0?'#8FD3B0':'#E8A0A0'}"></i><span class="num">${fmt(avg[k])}</span></div>`).join('');
-  const poor=L.C.tier<=2, moneyLow=avg.m<0, msg = best==='m'||best==='n' ? '이 삶에서는 넉넉한 살림이 행복을 크게 받쳐 주었습니다. 그래도 곁의 사람들과 감사하는 마음이 없었다면 그 행복은 훨씬 작았을 거예요.'
+  const poor=L.C.tier<=2, moneyLow=avg.m<0, msg = best==='m'||best==='n' ? '이 삶에서는 넉넉한 살림이 행복을 크게 받쳐 주었습니다. 그래도 곁의 사람들이 없었다면 그 행복은 훨씬 작았을 거예요.'
     : moneyLow ? '살림은 넉넉하지 않았습니다. 그래도 '+josa(nm[best],'이','가')+' 행복을 더 크게 받쳐 주었습니다. 가진 것이 적어도 행복할 수 있었습니다.'
     : josa(nm[best],'이','가')+' 이 삶의 행복을 가장 크게 받쳐 주었습니다.';
   const job=L.jobs&&L.jobs.length?`<p class="soft">거쳐 온 일: ${L.jobs.map(x=>esc(x.n)).join(' → ')}${L.maxInc?` · 가장 많이 벌 때 한 달 약 ${fmtPay(L.maxInc)} (이 나라 보통 벌이 약 ${fmtPay(L.C.med)})`:''}</p>`:'';
@@ -10829,7 +10829,7 @@ function lifeTabs(l,o){ o=o||{}; const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, mk=
   const panes={card:o.card||'',
     sum:`<section class="icard"><h3>${esc(l.title||'제목 없는 삶')} <small>${esc(l.name||'')} · ${esc(C.n)} ${SETN[l.set]||''}</small></h3><div class="kpi">${kp.map(c=>`<div><b>${esc(c[0])}</b><span>${esc(c[1])}</span></div>`).join('')}</div></section>`,
     shape:shape||none('그래프로 볼 만큼 긴 기록이 없어요.'),
-    life:(()=>{ const HN={m:'살림(돈)',n:'나라의 형편',r:'곁의 사람들',g:'감사하는 마음',c:'함께 웃는 문화',h:'건강'}, f=l.hpf, mx=f?Math.max(1,...Object.values(f).map(Math.abs)):1;
+    life:(()=>{ const HN={m:'살림(돈)',n:'나라의 형편',r:'곁의 사람들',c:'함께 웃는 문화',h:'건강'}, f=l.hpf, mx=f?Math.max(1,...Object.values(f).map(Math.abs)):1;
       const mk=[[fmtWon(l.earned||0),'평생 번 돈 (배우자 포함)'],[fmtWon(l.maxNW||0),'재산이 가장 많았을 때'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산 (집 포함)']].concat(l.avgJ!=null?[[`${l.avgJ}점`,'평생 평균 행복 (100점 만점)']]:[]);
       return (l.earned||l.maxNW?`<section class="icard"><h3>돈</h3><div class="kpi">${mk.map(c=>`<div><b>${esc(c[0])}</b><span>${esc(c[1])}</span></div>`).join('')}</div><p class="small">그 나라 돈을 한국 돈으로 바꾼 근사치입니다.</p></section>`:'')
         +(f?`<section class="icard"><h3>행복을 더하거나 깎은 것 <small>한 해 평균</small></h3>${Object.keys(HN).map(k=>`<div class="hbar"><span>${HN[k]}</span><i style="width:${Math.max(2,Math.abs(f[k])/mx*100)}%;background:${f[k]>=0?'#8FD3B0':'#E8A0A0'}"></i><b>${f[k]>0?'+':''}${f[k]}</b></div>`).join('')}<p class="small">무엇이 이 삶의 행복을 받쳐 주었고 무엇이 깎았는지 견주어 보세요.</p></section>`:''); })(),
