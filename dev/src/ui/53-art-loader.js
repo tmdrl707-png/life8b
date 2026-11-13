@@ -4,7 +4,7 @@ const WR=3;   // 바깥·방 바닥 그림의 해상도 배율
 const WRO=2.5;   // 넓어진 바깥 지도는 조금 낮춰 (휴대폰 캔버스 크기 한도)
 const ART={ok:false,spr:null,tex:null,M:ART_MAP,T:{},P:{}};
 function artLoad(src){ return new Promise((res,rej)=>{ const im=new Image(); im.decoding='async'; im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
-Promise.all([artLoad('art/spr.webp'),artLoad('art/tex.webp')]).then(([s,t])=>{ ART.spr=s; ART.tex=t; ART.ok=true; worldLayer.k=null; roomLayer.k=null; CACHE.forEach((v,k)=>{ if(/^(VHD|VLO|AHD)/.test(k)) CACHE.delete(k); }); }).catch(()=>{});
+Promise.all([artLoad('art/spr.webp?v=1114'),artLoad('art/tex.webp')]).then(([s,t])=>{ ART.spr=s; ART.tex=t; ART.ok=true; worldLayer.k=null; roomLayer.k=null; CACHE.forEach((v,k)=>{ if(/^(VHD|VLO|AHD)/.test(k)) CACHE.delete(k); }); }).catch(()=>{});
 function artHas(n){ return ART.ok&&!!ART.M.spr[n]; }
 // 상자(w×h) 안에 맞춰, 아래 가운데(cx,by)에 붙여 그린다
 function artDraw(x,n,cx,by,w,h,flip){ const r=ART.M.spr[n]; if(!r) return null; const s=Math.min(w/r[2],h/r[3]), dw=r[2]*s, dh=r[3]*s;
@@ -150,6 +150,8 @@ function scVar(kind,txt,age,L){ try{ const g=L&&L.C&&RG_ART[L.C.rg]; if(!g||age=
     const R=[[/혜성|유성|일식|월식/,'end_stargaze'],[/모임|봉사|쓰레기를 줍|청소를 했|마을 회의|선거/,'end_neighbors'],[/손주|손자|손녀/,'end_grandkids'],[/정전|전기가 (들어오지|끊)/,'end_window_night'],[/생일|케이크/,'end_birthday'],[/사진|앨범/,'end_album'],[/낚시/,'end_fishing'],[/별을|별이|밤하늘|달을|달이/,'end_stargaze'],[/텃밭|정원|화분|꽃을 심|씨앗/,'end_garden'],
       [/영상통화|전화|편지|소식을 전/,'end_videocall'],[/이웃/,'end_neighbors'],[/산책|바닷가|바다를/,'end_dawn_walk'],[/운동|체조|달리기/,'end_exercise'],[/빗소리|비가 내|비 오는/,'end_rain_window'],[/이사/,'end_moving'],
       [/먹|밥|식사|음식|요리|부엌|반찬|저녁상/,meal],[/친구/,age<60?'end_friends':'end_couple'],[/배우자|아내|남편|부부|둘이서/,age>=50?'end_couple':'end_friends'],[/퇴근|일을 마치|하루를 마치/,'end_bench'],[/공부|책을|숙제/,age<30?'end_study_night':'end_rain_window'],[/놀|술래|운동장|공차기/,age<13?'end_playground':'end_friends']];
+    // 힘든 일(형편이 어려워짐·다툼·거절·잃음)에는 잔칫상·놀이터 같은 밝은 그림을 쓰지 않는다
+    if(/어려워|힘들|가난|슬프|슬퍼|다퉜|싸웠|싸움|거절|잃었|잃고|떨어졌|속상|외로|무서|울었|눈물/.test(t)) return 'life@'+(age<30?'end_rain_window':'end_window_night');
     for(const [re,n] of R) if(re.test(t)) return 'life@'+n;
     const pool=age<13?['end_playground',meal,'end_playground','end_stargaze']:age<30?['end_friends','end_study_night',meal,'end_bench','end_rain_window','end_stargaze']:age<60?[meal,'end_bench','end_neighbors','end_rain_window','end_window_night']:['life_'+g+(L.sex===0?'_m':'_f'),'end_couple','end_garden','end_grandkids','end_album','end_window_night','end_videocall','end_fishing','end_dawn_walk',meal];
     return 'life@'+pool[scHash(t+'|'+age)%pool.length]; }catch(e){ return kind; } }
@@ -162,11 +164,12 @@ function scArtName(kind,L){ if(kind==='title') return 'title'; kind=String(kind|
   { const p=scPick(kind,L&&L.age,L); if(p) return p; }
   if(g){ const k=(kind==='birth'&&g!=='EA'&&g!=='WE')?'baby':kind; if(SC_VAR.has(k+'_'+g)) return k+'_'+g; }
   return kind; }
-function scImg(n){ let e=SC_IMG[n]; if(!e){ e=SC_IMG[n]={im:null}; artLoad('art/sc/'+n+'.webp').then(im=>e.im=im).catch(()=>{}); } return e.im; }
+function scImg(n){ let e=SC_IMG[n]; if(!e){ e=SC_IMG[n]={im:null}; artLoad('art/sc/'+n+'.webp?v=1114').then(im=>e.im=im).catch(()=>{ e.err=1; }); } return e.im; }
 function scPreload(kinds,L){ kinds.forEach(k=>{ const n=scArtName(k,L); if(n) scImg(n); }); }
 const _drawScene=drawScene;
 drawScene=function(x,kind,t,L){ const n=scArtName(kind,L), im=n&&scImg(n);
-  if(!im) return _drawScene(x,scBase(kind),t,L);
+  // 그림을 받는 동안에는 예전 도트 그림을 잠깐 보이지 않고 빈 종이 색으로 기다린다(11-13 점검: 옛 배경이 툭 튀어나왔다 바뀜). 못 받았을 때만 예전 그림
+  if(!im){ const e=n&&SC_IMG[n]; if(e&&!e.err){ const gr=x.createLinearGradient(0,0,0,80); gr.addColorStop(0,'#F4EBDC'); gr.addColorStop(1,'#E6D6BC'); x.fillStyle=gr; x.fillRect(0,0,160,80); return; } return _drawScene(x,scBase(kind),t,L); }
   const sm=x.imageSmoothingEnabled; x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high';
   const z=1.05+.035*Math.sin(t*.22), w=160*z, h=80*z, dx=(160-w)/2+Math.sin(t*.15)*2.2, dy=(80-h)/2+Math.cos(t*.13)*1.2;
   x.drawImage(im,dx,dy,w,h);

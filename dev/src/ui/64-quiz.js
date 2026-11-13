@@ -56,21 +56,46 @@ const qzGrade=a=>clamp(a-6,1,12);
 const qzGradeName=g=>g<=6?`초등 ${g}학년`:g<=9?`중학교 ${g-6}학년`:`고등학교 ${g-9}학년`;
 function qzMake(L){ const g=qzGrade(L.age), bank=QZ_BANK[g], Q=L.f.quiz||{}, last=Q.u;
   let pool=bank.filter(b=>b[0]!==last); if(!pool.length) pool=bank; const [unit,fn]=qzPick(pool), p=fn(); const o=qzOpts(p.ans,p.wrong); return {g,unit,q:p.q,ex:p.ex,...o}; }
-// 칠판에 다가가면: 6~18살 학생이면 '문제 풀기'
-const QZ_SPOT={board:1,st_board:1};
+// 상식 문제(도서관): 이 게임의 193개 나라 자료로 만든다 — 큰 도시·즐겨 먹는 음식·명절·지역·기대수명·아기가 많이 태어나는 나라
+const QZ_GEN=[
+  ['세계의 도시',()=>{ const c=qzBig(), w=qzVals(c,'city'); return {q:`${c.n}에서 가장 큰 도시는?`,ans:c.city,wrong:w,ex:`${c.n}의 가장 큰 도시는 ${c.city}예요.`}; }],
+  ['세계의 음식',()=>{ const c=qzBig(), w=qzVals(c,'food'); return {q:`${c.n} 사람들이 즐겨 먹는 음식은?`,ans:c.food,wrong:w,ex:`${c.n}에서는 ${c.food}${josa(c.food,'을','를').slice(c.food.length)} 즐겨 먹어요.`}; }],
+  ['세계의 명절',()=>{ const c=qzBig(), w=qzVals(c,'fest'); return {q:`${c.n}의 큰 명절·축제는?`,ans:c.fest,wrong:w,ex:`${c.n}의 큰 명절은 ${c.fest}예요.`}; }],
+  ['세계의 지역',()=>{ const c=qzBig(), rg=RGN_N[c.rg], w=Object.keys(RGN_N).filter(k=>k!==c.rg).sort(()=>R()-.5).slice(0,3).map(k=>RGN_N[k]); return {q:`${c.n}${josa(c.n,'은','는').slice(c.n.length)} 어느 지역에 있을까?`,ans:rg,wrong:w,ex:`${c.n}${josa(c.n,'은','는').slice(c.n.length)} ${rg}에 있어요.`}; }],
+  ['기대수명',()=>{ const [a,b]=qzOthers(null,2).sort((x,y)=>y.le-x.le); if(a.le===b.le) return QZ_GEN[0][1](); return {q:`태어난 아기가 평균적으로 더 오래 사는 나라는?`,ans:a.n,wrong:[b.n],ex:`기대수명은 ${a.n} 약 ${a.le}살, ${b.n} 약 ${b.le}살이에요.`,two:1}; }],
+  ['세계의 아기',()=>{ const [a,b]=qzOthers(null,2).sort((x,y)=>y.births-x.births); if(a.births===b.births) return QZ_GEN[0][1](); return {q:`한 해에 아기가 더 많이 태어나는 나라는?`,ans:a.n,wrong:[b.n],ex:`한 해에 ${a.n}에서 약 ${a.births}만 명, ${b.n}에서 약 ${b.births}만 명이 태어나요.`,two:1}; }]];
+const qzBigList=()=>qzBigList.c||(qzBigList.c=CKEYS.map(k=>COUNTRIES[k]).filter(c=>c.births>=25||['KR','JP','GB','FR','DE','IT','ES','CA','AU'].includes(c.code)));
+function qzBig(){ const L=G.life; if(L&&R()<.2) return L.C; return qzPick(qzBigList()); }
+function qzVals(c,k){ const seen=new Set([c[k]]), out=[]; for(const x of qzBigList().slice().sort(()=>R()-.5)){ if(seen.has(x[k])) continue; seen.add(x[k]); out.push(x[k]); if(out.length>=3) break; } return out; }
+function qzOthers(c,n){ const pool=qzBigList().filter(x=>!c||(x.code!==c.code&&x.city!==c.city&&x.food!==c.food&&x.fest!==c.fest)); const out=[]; while(out.length<n&&pool.length){ out.push(pool.splice(Math.floor(R()*pool.length),1)[0]); } return out; }
+function qzMakeGen(L){ const Q=L.f.quiz||{}; let pool=QZ_GEN.filter(b=>b[0]!==Q.gu); const [unit,fn]=qzPick(pool), p=fn();
+  if(p.two){ const opts=[p.ans,p.wrong[0]].sort(()=>R()-.5); return {g:0,unit,q:p.q,ex:p.ex,opts,ans:p.ans}; }
+  const o=qzOpts(p.ans,p.wrong); return {g:0,unit,q:p.q,ex:p.ex,...o}; }
+// 어디서 푸나: 학교(초·중·고) 안의 '내 자리' 책상, 학원 책상 → 교과 수학 문제 / 도서관 탁자 → 상식 문제
+const MY_DESK=1;   // INT.f에서 내 자리로 쓰는 책상 (앞줄 가운데)
 const qzCan=L=>L&&L.age>=7&&L.age<=18;
-(()=>{ const _ne=nearExtra; nearExtra=function(){ const b=_ne(); const L=G.life;
-  if(b&&b.type==='o'&&QZ_SPOT[b.k]&&qzCan(L)) return Object.assign(b,{type:'z',lab:`${b.n} · 문제 풀기`});
-  if(!b&&qzCan(L)&&!W.car){ // 칠판 놀이가 없는 나이에도 칠판이 가까우면
-    const ms=W.map; const fs=ms==='elem'||ms==='mid'?INT.f.filter(f=>f[0]==='board').map(f=>({r:f.slice(1)})):(typeof PLACE_IN!=='undefined'&&PLACE_IN[ms]?PLACE_IN[ms].f.filter(f=>QZ_SPOT[f[5]]).map(f=>({r:f.slice(1,5)})):[]);
-    for(const o of fs) if(distTo(o)+.35<1.3) return {type:'z',k:'board',n:'칠판',lab:'칠판 · 문제 풀기'}; }
-  return b; };
-  const _act=$('btnAct').onclick; $('btnAct').onclick=function(){ if(near&&near.type==='z'&&$('sheet').hidden){ openQuiz(near); return; } return _act.apply(this,arguments); };
+const qzSchoolMap=m=>m==='elem'||m==='mid'||m==='high';
+function qzSpotAt(){ const L=G.life, m=W.map; if(!L||W.car) return null;
+  if(qzSchoolMap(m)&&qzCan(L)){ const d=INT.f[MY_DESK]; if(distTo({r:d.slice(1)})<1.25) return {type:'z',mode:'s',k:'mydesk',n:'내 자리',lab:'내 자리 · 문제 풀기'}; }
+  if(typeof PLACE_IN!=='undefined'&&PLACE_IN[m]){ const PI=PLACE_IN[m];
+    if(m==='study'&&qzCan(L)) for(const f of PI.f) if(f[5]==='st_desk'&&distTo({r:f.slice(1,5)})<1.2) return {type:'z',mode:'s',k:'st_desk',n:'학원 책상',lab:'학원 책상 · 문제 풀기'};
+    if(PI.kind==='school'&&m!=='study'&&L.age>=7) for(const f of PI.f) if(f[5]==='l_table'&&distTo({r:f.slice(1,5)})<1.2) return {type:'z',mode:'g',k:'l_table',n:L.spotName(m),lab:'책 읽기 · 상식 문제'}; }
+  return null; }
+(()=>{ const _ne=nearExtra; nearExtra=function(){ const z=qzSpotAt(); if(z) return z; return _ne(); };
+  const _act=$('btnAct').onclick; $('btnAct').onclick=function(){ if(near&&(near.type==='z'||near.qz)&&$('sheet').hidden){ openQuiz(near); return; } return _act.apply(this,arguments); };
 })();
-function openQuiz(nr){ if(dlgOpen()) return; const L=G.life; if(!qzCan(L)) return; const Q=L.f.quiz||(L.f.quiz={n:0,ok:0,u:''}), Y=tkYear(L); Y.qz=Y.qz||0;
-  const p=qzMake(L), who=`${nr.n||'칠판'} · ${qzGradeName(p.g)} ${p.unit}`;
-  dlgRun([{who,t:p.q,opts:p.opts,then:i=>{ const ok=p.opts[i]===p.ans; Q.n++; Q.u=p.unit; if(ok) Q.ok++;
-    let up=[], tail=''; if(Y.qz<QZ_CAP){ Y.qz++; up=tinyGain(L,{k:ok?.55:.12},''); } else tail=' (올해는 문제로 오르는 지식이 다 찼어요)';
-    if(Y.qz===1&&ok) L.remember({a:L.age,t:`칠판 앞에서 ${p.unit} 문제를 풀었다.`,sp:'desk'});
+// 학교에 처음 다닐 때(그리고 중학교·고등학교에 올라갈 때) 한 번만: 내 자리를 파란 표시로 알려 준다
+const qzBand=a=>a<=12?'e':a<=15?'m':'h';
+function qzIntro(L){ if(!qzCan(L)) return null; const a=L.age, sch=a<=12?'elem':'mid'; if(a<=12?!L.f.elem:!L.f.sec) return null;
+  const Q=L.f.quiz||{}; if(Q.band===qzBand(a)) return null; const d=INT.f[MY_DESK];
+  return {type:'q',qz:1,mode:'s',m:sch,p:[d[1]+d[3]/2,d[2]+d[4]+.75],n:'내 자리 · 문제 풀기',lab:'내 자리 · 문제 풀기',key:null}; }
+(()=>{ const _tg=targets; targets=function(){ const out=_tg(); try{ const L=G.life, t=L&&L.cur&&qzIntro(L); if(t){ out.push(t);
+  if(L.f.qzTold!==qzBand(L.age)){ L.f.qzTold=qzBand(L.age); setTimeout(()=>toast(`${L.age<=12?'학교':L.age<=15?'중학교':'고등학교'} 내 자리에서 문제를 풀 수 있어요. 파란 표시를 찾아가 보세요. 맞히면 지식이 자라요.`,'news'),400); } } }catch(e){} return out; }; })();
+function openQuiz(nr){ if(dlgOpen()) return; const L=G.life, gen=nr.mode==='g'; if(!gen&&!qzCan(L)) return;
+  const Q=L.f.quiz||(L.f.quiz={n:0,ok:0,u:''}), Y=tkYear(L); Y.qz=Y.qz||0; if(!gen) Q.band=qzBand(L.age);
+  const p=gen?qzMakeGen(L):qzMake(L), who=gen?`${nr.n||'도서관'} · 상식 · ${p.unit}`:`${nr.n||'내 자리'} · ${qzGradeName(p.g)} ${p.unit}`;
+  dlgRun([{who,t:p.q,opts:p.opts,then:i=>{ const ok=p.opts[i]===p.ans; Q.n++; if(gen) Q.gu=p.unit; else Q.u=p.unit; if(ok) Q.ok++;
+    let up=[], tail=''; if(Y.qz<QZ_CAP){ Y.qz++; up=tinyGain(L,gen?{k:ok?.4:.1,e:ok?.25:0}:{k:ok?.55:.12},''); } else tail=' (올해는 문제로 오르는 지식이 다 찼어요)';
+    if(Y.qz===1&&ok) L.remember({a:L.age,t:gen?`도서관에서 책을 읽다가 ${p.unit}에 대해 새로 알았다.`:`내 자리에서 ${p.unit} 문제를 풀었다.`,sp:gen?'lib':'desk'});
     renderHud(); persist();
     return [{who,t:(ok?`정답! ${p.ans}. `:`아쉬워요. 답은 ${p.ans}. `)+p.ex+tail,up}]; }}]); }
