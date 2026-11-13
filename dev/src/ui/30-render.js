@@ -137,11 +137,13 @@ function draw(t){
   let cx=W.x*PX-LW/2, cy=W.y*PX-(hud+(LH-hud-bottom)*.5);
   cx=MW<LW?vx0+(MW-LW)/2:clamp(cx,vx0,vx0+MW-LW); cy=MH<LH-hud-bottom?vy0+(MH-LH)/2-(hud-bottom)/2:clamp(cy,vy0-hud-6,vy0+MH-LH+bottom);
   { const dtc=Math.min(.05,Math.max(.001,t-(draw.lt||t))); draw.lt=t; const cm=draw.cam;
-    if(!cm||cm.m!==W.map||Math.abs(cm.x-cx)>LW||Math.abs(cm.y-cy)>LH) draw.cam={m:W.map,x:cx,y:cy}; else { const k=1-Math.exp(-dtc*10); cm.x+=(cx-cm.x)*k; cm.y+=(cy-cm.y)*k; cx=cm.x; cy=cm.y; } }
-  cx=Math.round(cx); cy=Math.round(cy);
+    if(!cm||cm.m!==W.map||Math.abs(cm.x-cx)>LW||Math.abs(cm.y-cy)>LH) draw.cam={m:W.map,x:cx,y:cy}; else if(W.moving&&Math.abs(cm.x-cx)<40&&Math.abs(cm.y-cy)<40){ cm.x=cx; cm.y=cy; } else { const k=1-Math.exp(-dtc*25); /* 카메라가 늦게 따라오면 탈것에서 화면이 출렁여 어지럽다(11-13): 거의 바로 따라간다 */ cm.x+=(cx-cm.x)*k; cm.y+=(cy-cm.y)*k; cx=cm.x; cy=cm.y; } }
+  // 화면 떨림 없애기(11-13): 카메라와 모든 위치를 '기기 화소' 단위로 맞춘다. 예전에는 1도트(화면 2~4화소) 단위로 따로 반올림해서
+  // 천천히 움직일 때(아기·아플 때) 내 캐릭터가 화면에서 1도트씩 앞뒤로 떨렸다.
+  cx=Math.round(cx*LR)/LR; cy=Math.round(cy*LR)/LR;
   lx.fillStyle=out?(visU(L)?'#3A5040':GRASS[sp][2]):'#101418'; lx.fillRect(0,0,LW,LH);
   const layer=out?worldLayer():roomLayer(W.map); if(layer.wr){ lx.imageSmoothingEnabled=true; lx.imageSmoothingQuality='high'; lx.drawImage(layer,-cx,-cy-LAYER_TOP,layer.width/layer.wr,layer.height/layer.wr); lx.imageSmoothingEnabled=false; } else lx.drawImage(layer,-cx,-cy-LAYER_TOP);
-  const X=v=>Math.round(v*PX-cx), Y=v=>Math.round(v*PX-cy), fr=Math.floor(t*2.5);
+  const X=v=>Math.round((v*PX-cx)*LR)/LR, Y=v=>Math.round((v*PX-cy)*LR)/LR, fr=Math.floor(t*2.5);
   if(out){ const T=terrain(); const x0=Math.max(0,Math.floor(cx/PX)), x1=Math.min(OUT.w,Math.ceil((cx+LW)/PX)), y0=Math.max(0,Math.floor(cy/PX)), y1=Math.min(OUT.h,Math.ceil((cy+LH)/PX));
     if(layer.wr){ lx.fillStyle='rgba(255,255,255,.38)'; for(let y=y0;y<y1;y++) for(let i=x0;i<x1;i++){ if(T[y][i]!=='w') continue; for(let q=0;q<2;q++){ const o=(t*(5+q*2)+i*5+y*3+q*7)%16; lx.fillRect(i*PX-cx+o*.8,y*PX-cy+((i*7+y*5+q*8)%13)+1.5,3.2,.55); } } }
     else for(let y=y0;y<y1;y++) for(let i=x0;i<x1;i++){ const tt=T[y][i]; if(tt==='w') lx.drawImage(groundTile('w',sp,(i*7+y*3)%4,fr%4),i*PX-cx,y*PX-cy); else if(tt==='f'&&fr%2) lx.drawImage(groundTile('f',sp,(i*7+y*3)%4,1),i*PX-cx,y*PX-cy); }
@@ -153,7 +155,7 @@ function draw(t){
     else spr.push({y:n.y,d:()=>{ const f=n.moving?[1,0,2,0][Math.floor(n.fr)%4]:0, bob=n.moving&&f===0?1:0; dropShadow(lx,X(n.x),Y(n.y)-1,n.st==='baby'?10:12); drawSpr(lx,personSprite({dir:n.dir,fr:f,st:n.st,skin:n.look.skin,hair:n.st==='elder'?'#D8DCE0':n.look.hair,body:n.look.body,pants:n.look.pants,long:n.long,sty:Math.floor(hash(Math.round(n.look.body.charCodeAt(2)*7+n.look.hair.charCodeAt(3)),9)*4),blink:Math.floor(t*10+n.x*7)%41===0}),X(n.x)-8,Y(n.y)-22-bob); }}); }
   const a=L.age, st=stageAt(a), f=W.moving?[1,0,2,0][Math.floor(W.walk)%4]:0, lk=L.look;
   spr.push({y:W.y,me:1,d:()=>{ if(W.car){ dropShadow(lx,X(W.x),Y(W.y)+2,C_VEH()==='car'?24:16); const s=vehicleSprite(C_VEH(),W.dir===1?-1:1,'#C2577A',C_VEH()==='car'?null:{skin:lk.skin,hair:a>=62?'#D8DCE0':lk.hair,body:'#E2703A',pants:lk.pants,st:stageAt(a),long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:0}); drawSpr(lx,s,X(W.x)-sprW(s)/2,Y(W.y)-sprH(s)+4); }
-    else { dropShadow(lx,X(W.x),Y(W.y)-1,st==='baby'?10:12); const bob=W.moving&&f===0?1:0; drawSpr(lx,personSprite({dir:W.dir,fr:f,st,skin:lk.skin,hair:a>=62?'#D8DCE0':a>=50?shade(lk.hair,1.6):lk.hair,body:'#E2703A',pants:lk.pants,long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:Math.floor(hash(lk.si*5+lk.hair.charCodeAt(3),9)*4),blink:Math.floor(t*10)%38===0}),X(W.x)-8,Y(W.y)-22-bob); } }});
+    else { dropShadow(lx,X(W.x),Y(W.y)-1,st==='baby'?10:12); const bob=W.moving&&f===0&&st!=='baby'?1:0; drawSpr(lx,personSprite({dir:W.dir,fr:f,st,skin:lk.skin,hair:a>=62?'#D8DCE0':a>=50?shade(lk.hair,1.6):lk.hair,body:'#E2703A',pants:lk.pants,long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:Math.floor(hash(lk.si*5+lk.hair.charCodeAt(3),9)*4),blink:Math.floor(t*10)%38===0}),X(W.x)-8,Y(W.y)-22-bob); } }});
   const pk=[OUT.b.home[0]+OUT.b.home[2]/2+2,OUT.RY-.15];
   if(out&&canDrive()&&!W.car) spr.push({y:pk[1],d:()=>{ const s=vehicleSprite(C_VEH(),1,'#C2577A',null); drawSpr(lx,s,X(pk[0])-sprW(s)/2,Y(pk[1])-sprH(s)+4); }});
   spr.sort((p,q)=>p.y-q.y).forEach(s=>s.d());
