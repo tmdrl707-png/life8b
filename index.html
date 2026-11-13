@@ -8745,7 +8745,7 @@ $('btnMem').onclick=()=>openMem('all');
 function openMem(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()=>true,big:m=>m.big,fam:m=>m.fam||/엄마|아빠|아내|남편|아들|딸|손주|동생|형|누나|언니|오빠|할머니|할아버지|가족/.test(m.t+(m.q||'')),pick:m=>!!m.q}[flt], list=all.filter(test).slice(0,80);
   const tab=(k,n)=>`<button data-f="${k}" class="${flt===k?'on':''}">${n}</button>`;
   sheet(`<h2>${esc(L.name)}의 기억</h2><p class="small sub">선택 ${L.n}번 · 놓친 순간 ${L.miss}번 · 주황 줄은 큰 일 · ▣ 표시 줄을 누르면 그 장면을 다시 봅니다</p>
-    <div class="mtabs">${tab('all','전체')}${tab('big','큰 일')}${tab('pick','내가 고른 일')}${tab('fam','가족')}</div>
+    <div class="mtabs">${tab('all','전체')}${tab('big','큰 사건')}${tab('pick','내가 고른 순간')}${tab('fam','가족')}</div>
     <div class="tscroll"><table class="dtbl"><thead><tr><th>나이</th><th>그때의 상황 · 나의 선택</th><th>그 결과</th></tr></thead><tbody>${list.length?list.map((m,i)=>`<tr class="${m.sc?'sc':''} ${m.big?'big':''}" data-i="${i}"><td class="a">${m.a}살</td><td class="q">${m.q?esc(m.q):'<span class="sub">—</span>'}${m.l?`<br><b style="font-weight:600;color:#2858A8">→ ${esc(m.l)}</b>`:''}</td><td>${esc(memT(m))}${m.rp>1?` <span class="rp">×${m.rp}</span>`:''}${m.f?'<span class="tag">뜻대로 안 됨</span>':''}${m.sc?' <span class="sub">▣</span>':''}</td></tr>`).join(''):'<tr><td colspan="3" class="sub">아직 없어요</td></tr>'}</tbody></table></div>
     <p class="small sub">최근 기억부터 ${list.length}개를 보여 줍니다.</p><button class="btn" id="btnOk">닫기</button>`);
   $('btnOk').onclick=closeSheet;
@@ -9063,16 +9063,16 @@ function miniBase(){ const L=G.life, key=worldKey()+'|'+L.age; if(miniBase.k===k
   { const r=reachOf(L.age); x.fillStyle='rgba(28,40,52,.9)'; if(r[2]<OUT.w) x.fillRect(r[2]*4,0,(OUT.w-r[2])*4,OUT.h*4); if(r[3]<OUT.h) x.fillRect(0,r[3]*4,r[2]*4,(OUT.h-r[3])*4); }
   miniBase.k=key; miniBase.c=c; return c; }
 function drawMini(t){ const c=$('mini'), x=c.getContext('2d'), L=G.life; x.imageSmoothingEnabled=false; x.fillStyle='#283038'; x.fillRect(0,0,c.width,c.height);
-  const blink=Math.floor(t*3)%2===0, tg=targets();
+  const blink=Math.floor(t*1.5)%2===0, tg=targets();
   if(W.map==='out'){ const v=viewRect(), k=Math.min(c.width/v[2],c.height/v[3]), ox=(c.width-v[2]*k)/2, oy=(c.height-v[3]*k)/2, P=(px,py)=>[Math.round(ox+(px-v[0])*k),Math.round(oy+(py-v[1])*k)], q=Math.max(4,Math.round(k*1.2));
     x.drawImage(miniBase(),v[0]*4,v[1]*4,v[2]*4,v[3]*4,ox,oy,v[2]*k,v[3]*k); $('miniTag').textContent='동네 지도';
     tg.forEach(t=>{ const p=P(...(t.m==='out'?t.p:doorOf(t.m==='home'?'home':t.m))); x.fillStyle='#283038'; x.fillRect(p[0]-q,p[1]-q,q*2+1,q*2+1); x.fillStyle=t.type==='q'?'#5890F0':'#F08A50'; x.fillRect(p[0]-q+1,p[1]-q+1,q*2-1,q*2-1); });
     const me=P(W.x,W.y); x.fillStyle=blink?'#FFFFFF':'#283038'; x.fillRect(me[0]-q,me[1]-q,q*2,q*2); x.fillStyle='#E2703A'; x.fillRect(me[0]-Math.floor(q/2),me[1]-Math.floor(q/2),q,q); }
-  else { const s=7, ox=Math.round((c.width-IW*s)/2), oy=Math.round((c.height-IH*s)/2); x.fillStyle='#D8C8A8'; x.fillRect(ox,oy,IW*s,IH*s); x.fillStyle='#8A643C';
-    furnOf(W.map).forEach(f=>x.fillRect(ox+Math.round(f[1]*s),oy+Math.round(f[2]*s),Math.max(2,Math.round(f[3]*s)),Math.max(2,Math.round(f[4]*s)))); x.fillStyle='#E2703A'; x.fillRect(ox+IDOOR[0]*s-6,oy+IH*s-3,12,3);
-    (NPCMAP[W.map]||[]).forEach(n=>{ if(n.kind!=='p') return; x.fillStyle='#5A6878'; x.fillRect(ox+Math.round(n.x*s)-2,oy+Math.round(n.y*s)-2,4,4); });
-    tg.forEach(k=>{ if(k.m!==W.map) return; x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(ox+Math.round(k.p[0]*s)-3,oy+Math.round(k.p[1]*s)-3,6,6); });
-    x.fillStyle=blink?'#FFFFFF':'#283038'; x.fillRect(ox+Math.round(W.x*s)-3,oy+Math.round(W.y*s)-3,6,6);
+  else { const s=Math.floor(Math.min(c.width/IW,c.height/IH)*.94), m=Math.max(3,Math.round(s*.28)), ox=Math.round((c.width-IW*s)/2), oy=Math.round((c.height-IH*s)/2); x.fillStyle='#D8C8A8'; x.fillRect(ox,oy,IW*s,IH*s); x.fillStyle='#8A643C';
+    furnOf(W.map).forEach(f=>x.fillRect(ox+Math.round(f[1]*s),oy+Math.round(f[2]*s),Math.max(2,Math.round(f[3]*s)),Math.max(2,Math.round(f[4]*s)))); x.fillStyle='#E2703A'; x.fillRect(ox+IDOOR[0]*s-s*.6,oy+IH*s-4,s*1.2,4);
+    (NPCMAP[W.map]||[]).forEach(n=>{ if(n.kind!=='p') return; x.fillStyle='#5A6878'; x.fillRect(ox+Math.round(n.x*s)-m,oy+Math.round(n.y*s)-m,m*2,m*2); });
+    tg.forEach(k=>{ if(k.m!==W.map) return; x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(ox+Math.round(k.p[0]*s)-m-1,oy+Math.round(k.p[1]*s)-m-1,m*2+2,m*2+2); });
+    x.fillStyle=blink?'#FFFFFF':'#283038'; x.fillRect(ox+Math.round(W.x*s)-m-1,oy+Math.round(W.y*s)-m-1,m*2+2,m*2+2);
     $('miniTag').textContent=W.map==='home'?'집 안':W.map==='work'?L.spotName('work')+' 안':L.spotName(W.map)+' 안'; } }
 const patchLabels=()=>{ const p=OUT.patch; return [['play',p.play[0]+p.play[2]/2,p.play[1]+.2],['nature',p.nature[0]+p.nature[2]/2,p.nature[1]+.2],['mount',p.mount[0]+p.mount[2]/2,p.mount[1]-.6],['sea',p.sea[0]+p.sea[2]/2,p.sea[1]+p.sea[3]-1]]; };
 function drawBigMap(c){ const x=c.getContext('2d'), L=G.life, s=c.width/OUT.w; x.imageSmoothingEnabled=false; x.drawImage(miniBase(),0,0,OUT.w*s,OUT.h*s);
@@ -10016,7 +10016,7 @@ function renderMiniRad(){ const L=G.life, hud=$('hud'); if(!L||!hud) return; let
   el.innerHTML=MINIRAD_OFF?`<button class="mrtog" type="button" aria-label="삶의 모양 펼치기">⬠ 삶의 모양 ＋</button>`:`<div class="mrhd"><span>삶의 모양</span><button class="mrtog" type="button" aria-label="삶의 모양 접기">－</button></div>${miniRadarSVG(L.s)}`; }
 // 11-13 선생님 결정: 게임 화면의 작은 오각형은 띄우지 않는다(내 정보 '삶의 모양'에서 본다). renderMiniRad는 남겨 두되 부르지 않는다.
 // ---- 내 정보: 메뉴로 나눈다
-const INFO_TABS=[['me','개인 정보'],['others','다른 사람들'],['fam','우리 가족'],['shape','삶의 모양'],['joy','내 행복을 만드는 것']];
+const INFO_TABS=[['me','개인 정보'],['fam','우리 가족'],['shape','삶의 모양'],['joy','내 행복을 만드는 것']];
 function infoRow(k,v){ return `<div class="irow"><div class="ik">${k}</div><div class="iv">${v}</div></div>`; }
 function openInfo(tab){ tab=tab||'me'; const L=G.life, C=L.C, f=L.f, a=L.age, P=L.ppl||{};
   let body='';
@@ -10037,18 +10037,18 @@ function openInfo(tab){ tab=tab||'me'; const L=G.life, C=L.C, f=L.f, a=L.age, P=
       ${L.fam?`<section class="icard"><h3>가족 한 사람 한 사람</h3><div class="plist">${L.famList().map(r=>`<div class="pcard"><b>${esc(r[0])}</b><span class="isub">${esc(r[1])}</span><p>${esc(r[2])}</p></div>`).join('')}</div></section>`:''}
       <section class="icard"><h3>가까운 정도 <small>친밀도 0~100</small></h3>${relBars(L)}<p class="isub">가족은 천천히, 친구와 동료는 연락이 없으면 빨리 멀어집니다. 함께하는 선택을 하면 가까워져요.</p></section>`; }
   else if(tab==='shape'){ const v=L.s, ov=radarOverlays(L,a), H=(L.hist||[]).filter(x=>x.a<a&&x.t!=null), prev=H.length?H[H.length-1]:null;
-    body=`<section class="icard"><h3>삶의 모양 <small>꽉 찬 정오각형이 만점(100)</small></h3>${radarSVG(v,ov)}${radarLegend(ov)}
-      <div class="axgrid">${AXES.map(k=>{ const d=prev?Math.round(v[k])-prev[k]:0; return `<div><span style="color:${AX_COL[k]}">${AX_N[k]}</span><b>${Math.round(v[k])}</b>${d?`<small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:'<small>　</small>'}</div>`; }).join('')}</div>
+    body=`<section class="icard"><h3>삶의 모양 <small>꽉 찬 정오각형이 만점(100)</small></h3><div class="shapew"><div class="shaper">${radarSVG(v,ov)}${radarLegend(ov)}</div>
+      <div class="axgrid">${AXES.map(k=>{ const d=prev?Math.round(v[k])-prev[k]:0; return `<div><span style="color:${AX_COL[k]}">${AX_N[k]}</span><b>${Math.round(v[k])}</b>${d?`<small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:'<small>　</small>'}</div>`; }).join('')}</div></div>
       <p class="isub">직접 다가가서 고른 일은 삶의 모양을 키우고, 그냥 지나간 일은 조금만 키웁니다. 다섯 가지를 한꺼번에 키우기는 어려워요.</p></section>
       <section class="icard"><h3>나이에 따라</h3>${lineChartSVG(L)||'<p class="isub">한 해가 지나면 그래프가 생겨요</p>'}</section>
       <section class="icard"><h3>건강과 재산 <small>오각형 밖에 따로</small></h3>${resBars(L)}</section>`; }
   else if(tab==='trait'){ const top=L.topTrait(), tot=Object.values(L.tr).reduce((s,x)=>s+x,0);
     body=`<section class="icard"><h3>성향</h3><p class="ibig">${tot?`지금까지는 <b>'${TRAIT[top]}'</b>이 가장 많아요`:'아직 쌓인 것이 없어요'}</p>${traitPanel(L)}<p class="isub">어떤 성향으로 골랐는지가 쌓여, 이어지는 일의 확률을 조금씩 바꿉니다.</p></section>`; }
   else { const s=L.s, me=L.moneyEase(), ws=L.workSat(), tg=L.joyTarget(), parts=[['건강',s.h,.25],['곁의 사람들(관계)',s.r,.25],['돈 걱정 없음',me,.15],['일과 꿈',ws,.20],['겪어 본 것들(경험)',s.e,.15]];
-    const JP=L.joyParts(), nm={n:'나라의 형편',g:'감사하는 마음',c:'함께 웃는 문화'};
+    const JP=L.joyParts(), nm={n:'나라의 형편',c:'함께 웃는 문화'};
     body=`<section class="icard"><h3>올해 행복을 만드는 것 <small>지금 행복 ${Math.round(s.j)}</small></h3>${parts.map(([n,v,w])=>`<div class="jrow"><span>${n}<small> ×${Math.round(w*100)}%</small></span><div class="rt"><i style="width:${Math.round(clamp(v,0,100))}%"></i></div><b>${Math.round(v)}</b></div>`).join('')}
       <p class="isub">이 다섯 가지를 합한 값(지금 ${Math.round(tg)})을 향해 행복이 해마다 조금씩 움직입니다. 큰 기쁨이나 슬픔은 한 번에 크게 바꾸기도 해요.</p></section>
-      <section class="icard"><h3>그 밖에 영향을 주는 것</h3>${Object.keys(nm).map(k=>`<div class="happy"><span>${nm[k]}</span><div class="hbar">${barSvg(JP[k])}</div><span class="num">${JP[k]>=0?'+':''}${JP[k].toFixed(0)}</span></div>`).join('')}<p class="isub">돈만이 아니라 곁의 사람들, 작은 일에도 감사하는 마음, 함께 웃는 문화가 행복을 크게 바꿉니다.</p></section>`; }
+      <section class="icard"><h3>그 밖에 영향을 주는 것</h3>${Object.keys(nm).map(k=>`<div class="happy"><span>${nm[k]}</span><div class="hbar">${barSvg(JP[k])}</div><span class="num">${JP[k]>=0?'+':''}${JP[k].toFixed(0)}</span></div>`).join('')}<p class="isub">돈만이 아니라 곁의 사람들과 함께 웃는 문화가 행복을 크게 바꿉니다.</p></section>`; }
   sheet(`<div class="ihead"><div class="place">내 정보</div><h2>${esc(L.name)} · ${a}살 · ${L.by+a}년</h2><nav class="itabs" role="tablist">${INFO_TABS.map(([k,n])=>`<button role="tab" data-t="${k}" class="${k===tab?'on':''}" aria-selected="${k===tab}">${n}</button>`).join('')}</nav></div><div class="ibody">${body}</div><button class="btn" id="btnOk">닫기</button>`,'info closable');
   $('btnOk').onclick=closeSheet; $('sheetBox').querySelectorAll('.itabs button').forEach(b=>b.onclick=()=>{ openInfo(b.dataset.t); });
   const on=$('sheetBox').querySelector('.itabs .on'); if(on) on.scrollIntoView({block:'nearest',inline:'center'}); }
@@ -10058,7 +10058,7 @@ $('btnInfo').onclick=()=>openInfo('me');
 // ---- 기억: 표 대신 카드
 openMem=function(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()=>true,big:m=>m.big,fam:m=>m.fam||/엄마|아빠|아내|남편|아들|딸|손주|동생|형|누나|언니|오빠|할머니|할아버지|가족/.test(m.t+(m.q||'')),pick:m=>!!m.q}[flt], list=all.filter(test).slice(0,80);
   const tab=(k,n)=>`<button data-f="${k}" class="${flt===k?'on':''}">${n}</button>`;
-  sheet(`<div class="ihead"><div class="place">기억</div><h2>${esc(L.name)}의 기억</h2><nav class="itabs">${tab('all','전체')}${tab('big','큰 일')}${tab('pick','내가 고른 일')}${tab('fam','가족')}</nav></div>
+  sheet(`<div class="ihead"><div class="place">기억</div><h2>${esc(L.name)}의 기억</h2><nav class="itabs">${tab('all','전체')}${tab('big','큰 사건')}${tab('pick','내가 고른 순간')}${tab('fam','가족')}</nav></div>
     <p class="isub">선택 ${L.n}번 · 놓친 순간 ${L.miss}번 · 최근 기억부터 ${list.length}개 · <span class="scmark">장면</span> 표시가 있는 기억을 누르면 그 장면을 다시 봅니다</p>
     <div class="mlist">${list.length?list.map((m,i)=>`<article class="mcard${m.big?' big':''}${m.sc?' sc':''}" data-i="${i}"><div class="mage">${m.a}살<small>${L.by+m.a}년</small></div><div class="mtx">${m.q?`<p class="mq">${esc(m.q)}</p>`:''}${m.l?`<p class="ml">→ ${esc(m.l)}</p>`:''}<p class="mr">${esc(memT(m))}${m.rp>1?` <span class="rp">×${m.rp}</span>`:''}</p>${m.f||m.sc?`<div class="mtags">${m.f?'<span class="tag">뜻대로 안 됨</span>':''}${m.sc?'<span class="scmark">장면</span>':''}</div>`:''}</div></article>`).join(''):'<p class="isub">아직 없어요</p>'}</div>
     <button class="btn" id="btnOk">닫기</button>`,'mem closable');
@@ -11285,6 +11285,55 @@ const _wfMaps=openMaps; openMaps=function(tab){ _wfMaps(tab); try{ if(tab!=='tow
   cv.insertAdjacentHTML('afterend',`<p class="small sub" style="margin:8px 0 0">갈 곳을 누르면 그곳까지 길을 안내해요.</p><div class="wflist">${list.map(o=>`<button type="button" data-k="${o.k}" class="${o.k===cur?'on':''}">${esc(o.n)}<small>${o.d}칸</small></button>`).join('')}</div>`);
   $('sheetBox').querySelectorAll('.wflist button').forEach(b=>b.onclick=()=>{ const o=list.find(x=>x.k===b.dataset.k); G.guide={k:o.k,n:o.n,z:W.zone}; WF.off=0; WF.path=[]; closeSheet(); toast(`길 안내: ${o.n}`,'news'); });
 }catch(e){} };
+/* ========== [2-1 세계·화면] 선생님 플레이 점검(11-13 밤) 반영: 화면 다듬기 ==========
+   1) 개발자 창: 위쪽 가운데의 긴 띠 → 미니맵 바로 아래, 미니맵 너비의 네모 칸(여러 줄). 접으면 버튼 하나.
+   2) 미니맵(밖): 갈 수 있는 곳 전체를 한꺼번에 보이지 않고, 나를 가운데 두고 일정한 크기(가로 약 30칸)만 보인다.
+      갈 수 있는 곳이 넓어져도 글씨가 작아지지 않고, 내가 움직이면 미니맵도 따라 움직인다.
+   3) 미니맵 조금 크게, 해를 넘길 때 '지나간 일' 글씨를 크고 같은 색으로, 내 정보 '삶의 모양'을 한 화면에. */
+document.head.insertAdjacentHTML('beforeend',`<style id="playFixCss">
+#devBar.side{top:var(--devTop,160px);left:var(--devLeft,8px);transform:none;width:var(--devW,190px);max-width:none;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:6px;border-radius:10px;justify-content:stretch}
+#devBar.side b{grid-column:1/-1;margin:0 0 2px;text-align:left}
+#devBar.side button{text-align:center;padding:5px 4px;font-size:.74rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#devBar.side button[data-a=tog]{grid-column:1/-1}
+#devBar.side.mini{width:auto;grid-template-columns:auto auto;align-items:center}
+#devBar.side.mini b{grid-column:auto;margin:0 4px 0 0}
+#devBar.side.mini button[data-a=tog]{grid-column:auto}
+@media (max-height:460px){ #devBar.side{bottom:auto;gap:3px;padding:4px} #devBar.side button{font-size:.6rem;padding:3px 2px} #devBar.side b{font-size:.6rem} }
+#mini{width:196px!important;height:144px!important}
+@media (min-width:900px) and (min-height:560px){ #mini{width:212px!important;height:156px!important} }
+@media (max-height:460px){ #mini{width:124px!important;height:91px!important} }
+.autolist li{font-size:.95rem!important;gap:4px!important;color:#283038}
+.autolist b{color:#283038!important;font-weight:600!important}
+.autolist span{color:#2858A8!important;font-size:.9rem!important}
+.autolist em{color:#283038!important;font-size:.92rem!important}
+.autolist .k{font-size:.78rem!important;color:#B4501E!important}
+@media (max-height:460px){ .autolist li{font-size:.8rem!important} .autolist em,.autolist span{font-size:.78rem!important} }
+.shapew{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.shapew .shaper{flex:1 1 240px;max-width:360px;display:flex;flex-direction:column;align-items:center}
+.shapew .shaper svg{width:100%;height:auto;max-height:min(44vh,300px)}
+.shapew .axgrid{flex:1 1 200px;grid-template-columns:repeat(5,1fr)}
+@media (max-height:460px){ .shapew .shaper svg{max-height:52vh} .shapew .axgrid{grid-template-columns:1fr 1fr 1fr;gap:4px} .shapew .axgrid b{font-size:1rem} }
+.happy{grid-template-columns:7.5rem minmax(0,1fr) 3rem!important;font-size:.85rem!important}
+.happy .hbar svg{width:100%}
+</style>`);
+// 1) 개발자 창 자리: 미니맵(과 그 아래 할 일 표시) 바로 아래
+function devBarPlace(){ const b=$('devBar'); if(!b||b.hidden) return; const inGame=!$('s-game').hidden&&$('s-end').hidden; b.classList.toggle('side',inGame); if(!inGame) return;
+  const mw=$('miniWrap'); if(!mw||!mw.offsetParent) return; const r=mw.getBoundingClientRect(); let top=r.bottom+6;
+  document.querySelectorAll('#hQuest li').forEach(c=>{ if(!c.offsetParent) return; const q=c.getBoundingClientRect(); if(q.left<r.right) top=Math.max(top,q.bottom+6); });
+  b.style.setProperty('--devTop',Math.round(top)+'px'); b.style.setProperty('--devLeft',Math.round(r.left)+'px'); b.style.setProperty('--devW',Math.round(Math.max(150,r.width))+'px'); }
+(()=>{ const _db=devBar; devBar=function(){ const r=_db.apply(this,arguments); try{ devBarPlace(); }catch(e){} return r; };
+  const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ requestAnimationFrame(devBarPlace); }catch(e){} return r; };
+  addEventListener('resize',()=>setTimeout(devBarPlace,120)); })();
+// 2) 미니맵이 나를 따라 움직이는 창 (갈 수 있는 곳 안에서)
+const MINI_SPAN=30;   // 미니맵에 보이는 가로 칸 수
+function miniRect(){ const r=reachOf(G.life.age), c=$('mini'), asp=c?c.height/c.width:.74;
+  const x0=Math.max(0,r[0]-1), y0=Math.max(0,r[1]-1), x1=Math.min(OUT.w,r[0]+r[2]+1), y1=Math.min(OUT.h,r[1]+r[3]+1), RW=x1-x0, RH=y1-y0;
+  let w=Math.min(MINI_SPAN,RW), h=w*asp; if(h>RH){ h=RH; w=Math.min(RW,h/asp); }
+  // 갈 수 있는 곳이 창보다 작으면 그대로, 크면 나를 가운데에
+  const cx=W.map==='out'?W.x:OUT.s.home[0], cy=W.map==='out'?W.y:OUT.s.home[1];
+  const x=RW<=w?x0+(RW-w)/2:clamp(cx-w/2,x0,x1-w), y=RH<=h?y0+(RH-h)/2:clamp(cy-h/2,y0,y1-h);
+  return [x,y,w,h]; }
+(()=>{ const _dmF=drawMini; drawMini=function(t){ const vr=viewRect; viewRect=miniRect; try{ return _dmF.apply(this,arguments); } finally{ viewRect=vr; } }; })();
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
 <script id="visual-enhancer">

@@ -23,7 +23,7 @@ function renderMiniRad(){ const L=G.life, hud=$('hud'); if(!L||!hud) return; let
   el.innerHTML=MINIRAD_OFF?`<button class="mrtog" type="button" aria-label="삶의 모양 펼치기">⬠ 삶의 모양 ＋</button>`:`<div class="mrhd"><span>삶의 모양</span><button class="mrtog" type="button" aria-label="삶의 모양 접기">－</button></div>${miniRadarSVG(L.s)}`; }
 // 11-13 선생님 결정: 게임 화면의 작은 오각형은 띄우지 않는다(내 정보 '삶의 모양'에서 본다). renderMiniRad는 남겨 두되 부르지 않는다.
 // ---- 내 정보: 메뉴로 나눈다
-const INFO_TABS=[['me','개인 정보'],['others','다른 사람들'],['fam','우리 가족'],['shape','삶의 모양'],['joy','내 행복을 만드는 것']];
+const INFO_TABS=[['me','개인 정보'],['fam','우리 가족'],['shape','삶의 모양'],['joy','내 행복을 만드는 것']];
 function infoRow(k,v){ return `<div class="irow"><div class="ik">${k}</div><div class="iv">${v}</div></div>`; }
 function openInfo(tab){ tab=tab||'me'; const L=G.life, C=L.C, f=L.f, a=L.age, P=L.ppl||{};
   let body='';
@@ -44,18 +44,18 @@ function openInfo(tab){ tab=tab||'me'; const L=G.life, C=L.C, f=L.f, a=L.age, P=
       ${L.fam?`<section class="icard"><h3>가족 한 사람 한 사람</h3><div class="plist">${L.famList().map(r=>`<div class="pcard"><b>${esc(r[0])}</b><span class="isub">${esc(r[1])}</span><p>${esc(r[2])}</p></div>`).join('')}</div></section>`:''}
       <section class="icard"><h3>가까운 정도 <small>친밀도 0~100</small></h3>${relBars(L)}<p class="isub">가족은 천천히, 친구와 동료는 연락이 없으면 빨리 멀어집니다. 함께하는 선택을 하면 가까워져요.</p></section>`; }
   else if(tab==='shape'){ const v=L.s, ov=radarOverlays(L,a), H=(L.hist||[]).filter(x=>x.a<a&&x.t!=null), prev=H.length?H[H.length-1]:null;
-    body=`<section class="icard"><h3>삶의 모양 <small>꽉 찬 정오각형이 만점(100)</small></h3>${radarSVG(v,ov)}${radarLegend(ov)}
-      <div class="axgrid">${AXES.map(k=>{ const d=prev?Math.round(v[k])-prev[k]:0; return `<div><span style="color:${AX_COL[k]}">${AX_N[k]}</span><b>${Math.round(v[k])}</b>${d?`<small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:'<small>　</small>'}</div>`; }).join('')}</div>
+    body=`<section class="icard"><h3>삶의 모양 <small>꽉 찬 정오각형이 만점(100)</small></h3><div class="shapew"><div class="shaper">${radarSVG(v,ov)}${radarLegend(ov)}</div>
+      <div class="axgrid">${AXES.map(k=>{ const d=prev?Math.round(v[k])-prev[k]:0; return `<div><span style="color:${AX_COL[k]}">${AX_N[k]}</span><b>${Math.round(v[k])}</b>${d?`<small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:'<small>　</small>'}</div>`; }).join('')}</div></div>
       <p class="isub">직접 다가가서 고른 일은 삶의 모양을 키우고, 그냥 지나간 일은 조금만 키웁니다. 다섯 가지를 한꺼번에 키우기는 어려워요.</p></section>
       <section class="icard"><h3>나이에 따라</h3>${lineChartSVG(L)||'<p class="isub">한 해가 지나면 그래프가 생겨요</p>'}</section>
       <section class="icard"><h3>건강과 재산 <small>오각형 밖에 따로</small></h3>${resBars(L)}</section>`; }
   else if(tab==='trait'){ const top=L.topTrait(), tot=Object.values(L.tr).reduce((s,x)=>s+x,0);
     body=`<section class="icard"><h3>성향</h3><p class="ibig">${tot?`지금까지는 <b>'${TRAIT[top]}'</b>이 가장 많아요`:'아직 쌓인 것이 없어요'}</p>${traitPanel(L)}<p class="isub">어떤 성향으로 골랐는지가 쌓여, 이어지는 일의 확률을 조금씩 바꿉니다.</p></section>`; }
   else { const s=L.s, me=L.moneyEase(), ws=L.workSat(), tg=L.joyTarget(), parts=[['건강',s.h,.25],['곁의 사람들(관계)',s.r,.25],['돈 걱정 없음',me,.15],['일과 꿈',ws,.20],['겪어 본 것들(경험)',s.e,.15]];
-    const JP=L.joyParts(), nm={n:'나라의 형편',g:'감사하는 마음',c:'함께 웃는 문화'};
+    const JP=L.joyParts(), nm={n:'나라의 형편',c:'함께 웃는 문화'};
     body=`<section class="icard"><h3>올해 행복을 만드는 것 <small>지금 행복 ${Math.round(s.j)}</small></h3>${parts.map(([n,v,w])=>`<div class="jrow"><span>${n}<small> ×${Math.round(w*100)}%</small></span><div class="rt"><i style="width:${Math.round(clamp(v,0,100))}%"></i></div><b>${Math.round(v)}</b></div>`).join('')}
       <p class="isub">이 다섯 가지를 합한 값(지금 ${Math.round(tg)})을 향해 행복이 해마다 조금씩 움직입니다. 큰 기쁨이나 슬픔은 한 번에 크게 바꾸기도 해요.</p></section>
-      <section class="icard"><h3>그 밖에 영향을 주는 것</h3>${Object.keys(nm).map(k=>`<div class="happy"><span>${nm[k]}</span><div class="hbar">${barSvg(JP[k])}</div><span class="num">${JP[k]>=0?'+':''}${JP[k].toFixed(0)}</span></div>`).join('')}<p class="isub">돈만이 아니라 곁의 사람들, 작은 일에도 감사하는 마음, 함께 웃는 문화가 행복을 크게 바꿉니다.</p></section>`; }
+      <section class="icard"><h3>그 밖에 영향을 주는 것</h3>${Object.keys(nm).map(k=>`<div class="happy"><span>${nm[k]}</span><div class="hbar">${barSvg(JP[k])}</div><span class="num">${JP[k]>=0?'+':''}${JP[k].toFixed(0)}</span></div>`).join('')}<p class="isub">돈만이 아니라 곁의 사람들과 함께 웃는 문화가 행복을 크게 바꿉니다.</p></section>`; }
   sheet(`<div class="ihead"><div class="place">내 정보</div><h2>${esc(L.name)} · ${a}살 · ${L.by+a}년</h2><nav class="itabs" role="tablist">${INFO_TABS.map(([k,n])=>`<button role="tab" data-t="${k}" class="${k===tab?'on':''}" aria-selected="${k===tab}">${n}</button>`).join('')}</nav></div><div class="ibody">${body}</div><button class="btn" id="btnOk">닫기</button>`,'info closable');
   $('btnOk').onclick=closeSheet; $('sheetBox').querySelectorAll('.itabs button').forEach(b=>b.onclick=()=>{ openInfo(b.dataset.t); });
   const on=$('sheetBox').querySelector('.itabs .on'); if(on) on.scrollIntoView({block:'nearest',inline:'center'}); }
@@ -65,7 +65,7 @@ $('btnInfo').onclick=()=>openInfo('me');
 // ---- 기억: 표 대신 카드
 openMem=function(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()=>true,big:m=>m.big,fam:m=>m.fam||/엄마|아빠|아내|남편|아들|딸|손주|동생|형|누나|언니|오빠|할머니|할아버지|가족/.test(m.t+(m.q||'')),pick:m=>!!m.q}[flt], list=all.filter(test).slice(0,80);
   const tab=(k,n)=>`<button data-f="${k}" class="${flt===k?'on':''}">${n}</button>`;
-  sheet(`<div class="ihead"><div class="place">기억</div><h2>${esc(L.name)}의 기억</h2><nav class="itabs">${tab('all','전체')}${tab('big','큰 일')}${tab('pick','내가 고른 일')}${tab('fam','가족')}</nav></div>
+  sheet(`<div class="ihead"><div class="place">기억</div><h2>${esc(L.name)}의 기억</h2><nav class="itabs">${tab('all','전체')}${tab('big','큰 사건')}${tab('pick','내가 고른 순간')}${tab('fam','가족')}</nav></div>
     <p class="isub">선택 ${L.n}번 · 놓친 순간 ${L.miss}번 · 최근 기억부터 ${list.length}개 · <span class="scmark">장면</span> 표시가 있는 기억을 누르면 그 장면을 다시 봅니다</p>
     <div class="mlist">${list.length?list.map((m,i)=>`<article class="mcard${m.big?' big':''}${m.sc?' sc':''}" data-i="${i}"><div class="mage">${m.a}살<small>${L.by+m.a}년</small></div><div class="mtx">${m.q?`<p class="mq">${esc(m.q)}</p>`:''}${m.l?`<p class="ml">→ ${esc(m.l)}</p>`:''}<p class="mr">${esc(memT(m))}${m.rp>1?` <span class="rp">×${m.rp}</span>`:''}</p>${m.f||m.sc?`<div class="mtags">${m.f?'<span class="tag">뜻대로 안 됨</span>':''}${m.sc?'<span class="scmark">장면</span>':''}</div>`:''}</div></article>`).join(''):'<p class="isub">아직 없어요</p>'}</div>
     <button class="btn" id="btnOk">닫기</button>`,'mem closable');

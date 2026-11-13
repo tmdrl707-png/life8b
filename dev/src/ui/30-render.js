@@ -200,16 +200,16 @@ function miniBase(){ const L=G.life, key=worldKey()+'|'+L.age; if(miniBase.k===k
   { const r=reachOf(L.age); x.fillStyle='rgba(28,40,52,.9)'; if(r[2]<OUT.w) x.fillRect(r[2]*4,0,(OUT.w-r[2])*4,OUT.h*4); if(r[3]<OUT.h) x.fillRect(0,r[3]*4,r[2]*4,(OUT.h-r[3])*4); }
   miniBase.k=key; miniBase.c=c; return c; }
 function drawMini(t){ const c=$('mini'), x=c.getContext('2d'), L=G.life; x.imageSmoothingEnabled=false; x.fillStyle='#283038'; x.fillRect(0,0,c.width,c.height);
-  const blink=Math.floor(t*3)%2===0, tg=targets();
+  const blink=Math.floor(t*1.5)%2===0, tg=targets();
   if(W.map==='out'){ const v=viewRect(), k=Math.min(c.width/v[2],c.height/v[3]), ox=(c.width-v[2]*k)/2, oy=(c.height-v[3]*k)/2, P=(px,py)=>[Math.round(ox+(px-v[0])*k),Math.round(oy+(py-v[1])*k)], q=Math.max(4,Math.round(k*1.2));
     x.drawImage(miniBase(),v[0]*4,v[1]*4,v[2]*4,v[3]*4,ox,oy,v[2]*k,v[3]*k); $('miniTag').textContent='동네 지도';
     tg.forEach(t=>{ const p=P(...(t.m==='out'?t.p:doorOf(t.m==='home'?'home':t.m))); x.fillStyle='#283038'; x.fillRect(p[0]-q,p[1]-q,q*2+1,q*2+1); x.fillStyle=t.type==='q'?'#5890F0':'#F08A50'; x.fillRect(p[0]-q+1,p[1]-q+1,q*2-1,q*2-1); });
     const me=P(W.x,W.y); x.fillStyle=blink?'#FFFFFF':'#283038'; x.fillRect(me[0]-q,me[1]-q,q*2,q*2); x.fillStyle='#E2703A'; x.fillRect(me[0]-Math.floor(q/2),me[1]-Math.floor(q/2),q,q); }
-  else { const s=7, ox=Math.round((c.width-IW*s)/2), oy=Math.round((c.height-IH*s)/2); x.fillStyle='#D8C8A8'; x.fillRect(ox,oy,IW*s,IH*s); x.fillStyle='#8A643C';
-    furnOf(W.map).forEach(f=>x.fillRect(ox+Math.round(f[1]*s),oy+Math.round(f[2]*s),Math.max(2,Math.round(f[3]*s)),Math.max(2,Math.round(f[4]*s)))); x.fillStyle='#E2703A'; x.fillRect(ox+IDOOR[0]*s-6,oy+IH*s-3,12,3);
-    (NPCMAP[W.map]||[]).forEach(n=>{ if(n.kind!=='p') return; x.fillStyle='#5A6878'; x.fillRect(ox+Math.round(n.x*s)-2,oy+Math.round(n.y*s)-2,4,4); });
-    tg.forEach(k=>{ if(k.m!==W.map) return; x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(ox+Math.round(k.p[0]*s)-3,oy+Math.round(k.p[1]*s)-3,6,6); });
-    x.fillStyle=blink?'#FFFFFF':'#283038'; x.fillRect(ox+Math.round(W.x*s)-3,oy+Math.round(W.y*s)-3,6,6);
+  else { const s=Math.floor(Math.min(c.width/IW,c.height/IH)*.94), m=Math.max(3,Math.round(s*.28)), ox=Math.round((c.width-IW*s)/2), oy=Math.round((c.height-IH*s)/2); x.fillStyle='#D8C8A8'; x.fillRect(ox,oy,IW*s,IH*s); x.fillStyle='#8A643C';
+    furnOf(W.map).forEach(f=>x.fillRect(ox+Math.round(f[1]*s),oy+Math.round(f[2]*s),Math.max(2,Math.round(f[3]*s)),Math.max(2,Math.round(f[4]*s)))); x.fillStyle='#E2703A'; x.fillRect(ox+IDOOR[0]*s-s*.6,oy+IH*s-4,s*1.2,4);
+    (NPCMAP[W.map]||[]).forEach(n=>{ if(n.kind!=='p') return; x.fillStyle='#5A6878'; x.fillRect(ox+Math.round(n.x*s)-m,oy+Math.round(n.y*s)-m,m*2,m*2); });
+    tg.forEach(k=>{ if(k.m!==W.map) return; x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(ox+Math.round(k.p[0]*s)-m-1,oy+Math.round(k.p[1]*s)-m-1,m*2+2,m*2+2); });
+    x.fillStyle=blink?'#FFFFFF':'#283038'; x.fillRect(ox+Math.round(W.x*s)-m-1,oy+Math.round(W.y*s)-m-1,m*2+2,m*2+2);
     $('miniTag').textContent=W.map==='home'?'집 안':W.map==='work'?L.spotName('work')+' 안':L.spotName(W.map)+' 안'; } }
 const patchLabels=()=>{ const p=OUT.patch; return [['play',p.play[0]+p.play[2]/2,p.play[1]+.2],['nature',p.nature[0]+p.nature[2]/2,p.nature[1]+.2],['mount',p.mount[0]+p.mount[2]/2,p.mount[1]-.6],['sea',p.sea[0]+p.sea[2]/2,p.sea[1]+p.sea[3]-1]]; };
 function drawBigMap(c){ const x=c.getContext('2d'), L=G.life, s=c.width/OUT.w; x.imageSmoothingEnabled=false; x.drawImage(miniBase(),0,0,OUT.w*s,OUT.h*s);
