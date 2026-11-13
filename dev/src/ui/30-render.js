@@ -176,9 +176,7 @@ function draw(t){
   const S=v=>v*SC;
   if(out){ for(const k in OUT.b){ const b=OUT.b[k], lxp=S(X(b[0]+b[2]/2)), lyp=S(Y(b[1])-4); if(lxp<-60||lxp>VW+60||lyp<HUDH-20||lyp>VH||!inReach(b[0]+b[2]/2,b[1]+b[3])) continue; label(k==='home'?'우리 집':L.spotName(k),lxp,lyp,11,'#F8F8F0','#283038'); }
     patchLabels().forEach(([k,xx,yy])=>{ if(!inReach(xx,yy+1)) return; const lxp=S(X(xx)), lyp=S(Y(yy)); if(lxp>-80&&lxp<VW+80&&lyp>HUDH-10&&lyp<VH) label(L.spotName(k),lxp,lyp,11,'#FFF6DC','#5A4030'); });
-    { const r=reachOf(a), na=reachAge(a); if(na){ const msg=`${na}살이 되면 갈 수 있어요`;
-        if(r[2]<OUT.w){ const lxp=Math.min(VW-120,S(X(r[0]+r[2]+.9))+60), lyp=clamp(S(Y(W.y)),HUDH+20,VH-90); if(S(X(r[0]+r[2]))<VW-20) label(msg,lxp,lyp,11,'#283038','#F8F8F0','#F2C14E'); }
-        if(r[3]<OUT.h){ const lxp=clamp(S(X(W.x)),140,VW-140), lyp=Math.min(VH-110,S(Y(r[1]+r[3]+.9))+16); if(S(Y(r[1]+r[3]))<VH-40) label(na===10?'큰길 아래쪽 동네 · '+msg:msg,lxp,lyp,11,'#283038','#F8F8F0','#F2C14E'); } } } }
+    }
   for(const n of list){ if(n.kind!=='p'||!n.key||n.static) continue; const pd=Math.hypot(n.x-W.x,n.y-W.y), isT=tg.some(k=>k.key===n.key&&k.m===W.map); if(pd>3.2&&!isT) continue;
     const nm=n.label||(W.map==='home'?L.spotName(n.key):n.key==='p0'?intNames(W.map)[0]:n.key==='p2'?intNames(W.map)[2]:null); if(nm) label(nm,S(X(n.x)),S(Y(n.y)-(n.st==='kid'?21:n.st==='tod'?17:n.st==='baby'?14:27)),10,'#F8F8F0','#283038'); }
   if(!out){ const nm=W.map==='home'?'현관 · 밖으로':L.spotName(W.map)+' · 밖으로'; label(W.map==='home'&&a<6?'현관 (아직 못 나가요)':nm,S(X(IDOOR[0])),S(Y(9.1)),10,'#283038','#F8F8F0'); }
@@ -217,7 +215,6 @@ function drawBigMap(c){ const x=c.getContext('2d'), L=G.life, s=c.width/OUT.w; x
   const tag=(t,px,py,bg)=>{ const w=x.measureText(t).width+10; x.fillStyle='#283038'; x.fillRect(px-w/2-2,py-13,w+4,26); x.fillStyle=bg||'#F8F8F0'; x.fillRect(px-w/2,py-11,w,22); x.fillStyle='#283038'; x.fillText(t,px,py+1); };
   for(const k in OUT.b){ const b=OUT.b[k]; if(k==='bus'||!inReach(b[0]+b[2]/2,b[1]+b[3])) continue; tag(k==='home'?'우리 집':L.spotName(k),(b[0]+b[2]/2)*s,(b[1]+b[3]/2)*s); }
   patchLabels().forEach(([k,xx,yy])=>{ if(inReach(xx,yy+1)) tag(L.spotName(k),xx*s,(yy+1.5)*s,'#FFF6DC'); });
-  { const r=reachOf(L.age), na=reachAge(L.age); if(na){ x.fillStyle='#F8F8F0'; x.font=`20px ${LABEL_FONT}`; if(r[2]<OUT.w) x.fillText(`${na}살이 되면 갈 수 있어요`,(r[2]+OUT.w)/2*s,OUT.h/2*s); if(r[3]<OUT.h) x.fillText(na===10?'열 살이 되면 갈 수 있어요':'',r[2]/2*s,(r[3]+OUT.h)/2*s); } }
   targets().forEach(k=>{ const p=k.m==='out'?k.p:doorOf(k.m==='home'?'home':k.m); x.fillStyle='#283038'; x.fillRect(p[0]*s-13,p[1]*s-13,26,26); x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(p[0]*s-10,p[1]*s-10,20,20); });
   const p=W.map==='out'?[W.x,W.y]:doorOf(W.map==='home'?'home':W.map); x.fillStyle='#283038'; x.fillRect(p[0]*s-15,p[1]*s-15,30,30); x.fillStyle='#FFFFFF'; x.fillRect(p[0]*s-12,p[1]*s-12,24,24); x.fillStyle='#E2703A'; x.fillRect(p[0]*s-6,p[1]*s-6,12,12); }
 /* 실제 사진 목록 — 위키백과 문서의 대표 사진(위키미디어 공용, 자유 이용). [파일 이름, 저장 위치(!는 원본 크기), 찍은 사람, 라이선스] */

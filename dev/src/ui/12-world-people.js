@@ -24,7 +24,7 @@ const natureWater=()=>{ const p=OUT.patch.nature; return [p[0]+.6,p[1]+.6,p[2]-1
 // 나이에 따라 갈 수 있는 곳: 처음 집 밖에 나서면 동네 한 귀퉁이만, 자랄수록 넓어진다 (갈 수 없는 곳은 가려 둔다)
 function reachOf(a){ return a<10?[0,0,31.9,23.75]:a<13?[0,0,31.9,OUT.h]:a<19?[0,0,61.9,OUT.h]:[0,0,OUT.w,OUT.h]; }
 function inReach(x,y){ const r=reachOf(G.life.age); return x>=r[0]&&x<=r[0]+r[2]&&y>=r[1]&&y<=r[1]+r[3]; }
-function reachMsg(x,y){ const a=G.life.age, r=reachOf(a); if(y>r[1]+r[3]) return '큰길 아래쪽 동네는 열 살이 되면 갈 수 있어요.'; return a<13?'큰길 건너편은 열세 살이 되면 갈 수 있어요.':'저 너머는 어른이 되면 갈 수 있어요.'; }
+function reachMsg(x,y){ const a=G.life.age, r=reachOf(a); return '아직은 혼자 가기엔 먼 곳이에요.'; }
 const reachAge=a=>a<10?10:a<13?13:a<19?19:null;
 const roadGap=i=>OUT.roads.some(r=>r[3]>r[2]&&i+1>=r[0]-.6&&i<=r[0]+r[2]+.6)||(i>=OUT.hw[0]-1&&i<=OUT.hw[0]+OUT.hw[2]+1);
 function viewRect(){ const r=reachOf(G.life.age), x0=Math.max(0,r[0]-1.5), y0=Math.max(0,r[1]-1.5), x1=Math.min(OUT.w,r[0]+r[2]+1.5), y1=Math.min(OUT.h,r[1]+r[3]+1.5); return [x0,y0,x1-x0,y1-y0]; }

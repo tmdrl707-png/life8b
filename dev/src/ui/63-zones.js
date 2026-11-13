@@ -130,7 +130,7 @@ const _tryMove=tryMove; tryMove=function(dx,dy){ zoneSync();
   if(W.map==='out'&&W.zone&&!(W.car&&C_VEH()!=='horse')) zoneWalk(dx,dy); else _tryMove(dx,dy);
   if(W.map!=='out') return; const L=G.life;
   for(const g of ZONES[W.zone].gates){ if(!inRect(W.x,W.y,g.t)) continue; if(dx*g.dir[0]+dy*g.dir[1]<=0||performance.now()-W.zt<800) continue;
-    if(g.age&&L.age<g.age){ say(`${g.nm}에는 ${g.age===10?'열':g.age===13?'열세':'열아홉'} 살이 되면 갈 수 있어요.`); W.zt=performance.now(); continue; }
+    if(g.age&&L.age<g.age){ say('아직은 혼자 가기엔 먼 곳이에요.'); W.zt=performance.now(); continue; }
     setZone(g.to,g.sx,g.sy); break; } };
 const _lb=loopBody; loopBody=function(t){ zoneSync(); return _lb(t); };
 // 할 일(!·미션)이 다른 지도에 있으면: 그쪽으로 가는 지도 가장자리를 가리킨다
@@ -149,7 +149,7 @@ const _dm=drawMini; drawMini=function(t){ _dm(t); if(W.map!=='out') return; cons
 // 화면: 다른 지도로 가는 길에 이정표
 const _draw=draw; draw=function(t){ zoneSync(); _draw(t); try{ if(W.map!=='out'||!draw.cam) return; const L=G.life, cx=Math.round(draw.cam.x), cy=Math.round(draw.cam.y);
   ZONES[W.zone].gates.forEach(g=>{ const sx=(g.sign[0]*PX-cx)*SC, sy=(g.sign[1]*PX-cy)*SC; if(sx<-80||sx>VW+80||sy<HUDH-10||sy>VH) return;
-    const arrow=g.dir[0]<0?'← ':g.dir[1]<0?'↑ ':'', tail=g.dir[0]>0?' →':g.dir[1]>0?' ↓':'', wait=g.age&&L.age<g.age?` (${g.age}살부터)`:'';
+    const arrow=g.dir[0]<0?'← ':g.dir[1]<0?'↑ ':'', tail=g.dir[0]>0?' →':g.dir[1]>0?' ↓':'', wait='';
     label(arrow+(g.to===0?'우리 동네':zoneTitle(g.to))+tail+wait,sx,sy,11,'#283038','#F8F8F0','#F2C14E'); }); }catch(e){} };
 // 새해: 탈것을 더는 못 타게 된 나이에 큰 도시에 있으면 집으로 (돌아올 길이 없으므로)
 const _bpZ=beginPeriod; beginPeriod=function(){ const r=_bpZ.apply(this,arguments); if(W.zone===3&&W.map==='out'&&G.life&&!canDrive()){ W.car=false; W.map='home'; W.x=7; W.y=8; zoneSync(); } return r; };

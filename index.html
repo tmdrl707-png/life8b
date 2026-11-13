@@ -7283,6 +7283,20 @@ JOB_FAM.coach='care';
     if(had&&this.f.job&&!this.f.retired&&this.inc>i0*.9&&this.inc<i0*1.2) this.inc=this.inc/(1+.008*this.step);
     return r; };
 })();
+/* 58-simple: 성향(성실함·용기·다정함·호기심·감사)은 2026-11-13 선생님 결정으로 뺐다.
+   - 화면 어디에도 성향을 보이지 않는다(ui/21·40·41·52·55에서 지움).
+   - 계산에 쓰이던 곳(일자리·미션·대학 확률, 행복의 바탕)이 흔들리지 않게, 해마다 나이에 맞는 '평균값'으로 고정한다.
+     고른 선택과는 무관하다(자동으로 산 삶 40명의 나이별 평균).
+   - 남겨진 말·한 문장에 쓰이던 topTrait은 오각형에서 가장 돋보이는 축으로 정한다. */
+const TR_AVG=[[0,0,0,0,0,0],[6,2.9,3.2,5.1,3.5,.3],[10,9.8,5.6,9.9,7.2,1.6],[15,17.5,10.3,15.3,12.8,3.1],[20,25.7,15.5,19.9,16.3,4.8],[30,41.4,24.4,28.3,18.7,7.6],[45,65,36.2,39.7,21.8,11.8],[60,88.3,44.8,52.4,24.4,14.4],[80,104.7,50.9,62.7,26.2,18.8]];
+function trNeutral(a){ a=a||0; let i=1; while(i<TR_AVG.length-1&&TR_AVG[i][0]<a) i++;
+  const p=TR_AVG[i-1], q=TR_AVG[i], u=clamp((a-p[0])/(q[0]-p[0]),0,1), o={};
+  'DBKCG'.split('').forEach((k,j)=>o[k]=Math.round(p[j+1]+(q[j+1]-p[j+1])*u)); return o; }
+(()=>{ const P=Life.prototype, _sp=P.startPeriod;
+  P.startPeriod=function(){ this.tr=trNeutral(this.age); return _sp.apply(this,arguments); };
+  P.topTrait=function(){ const s=this.s||{}, m={r:'K',k:'C',e:'B',t:'D',j:'G'}; let best='r', bv=-1e9;
+    for(const k in m){ const v=(s[k]!=null?s[k]:AX_BASE[k])/AX_BASE[k]; if(v>bv){ bv=v; best=k; } } return m[best]; };
+  const _ld=Life.load; Life.load=function(o){ const L=_ld.call(Life,o); L.tr=trNeutral(L.age); return L; }; })();
 </script>
 
 <!-- =====================================================================
@@ -8270,7 +8284,7 @@ const natureWater=()=>{ const p=OUT.patch.nature; return [p[0]+.6,p[1]+.6,p[2]-1
 // 나이에 따라 갈 수 있는 곳: 처음 집 밖에 나서면 동네 한 귀퉁이만, 자랄수록 넓어진다 (갈 수 없는 곳은 가려 둔다)
 function reachOf(a){ return a<10?[0,0,31.9,23.75]:a<13?[0,0,31.9,OUT.h]:a<19?[0,0,61.9,OUT.h]:[0,0,OUT.w,OUT.h]; }
 function inReach(x,y){ const r=reachOf(G.life.age); return x>=r[0]&&x<=r[0]+r[2]&&y>=r[1]&&y<=r[1]+r[3]; }
-function reachMsg(x,y){ const a=G.life.age, r=reachOf(a); if(y>r[1]+r[3]) return '큰길 아래쪽 동네는 열 살이 되면 갈 수 있어요.'; return a<13?'큰길 건너편은 열세 살이 되면 갈 수 있어요.':'저 너머는 어른이 되면 갈 수 있어요.'; }
+function reachMsg(x,y){ const a=G.life.age, r=reachOf(a); return '아직은 혼자 가기엔 먼 곳이에요.'; }
 const reachAge=a=>a<10?10:a<13?13:a<19?19:null;
 const roadGap=i=>OUT.roads.some(r=>r[3]>r[2]&&i+1>=r[0]-.6&&i<=r[0]+r[2]+.6)||(i>=OUT.hw[0]-1&&i<=OUT.hw[0]+OUT.hw[2]+1);
 function viewRect(){ const r=reachOf(G.life.age), x0=Math.max(0,r[0]-1.5), y0=Math.max(0,r[1]-1.5), x1=Math.min(OUT.w,r[0]+r[2]+1.5), y1=Math.min(OUT.h,r[1]+r[3]+1.5); return [x0,y0,x1-x0,y1-y0]; }
@@ -8588,7 +8602,7 @@ function chips(fx,tr){ let h=''; if(fx) for(const k in fx){ const v=fx[k]; if(!v
     else if(k==='@') h+=`<span class="chip ${v>0?'pay':'dn'}">돈 ${v>0?'+':''}${fmtWon(v*G.life.C.med)}</span>`; else if(k==='%') h+=`<span class="chip ${v>0?'pay':'dn'}">모은 돈 ${v>0?'+':'−'}${Math.abs(v)}%</span>`;
     else if(k==='H') h+=`<span class="chip pay">${v>0?'집을 마련함':'집을 팖'}</span>`; else if(k==='V') h+=`<span class="chip ${v>0?'pay':'dn'}">집값 ${v>0?'+':'−'}${Math.abs(v)}%</span>`; else if(k==='M') h+=`<span class="chip up">가정을 꾸림</span>`;
     else if(STAT[k]) h+=`<span class="chip ${v>0?'up':'dn'}">${STAT[k]} ${v>0?'+':'−'}${Math.abs(v)}</span>`; }
-  if(tr) h+=`<span class="chip tr">${TRAIT[tr]}</span>`; return h?`<div class="chips">${h}</div>`:''; }
+  return h?`<div class="chips">${h}</div>`:''; }
 // 장면 그림: 창이 열려 있는 동안 조금씩 움직인다
 function sceneHTML(kind){ return kind?`<canvas class="scene" width="640" height="320" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[kind]||'삶'} —</div>`:''; }
 function animScenes(){ const cs=[...$('sheetBox').querySelectorAll('canvas.scene')]; if(!cs.length) return; const t0=performance.now();
@@ -8697,11 +8711,11 @@ $('btnInfo').onclick=()=>{
   sheet(`<div class="place">내 정보</div><h2>${esc(L.name)} · ${a}살 (${stageOf(a)}) · ${L.by+a}년</h2>
     <dl class="info"><dt>사는 곳</dt><dd>${C.n} · ${esc(L.town||'')} (${SETN[L.set]})</dd><dt>태어난 가정</dt><dd>${FAM[L.famI].n} · 지금 살림은 ${wtxt}${L.fam&&L.fam.rel?` · 가족의 종교: ${esc(L.fam.rel)}`:''}</dd><dt>함께 사는 사람</dt><dd>${fam.length?fam.join(' · '):'혼자 살아요'}</dd>
     <dt>학교</dt><dd>${school}</dd><dt>하는 일</dt><dd>${job}</dd>${money}<dt>나라의 제도</dt><dd><span class="sub">병원비 가운데 직접 내는 몫 약 ${I.oop}% (WHO)${I.hi?` · ${esc(I.hi)}`:''}<br>일하는 사람 가운데 비공식 일자리 약 ${I.inf}% (ILO)${retAgeOf(L)?` · 정년 ${retAgeOf(L)}세`:' · 정해진 정년 없음'}${I.cs&&I.cs[0]&&(I.cs[2]===2||L.sex===0)?` · 군 복무 ${I.cs[0]>=24?Math.round(I.cs[0]/12)+'년':I.cs[0]+'개월'}`:''}</span></dd><dt>가족</dt><dd>${f.widow&&P.spouse?`${esc(P.spouse.n)}과(와)는 ${f.widA}살에 사별했어요`.replace('과(와)',josa(P.spouse.n,'과','와').slice(P.spouse.n.length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:''):f.family?`${esc(P.spouse?P.spouse.n:'')}과(와) 가정을 꾸렸어요`.replace('과(와)',josa(P.spouse?P.spouse.n:'배우자','과','와').slice((P.spouse?P.spouse.n:'배우자').length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:'')+(f.grandkid?' · 손주 있음':''):'아직 가정을 꾸리지 않았어요'}</dd><dt>친구</dt><dd>${esc(P.friend?P.friend.n:'')}</dd>${L.f.pet?`<dt>반려동물</dt><dd>${esc(L.f.pet.n)} (${esc(L.f.pet.sp)}${L.f.pet.dA!=null?`, ${L.f.pet.dA}살 때 무지개다리를 건넘`:`, 함께한 지 ${a-L.f.pet.a}년`})</dd>`:''}${L.f.hob&&L.f.hob.length?`<dt>취미</dt><dd>${L.f.hob.map(h=>esc(h.n)+' Lv.'+h.lv).join(' · ')}</dd>`:''}
-    <dt>갈 수 있는 곳</dt><dd>${places.join(' → ')}</dd><dt>성향</dt><dd>${tot?`<span class="sub">지금까지는 '${TRAIT[top]}'이 가장 많아요 (아래 그래프)</span>`:'아직 쌓인 것이 없어요'}</dd>
+    <dt>갈 수 있는 곳</dt><dd>${places.join(' → ')}</dd>
     <dt>지금까지</dt><dd>선택 ${L.n}번 · 뜻대로 안 된 일 ${L.fail||0}번 · 놓친 순간 ${L.miss}번</dd>${G.room?`<dt>학급 방</dt><dd>${esc(G.room)}</dd>`:''}</dl>
     ${L.comps&&L.comps.length?`<div class="stack-s"><b style="font-weight:400">같은 1초에 태어난 사람들 · 지금 ${a}살 무렵</b><table class="famtbl">${L.comps.map(p=>`<tr><th>${esc(p.n)}</th><td>${esc(p.cn)} · ${p.sex?'여':'남'}</td><td>${esc(L.compNow(p,a))}</td></tr>`).join('')}</table></div>`:''}
     ${L.fam?`<div class="stack-s"><b style="font-weight:400">우리 가족</b><table class="famtbl">${L.famList().map(r=>`<tr><th>${esc(r[0])}</th><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('')}</table></div>`:''}
-    ${statPanel(L)}${traitPanel(L)}${jobsTable(L)}
+    ${statPanel(L)}${jobsTable(L)}
     <div class="stack-s"><b style="font-weight:400">지금 내 행복을 만드는 것</b>${bars}<p class="small sub">돈(살림)만이 아니라 곁의 사람들, 작은 일에도 감사하는 마음, 함께 웃는 문화가 행복을 크게 바꿉니다.</p></div>
     <p class="small sub">${esc(C.fact)} 물가가 나라마다 달라서 같은 돈으로 살 수 있는 것도 다릅니다.</p><button class="btn" id="btnOk">닫기</button>`);
   $('btnOk').onclick=closeSheet;
@@ -9025,9 +9039,7 @@ function draw(t){
   const S=v=>v*SC;
   if(out){ for(const k in OUT.b){ const b=OUT.b[k], lxp=S(X(b[0]+b[2]/2)), lyp=S(Y(b[1])-4); if(lxp<-60||lxp>VW+60||lyp<HUDH-20||lyp>VH||!inReach(b[0]+b[2]/2,b[1]+b[3])) continue; label(k==='home'?'우리 집':L.spotName(k),lxp,lyp,11,'#F8F8F0','#283038'); }
     patchLabels().forEach(([k,xx,yy])=>{ if(!inReach(xx,yy+1)) return; const lxp=S(X(xx)), lyp=S(Y(yy)); if(lxp>-80&&lxp<VW+80&&lyp>HUDH-10&&lyp<VH) label(L.spotName(k),lxp,lyp,11,'#FFF6DC','#5A4030'); });
-    { const r=reachOf(a), na=reachAge(a); if(na){ const msg=`${na}살이 되면 갈 수 있어요`;
-        if(r[2]<OUT.w){ const lxp=Math.min(VW-120,S(X(r[0]+r[2]+.9))+60), lyp=clamp(S(Y(W.y)),HUDH+20,VH-90); if(S(X(r[0]+r[2]))<VW-20) label(msg,lxp,lyp,11,'#283038','#F8F8F0','#F2C14E'); }
-        if(r[3]<OUT.h){ const lxp=clamp(S(X(W.x)),140,VW-140), lyp=Math.min(VH-110,S(Y(r[1]+r[3]+.9))+16); if(S(Y(r[1]+r[3]))<VH-40) label(na===10?'큰길 아래쪽 동네 · '+msg:msg,lxp,lyp,11,'#283038','#F8F8F0','#F2C14E'); } } } }
+    }
   for(const n of list){ if(n.kind!=='p'||!n.key||n.static) continue; const pd=Math.hypot(n.x-W.x,n.y-W.y), isT=tg.some(k=>k.key===n.key&&k.m===W.map); if(pd>3.2&&!isT) continue;
     const nm=n.label||(W.map==='home'?L.spotName(n.key):n.key==='p0'?intNames(W.map)[0]:n.key==='p2'?intNames(W.map)[2]:null); if(nm) label(nm,S(X(n.x)),S(Y(n.y)-(n.st==='kid'?21:n.st==='tod'?17:n.st==='baby'?14:27)),10,'#F8F8F0','#283038'); }
   if(!out){ const nm=W.map==='home'?'현관 · 밖으로':L.spotName(W.map)+' · 밖으로'; label(W.map==='home'&&a<6?'현관 (아직 못 나가요)':nm,S(X(IDOOR[0])),S(Y(9.1)),10,'#283038','#F8F8F0'); }
@@ -9066,7 +9078,6 @@ function drawBigMap(c){ const x=c.getContext('2d'), L=G.life, s=c.width/OUT.w; x
   const tag=(t,px,py,bg)=>{ const w=x.measureText(t).width+10; x.fillStyle='#283038'; x.fillRect(px-w/2-2,py-13,w+4,26); x.fillStyle=bg||'#F8F8F0'; x.fillRect(px-w/2,py-11,w,22); x.fillStyle='#283038'; x.fillText(t,px,py+1); };
   for(const k in OUT.b){ const b=OUT.b[k]; if(k==='bus'||!inReach(b[0]+b[2]/2,b[1]+b[3])) continue; tag(k==='home'?'우리 집':L.spotName(k),(b[0]+b[2]/2)*s,(b[1]+b[3]/2)*s); }
   patchLabels().forEach(([k,xx,yy])=>{ if(inReach(xx,yy+1)) tag(L.spotName(k),xx*s,(yy+1.5)*s,'#FFF6DC'); });
-  { const r=reachOf(L.age), na=reachAge(L.age); if(na){ x.fillStyle='#F8F8F0'; x.font=`20px ${LABEL_FONT}`; if(r[2]<OUT.w) x.fillText(`${na}살이 되면 갈 수 있어요`,(r[2]+OUT.w)/2*s,OUT.h/2*s); if(r[3]<OUT.h) x.fillText(na===10?'열 살이 되면 갈 수 있어요':'',r[2]/2*s,(r[3]+OUT.h)/2*s); } }
   targets().forEach(k=>{ const p=k.m==='out'?k.p:doorOf(k.m==='home'?'home':k.m); x.fillStyle='#283038'; x.fillRect(p[0]*s-13,p[1]*s-13,26,26); x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(p[0]*s-10,p[1]*s-10,20,20); });
   const p=W.map==='out'?[W.x,W.y]:doorOf(W.map==='home'?'home':W.map); x.fillStyle='#283038'; x.fillRect(p[0]*s-15,p[1]*s-15,30,30); x.fillStyle='#FFFFFF'; x.fillRect(p[0]*s-12,p[1]*s-12,24,24); x.fillStyle='#E2703A'; x.fillRect(p[0]*s-6,p[1]*s-6,12,12); }
 /* 실제 사진 목록 — 위키백과 문서의 대표 사진(위키미디어 공용, 자유 이용). [파일 이름, 저장 위치(!는 원본 크기), 찍은 사람, 라이선스] */
@@ -9735,7 +9746,7 @@ async function drawCard(mems,o){
   x.fillStyle='#fff'; x.fillRect(0,0,Wd,H); x.fillStyle='#1E2B37'; x.fillRect(0,0,Wd,210);
   T(o&&o.title?`「${o.title}」`:'인생 기록',48,60,24,'#FFC9A8',700); T('80억 분의 1',Wd-48,60,22,'#C5D2DC',500,'right');
   x.font=`800 52px ${F}`; const nmW=x.measureText(L.name).width; T(L.name,48,126,Math.min(52,52*560/Math.max(nmW,1)),'#fff',800); T(`${by}~${by+L.lifespan} · ${L.C.n} ${L.town||''} · ${FAM[L.famI].n}`,48,172,22,'#C5D2DC',500);
-  T(L.lifespan+'년',48,276,64,'#B4501E',800); T(`의 삶 · 선택 ${L.n}번 · ${TRAIT[L.topTrait()]}`,48+x.measureText(L.lifespan+'년').width+70,276,24,'#5A6A78',500);
+  T(L.lifespan+'년',48,276,64,'#B4501E',800); T(`의 삶 · 선택 ${L.n}번`,48+x.measureText(L.lifespan+'년').width+70,276,24,'#5A6A78',500);
   const lastJ=(L.jobs||[]).slice(-1)[0]; let ly=312; if(lastJ){ T(`${lastJ.co?lastJ.co+' · ':''}${lastJ.n} · 남긴 재산 ${fmtWon(L.nw)}`,48,ly,20,'#5A6A78',500); ly+=30; }
   if(L.ppl&&L.ppl.spouse) T(`함께한 사람 ${L.ppl.spouse.n}${L.kids.length?' · 아이 '+L.kids.map(k=>k.given).join(', '):''}`,48,ly,20,'#5A6A78',500);
   // 사진 세 장
@@ -9779,7 +9790,7 @@ function lifeDetailHTML(l){
   const H=(l.hist||[]).map(mk), pk=mk(l.peak), nw=l.nw||0;
   const kp=[[`${l.age}세`,`향년 · ${C.n} 기대수명 약 ${l.le||C.le}세`],[l.cause||'—','삶을 마친 이유'],[`${l.n||0}번`,'직접·자동으로 한 선택'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산']];
   if(l.avgJ!=null) kp.push([`${l.avgJ}점`,'평생 평균 행복']); if(l.earned) kp.push([fmtWon(l.earned),'평생 번 돈']); if(l.maxNW&&l.maxNW>nw) kp.push([fmtWon(l.maxNW),'재산이 가장 많았을 때']);
-  if(l.kids) kp.push([`${l.kids}명`,'아이']); if(l.top&&TRAIT[l.top]) kp.push([TRAIT[l.top],'가장 많이 고른 성향']);
+  if(l.kids) kp.push([`${l.kids}명`,'아이']);
   let g=''; if(pk){ const v={}; AXES.forEach(k=>v[k]=pk[k]); g+=`<div class="dbox"><p class="rcap">오각형이 가장 넓었던 때 · ${pk.a}살 무렵</p>${radarSVG(v,[])}</div>`; }
   if(H.length>1){ try{ g+=`<div class="dbox"><p class="rcap">나이에 따라 달라진 것들</p>${lineChartSVG({hist:H},pk?pk.a:null)}</div>`; }catch(e){} }
   return `<div class="ldt"><div class="kpi">${kp.map(c=>`<div><b>${esc(c[0])}</b><span>${esc(c[1])}</span></div>`).join('')}</div>${g?`<div class="gr">${g}</div>`:''}
@@ -10003,7 +10014,7 @@ function renderMiniRad(){ const L=G.life, hud=$('hud'); if(!L||!hud) return; let
   el.innerHTML=MINIRAD_OFF?`<button class="mrtog" type="button" aria-label="삶의 모양 펼치기">⬠ 삶의 모양 ＋</button>`:`<div class="mrhd"><span>삶의 모양</span><button class="mrtog" type="button" aria-label="삶의 모양 접기">－</button></div>${miniRadarSVG(L.s)}`; }
 // 11-13 선생님 결정: 게임 화면의 작은 오각형은 띄우지 않는다(내 정보 '삶의 모양'에서 본다). renderMiniRad는 남겨 두되 부르지 않는다.
 // ---- 내 정보: 메뉴로 나눈다
-const INFO_TABS=[['me','개인 정보'],['others','다른 사람들'],['fam','우리 가족'],['shape','삶의 모양'],['trait','성향'],['joy','내 행복을 만드는 것']];
+const INFO_TABS=[['me','개인 정보'],['others','다른 사람들'],['fam','우리 가족'],['shape','삶의 모양'],['joy','내 행복을 만드는 것']];
 function infoRow(k,v){ return `<div class="irow"><div class="ik">${k}</div><div class="iv">${v}</div></div>`; }
 function openInfo(tab){ tab=tab||'me'; const L=G.life, C=L.C, f=L.f, a=L.age, P=L.ppl||{};
   let body='';
@@ -10636,7 +10647,7 @@ const REC_TABS=[['sum','한눈에'],['shape','삶의 모양'],['life','돈과 �
 function lifeTabs(l,o){ o=o||{}; const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, mk=x=>x&&{a:x[0],j:x[1],k:x[2],t:x[3],e:x[4],r:x[5],h:x[6]}, H=(l.hist||[]).map(mk), pk=mk(l.peak), nw=l.nw||0;
   const kp=[[`${l.age}세`,`향년 · ${C.n} 기대수명 약 ${l.le||C.le}세`],[l.cause||'—','삶을 마친 이유'],[`${l.n||0}번`,'직접·자동으로 한 선택'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산']];
   if(l.avgJ!=null) kp.push([`${l.avgJ}점`,'평생 평균 행복']); if(l.earned) kp.push([fmtWon(l.earned),'평생 번 돈']); if(l.maxNW&&l.maxNW>nw) kp.push([fmtWon(l.maxNW),'재산이 가장 많았을 때']);
-  if(l.kids) kp.push([`${l.kids}명`,'아이']); if(l.top&&TRAIT[l.top]) kp.push([TRAIT[l.top],'가장 많이 고른 성향']);
+  if(l.kids) kp.push([`${l.kids}명`,'아이']);
   const none=t=>`<p class="rempty">${t}</p>`, li=(arr,f)=>`<ul class="rl">${arr.map(f).join('')}</ul>`;
   let shape=''; if(pk){ const v={}; AXES.forEach(k=>v[k]=pk[k]); shape+=`<section class="icard"><h3>오각형이 가장 넓었던 때 <small>${pk.a}살 무렵</small></h3>${radarSVG(v,[])}</section>`; }
   if(H.length>1){ try{ shape+=`<section class="icard"><h3>나이에 따라 달라진 것들</h3>${lineChartSVG({hist:H},pk?pk.a:null)}</section>`; }catch(e){} }
@@ -11105,7 +11116,7 @@ const _tryMove=tryMove; tryMove=function(dx,dy){ zoneSync();
   if(W.map==='out'&&W.zone&&!(W.car&&C_VEH()!=='horse')) zoneWalk(dx,dy); else _tryMove(dx,dy);
   if(W.map!=='out') return; const L=G.life;
   for(const g of ZONES[W.zone].gates){ if(!inRect(W.x,W.y,g.t)) continue; if(dx*g.dir[0]+dy*g.dir[1]<=0||performance.now()-W.zt<800) continue;
-    if(g.age&&L.age<g.age){ say(`${g.nm}에는 ${g.age===10?'열':g.age===13?'열세':'열아홉'} 살이 되면 갈 수 있어요.`); W.zt=performance.now(); continue; }
+    if(g.age&&L.age<g.age){ say('아직은 혼자 가기엔 먼 곳이에요.'); W.zt=performance.now(); continue; }
     setZone(g.to,g.sx,g.sy); break; } };
 const _lb=loopBody; loopBody=function(t){ zoneSync(); return _lb(t); };
 // 할 일(!·미션)이 다른 지도에 있으면: 그쪽으로 가는 지도 가장자리를 가리킨다
@@ -11124,10 +11135,154 @@ const _dm=drawMini; drawMini=function(t){ _dm(t); if(W.map!=='out') return; cons
 // 화면: 다른 지도로 가는 길에 이정표
 const _draw=draw; draw=function(t){ zoneSync(); _draw(t); try{ if(W.map!=='out'||!draw.cam) return; const L=G.life, cx=Math.round(draw.cam.x), cy=Math.round(draw.cam.y);
   ZONES[W.zone].gates.forEach(g=>{ const sx=(g.sign[0]*PX-cx)*SC, sy=(g.sign[1]*PX-cy)*SC; if(sx<-80||sx>VW+80||sy<HUDH-10||sy>VH) return;
-    const arrow=g.dir[0]<0?'← ':g.dir[1]<0?'↑ ':'', tail=g.dir[0]>0?' →':g.dir[1]>0?' ↓':'', wait=g.age&&L.age<g.age?` (${g.age}살부터)`:'';
+    const arrow=g.dir[0]<0?'← ':g.dir[1]<0?'↑ ':'', tail=g.dir[0]>0?' →':g.dir[1]>0?' ↓':'', wait='';
     label(arrow+(g.to===0?'우리 동네':zoneTitle(g.to))+tail+wait,sx,sy,11,'#283038','#F8F8F0','#F2C14E'); }); }catch(e){} };
 // 새해: 탈것을 더는 못 타게 된 나이에 큰 도시에 있으면 집으로 (돌아올 길이 없으므로)
 const _bpZ=beginPeriod; beginPeriod=function(){ const r=_bpZ.apply(this,arguments); if(W.zone===3&&W.map==='out'&&G.life&&!canDrive()){ W.car=false; W.map='home'; W.x=7; W.y=8; zoneSync(); } return r; };
+/* ========== [2-2 상호작용] 문제 풀기 (시험판, 2026-11-13) ==========
+   학교(초·중·고)와 학원의 칠판에 다가가면 '칠판 · 문제 풀기'. 꼭 하지 않아도 되는, 다른 물건과 같은 상호작용이다.
+   - 나이로 학년을 정해(7살 초1 … 18살 고3) 그 학년에 맞는 수학 문제를 하나 낸다(숫자는 그때그때 바뀜).
+   - 아래 대화창에서 네 개 가운데 고른다. 맞히면 지식이 오르고, 틀리면 풀이를 보여 주고 아주 조금만 오른다.
+   - 한 해에 지식이 오르는 문제는 QZ_CAP개까지(그 뒤로는 풀어도 오르지 않는다고 알려 줌).
+   - 문제는 모두 직접 만든 계산 문제이다(교과서·기출을 옮기지 않음). 나중에 과목·문제를 늘릴 때 QZ_BANK에 더한다. */
+const QZ_CAP=4;
+const qzR=(a,b)=>a+Math.floor(R()*(b-a+1));
+const qzPick=a=>a[Math.floor(R()*a.length)];
+const qzFrac=(n,d)=>{ const g=(x,y)=>y?g(y,x%y):x, k=g(Math.abs(n),d)||1; n/=k; d/=k; return d===1?String(n):`${n}/${d}`; };
+// 보기 넷: 정답 + 그럴듯한 틀린 답(겹치지 않게)
+function qzOpts(ans,wrong){ const a=String(ans), out=[a]; for(const w of wrong){ const s=String(w); if(!out.includes(s)) out.push(s); if(out.length>=4) break; }
+  let k=1; while(out.length<4&&typeof ans==='number'){ const s=String(ans+k*(k%2?1:-1)*(1+Math.floor(k/2))); if(!out.includes(s)) out.push(s); k++; }
+  for(let k=1;out.length<4&&k<12;k++){ const d=k%2?(k+1)/2:-k/2, s=a.replace(/\d+/,m=>String(Math.max(0,+m+d))); if(!out.includes(s)) out.push(s); }
+  for(let i=out.length-1;i>0;i--){ const j=Math.floor(R()*(i+1)); [out[i],out[j]]=[out[j],out[i]]; } return {opts:out,ans:a}; }
+// 학년별 문제 만들기: [단원 이름, ()=>{q, ans, wrong[], ex}]
+const QZ_BANK={
+  1:[['덧셈',()=>{ const a=qzR(2,9), b=qzR(2,9); return {q:`${a} + ${b} = ?`,ans:a+b,wrong:[a+b+1,a+b-1,a+b+2],ex:`${a}에서 ${b}만큼 더 세면 ${a+b}예요.`}; }],
+     ['뺄셈',()=>{ const a=qzR(10,18), b=qzR(2,9); return {q:`${a} − ${b} = ?`,ans:a-b,wrong:[a-b+1,a-b-1,a+b],ex:`${a}에서 ${b}만큼 거꾸로 세면 ${a-b}예요.`}; }],
+     ['수의 크기',()=>{ const n=[qzR(10,99),qzR(10,99),qzR(10,99),qzR(10,99)]; const m=Math.max(...n); return {q:`가장 큰 수는? (${n.join(', ')})`,ans:m,wrong:n.filter(x=>x!==m),ex:`십의 자리부터 견주면 ${m}이 가장 커요.`}; }]],
+  2:[['두 자리 덧셈',()=>{ const a=qzR(15,59), b=qzR(15,39); return {q:`${a} + ${b} = ?`,ans:a+b,wrong:[a+b+10,a+b-10,a+b-1],ex:`일의 자리끼리, 십의 자리끼리 더해요. 받아올림을 잊지 마세요.`}; }],
+     ['곱셈구구',()=>{ const a=qzR(2,9), b=qzR(2,9); return {q:`${a} × ${b} = ?`,ans:a*b,wrong:[a*b+a,a*b-b,a+b],ex:`${a}를 ${b}번 더하면 ${a*b}예요.`}; }],
+     ['시각',()=>{ const h=qzR(1,11), m=qzPick([15,30,45]); return {q:`${h}시 ${m}분에서 30분 뒤는 몇 시 몇 분?`,ans:m+30>=60?(m===30?`${h+1}시`:`${h+1}시 ${m-30}분`):`${h}시 ${m+30}분`,wrong:[`${h}시 ${(m+20)%60}분`,`${h+1}시 ${m}분`,`${h}시 ${m}분`],ex:`60분이 넘으면 한 시간으로 올려요.`}; }]],
+  3:[['나눗셈',()=>{ const b=qzR(2,9), q=qzR(2,9); return {q:`${b*q} ÷ ${b} = ?`,ans:q,wrong:[q+1,q-1,b],ex:`${b} × ${q} = ${b*q} 이니까 몫은 ${q}예요.`}; }],
+     ['곱셈',()=>{ const a=qzR(12,49), b=qzR(2,6); return {q:`${a} × ${b} = ?`,ans:a*b,wrong:[a*b+b,a*b-10,a*b+10],ex:`${Math.floor(a/10)*10}×${b}와 ${a%10}×${b}를 따로 구해 더해요.`}; }],
+     ['분수',()=>{ const d=qzPick([4,5,6,8]), a=qzR(1,d-2), b=qzR(a+1,d-1); return {q:`더 큰 분수는? ${a}/${d} 와 ${b}/${d}`,ans:`${b}/${d}`,wrong:[`${a}/${d}`,'둘이 같다','알 수 없다'],ex:`분모가 같으면 분자가 큰 쪽이 커요.`}; }]],
+  4:[['큰 수의 곱셈',()=>{ const a=qzR(21,89), b=qzR(11,29); return {q:`${a} × ${b} = ?`,ans:a*b,wrong:[a*b+a,a*b-b,a*(b-10)],ex:`${a}×${b-b%10}과 ${a}×${b%10}을 더해요.`}; }],
+     ['분수의 덧셈',()=>{ const d=qzPick([5,7,8,9]), a=qzR(1,3), b=qzR(1,Math.min(3,d-1-a)); return {q:`${a}/${d} + ${b}/${d} = ?`,ans:`${a+b}/${d}`,wrong:[`${a+b}/${d*2}`,`${a*b}/${d}`,`${a+b+1}/${d}`,`${a+b-1}/${d}`,`${a+b}/${d+1}`],ex:`분모가 같으면 분자끼리 더해요.`}; }],
+     ['각도',()=>{ const a=qzR(30,80), b=qzR(30,70); return {q:`삼각형의 두 각이 ${a}°, ${b}°일 때 나머지 한 각은?`,ans:`${180-a-b}°`,wrong:[`${360-a-b}°`,`${180-a}°`,`${90-a+b}°`],ex:`삼각형 세 각의 합은 180°예요.`}; }]],
+  5:[['약수와 배수',()=>{ const a=qzPick([12,18,20,24,30,36]), b=qzPick([8,12,15,16,18,20].filter(x=>x!==a)); const g=(x,y)=>y?g(y,x%y):x, G0=g(a,b); return {q:`${a}와 ${b}의 최대공약수는?`,ans:G0,wrong:[a*b/G0,G0*2,G0+1],ex:`두 수를 모두 나누어떨어지게 하는 가장 큰 수는 ${G0}예요.`}; }],
+     ['넓이',()=>{ const w=qzR(4,15), h=qzR(3,12); return {q:`밑변 ${w}cm, 높이 ${h}cm인 삼각형의 넓이는?`,ans:`${w*h/2}cm²`,wrong:[`${w*h}cm²`,`${w+h}cm²`,`${(w+h)*2}cm²`],ex:`(밑변 × 높이) ÷ 2 = ${w*h/2}`}; }],
+     ['분수의 곱셈',()=>{ const a=qzR(1,4), b=qzR(a+1,7), c=qzR(1,4), d=qzR(c+1,7); return {q:`${a}/${b} × ${c}/${d} = ? (기약분수)`,ans:qzFrac(a*c,b*d),wrong:[qzFrac(a+c,b+d),qzFrac(a*d,b*c),`${a*c}/${b+d}`],ex:`분자는 분자끼리, 분모는 분모끼리 곱하고 약분해요.`}; }]],
+  6:[['비와 비율',()=>{ const b=qzPick([20,25,40,50]), a=qzR(1,b/5)*5; return {q:`${b}명 가운데 ${a}명은 몇 %?`,ans:`${a/b*100}%`,wrong:[`${a}%`,`${b-a}%`,`${Math.round(b/a*10)}%`],ex:`${a} ÷ ${b} × 100 = ${a/b*100}%`}; }],
+     ['소수의 나눗셈',()=>{ const b=qzPick([2,4,5]), q=qzR(11,49)/10; const a=Math.round(q*b*10)/10; return {q:`${a} ÷ ${b} = ?`,ans:q,wrong:[Math.round(q*100)/10,Math.round((q+.1)*10)/10,Math.round(q*b*100)/100],ex:`${b} × ${q} = ${a}`}; }],
+     ['원',()=>{ const r=qzR(2,10); return {q:`반지름 ${r}cm인 원의 둘레는? (원주율 3.14)`,ans:`${Math.round(r*2*3.14*100)/100}cm`,wrong:[`${Math.round(r*3.14*100)/100}cm`,`${Math.round(r*r*3.14*100)/100}cm`,`${r*2*3}cm`],ex:`지름 × 원주율 = ${r*2} × 3.14`}; }]],
+  7:[['정수의 계산',()=>{ const a=qzR(-9,-2), b=qzR(3,12); return {q:`(${a}) + ${b} − (${a}) × 2 = ?`,ans:a+b-a*2,wrong:[a+b+a*2,-(a+b-a*2),a+b],ex:`곱셈을 먼저: (${a})×2 = ${a*2}, 그리고 빼면 더하기가 돼요.`}; }],
+     ['일차방정식',()=>{ const x=qzR(-6,9), a=qzR(2,7), b=qzPick([-9,-7,-5,-3,-2,2,3,4,6,8]); return {q:`${a}x ${b<0?'−':'+'} ${Math.abs(b)} = ${a*x+b} 일 때 x = ?`,ans:x,wrong:[x+1,-x||2,a*x],ex:`${b<0?'양변에 '+Math.abs(b)+'를 더하고':'양변에서 '+b+'를 빼고'} ${a}로 나눠요.`}; }],
+     ['소인수분해',()=>{ const all=[[12,'2²×3'],[18,'2×3²'],[20,'2²×5'],[36,'2²×3²'],[45,'3²×5'],[60,'2²×3×5'],[72,'2³×3²']], n=qzPick(all); return {q:`${n[0]}을 소인수분해하면?`,ans:n[1],wrong:all.filter(x=>x!==n).sort(()=>R()-.5).map(x=>x[1]),ex:`가장 작은 소수부터 차례로 나눠요.`}; }]],
+  8:[['연립방정식',()=>{ const x=qzR(1,6), y=qzR(1,6); return {q:`x + y = ${x+y}, x − y = ${x-y} 일 때 x는?`,ans:x,wrong:[y,x+y,x+1],ex:`두 식을 더하면 2x = ${2*x}`}; }],
+     ['일차함수',()=>{ const a=qzR(-4,5)||2, b=qzR(-5,5), x1=qzR(0,3); return {q:`일차함수 y = ${a}x ${b<0?'−':'+'} ${Math.abs(b)} 의 기울기는?`,ans:a,wrong:[b,-a,a+b],ex:`y = ax + b 에서 x 앞의 수 a가 기울기예요.`}; }],
+     ['지수법칙',()=>{ const m=qzR(2,6), n=qzR(2,5); return {q:`a^${m} × a^${n} = ?`,ans:`a^${m+n}`,wrong:[`a^${m*n}`,`2a^${m+n}`,`a^${Math.abs(m-n)}`],ex:`밑이 같으면 지수끼리 더해요.`}; }]],
+  9:[['제곱근',()=>{ const n=qzR(4,15); return {q:`√${n*n} = ?`,ans:n,wrong:[n*2,n*n/2,n+1],ex:`${n} × ${n} = ${n*n}`}; }],
+     ['이차방정식',()=>{ const p=qzR(1,5), q=qzR(p+1,7); return {q:`x² − ${p+q}x + ${p*q} = 0 의 두 근의 합은?`,ans:p+q,wrong:[p*q,-(p+q),p],ex:`(x−${p})(x−${q}) = 0 → 두 근 ${p}, ${q}`}; }],
+     ['피타고라스 정리',()=>{ const t=qzPick([[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17]]); return {q:`직각삼각형의 두 변이 ${t[0]}, ${t[1]}일 때 빗변은?`,ans:t[2],wrong:[t[0]+t[1],t[2]+1,t[1]+1],ex:`${t[0]}² + ${t[1]}² = ${t[2]}²`}; }]],
+  10:[['다항식',()=>{ const a=qzR(1,5), b=qzR(1,5); return {q:`(x + ${a})(x + ${b}) 를 전개했을 때 x의 계수는?`,ans:a+b,wrong:[a*b,a+b+1,2*a],ex:`x² + (${a}+${b})x + ${a*b}`}; }],
+      ['이차함수',()=>{ const p=qzPick([-4,-3,-2,-1,1,2,3,4]), q=qzPick([-5,-3,-2,-1,1,2,4,5]); return {q:`y = (x ${p<0?'+':'−'} ${Math.abs(p)})² ${q<0?'−':'+'} ${Math.abs(q)} 의 꼭짓점은?`,ans:`(${p}, ${q})`,wrong:[`(${-p}, ${q})`,`(${p}, ${-q})`,`(${q}, ${p})`],ex:`y = (x − p)² + q 의 꼭짓점은 (p, q)`}; }],
+      ['경우의 수',()=>{ const n=qzR(3,6); return {q:`${n}명 가운데 반장 1명, 부반장 1명을 뽑는 경우의 수는?`,ans:n*(n-1),wrong:[n*(n-1)/2,n*2,n*n],ex:`${n} × ${n-1} = ${n*(n-1)}`}; }]],
+  11:[['지수와 로그',()=>{ const b=qzPick([2,3,5]), k=qzR(2,5); return {q:`log${['₂','₃','₅'][[2,3,5].indexOf(b)]} ${b**k} = ?`,ans:k,wrong:[b**k/b,k+1,b],ex:`${b}을 ${k}번 곱하면 ${b**k}`}; }],
+      ['등차수열',()=>{ const a=qzR(1,9), d=qzR(2,6), n=qzR(5,10); return {q:`첫째항 ${a}, 공차 ${d}인 등차수열의 제${n}항은?`,ans:a+(n-1)*d,wrong:[a+n*d,a*d*n,a+(n-2)*d],ex:`${a} + (${n}−1) × ${d}`}; }],
+      ['삼각함수',()=>{ const t=qzPick([['sin 30°','1/2'],['cos 60°','1/2'],['tan 45°','1'],['sin 90°','1'],['cos 0°','1'],['sin 0°','0']]); return {q:`${t[0]} 의 값은?`,ans:t[1],wrong:['√3/2','√2/2','2'].filter(x=>x!==t[1]),ex:`특수각의 값을 떠올려 보세요.`}; }]],
+  12:[['미분',()=>{ const a=qzR(2,5), n=qzR(2,4), x=qzR(1,3); return {q:`f(x) = ${a}x^${n} 일 때 f′(${x}) = ?`,ans:a*n*x**(n-1),wrong:[a*x**n,a*n*x**n,n*x**(n-1)],ex:`f′(x) = ${a*n}x^${n-1}`}; }],
+      ['확률',()=>{ const r=qzR(2,5), b=qzR(2,5); return {q:`빨간 공 ${r}개, 파란 공 ${b}개에서 하나를 꺼낼 때 빨간 공일 확률은?`,ans:qzFrac(r,r+b),wrong:[qzFrac(b,r+b),`${r}/${b}`,'1/2'].filter(x=>x!==qzFrac(r,r+b)),ex:`${r} ÷ ${r+b}`}; }],
+      ['수열의 합',()=>{ const n=qzR(5,20); return {q:`1 + 2 + … + ${n} = ?`,ans:n*(n+1)/2,wrong:[n*n/2|0,n*(n-1)/2,n*(n+1)],ex:`n(n+1)/2 = ${n}×${n+1}/2`}; }]]
+};
+const qzGrade=a=>clamp(a-6,1,12);
+const qzGradeName=g=>g<=6?`초등 ${g}학년`:g<=9?`중학교 ${g-6}학년`:`고등학교 ${g-9}학년`;
+function qzMake(L){ const g=qzGrade(L.age), bank=QZ_BANK[g], Q=L.f.quiz||{}, last=Q.u;
+  let pool=bank.filter(b=>b[0]!==last); if(!pool.length) pool=bank; const [unit,fn]=qzPick(pool), p=fn(); const o=qzOpts(p.ans,p.wrong); return {g,unit,q:p.q,ex:p.ex,...o}; }
+// 칠판에 다가가면: 6~18살 학생이면 '문제 풀기'
+const QZ_SPOT={board:1,st_board:1};
+const qzCan=L=>L&&L.age>=7&&L.age<=18;
+(()=>{ const _ne=nearExtra; nearExtra=function(){ const b=_ne(); const L=G.life;
+  if(b&&b.type==='o'&&QZ_SPOT[b.k]&&qzCan(L)) return Object.assign(b,{type:'z',lab:`${b.n} · 문제 풀기`});
+  if(!b&&qzCan(L)&&!W.car){ // 칠판 놀이가 없는 나이에도 칠판이 가까우면
+    const ms=W.map; const fs=ms==='elem'||ms==='mid'?INT.f.filter(f=>f[0]==='board').map(f=>({r:f.slice(1)})):(typeof PLACE_IN!=='undefined'&&PLACE_IN[ms]?PLACE_IN[ms].f.filter(f=>QZ_SPOT[f[5]]).map(f=>({r:f.slice(1,5)})):[]);
+    for(const o of fs) if(distTo(o)+.35<1.3) return {type:'z',k:'board',n:'칠판',lab:'칠판 · 문제 풀기'}; }
+  return b; };
+  const _act=$('btnAct').onclick; $('btnAct').onclick=function(){ if(near&&near.type==='z'&&$('sheet').hidden){ openQuiz(near); return; } return _act.apply(this,arguments); };
+})();
+function openQuiz(nr){ if(dlgOpen()) return; const L=G.life; if(!qzCan(L)) return; const Q=L.f.quiz||(L.f.quiz={n:0,ok:0,u:''}), Y=tkYear(L); Y.qz=Y.qz||0;
+  const p=qzMake(L), who=`${nr.n||'칠판'} · ${qzGradeName(p.g)} ${p.unit}`;
+  dlgRun([{who,t:p.q,opts:p.opts,then:i=>{ const ok=p.opts[i]===p.ans; Q.n++; Q.u=p.unit; if(ok) Q.ok++;
+    let up=[], tail=''; if(Y.qz<QZ_CAP){ Y.qz++; up=tinyGain(L,{k:ok?.55:.12},''); } else tail=' (올해는 문제로 오르는 지식이 다 찼어요)';
+    if(Y.qz===1&&ok) L.remember({a:L.age,t:`칠판 앞에서 ${p.unit} 문제를 풀었다.`,sp:'desk'});
+    renderHud(); persist();
+    return [{who,t:(ok?`정답! ${p.ans}. `:`아쉬워요. 답은 ${p.ans}. `)+p.ex+tail,up}]; }}]); }
+/* ========== [2-1 세계·화면] 길 찾기 (2026-11-13) ==========
+   건물이 어디 있는지 알기 어렵고, 누군가를 찾아가는 미션이 힘들다는 의견에 따라:
+   1) 큰 지도(미니맵을 누르면)에 '갈 수 있는 곳' 목록 — 가까운 순. 하나를 누르면 그곳까지 길 안내가 켜진다.
+   2) 길 안내: 화면 바닥에 발자국 점선, 위쪽 가운데에 '○○까지 N칸' 띠(✕로 끄기). 도착하면 저절로 꺼진다.
+   3) 미션을 받으면 따로 고르지 않아도 그 미션의 목적지로 길 안내가 켜진다.
+   4) 미니맵이 충분히 크게 보일 때(어린 나이, 동네가 좁을 때) 건물 이름을 미니맵에 적는다.
+   길은 0.5칸 격자에서 목적지로부터 거리를 재어(너비 우선 탐색) 가장 가까운 쪽으로 이어 그린다. */
+const WF={grid:null,gk:'',dist:null,dk:'',path:[],t:0};
+G.guide=null;
+const wfRes=.5;
+function wfTarget(){ const L=G.life; if(!L||W.map!=='out') return null;
+  if(L.q){ const t=targets().find(x=>x.type==='q'); if(t){ const p=t.m==='out'?t.p:(OUT.b[t.m==='home'?'home':t.m]?doorOf(t.m==='home'?'home':t.m):null); if(p) return {p,n:t.n,q:1}; } }
+  const g=G.guide; if(!g) return null; if(g.z!==W.zone) return null; const b=OUT.b[g.k]; if(!b) return null;
+  return {p:OUT.s[g.k]||doorOf(g.k),n:g.n}; }
+function wfGrid(){ const key=[W.zone,G.life.age,W.car?1:0,worldKey()].join('|'); if(WF.gk===key) return WF.grid;
+  const nx=Math.ceil(OUT.w/wfRes), ny=Math.ceil(OUT.h/wfRes), gr=new Uint8Array(nx*ny), sol=solidsFor('out');
+  for(let j=0;j<ny;j++) for(let i=0;i<nx;i++){ const x=(i+.5)*wfRes, y=(j+.5)*wfRes; gr[j*nx+i]=blocked('out',x,y,.28,sol)?0:1; }
+  WF.grid={nx,ny,gr}; WF.gk=key; WF.dk=''; return WF.grid; }
+function wfDist(p){ const G0=wfGrid(), key=WF.gk+'|'+p[0].toFixed(1)+','+p[1].toFixed(1); if(WF.dk===key) return WF.dist;
+  const {nx,ny,gr}=G0, d=new Int32Array(nx*ny).fill(-1), q=new Int32Array(nx*ny); let h=0,t=0;
+  // 목적지 칸이 막혀 있으면(건물 문 앞 등) 가장 가까운 빈 칸에서 시작
+  let ci=clamp(Math.floor(p[0]/wfRes),0,nx-1), cj=clamp(Math.floor(p[1]/wfRes),0,ny-1);
+  if(!gr[cj*nx+ci]){ let best=null,bd=1e9; for(let dj=-6;dj<=6;dj++) for(let di=-6;di<=6;di++){ const i=ci+di,j=cj+dj; if(i<0||j<0||i>=nx||j>=ny||!gr[j*nx+i]) continue; const dd=di*di+dj*dj; if(dd<bd){ bd=dd; best=[i,j]; } } if(best){ ci=best[0]; cj=best[1]; } }
+  d[cj*nx+ci]=0; q[t++]=cj*nx+ci;
+  while(h<t){ const c=q[h++], i=c%nx, j=(c-i)/nx, v=d[c]+1;
+    if(i>0&&gr[c-1]&&d[c-1]<0){ d[c-1]=v; q[t++]=c-1; } if(i<nx-1&&gr[c+1]&&d[c+1]<0){ d[c+1]=v; q[t++]=c+1; }
+    if(j>0&&gr[c-nx]&&d[c-nx]<0){ d[c-nx]=v; q[t++]=c-nx; } if(j<ny-1&&gr[c+nx]&&d[c+nx]<0){ d[c+nx]=v; q[t++]=c+nx; } }
+  WF.dist=d; WF.dk=key; return d; }
+function wfPath(p){ const G0=wfGrid(), d=wfDist(p), {nx,ny}=G0; let i=clamp(Math.floor(W.x/wfRes),0,nx-1), j=clamp(Math.floor(W.y/wfRes),0,ny-1);
+  if(d[j*nx+i]<0){ let best=null,bd=1e9; for(let dj=-3;dj<=3;dj++) for(let di=-3;di<=3;di++){ const a=i+di,b=j+dj; if(a<0||b<0||a>=nx||b>=ny) continue; const v=d[b*nx+a]; if(v>=0&&v<bd){ bd=v; best=[a,b]; } } if(!best) return null; [i,j]=best; }
+  const out=[]; let c=j*nx+i, g=0; while(d[c]>0&&g++<2000){ const ci=c%nx, cj=(c-ci)/nx; out.push([(ci+.5)*wfRes,(cj+.5)*wfRes]);
+    let nb=c; for(const n of [c-1,c+1,c-nx,c+nx]){ if(n<0||n>=d.length) continue; const ni=n%nx; if(Math.abs(ni-ci)>1) continue; if(d[n]>=0&&d[n]<d[nb]) nb=n; } if(nb===c) break; c=nb; }
+  return out; }
+// 위쪽 가운데 안내 띠
+function wfBar(t,steps){ let b=$('guideBar'); if(!t){ if(b) b.hidden=true; return; }
+  if(!b){ document.head.insertAdjacentHTML('beforeend',`<style>#guideBar{position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--hudH,150px) + 4px);z-index:6;background:rgba(40,48,56,.88);color:#FFF6DC;border:2px solid #F2C14E;border-radius:999px;padding:3px 6px 3px 14px;font-size:.86rem;display:flex;gap:8px;align-items:center;white-space:nowrap;pointer-events:auto}
+#guideBar b{color:#F2C14E;font-weight:700} #guideBar button{background:none;border:0;color:#FFF6DC;font-size:1rem;padding:0 6px;cursor:pointer}
+@media (max-height:460px){ #guideBar{font-size:.72rem;padding:2px 4px 2px 10px} }</style>`);
+    $('s-game').insertAdjacentHTML('beforeend','<div id="guideBar" hidden><span></span><button type="button" aria-label="길 안내 끄기">✕</button></div>'); b=$('guideBar');
+    b.querySelector('button').onclick=e=>{ e.stopPropagation(); const L=G.life; WF.off=L&&L.q?'q'+L.q.i+'-'+L.q.st:'g'; G.guide=null; wfBar(null); }; }
+  const s=b.querySelector('span'), txt=`길 안내 · <b>${esc(t.n)}</b>까지 ${steps}칸`; if(s.innerHTML!==txt) s.innerHTML=txt; b.hidden=false; }
+// 화면에 발자국 점선
+const _wfDraw=draw; draw=function(t){ _wfDraw(t); try{ const L=G.life; if(!L||!draw.cam||W.map!=='out'||!$('s-game')||$('s-game').hidden){ wfBar(null); return; }
+  const tg=wfTarget(), sig=tg&&tg.q?'q'+L.q.i+'-'+L.q.st:'g'; if(!tg||WF.off===sig){ WF.path=[]; wfBar(null); return; }
+  const now=performance.now(); if(now-WF.t>250||!WF.path.length){ WF.t=now; WF.path=wfPath(tg.p)||[]; }
+  const P=WF.path; if(Math.hypot(tg.p[0]-W.x,tg.p[1]-W.y)<1.6){ if(!tg.q&&G.guide){ toast(`${tg.n}에 도착했어요.`,'news'); G.guide=null; } WF.path=[]; wfBar(null); return; }
+  if(!P.length){ wfBar(null); return; }
+  wfBar(tg,Math.round(P.length*wfRes));
+  const cx=Math.round(draw.cam.x), cy=Math.round(draw.cam.y), r=Math.max(2,SC*1.4);
+  g.save(); for(let k=2;k<P.length;k+=2){ const sx=(P[k][0]*PX-cx)*SC, sy=(P[k][1]*PX-cy)*SC; if(sx<-10||sx>VW+10||sy<HUDH-10||sy>VH+10) continue;
+    g.fillStyle='rgba(40,48,56,.55)'; g.beginPath(); g.arc(sx,sy,r+1.5,0,7); g.fill(); g.fillStyle=tg.q?'#8FB8F8':'#F2C14E'; g.beginPath(); g.arc(sx,sy,r,0,7); g.fill(); }
+  g.restore(); }catch(e){} };
+// 미니맵: 건물 이름(충분히 클 때) + 길 안내 점선
+const _wfMini=drawMini; drawMini=function(t){ _wfMini(t); try{ if(W.map!=='out') return; const c=$('mini'), x=c.getContext('2d'), L=G.life, v=viewRect(), k=Math.min(c.width/v[2],c.height/v[3]), ox=(c.width-v[2]*k)/2, oy=(c.height-v[3]*k)/2;
+  const P=(px,py)=>[ox+(px-v[0])*k,oy+(py-v[1])*k];
+  if(WF.path&&WF.path.length){ x.fillStyle='#F2C14E'; for(let i=0;i<WF.path.length;i+=3){ const p=P(...WF.path[i]); x.fillRect(p[0]-2,p[1]-2,4,4); } }
+  if(k<5) return; x.font=`bold ${Math.round(clamp(k*1.5,15,22))}px ${LABEL_FONT}`; x.textAlign='center'; x.textBaseline='middle'; x.lineJoin='round';
+  for(const key in OUT.b){ if(key==='bus') continue; const b=OUT.b[key]; if(!inReach(b[0]+b[2]/2,b[1]+b[3])) continue; const p=P(b[0]+b[2]/2,b[1]+b[3]/2), nm=key==='home'?'우리 집':L.spotName(key);
+    x.lineWidth=4; x.strokeStyle='#283038'; x.strokeText(nm,p[0],p[1]); x.fillStyle='#FFFFFF'; x.fillText(nm,p[0],p[1]); } }catch(e){} };
+// 큰 지도 아래 '갈 수 있는 곳' 목록
+const _wfMaps=openMaps; openMaps=function(tab){ _wfMaps(tab); try{ if(tab!=='town'||W.map!=='out') return; const L=G.life, cv=$('bigMap'); if(!cv) return;
+  const me=[W.x,W.y], list=Object.keys(OUT.b).filter(k=>k!=='bus'&&inReach(OUT.b[k][0]+OUT.b[k][2]/2,OUT.b[k][1]+OUT.b[k][3])).map(k=>{ const p=OUT.s[k]||doorOf(k); return {k,n:k==='home'?'우리 집':L.spotName(k),d:Math.round(Math.hypot(p[0]-me[0],p[1]-me[1]))}; }).sort((a,b)=>a.d-b.d);
+  if(!list.length) return;
+  if(!$('wfCss')) document.head.insertAdjacentHTML('beforeend',`<style id="wfCss">.wflist{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}.wflist button{border:1.5px solid #283038;background:#FFF6DC;color:#283038;border-radius:8px;padding:4px 10px;font-size:.86rem;cursor:pointer}.wflist button small{color:#6b6f7a;margin-left:4px}.wflist button.on{background:#F2C14E}</style>`);
+  const cur=G.guide&&G.guide.z===W.zone?G.guide.k:null;
+  cv.insertAdjacentHTML('afterend',`<p class="small sub" style="margin:8px 0 0">갈 곳을 누르면 그곳까지 길을 안내해요.</p><div class="wflist">${list.map(o=>`<button type="button" data-k="${o.k}" class="${o.k===cur?'on':''}">${esc(o.n)}<small>${o.d}칸</small></button>`).join('')}</div>`);
+  $('sheetBox').querySelectorAll('.wflist button').forEach(b=>b.onclick=()=>{ const o=list.find(x=>x.k===b.dataset.k); G.guide={k:o.k,n:o.n,z:W.zone}; WF.off=0; WF.path=[]; closeSheet(); toast(`길 안내: ${o.n}`,'news'); });
+}catch(e){} };
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
 <script id="visual-enhancer">

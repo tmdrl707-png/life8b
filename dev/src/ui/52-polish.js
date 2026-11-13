@@ -23,7 +23,7 @@ function renderMiniRad(){ const L=G.life, hud=$('hud'); if(!L||!hud) return; let
   el.innerHTML=MINIRAD_OFF?`<button class="mrtog" type="button" aria-label="삶의 모양 펼치기">⬠ 삶의 모양 ＋</button>`:`<div class="mrhd"><span>삶의 모양</span><button class="mrtog" type="button" aria-label="삶의 모양 접기">－</button></div>${miniRadarSVG(L.s)}`; }
 // 11-13 선생님 결정: 게임 화면의 작은 오각형은 띄우지 않는다(내 정보 '삶의 모양'에서 본다). renderMiniRad는 남겨 두되 부르지 않는다.
 // ---- 내 정보: 메뉴로 나눈다
-const INFO_TABS=[['me','개인 정보'],['others','다른 사람들'],['fam','우리 가족'],['shape','삶의 모양'],['trait','성향'],['joy','내 행복을 만드는 것']];
+const INFO_TABS=[['me','개인 정보'],['others','다른 사람들'],['fam','우리 가족'],['shape','삶의 모양'],['joy','내 행복을 만드는 것']];
 function infoRow(k,v){ return `<div class="irow"><div class="ik">${k}</div><div class="iv">${v}</div></div>`; }
 function openInfo(tab){ tab=tab||'me'; const L=G.life, C=L.C, f=L.f, a=L.age, P=L.ppl||{};
   let body='';

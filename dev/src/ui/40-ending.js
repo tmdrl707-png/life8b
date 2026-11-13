@@ -251,7 +251,7 @@ async function drawCard(mems,o){
   x.fillStyle='#fff'; x.fillRect(0,0,Wd,H); x.fillStyle='#1E2B37'; x.fillRect(0,0,Wd,210);
   T(o&&o.title?`「${o.title}」`:'인생 기록',48,60,24,'#FFC9A8',700); T('80억 분의 1',Wd-48,60,22,'#C5D2DC',500,'right');
   x.font=`800 52px ${F}`; const nmW=x.measureText(L.name).width; T(L.name,48,126,Math.min(52,52*560/Math.max(nmW,1)),'#fff',800); T(`${by}~${by+L.lifespan} · ${L.C.n} ${L.town||''} · ${FAM[L.famI].n}`,48,172,22,'#C5D2DC',500);
-  T(L.lifespan+'년',48,276,64,'#B4501E',800); T(`의 삶 · 선택 ${L.n}번 · ${TRAIT[L.topTrait()]}`,48+x.measureText(L.lifespan+'년').width+70,276,24,'#5A6A78',500);
+  T(L.lifespan+'년',48,276,64,'#B4501E',800); T(`의 삶 · 선택 ${L.n}번`,48+x.measureText(L.lifespan+'년').width+70,276,24,'#5A6A78',500);
   const lastJ=(L.jobs||[]).slice(-1)[0]; let ly=312; if(lastJ){ T(`${lastJ.co?lastJ.co+' · ':''}${lastJ.n} · 남긴 재산 ${fmtWon(L.nw)}`,48,ly,20,'#5A6A78',500); ly+=30; }
   if(L.ppl&&L.ppl.spouse) T(`함께한 사람 ${L.ppl.spouse.n}${L.kids.length?' · 아이 '+L.kids.map(k=>k.given).join(', '):''}`,48,ly,20,'#5A6A78',500);
   // 사진 세 장

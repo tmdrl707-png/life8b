@@ -3,7 +3,7 @@ const REC_TABS=[['sum','한눈에'],['shape','삶의 모양'],['life','돈과 �
 function lifeTabs(l,o){ o=o||{}; const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, mk=x=>x&&{a:x[0],j:x[1],k:x[2],t:x[3],e:x[4],r:x[5],h:x[6]}, H=(l.hist||[]).map(mk), pk=mk(l.peak), nw=l.nw||0;
   const kp=[[`${l.age}세`,`향년 · ${C.n} 기대수명 약 ${l.le||C.le}세`],[l.cause||'—','삶을 마친 이유'],[`${l.n||0}번`,'직접·자동으로 한 선택'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산']];
   if(l.avgJ!=null) kp.push([`${l.avgJ}점`,'평생 평균 행복']); if(l.earned) kp.push([fmtWon(l.earned),'평생 번 돈']); if(l.maxNW&&l.maxNW>nw) kp.push([fmtWon(l.maxNW),'재산이 가장 많았을 때']);
-  if(l.kids) kp.push([`${l.kids}명`,'아이']); if(l.top&&TRAIT[l.top]) kp.push([TRAIT[l.top],'가장 많이 고른 성향']);
+  if(l.kids) kp.push([`${l.kids}명`,'아이']);
   const none=t=>`<p class="rempty">${t}</p>`, li=(arr,f)=>`<ul class="rl">${arr.map(f).join('')}</ul>`;
   let shape=''; if(pk){ const v={}; AXES.forEach(k=>v[k]=pk[k]); shape+=`<section class="icard"><h3>오각형이 가장 넓었던 때 <small>${pk.a}살 무렵</small></h3>${radarSVG(v,[])}</section>`; }
   if(H.length>1){ try{ shape+=`<section class="icard"><h3>나이에 따라 달라진 것들</h3>${lineChartSVG({hist:H},pk?pk.a:null)}</section>`; }catch(e){} }

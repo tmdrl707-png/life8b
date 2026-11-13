@@ -21,7 +21,7 @@ function lifeDetailHTML(l){
   const H=(l.hist||[]).map(mk), pk=mk(l.peak), nw=l.nw||0;
   const kp=[[`${l.age}세`,`향년 · ${C.n} 기대수명 약 ${l.le||C.le}세`],[l.cause||'—','삶을 마친 이유'],[`${l.n||0}번`,'직접·자동으로 한 선택'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산']];
   if(l.avgJ!=null) kp.push([`${l.avgJ}점`,'평생 평균 행복']); if(l.earned) kp.push([fmtWon(l.earned),'평생 번 돈']); if(l.maxNW&&l.maxNW>nw) kp.push([fmtWon(l.maxNW),'재산이 가장 많았을 때']);
-  if(l.kids) kp.push([`${l.kids}명`,'아이']); if(l.top&&TRAIT[l.top]) kp.push([TRAIT[l.top],'가장 많이 고른 성향']);
+  if(l.kids) kp.push([`${l.kids}명`,'아이']);
   let g=''; if(pk){ const v={}; AXES.forEach(k=>v[k]=pk[k]); g+=`<div class="dbox"><p class="rcap">오각형이 가장 넓었던 때 · ${pk.a}살 무렵</p>${radarSVG(v,[])}</div>`; }
   if(H.length>1){ try{ g+=`<div class="dbox"><p class="rcap">나이에 따라 달라진 것들</p>${lineChartSVG({hist:H},pk?pk.a:null)}</div>`; }catch(e){} }
   return `<div class="ldt"><div class="kpi">${kp.map(c=>`<div><b>${esc(c[0])}</b><span>${esc(c[1])}</span></div>`).join('')}</div>${g?`<div class="gr">${g}</div>`:''}

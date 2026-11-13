@@ -76,7 +76,7 @@ function chips(fx,tr){ let h=''; if(fx) for(const k in fx){ const v=fx[k]; if(!v
     else if(k==='@') h+=`<span class="chip ${v>0?'pay':'dn'}">돈 ${v>0?'+':''}${fmtWon(v*G.life.C.med)}</span>`; else if(k==='%') h+=`<span class="chip ${v>0?'pay':'dn'}">모은 돈 ${v>0?'+':'−'}${Math.abs(v)}%</span>`;
     else if(k==='H') h+=`<span class="chip pay">${v>0?'집을 마련함':'집을 팖'}</span>`; else if(k==='V') h+=`<span class="chip ${v>0?'pay':'dn'}">집값 ${v>0?'+':'−'}${Math.abs(v)}%</span>`; else if(k==='M') h+=`<span class="chip up">가정을 꾸림</span>`;
     else if(STAT[k]) h+=`<span class="chip ${v>0?'up':'dn'}">${STAT[k]} ${v>0?'+':'−'}${Math.abs(v)}</span>`; }
-  if(tr) h+=`<span class="chip tr">${TRAIT[tr]}</span>`; return h?`<div class="chips">${h}</div>`:''; }
+  return h?`<div class="chips">${h}</div>`:''; }
 // 장면 그림: 창이 열려 있는 동안 조금씩 움직인다
 function sceneHTML(kind){ return kind?`<canvas class="scene" width="640" height="320" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[kind]||'삶'} —</div>`:''; }
 function animScenes(){ const cs=[...$('sheetBox').querySelectorAll('canvas.scene')]; if(!cs.length) return; const t0=performance.now();
@@ -185,11 +185,11 @@ $('btnInfo').onclick=()=>{
   sheet(`<div class="place">내 정보</div><h2>${esc(L.name)} · ${a}살 (${stageOf(a)}) · ${L.by+a}년</h2>
     <dl class="info"><dt>사는 곳</dt><dd>${C.n} · ${esc(L.town||'')} (${SETN[L.set]})</dd><dt>태어난 가정</dt><dd>${FAM[L.famI].n} · 지금 살림은 ${wtxt}${L.fam&&L.fam.rel?` · 가족의 종교: ${esc(L.fam.rel)}`:''}</dd><dt>함께 사는 사람</dt><dd>${fam.length?fam.join(' · '):'혼자 살아요'}</dd>
     <dt>학교</dt><dd>${school}</dd><dt>하는 일</dt><dd>${job}</dd>${money}<dt>나라의 제도</dt><dd><span class="sub">병원비 가운데 직접 내는 몫 약 ${I.oop}% (WHO)${I.hi?` · ${esc(I.hi)}`:''}<br>일하는 사람 가운데 비공식 일자리 약 ${I.inf}% (ILO)${retAgeOf(L)?` · 정년 ${retAgeOf(L)}세`:' · 정해진 정년 없음'}${I.cs&&I.cs[0]&&(I.cs[2]===2||L.sex===0)?` · 군 복무 ${I.cs[0]>=24?Math.round(I.cs[0]/12)+'년':I.cs[0]+'개월'}`:''}</span></dd><dt>가족</dt><dd>${f.widow&&P.spouse?`${esc(P.spouse.n)}과(와)는 ${f.widA}살에 사별했어요`.replace('과(와)',josa(P.spouse.n,'과','와').slice(P.spouse.n.length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:''):f.family?`${esc(P.spouse?P.spouse.n:'')}과(와) 가정을 꾸렸어요`.replace('과(와)',josa(P.spouse?P.spouse.n:'배우자','과','와').slice((P.spouse?P.spouse.n:'배우자').length))+(L.kids.length?` · 아이 ${L.kids.map(k=>esc(k.given)).join(', ')}`:'')+(f.grandkid?' · 손주 있음':''):'아직 가정을 꾸리지 않았어요'}</dd><dt>친구</dt><dd>${esc(P.friend?P.friend.n:'')}</dd>${L.f.pet?`<dt>반려동물</dt><dd>${esc(L.f.pet.n)} (${esc(L.f.pet.sp)}${L.f.pet.dA!=null?`, ${L.f.pet.dA}살 때 무지개다리를 건넘`:`, 함께한 지 ${a-L.f.pet.a}년`})</dd>`:''}${L.f.hob&&L.f.hob.length?`<dt>취미</dt><dd>${L.f.hob.map(h=>esc(h.n)+' Lv.'+h.lv).join(' · ')}</dd>`:''}
-    <dt>갈 수 있는 곳</dt><dd>${places.join(' → ')}</dd><dt>성향</dt><dd>${tot?`<span class="sub">지금까지는 '${TRAIT[top]}'이 가장 많아요 (아래 그래프)</span>`:'아직 쌓인 것이 없어요'}</dd>
+    <dt>갈 수 있는 곳</dt><dd>${places.join(' → ')}</dd>
     <dt>지금까지</dt><dd>선택 ${L.n}번 · 뜻대로 안 된 일 ${L.fail||0}번 · 놓친 순간 ${L.miss}번</dd>${G.room?`<dt>학급 방</dt><dd>${esc(G.room)}</dd>`:''}</dl>
     ${L.comps&&L.comps.length?`<div class="stack-s"><b style="font-weight:400">같은 1초에 태어난 사람들 · 지금 ${a}살 무렵</b><table class="famtbl">${L.comps.map(p=>`<tr><th>${esc(p.n)}</th><td>${esc(p.cn)} · ${p.sex?'여':'남'}</td><td>${esc(L.compNow(p,a))}</td></tr>`).join('')}</table></div>`:''}
     ${L.fam?`<div class="stack-s"><b style="font-weight:400">우리 가족</b><table class="famtbl">${L.famList().map(r=>`<tr><th>${esc(r[0])}</th><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('')}</table></div>`:''}
-    ${statPanel(L)}${traitPanel(L)}${jobsTable(L)}
+    ${statPanel(L)}${jobsTable(L)}
     <div class="stack-s"><b style="font-weight:400">지금 내 행복을 만드는 것</b>${bars}<p class="small sub">돈(살림)만이 아니라 곁의 사람들, 작은 일에도 감사하는 마음, 함께 웃는 문화가 행복을 크게 바꿉니다.</p></div>
     <p class="small sub">${esc(C.fact)} 물가가 나라마다 달라서 같은 돈으로 살 수 있는 것도 다릅니다.</p><button class="btn" id="btnOk">닫기</button>`);
   $('btnOk').onclick=closeSheet;
