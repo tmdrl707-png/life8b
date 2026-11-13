@@ -51,3 +51,9 @@ function miniRect(){ const r=reachOf(G.life.age), c=$('mini'), asp=c?c.height/c.
 (()=>{ const _pos=posOfSpot; posOfSpot=function(key,idx){ const r=_pos(key,idx);
   try{ if(r.m==='out'&&typeof PLACE_IN!=='undefined'&&PLACE_IN[key]&&(key in ENTER)&&OUT.b[key]){ const PI=PLACE_IN[key], n=npcFind(key,'p0'); return {m:key,p:n?[n.x,n.y]:PI.p0.slice(),n:G.life.spotName(key)+' · '+PI.n[0]}; } }catch(e){}
   return r; }; })();
+// 5) 고르지 않고 시간이 다 되면: 가장 소극적인 선택('확실')이 골라진다. 확실한 것이 없으면 잘될 확률이 가장 높은 것(11-13 선생님 결정)
+(()=>{ const _da=decAuto; decAuto=function(){ try{ if(DEC.mode==='auto'){ const bs=[...$('sheetBox').querySelectorAll('.opts button:not([disabled])')];
+    if(bs.length){ let pick=bs.find(b=>b.querySelector('.sure'))||null;
+      if(!pick){ let best=-1; bs.forEach(b=>{ const m=String(b.textContent).match(/(\d+)%/); const v=m?+m[1]:-1; if(v>best){ best=v; pick=b; } }); }
+      if(pick){ DEC.on=0; G.autoPicked=1; pick.click(); G.autoPicked=0; toast('시기를 놓쳐 저절로 정해졌어요.','news'); return; } } } }catch(e){}
+  return _da.apply(this,arguments); }; })();

@@ -90,7 +90,7 @@ function roomCfg(k){ const r=G.roomInfo, c=r&&r.cfg; return !G.teacher&&c&&c[k]!
 function probMode(){ const v=roomCfg('prob'); if(v!=null) return +v; return G.opts.prob==null?2:+G.opts.prob; }
 function softOn(){ const v=roomCfg('soft'); if(v!=null) return +v===1; return !!(G.life&&G.life.opt&&G.life.opt.soft); }
 const RD=()=>Math.max(1,+(G.opts.read||1));   // 글이 떠 있는 시간 배율 (천천히 읽기)
-const pct=(p,big)=>{ const m=probMode(); if(!m) return ''; if(p==null) return `<span class="pl sure">확실</span>`;
+const pct=(p,big)=>{ const m=probMode(); if(!m) return ''; if(p==null||p>=.999) return `<span class="pl sure">확실</span>`;
   const lv=p>=.65?['hi','높음']:p>=.4?['mid','보통']:['lo','낮음'];
   return m===2?`<span class="pl ${lv[0]}">잘될 확률 ${Math.round(p*100)}%</span>`:`<span class="pl ${lv[0]}">될 가능성 ${lv[1]}</span>`; };
 function onOpts(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e.target.closest('button'); if(b) fn(+b.dataset.i); }; }
