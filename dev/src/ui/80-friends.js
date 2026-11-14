@@ -22,11 +22,12 @@
   };
   // ---- 내 정보 알리기 ----
   let me=null, beatOn=false;
+  const net={put:null,get:null,t:0};   // 마지막 내 알림(put)·친구 목록 읽기(get)가 성공(true)/실패(false)했는지
   const can=()=>!!(G.life&&G.running&&!G.teacher&&!G.dev&&Store.sess&&!$('s-game').hidden);
   const myInfo=()=>{ const L=G.life; let st='',cn=''; try{ st=SETN[L.set]||''; cn=L.C.n||''; }catch(e){} return {id:Store.sess.id,nm:L.name||Store.sess.id,a:L.dead?L.lifespan:L.age,cn,st,t:Date.now()}; };
   async function beat(){ if(!can()){ if(beatOn&&Store.sess){ beatOn=false; try{ await DB.put('online/'+Store.uid(),null); }catch(e){} } return; }
-    beatOn=true; try{ await DB.put('online/'+Store.uid(),myInfo()); }catch(e){} }
-  async function friends(){ let o=null; try{ o=await DB.get('online'); }catch(e){} const me=Store.uid(), now=Date.now(), a=[];
+    beatOn=true; try{ await DB.put('online/'+Store.uid(),myInfo()); net.put=true; net.t=Date.now(); }catch(e){ net.put=false; } }
+  async function friends(){ let o=null; try{ o=await DB.get('online'); net.get=true; }catch(e){ net.get=false; } const me=Store.uid(), now=Date.now(), a=[];
     for(const k in (o||{})){ const v=o[k]; if(k===me||!v||now-(v.t||0)>TTL) continue; a.push(Object.assign({uid:k},v)); } a.sort((x,y)=>String(x.nm).localeCompare(String(y.nm),'ko')); return a; }
   const pair=(a,b)=>[a,b].sort().join('_');
   // ---- 안 읽음 ----
@@ -52,6 +53,7 @@
 #frPanel .ft button.on{color:#2B5FB8;border-bottom-color:#2B5FB8}
 #frPanel .fb{flex:1;overflow:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px;min-height:0}
 #frPanel .fe{color:#7A6F55;font-size:13px;line-height:1.6;text-align:center;padding:24px 8px}
+#frPanel .fst{padding:6px 12px;font-size:12px;color:#7A6F55;background:#F3EEDF;border-bottom:1px solid #E3DCCB}#frPanel .fst.ok{color:#1E7A46}#frPanel .fst.bad{color:#B3261E;background:#FDEDEC}
 #frPanel .fc{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid #E3DCCB;border-radius:12px;background:#fff;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
 #frPanel .fc .av{width:38px;height:38px;border-radius:50%;background:#CFE2FF;color:#2B5FB8;font:700 16px/38px inherit;text-align:center;flex:none}
 #frPanel .fc .tx{flex:1;min-width:0}#frPanel .fc .tx b{display:block;font-size:15px}#frPanel .fc .tx span{display:block;font-size:12px;color:#7A6F55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -77,8 +79,12 @@
     <div class="ft">${FR_TABS.map(t=>`<button data-t="${t.k}" class="${t.k===tab?'on':''}">${t.n}</button>`).join('')}</div>${body}`;
     $('frX').onclick=closeP; }
   let list=[];
+  // 연결 상태 한 줄: 내 알림과 목록 읽기가 모두 성공했을 때만 '연결됨'이라고 알린다
+  function statusHTML(){ const ok=net.put===true&&net.get===true, bad=net.put===false||net.get===false;
+    const t=!Store.fb?'이 기기 안에서만 이어져요 (같은 컴퓨터의 다른 창과만 만날 수 있어요)':ok?`연결됨 · 지금 나 말고 ${list.length}명이 플레이 중`:bad?'연결이 불안정해요 · 친구 목록이 맞지 않을 수 있어요':'연결 확인 중…';
+    return `<div class="fst ${ok||!Store.fb?'ok':bad?'bad':''}">${ok||!Store.fb?'●':bad?'▲':'○'} ${t}</div>`; }
   function drawList(){ view='list'; clearInterval(msgT);
-    shell(`<div class="fb" id="frB">${list.length?list.map(f=>`<button class="fc" data-u="${esc(f.uid)}"><span class="av">${initial(f.nm)}</span><span class="tx"><b>${esc(f.nm)}</b><span>${sub(f)}</span></span>${unreadOf(f.uid)?'<i class="nw"></i>':''}</button>`).join(''):'<div class="fe">지금 같이 플레이하는 친구가 없어요.<br>친구가 게임을 시작하면 여기에 나타나요.</div>'}</div>`);
+    shell(`${statusHTML()}<div class="fb" id="frB">${list.length?list.map(f=>`<button class="fc" data-u="${esc(f.uid)}"><span class="av">${initial(f.nm)}</span><span class="tx"><b>${esc(f.nm)}</b><span>${sub(f)}</span></span>${unreadOf(f.uid)?'<i class="nw"></i>':''}</button>`).join(''):(net.get===false?'<div class="fe">연결을 확인하지 못했어요.<br>인터넷이 연결되어 있는지 보고 잠시 뒤 다시 열어 보세요.</div>':'<div class="fe">지금 같이 플레이하는 친구가 없어요.<br>친구가 게임을 시작하면 여기에 나타나요.</div>')}</div>`);
     panel.querySelectorAll('.fc').forEach(b=>b.onclick=()=>openChat(b.dataset.u)); }
   async function refreshList(){ list=await friends(); if(!panel.hidden&&view==='list') drawList(); return list; }
   function bubbles(arr){ const meU=Store.uid(); return arr.map(m=>{ const d=new Date(m.t||0); return `<div class="mb ${m.f===meU?'me':''}">${esc(m.x)}<i>${m.f===meU?'':esc(m.n)+' · '}${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}</i></div>`; }).join(''); }
@@ -93,7 +99,7 @@
     $('frX').onclick=closeP; $('frBack').onclick=()=>{ cur=null; refreshList().then(()=>{ if(view!=='list') drawList(); }); drawList(); };
     $('frF').onsubmit=async e=>{ e.preventDefault(); const inp=$('frIn'), x=inp.value.trim().slice(0,MAXLEN); if(!x||Date.now()-lastSend<1200) return; lastSend=Date.now(); inp.value='';
       const me=Store.uid(), nm=(G.life&&G.life.name)||Store.sess.id, t=Date.now();
-      try{ await DB.push('dm/'+pair(me,f.uid),{f:me,n:nm,x,t}); await DB.put('inbox/'+f.uid+'/'+me,{n:nm,x,t}); }catch(er){ toast('메시지를 보내지 못했어요. 잠시 뒤 다시 해 보세요.','news'); } loadMsgs(); };
+      let ok=false; try{ await DB.push('dm/'+pair(me,f.uid),{f:me,n:nm,x,t}); ok=true; await DB.put('inbox/'+f.uid+'/'+me,{n:nm,x,t}); }catch(er){ if(!ok){ inp.value=x; toast('메시지를 보내지 못했어요. 인터넷을 확인하고 다시 눌러 보세요.','news'); } } loadMsgs(); };
     clearInterval(msgT); loadMsgs(); msgT=setInterval(loadMsgs,3500); setTimeout(()=>{ const i=$('frIn'); i&&i.focus(); },60); }
   function openP(){ if(!can()) return; panel.hidden=false; beat(); drawList(); refreshList(); pollInbox(); }
   function closeP(){ panel.hidden=true; clearInterval(msgT); cur=null; view='list'; badge(); }

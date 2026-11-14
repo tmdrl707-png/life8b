@@ -4,5 +4,5 @@ const YL3=[[60,'빠르게 · 한 해 1분'],[180,'보통 · 한 해 3분 ★추�
 renderBSet=function(){ const o=G.opts; if(!YL3.some(x=>x[0]===+o.yl)) o.yl=180; o.card=1; o.soft=1; o.prob=2;
   $('bSet').innerHTML=`<h3>플레이 시간</h3>
     <div class="stack-s"><p class="small sub" style="margin:0 0 4px">처음이라면 <b>'보통'</b>을 추천해요. 선택하고 둘러볼 시간이 넉넉해요.</p><div class="seg" data-o="yl">${YL3.map(([v,t])=>`<button data-v="${v}" class="${+o.yl===v?'on':''}">${t}</button>`).join('')}</div>
-    <p class="small sub">100살까지 산다면 <b>${lifeTimeText(o.yl)}</b> 안팎이 걸려요 (어른이 되면 한 번에 두 해씩 흘러요). 살아가는 중에는 위쪽의 '저장하기'로 저장하고 쉬었다가 이어서 할 수 있어요.</p></div>
+    <p class="small sub">100살까지 산다면 <b>${lifeTimeText(o.yl)}</b> 안팎이 걸려요 (어른이 되면 한 번에 두 해씩 흘러요). 삶은 저절로 저장돼요. 오른쪽 위 메뉴의 '나가기'로 나갔다가 이어서 할 수 있어요.</p></div>
     ${!G.teacher&&G.data&&G.data.room?`<p class="small sub notice">지금 '${esc(G.data.room)}' 반에 들어가 있어요. 선생님이 반 설정을 정해 두었다면 그 설정이 먼저 적용됩니다.</p>`:''}`; };

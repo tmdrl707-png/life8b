@@ -87,7 +87,7 @@ function sheet(html,cls){ $('sheetBox').className='box gbox '+(cls||''); $('shee
 function closeSheet(){ $('sheet').hidden=true; paused=false; lastT=performance.now(); }
 // 선택지의 '될 가능성' 표시: 0 숨김 · 1 모두 높음/보통/낮음 · 2 모두 숫자(기본). 학급 방의 선생님 설정이 먼저. 확률이 없는 선택은 '확실'
 function roomCfg(k){ const r=G.roomInfo, c=r&&r.cfg; return !G.teacher&&c&&c[k]!=null&&c[k]!==''?c[k]:null; }
-function probMode(){ const v=roomCfg('prob'); if(v!=null) return +v; return G.opts.prob==null?2:+G.opts.prob; }
+function probMode(){ const v=roomCfg('prob'), n=v!=null?+v:(G.opts.prob==null?2:+G.opts.prob); return n===1?1:2; }   // 항상 보인다(숨기기 없음): 1 높음·보통·낮음 · 2 숫자
 function softOn(){ const v=roomCfg('soft'); if(v!=null) return +v===1; return !!(G.life&&G.life.opt&&G.life.opt.soft); }
 const RD=()=>Math.max(1,+(G.opts.read||1));   // 글이 떠 있는 시간 배율 (천천히 읽기)
 const pct=(p,big)=>{ const m=probMode(); if(!m) return ''; if(p==null||p>=.999) return `<span class="pl sure">${sureWord()}</span>`;
@@ -225,7 +225,7 @@ function openMem(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()
   $('btnOk').onclick=closeSheet;
   $('sheetBox').querySelectorAll('.mtabs button').forEach(b=>b.onclick=()=>openMem(b.dataset.f));
   $('sheetBox').querySelector('tbody').onclick=e=>{ const tr=e.target.closest('tr.sc'); if(!tr) return; const m=list[+tr.dataset.i]; popup(`${m.a}살의 기억`,memT(m),null,()=>openMem(flt),'',m.sc,m.q?`${m.q}${m.l?' → '+m.l:''}`:null); }; }
-$('btnExit').onclick=()=>{ sheet(`<h2>잠시 멈출까요?</h2><p class="sub">${G.teacher?'지금까지의 삶은 교사용 모드의 \'내 체험 기록\'에 저장됩니다. 언제든 이어서 살 수 있어요.':'지금까지의 삶은 저장됩니다. 언제든 이어서 살 수 있어요.'}</p><div class="row"><button class="btn primary" id="btnQuit">저장하고 나가기</button><button class="btn" id="btnOk">계속 살기</button></div>`);
+$('btnExit').onclick=()=>{ sheet(`<h2>메인 화면으로 나갈까요?</h2><p class="sub">${G.teacher?'삶은 저절로 저장돼요. 교사용 모드의 \'내 체험 기록\'에서 언제든 이어서 살 수 있어요.':'삶은 저절로 저장돼요. 나가도 같은 아이디로 들어오면 이어서 살 수 있어요.'}</p><div class="row"><button class="btn primary" id="btnQuit">메인 화면으로 나가기</button><button class="btn" id="btnOk">계속 살기</button></div>`);
   $('btnOk').onclick=closeSheet; $('btnQuit').onclick=()=>{ G.running=false; closeSheet(); if(G.teacher){ persist(true); G.teacher=false; G.life=null; G.tid=null; openTeacherBody(); } else { persist(true); openHub(); } }; };
 $('miniWrap').onclick=()=>{ if(!$('sheet').hidden) return; openMaps('town'); };
 // 멈춤: 이 창이 열려 있는 동안 시간이 흐르지 않는다 (읽는 속도가 다른 학생을 위해)

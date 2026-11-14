@@ -81,10 +81,7 @@
       {h:'움직이기',el:'#hint',p:`<p><b>휴대폰</b>: 화면을 누른 채 가고 싶은 쪽으로 끌면 걸어가요.</p><p><b>컴퓨터</b>: <span class="kb">←</span><span class="kb">↑</span><span class="kb">↓</span><span class="kb">→</span> 방향키나 <span class="kb">W</span><span class="kb">A</span><span class="kb">S</span><span class="kb">D</span>로 움직여요.</p>`},
       {h:'다가가서 누르기',p:`<p>사람·동물·물건 가까이 가면 오른쪽 아래에 <b>둥근 단추</b>가 떠요.</p><p>단추를 누르면(키보드는 <span class="kb">스페이스</span>·<span class="kb">엔터</span>) 말을 걸거나 만져 볼 수 있어요. <b>반짝이(✦)</b>가 있는 곳은 아직 해 볼 것이 남은 곳이에요.</p>`},
       {h:'대화창',p:`<p>말을 걸면 화면 <b>아래에 대화창</b>이 열려요. 글을 누르면 다음으로 넘어가요.</p><p>고를 것이 나오면 하나를 누르세요. 옆에 <b>잘될 확률</b>이 함께 보여요. 큰 일은 화면 가운데 창으로, 작은 소식은 오른쪽 위 알림으로 와요.</p>`},
-      {h:'내 정보',el:'#btnInfo',p:`<p>나와 가족, <b>삶의 모양</b>(능력치 육각형), <b>내 행복을 만드는 것</b>을 볼 수 있어요.</p>`},
-      {h:'기억',el:'#btnMem',p:`<p>지금까지 지나온 일들이 나이 순서대로 남아 있어요. 저절로 지나간 해의 일도 여기서 볼 수 있어요.</p>`},
-      {h:'저장하기 · 나가기',el:()=>{ const a=$('btnPause'), b=$('btnExit'); return a&&b?{getBoundingClientRect:()=>{ const r1=a.getBoundingClientRect(), r2=b.getBoundingClientRect(); return {left:r1.left,top:Math.min(r1.top,r2.top),width:r2.right-r1.left,height:Math.max(r1.bottom,r2.bottom)-Math.min(r1.top,r2.top)}; },offsetParent:1}:null; },
-        p:`<p><b>저장하기</b>를 누르면 저장되고 시간이 멈춰요. 쉬었다가 이어서 할 수 있어요.</p><p><b>나가기</b>로 그만두어도 같은 아이디로 들어오면 이어서 살 수 있어요.</p>`},
+      {h:'메뉴 모음',el:'#btnHub',p:`<p>오른쪽 위의 이 단추를 누르면 메뉴가 펼쳐져요.</p><p><b>내 정보</b>: 나와 가족, 삶의 모양(능력치 육각형), 내 행복을 만드는 것<br><b>기록</b>: 지나온 일을 나이 순서대로<br><b>나가기</b>: 메인 화면으로 (삶은 저절로 저장돼요)</p>`},
       {h:'흐르는 시간',el:'#hud .timer',p:`<p>이 막대가 줄어들면 <b>한 해</b>가 지나고 한 살 더 먹어요.</p><p>창이 떠 있어도 시간은 흘러요. 그해에 고르지 않은 일은 한 해가 끝날 때 저절로 정해져요.</p>`},
       {h:'능력치와 행복',el:'#hRes',p:`<p>위쪽 동그라미는 <b>건강·관계·경험·지식·기술·재산</b>, 맨 앞 얼굴은 <b>행복</b>이에요.</p><p>자물쇠는 나이가 들면 하나씩 열려요. 동그라미를 <b>누르면 설명</b>이 나와요.</p>`},
       {h:'처음 열린 능력치 · 건강',el:ringOf('h'),p:`<p>${esc(h[0])} ${esc(h[1])}</p><p>${h[2]}</p>`},
@@ -95,7 +92,7 @@
     if(!L.q){ try{ L.questOffer(); }catch(er){} }
     const q=L.q&&typeof QUESTS!=='undefined'?QUESTS[L.q.i]:null, giver=q?giverName(q.giver):'';
     return [
-      {h:'다섯 살이 되었어요!',el:'#btnMem',p:`<p>1~4살 동안 있었던 일은 <b>기억</b>에 남아 있어요. 궁금하면 나중에 열어 보세요.</p>`},
+      {h:'다섯 살이 되었어요!',el:'#btnHub',p:`<p>1~4살 동안 있었던 일은 오른쪽 위 메뉴의 <b>기록</b>에 남아 있어요. 궁금하면 나중에 열어 보세요.</p>`},
       {h:'새로 열린 능력치 · 관계',el:ringOf('r'),p:`<p>${esc(r[0])} ${esc(r[1])}</p><p>${r[2]}</p>`},
       {h:'그리고 경험',el:ringOf('e'),p:`<p>${esc(e[0])} ${esc(e[1])}</p>`},
       {h:'미션',el:'#miniWrap',p:`<p><span class="blue">파란 물음표(?)</span>는 <b>미션</b>이에요. 지도에서는 <span class="blue">파란 점</span>으로 보여요.</p><p>${giver?`지금은 <b>${esc(giver)}</b>에게 부탁받을 일이 있어요. `:''}부탁한 사람에게 가서 이야기를 듣고 → 말한 곳에 다녀와서 → 다시 알려 주면 끝나요.</p>`},
