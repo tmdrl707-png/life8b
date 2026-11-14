@@ -9810,7 +9810,7 @@ function finishLife(){
   const SL=(k,b,t)=>({k,b,t:t||''}), slides=[SL('마지막 순간',s1)];
   if(voices.length) slides.push(SL('남겨진 사람들의 말',s2));
   if(!young){ slides.push(SL('삶의 길',s3)); slides.push(SL('주어진 것 · 고른 것 · 우연',s4)); }
-  slides.push(SL('나의 기억 고르기',pickSlideHTML(L,PKC,scKind))); slides.push(SL('마지막으로 스쳐 간 장면',sceneSlide));
+  slides.push(SL('나의 기억 고르기',pickSlideHTML(L,PKC,scKind))); slides.push(SL('저절로 지나간 순간',sceneSlide));
   if(!young) slides.push(SL('떠나보낸 것과 남긴 것',s7));
   slides.push(SL('같은 1초에 태어난 사람들',s8)); if(!young) slides.push(SL('숫자로 본 이 삶',s9));
   slides.push(SL('생각해 보기',s10)); slides.push(SL('나의 한 문장',s11)); slides.push(SL('인생 기록',s12));
@@ -10940,7 +10940,7 @@ addEventListener('unhandledrejection',ev=>reportErr(ev.reason,'저장·불러오
    교사용·개발자 모드와 '저장하기'·'나가기' 창에서는 예전처럼 시간이 멈춘다. */
 const DEC={on:0,left:0,total:0,mode:null,next:null,tt:0};
 const flowOn=()=>!!(G.life&&!G.teacher&&!G.hardPause);
-const decWin=()=>Math.max(12,yearLen()*.2)*Math.min(2,RD());
+const decWin=()=>{ const n=($('sheetBox').innerText||'').length, base=Math.max(12,Math.min(25,10+n/22)); return Math.max(base,yearLen()*.2*.5)*Math.min(2,RD()); };   // 글이 길수록 12~25초
 function decStart(){ const m=DEC.next; DEC.next=null; if(!m||!flowOn()||!$('sheetBox').querySelector('.opts button')){ DEC.on=0; return; }
   DEC.on=1; DEC.mode=m; DEC.total=DEC.left=decWin(); DEC.tt=0;
   $('sheetBox').insertAdjacentHTML('afterbegin',`<div class="decbar" role="timer"><i></i><span></span></div>`); decRender(true); }

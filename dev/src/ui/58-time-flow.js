@@ -4,7 +4,7 @@
    교사용·개발자 모드와 '저장하기'·'나가기' 창에서는 예전처럼 시간이 멈춘다. */
 const DEC={on:0,left:0,total:0,mode:null,next:null,tt:0};
 const flowOn=()=>!!(G.life&&!G.teacher&&!G.hardPause);
-const decWin=()=>Math.max(12,yearLen()*.2)*Math.min(2,RD());
+const decWin=()=>{ const n=($('sheetBox').innerText||'').length, base=Math.max(12,Math.min(25,10+n/22)); return Math.max(base,yearLen()*.2*.5)*Math.min(2,RD()); };   // 글이 길수록 12~25초
 function decStart(){ const m=DEC.next; DEC.next=null; if(!m||!flowOn()||!$('sheetBox').querySelector('.opts button')){ DEC.on=0; return; }
   DEC.on=1; DEC.mode=m; DEC.total=DEC.left=decWin(); DEC.tt=0;
   $('sheetBox').insertAdjacentHTML('afterbegin',`<div class="decbar" role="timer"><i></i><span></span></div>`); decRender(true); }

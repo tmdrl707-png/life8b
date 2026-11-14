@@ -142,7 +142,7 @@ function finishLife(){
   const SL=(k,b,t)=>({k,b,t:t||''}), slides=[SL('마지막 순간',s1)];
   if(voices.length) slides.push(SL('남겨진 사람들의 말',s2));
   if(!young){ slides.push(SL('삶의 길',s3)); slides.push(SL('주어진 것 · 고른 것 · 우연',s4)); }
-  slides.push(SL('나의 기억 고르기',pickSlideHTML(L,PKC,scKind))); slides.push(SL('마지막으로 스쳐 간 장면',sceneSlide));
+  slides.push(SL('나의 기억 고르기',pickSlideHTML(L,PKC,scKind))); slides.push(SL('저절로 지나간 순간',sceneSlide));
   if(!young) slides.push(SL('떠나보낸 것과 남긴 것',s7));
   slides.push(SL('같은 1초에 태어난 사람들',s8)); if(!young) slides.push(SL('숫자로 본 이 삶',s9));
   slides.push(SL('생각해 보기',s10)); slides.push(SL('나의 한 문장',s11)); slides.push(SL('인생 기록',s12));
