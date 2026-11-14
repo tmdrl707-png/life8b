@@ -137,7 +137,7 @@ const SIX_MEET={
     :['학교에 다니지 못해도 배울 수 있어요.','어른들에게 묻고, 보고 따라 하고, 책을 구해 읽으면 지식이 자라요. 오래 쓰지 않으면 조금씩 잊어요.','동네 <b>어르신</b>이나 집의 <b>책상</b>에서 시작해 보세요.'],
   t:L=>L.f.sec?[`${L.sch&&L.sch.mid||'중학교'}에 들어갔어요. 이제 손에 익은 솜씨, 기술이 보여요.`,'만들고, 고치고, 꾸준히 연습하면 올라요. 나중에 일을 하면 쌓이고, 오래 손을 놓으면 무뎌져요.','집의 <b>책상·부엌·마당</b>, 동네 <b>체육관</b>과 <b>일터</b>를 찾아보세요.']
     :['열세 살, 이제 손에 익은 솜씨가 보여요.','일을 돕고, 만들고, 고치고, 연습하면 올라요. 오래 손을 놓으면 무뎌져요.','집의 <b>부엌·마당</b>이나 동네 <b>밭과 가게</b>에서 일을 거들어 보세요.'],
-  m:L=>(L.f.job&&!L.f.school)?['이제 번 돈을 모을 수 있어요.','벌고 남은 돈이 모여 재산이 돼요. 물건을 사거나 큰일이 생기면 줄어요.','동네 <b>가게·시장</b>에서 무엇을 살지, 얼마나 모을지 정해 보세요.']
+  m:L=>(L.age>=19||(L.f.job&&!L.f.school))?['이제 번 돈을 모을 수 있어요.','벌고 남은 돈이 모여 재산이 돼요. 물건을 사거나 큰일이 생기면 줄어요.','동네 <b>가게·시장</b>에서 무엇을 살지, 얼마나 모을지 정해 보세요.']
     :[`이제 해마다 용돈 ${fmtWon(allowYear(L))}을 받아요.`,'쓰고 남은 용돈은 차곡차곡 모여, 어른이 될 때 나의 첫 통장이 돼요. 사고 싶은 것을 사면 그만큼 줄어요.','동네 <b>가게·시장·식당</b>에서 쓸 수 있어요. 아껴 두면 모여요.']};
 function sixUEl(){ let d=$('sixU'); if(!d){ d=document.createElement('div'); d.id='sixU'; d.hidden=true; d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true'); ($('s-game')||document.body).appendChild(d); } return d; }
 function sixUnlockShow(L,k){ const d=sixUEl(), t=SIX_MEET[k](L); paused=true; IN.jx=IN.jy=0; IN.id=null;
@@ -145,7 +145,7 @@ function sixUnlockShow(L,k){ const d=sixUEl(), t=SIX_MEET[k](L); paused=true; IN
   d.hidden=false; L.f.unS=L.f.unS||{}; L.f.unS[k]=1; G._six=null; SIX_FX[k]={c:'pu',u:performance.now()+2600};
   const ok=()=>{ d.hidden=true; d.innerHTML=''; paused=false; lastT=performance.now(); renderHud(); persist(); }; $('sixUOk').onclick=ok; $('sixUOk').focus(); }
 setInterval(()=>{ try{ const L=G.life, d=$('sixU'); if(!L||!L.f||(d&&!d.hidden)||$('s-game').hidden||!$('sheet').hidden||(typeof dlgOpen==='function'&&dlgOpen())||G.hardPause) return;
-  const U=L.f.un||{}, S=L.f.unS||(L.f.unS={}); const k=SIX.find(k=>U[k]!=null&&U[k]===L.age&&!S[k]); if(k) sixUnlockShow(L,k); }catch(e){} },700);
+  const U=L.f.un||{}, S=L.f.unS||(L.f.unS={}); const k=SIX.find(k=>U[k]!=null&&U[k]>=0&&!S[k]); if(k) sixUnlockShow(L,k);   /* 그 해를 빨리 지나가도 놓치지 않게: 아직 못 본 것은 다음에 띄운다 */ }catch(e){} },700);
 addEventListener('keydown',e=>{ const d=$('sixU'); if(d&&!d.hidden&&(e.key==='Enter'||e.key===' '||e.key==='Escape')){ e.preventDefault(); e.stopImmediatePropagation(); const b=$('sixUOk'); if(b) b.click(); } },true);
 
 /* ---------- 3) 상호작용의 무게 ---------- */
@@ -153,7 +153,7 @@ addEventListener('keydown',e=>{ const d=$('sixU'); if(d&&!d.hidden&&(e.key==='En
 const SIX_BOOST={r:3,e:3.2,k:4,t:2.2,h:1.8};
 Object.assign(TK_CAP,{B:6,T:7,K:8,Y:8,A:6,O:6});
 tinyGain=(old=>function(L,g,why){ const g2={}, Y=tkYear(L); Y.c=Y.c||{};
-  for(const k in g){ const v=g[k]; g2[k]=v>0?v*(SIX_BOOST[k]||1):v; if(v>0) Y.c[k]=(Y.c[k]||0)+1; }
+  for(const k in g){ const v=g[k]; g2[k]=v>0?v*(L.sixOpen&&SIX.includes(k)&&!L.sixOpen(k)?.7:(SIX_BOOST[k]||1)):v;   /* 아직 안 열린 능력치는 조금만 */ if(v>0) Y.c[k]=(Y.c[k]||0)+1; }
   const up=old(L,g2,why)||[]; return up.filter(u=>{ const k=SIX.find(k=>u.startsWith(SIX_N[k]+' ')); return !k||L.sixOpen(k); }).map(u=>u.replace(' 조금 ↑',' ↑')); })(tinyGain);
 // 아직 잠긴 능력치는 사건 칩에서도 감춘다
 chips=(old=>function(fx,tr){ const L=G.life; if(fx&&L&&L.sixOpen){ const f2={}; for(const k in fx) if(!(SIX.includes(k)&&!L.sixOpen(k))) f2[k]=fx[k]; fx=f2; } return old(fx,tr); })(chips);
@@ -264,3 +264,30 @@ openDev=(old=>function(){ old(); try{ const d=$('devP'), box=d&&d.querySelector(
   $('vowTry').onclick=()=>{ d.hidden=true; vowOpen(v=>{ if(G.life){ G.life.val=v; renderHud(); } }); }; }catch(e){ console.warn(e); } })(openDev);
 // 개발자 모드로 시작한 삶은 '새로 알게 된 것' 카드를 띄우지 않는다 (시험·확인용)
 devStart=(old=>function(){ const r=old.apply(this,arguments); try{ const L=G.life; if(L&&L.f){ L.f.unS=L.f.unS||{}; SIX.forEach(k=>L.f.unS[k]=1); } }catch(e){} return r; })(devStart);
+
+/* ---------- 어른·노인도 집과 동네의 물건과 함께 (11-14 플레이 점검: 19살부터 집 물건이 하나도 없었다) ---------- */
+const PLAY_AO={
+  counter:{A:[['퇴근길에 산 재료로 처음 보는 나라 요리를 만들어 보았다.','e t'],['가족 도시락을 싸며 손이 빨라졌다.','t r'],['한 달 장보기 영수증을 펼쳐 놓고 식비를 따져 보았다.','k t']],
+    O:[['손주에게 줄 옛날 음식을 만들며 손맛을 전했다.','r t'],['약 먹을 시간을 적어 냉장고에 붙였다.','h k']]},
+  table:{A:[['식탁에 모여 앉아 하루 있었던 일을 나누었다.','r j'],['가계부를 펴고 이번 달 쓸 돈을 나누어 적었다.','k t'],['오래 연락 못 한 친구에게 손편지를 썼다.','r']],
+    O:[['오래된 사진첩을 펼쳐 옛이야기를 들려주었다.','r e'],['돋보기를 쓰고 신문을 천천히 읽었다.','k']]},
+  sofa:{A:[['소파에 앉아 읽다 만 책을 끝까지 읽었다.','k j'],['가족과 나란히 앉아 영화를 보았다.','r j'],['배우고 싶던 악기를 다시 꺼내 연습했다.','t e']],
+    O:[['짧게 낮잠을 자고 일어나 몸을 풀었다.','h j'],['라디오 노래를 따라 흥얼거렸다.','j e']]},
+  tv:{A:[['다른 나라 소식을 보며 지도에서 그 나라를 찾아보았다.','k e'],['온라인 강의를 틀어 놓고 새 기술을 배웠다.','t k']],
+    O:[['건강 체조 방송을 보며 따라 했다.','h'],['처음 보는 나라의 여행 방송을 보며 메모했다.','k e']]},
+  bed:{A:[['일찍 누워 푹 잤다. 몸이 한결 가벼웠다.','h j'],['잠들기 전 스트레칭을 십 분 했다.','h']],
+    O:[['일찍 자고 일찍 일어나 동네를 한 바퀴 걸었다.','h']]},
+  desk:{A:[['일에 필요한 자격증 문제집을 풀었다.','k t'],['고장 난 물건을 설명서를 보며 직접 고쳤다.','t k'],['가 보고 싶은 곳의 여행 계획을 짰다.','e k']],
+    O:[['살아온 이야기를 공책에 조금씩 적었다.','k e'],['고장 난 라디오를 손주와 함께 고쳤다.','t r']]},
+  yard:{A:[['화분을 손질하고 새 모종을 심었다.','t h'],['이웃과 담 너머로 안부를 나누었다.','r'],['아침 일찍 맨손 체조를 했다.','h']],
+    O:[['텃밭에 물을 주며 새싹을 살폈다.','h t'],['마당에 나온 이웃과 차 한 잔을 나누었다.','r j']]},
+  tree:{A:[['나무 그늘 아래서 동네 사람들과 이야기를 나누었다.','r j'],['나무 사이를 천천히 걸으며 생각을 정리했다.','h e']],
+    O:[['나무 아래 의자에 앉아 지나가는 아이들에게 인사했다.','r j']]},
+  field:{A:[['새 품종 씨앗을 한 줄 심어 보았다.','t k'],['이웃 밭일을 거들고 품앗이로 도움을 받았다.','r t']],
+    O:[['젊은이들에게 씨 뿌리는 때를 일러 주었다.','r k']]}};
+for(const k in PLAY_AO) if(PLAY[k]) for(const st in PLAY_AO[k]) if(!PLAY[k][st]) PLAY[k][st]=PLAY_AO[k][st];
+touchables=(old=>function(){ const r=old(), L=G.life; if(!L||L.age<19||(typeof PLACE_IN!=='undefined'&&PLACE_IN[W.map])) return r;
+  const m=W.map, st=stg(L.age), out=[];
+  if(m==='home'){ HOME.f.forEach(f=>out.push({k:f[0],r:f.slice(1)})); out.push({k:'yard',p:HOME.s.yard}); }
+  else if(m==='out'){ OUT.trees.forEach(t=>out.push({k:'tree',p:t})); if(L.set==='R') OUT.fields.forEach(f=>out.push({k:'field',r:f})); }
+  return r.concat(out.filter(o=>playPool(o.k,st).length)); })(touchables);
