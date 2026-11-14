@@ -227,3 +227,13 @@ function scAgeFix(kind,txt,a){ if(!kind||!G.life||G.life.dead) return kind; cons
   if(b==='sick'&&a>=19){ if(/지쳤|쉬어|피곤|마음도/.test(t)) return 'life@end_bench'; if(/마지막|가족과 함께 시간/.test(t)) return a>=55?'life':'hosp'; return 'hosp'; }
   return kind; }
 
+
+// 기록 카드의 사진 세 장: 필름 사진 흉내(거친 그림) 대신 다른 화면과 같은 수채화 장면 그림을 쓴다. 그림이 없을 때만 예전 방식.
+async function drawSceneThumb(cv,m,L){
+  const k=endKindOf(m), k0=(typeof softOn==='function'&&softOn()&&/^(farewell|sick|hosp|unrest)$/.test(k))?'life':(SCENE_TITLE[k]?k:'life');
+  const kind=typeof scVar==='function'?scVar(k0,memT(m)+' '+(m.q||''),m.a,L):k0, n=scArtName(kind,L);
+  if(!n) throw new Error('no art');
+  const im=await artLoad('art/sc/'+n+'.webp?v=1114');
+  const W=480,H=360; cv.width=W; cv.height=H; const x=cv.getContext('2d'), s=Math.max(W/im.width,H/im.height), w=im.width*s, h=im.height*s;
+  x.drawImage(im,(W-w)/2,(H-h)/2,w,h);
+}

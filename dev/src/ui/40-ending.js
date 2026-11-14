@@ -258,7 +258,7 @@ async function drawCard(mems,o){
   // 어릴 때 · 한창때 · 나이 들어서 한 장씩 (돈·아픔 같은 기억보다는 장면이 있는 기억을 먼저)
   const pool0=(mems||[]).filter(m=>m&&m.a>0), nice=pool0.filter(m=>!/^(money|sick|hosp|jobloss|farewell)$/.test(photoKind(m))), pool=nice.length>=3?nice:pool0;
   const ps=pool.length<=3?pool:[pool[0],pool[Math.floor(pool.length/2)],pool[pool.length-1]], pw=196, ph=147, gap=(Wd-96-pw*3)/2;
-  const pcs=await Promise.all(ps.map(async(m,i)=>{ const pc=document.createElement('canvas'); try{ await drawMemPhoto(pc,m,L,L.mem.indexOf(m)); }catch(e){ try{ drawPhoto(pc,m,L,i); }catch(e2){} } return pc; }));
+  const pcs=await Promise.all(ps.map(async(m,i)=>{ const pc=document.createElement('canvas'); try{ await drawSceneThumb(pc,m,L); }catch(e0){ try{ await drawMemPhoto(pc,m,L,L.mem.indexOf(m)); }catch(e){ try{ drawPhoto(pc,m,L,i); }catch(e2){} } } return pc; }));
   ps.forEach((m,i)=>{ const pc=pcs[i]; const px=48+i*(pw+gap), py=380+(i%2)*10;
     x.save(); x.translate(px+pw/2,py+ph/2); x.rotate((i-1)*.03); x.fillStyle='rgba(0,0,0,.18)'; x.fillRect(-pw/2-6,-ph/2-4,pw+16,ph+40); x.fillStyle='#F6F2EA'; x.fillRect(-pw/2-8,-ph/2-8,pw+16,ph+40); x.drawImage(pc,-pw/2,-ph/2,pw,ph);
     x.font='26px "Nanum Pen Script",cursive'; x.fillStyle='#3A3530'; x.textAlign='center'; x.fillText(`${by+m.a}년 · ${m.a}살`,0,ph/2+24); x.restore(); });
