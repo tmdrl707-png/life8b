@@ -27,7 +27,7 @@ function cmpHTML(L){ const C=L.C, K=COUNTRIES.KR, W=worldAvg(), ui=L.set==='U'?0
     ['다섯 살 전에 삶을 마치는 아이 (1000명 중)',`${C.u5}명`,`${K.u5}명`,`${Math.round(W.u5)}명`],
     [`초등학교에 다니는 아이 (100명 중${C.pU<.98?`, ${SETN[L.set]}`:''})`,`${pct100(at(C.edu,ui))}명`,`${pct100(at(K.edu,0))}명`,`${pct100(W.edu)}명`],
     [`중학교에 다니는 아이 (100명 중)`,`${pct100(at(C.sec,ui))}명`,`${pct100(at(K.sec,0))}명`,`${pct100(W.sec)}명`],
-    ['여성 한 명이 낳는 아이 (평균)',`${C.tfr}명`,`${K.tfr}명`,`${W.tfr.toFixed(1)}명`],
+    ['여성 한 명이 낳는 아이 (평균)',`${+(+C.tfr).toFixed(2)}명`,`${K.tfr}명`,`${W.tfr.toFixed(1)}명`],
     ['보통 한 달 벌이 (한국 돈으로)',fmtPay(C.med),fmtPay(K.med),'—'],
     ['병원비 가운데 직접 내는 몫',`${I.oop}%`,`${KI.oop}%`,'—'],
     ['계약서·사회보험 없이 일하는 사람 (100명 중)',`${I.inf}명`,`${KI.inf}명`,'—']];
@@ -39,7 +39,7 @@ function factLine(L,a,m){ if(m){ const mt=memT(m); if(/^(farewell|sick|hosp|jobl
     u5:()=>`${C.n}에서는 아이 1000명 가운데 약 ${C.u5}명이 다섯 살이 되기 전에 삶을 마칩니다.${vs(K.u5+'명',Math.round(W.u5)+'명')}`,
     edu:()=>`${C.n}${C.pU<.98?`의 ${SETN[L.set]}`:''}에서는 아이 100명 가운데 약 ${pct100(at(C.edu,ui))}명이 초등학교에 다닙니다.${vs(pct100(at(K.edu,0))+'명',pct100(W.edu)+'명')}`,
     sec:()=>`${C.n}${C.pU<.98?`의 ${SETN[L.set]}`:''}에서는 아이 100명 가운데 약 ${pct100(at(C.sec,ui))}명이 중학교에 다닙니다.${vs(pct100(at(K.sec,0))+'명',pct100(W.sec)+'명')}`,
-    tfr:()=>`${C.n}에서 여성 한 명이 평생 낳는 아이는 평균 약 ${C.tfr}명입니다.${vs(K.tfr+'명',W.tfr.toFixed(1)+'명')}`,
+    tfr:()=>`${C.n}에서 여성 한 명이 평생 낳는 아이는 평균 약 ${+(+C.tfr).toFixed(2)}명입니다.${vs(K.tfr+'명',W.tfr.toFixed(1)+'명')}`,
     mar:()=>C.mar?`${C.n}에서 처음 결혼하는 나이는 보통 남자 ${C.mar[0]}세, 여자 ${C.mar[1]}세 무렵입니다.${kr?'':` 대한민국은 남자 ${K.mar[0]}세, 여자 ${K.mar[1]}세 무렵입니다.`}`:null,
     med:()=>`${C.n}의 보통 한 달 벌이는 한국 돈으로 약 ${fmtPay(C.med)}입니다.${kr?'':` 대한민국은 약 ${fmtPay(K.med)}입니다.`} 물가가 달라 같은 돈으로 살 수 있는 것도 다릅니다.`,
     inf:()=>`${C.n}에서 일하는 사람 100명 가운데 약 ${I.inf}명은 계약서나 사회보험 없이 일합니다 (ILO).${kr?'':` 대한민국은 약 ${KI.inf}명입니다.`}`,

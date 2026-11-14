@@ -119,10 +119,10 @@
   // 학급 방: 1~4살에 관계·경험 카드는 5살 안내에서 함께 (안내를 보는 삶만)
   { const _iv=sixUnlockShow; sixUnlockShow=function(L,k){ if(L&&L.f&&L.f.tut&&L.f.tut<3&&L.age<5&&(k==='r'||k==='e')) return; return _iv.apply(this,arguments); }; }
   // 74의 '6살로' 단추는 처음 안내 중(0~4살)에는 숨긴다
-  { const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ const L=G.life, b=$('btnSkip6'); if(b&&L&&L.f&&L.f.tut&&L.f.tut<3&&L.age<5) b.hidden=true; }catch(e){} return r; }; }
 
   // ---- '5살로' 단추: 0~4살 어느 때나 (의무 아님) ----
-  { const row=document.querySelector('.hbtns'), pz=$('btnPause'), b=document.createElement('button'); b.id='btnSkip5'; b.type='button'; b.className='hbtn sk6'; b.hidden=true; b.textContent='5살로 ▶'; b.title='집 안에서 지내는 시기를 건너뛰어 5살로 가요'; if(row) row.insertBefore(b,pz||null);
+  { const b=document.createElement('button'); b.id='btnSkip5'; b.type='button'; b.hidden=true; b.innerHTML='<b>5살로 건너뛰기</b><span>언제든 누를 수 있어요</span>'; b.title='집 안에서 지내는 시기를 건너뛰어 5살로 가요'; ($('s-game')||document.body).appendChild(b);
+    { const st=document.createElement('style'); st.textContent=`#btnSkip5{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 118px);transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 22px 8px;border:2px solid #fff;border-radius:999px;background:linear-gradient(180deg,#FFB547 0%,#F0791F 100%);color:#fff;font:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(240,121,31,.55),0 0 0 4px rgba(255,181,71,.35);animation:sk5p 1.8s ease-in-out infinite}#btnSkip5 b{font-size:17px;line-height:1.2;text-shadow:0 1px 2px rgba(0,0,0,.35)}#btnSkip5 span{font-size:11px;opacity:.92}#btnSkip5[hidden]{display:none}@keyframes sk5p{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}@media (max-height:480px){#btnSkip5{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);left:50%;padding:6px 16px 5px}#btnSkip5 b{font-size:14px}#btnSkip5 span{display:none}}`; document.head.appendChild(st); }
     const can=()=>{ const L=G.life; return !!(L&&L.f&&L.f.tut&&L.f.tut<3&&!G.teacher&&!G.room&&G.running&&!L.dead&&L.age<5&&!tutOpen()); };
     const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ b.hidden=!can(); }catch(e){} return r; }; setInterval(()=>{ try{ b.hidden=!can(); }catch(e){} },1000);
     b.onclick=()=>{ if(!can()||!$('sheet').hidden) return; G.hardPause=1; const L=G.life, n=5-L.age;

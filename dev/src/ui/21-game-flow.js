@@ -314,7 +314,7 @@ function loopBody(t){
     // 한 해 안에서도 일은 계속 생긴다: 작은 선택은 채워지고, 큰 사건과 미션이 찾아온다
     G.spawnT-=dt; if(G.spawnT<=0){ G.spawnT=5; if(L.cur.scenes.filter(c=>!c.done).length<3&&L.spawn()>=0) renderHud(); }
     const catching=G.room&&G.roomPi!=null&&L.pi<G.roomPi-1;   // 반을 따라잡는 동안에는 큰 사건과 미션을 쉰다
-    if(!catching){ L.cur.qt-=dt; if(L.cur.qt<=0){ L.cur.qt=35; if(!L.q&&L.questOffer()) toast(`${giverName(QUESTS[L.q.i].giver)}에게 부탁받을 일이 생겼어요. 파란 물음표를 찾아가 보세요.`); }
+    if(!catching){ L.cur.qt-=dt; if(L.cur.qt<=0){ L.cur.qt=(L.age===5?10:L.age>=3&&L.age<5?22:35); if(!L.q&&L.questOffer()) toast(`${giverName(QUESTS[L.q.i].giver)}에게 부탁받을 일이 생겼어요. 파란 물음표를 찾아가 보세요.`); }
     L.cur.el=(L.cur.el||0)+dt;
     if(L.cur.mDone>=L.cur.plan&&caughtUp()&&!L.f.dying&&L.cur.el>=majorAt(L.cur.mDone)) L.addMajor();   // 반이 같은 해에 머무는 동안에도 큰 일은 이어진다
     if(L.cur.mDone<L.cur.plan&&L.cur.el>=majorAt(L.cur.mDone)){ if(L.major()!=null) openMajor(); else L.cur.mDone++; }

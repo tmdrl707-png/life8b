@@ -198,3 +198,7 @@ body.bnight #s-birth .panel:not(.bpick) h3{color:#22303C}
 body.bnight #s-birth .notice{background:rgba(226,112,58,.12);border-left:3px solid #FF9A62;color:#E7D3C6;border-radius:10px;padding:.8rem 1rem}
 body.bnight #s-birth .notice b{color:#FFC9A8}
 body.bnight .topbar .btn.ghost,body.bnight .topbar .who,body.bnight .topbar span{color:#DCE6EE}
+
+/* 태어난 곳 제목은 한 줄에 들어오게 (글자 크기는 birthFit이 줄인다) */
+body.bnight #s-birth h1#bTitle{white-space:nowrap;overflow:hidden}
+.bhead{min-width:0}

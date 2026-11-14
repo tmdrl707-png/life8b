@@ -101,7 +101,7 @@ function birthReveal(cards){
 }
 function birth(o){
   const L=G.life=new Life(o&&o.c?o:undefined); G.sec=CFG.PERIOD_SEC;
-  const C=L.C; $('bTitle').innerHTML=`<em>${esc(C.n)}</em><span class="dot"> · </span>${esc(SETN[L.set])}`; $('bLine').textContent=`${FAM[L.famI].n}의 ${SEX[L.sex]}아이`;
+  const C=L.C; $('bTitle').innerHTML=`<em>${esc(C.n)}</em><span class="dot"> · </span>${esc(SETN[L.set])}`; $('bLine').textContent=`${FAM[L.famI].n}의 ${SEX[L.sex]}아이`; birthFit();
   { const im=$('bArt'), cv=$('birthCv'), rg=(typeof RG_ART!=='undefined'&&RG_ART[C.rg])||'WE'; im.hidden=true; cv.hidden=false; im.onload=()=>{ im.hidden=false; cv.hidden=true; }; im.onerror=()=>{ im.hidden=true; cv.hidden=false; }; im.src=`art/sc/town6_${rg}.webp`; }
   birthReveal([
     {b:C.n,s:`세계에서 태어나는 아기 1000명 중 ${(()=>{ const v=birthShare(L.c)*1000; return v>=10?Math.round(v):v>=1?v.toFixed(1):v.toFixed(2); })()}명`,pool:CKEYS.map(k=>COUNTRIES[k].n)},
@@ -115,3 +115,7 @@ function birth(o){
 }
 $('btnLive').onclick=()=>{ const L=G.life; L.setGiven($('bName').value.trim()||L.given); if(L.mem[0]) L.mem[0].t=`${L.birthText()} 이름은 ${L.name}.`; L.opt={card:G.opts.card,ask:0,soft:G.opts.soft==null?1:G.opts.soft}; L.yl=+G.opts.yl||60; L.pace=L.yl<=35?'short':'normal'; G.sec=secOf(L); persist(true); startGame(); };
 
+
+// 태어난 곳 제목(나라 · 사는 곳)이 한 줄에 들어오도록 글자 크기를 줄인다
+function birthFit(){ const t=$('bTitle'); if(!t) return; const go=()=>{ t.style.fontSize=''; let fs=parseFloat(getComputedStyle(t).fontSize)||40; for(let i=0;i<30&&t.scrollWidth>t.clientWidth+1&&fs>14;i++){ fs-=2; t.style.fontSize=fs+'px'; } }; go(); setTimeout(go,300); setTimeout(go,1200); }
+addEventListener('resize',()=>{ try{ if(!$('s-birth').hidden) birthFit(); }catch(e){} });
