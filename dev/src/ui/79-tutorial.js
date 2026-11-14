@@ -88,8 +88,7 @@
       {h:'흐르는 시간',el:'#hud .timer',p:`<p>이 막대가 줄어들면 <b>한 해</b>가 지나고 한 살 더 먹어요.</p><p>창이 떠 있어도 시간은 흘러요. 그해에 고르지 않은 일은 한 해가 끝날 때 저절로 정해져요.</p>`},
       {h:'능력치와 행복',el:'#hRes',p:`<p>위쪽 동그라미는 <b>건강·관계·경험·지식·기술·재산</b>, 맨 앞 얼굴은 <b>행복</b>이에요.</p><p>자물쇠는 나이가 들면 하나씩 열려요. 동그라미를 <b>누르면 설명</b>이 나와요.</p>`},
       {h:'처음 열린 능력치 · 건강',el:ringOf('h'),p:`<p>${esc(h[0])} ${esc(h[1])}</p><p>${h[2]}</p>`},
-      room?{h:'이제 시작해요',p:`<p>학급 방에서는 반 친구들과 같은 나이로 함께 움직여요. 집 안을 걸어 다니며 가족에게 다가가 보세요.</p><p>다섯 살이 되면 <b>관계</b>와 <b>미션</b>을 알려 줄게요.</p>`}
-          :{h:'다섯 살로 가 볼까요?',p:`<p>1~4살은 <b>저절로 지나가요</b>. 그동안의 일은 '기억'에 남아요.</p><p>다섯 살이 되면 새로 열리는 <b>관계</b>와 <b>미션</b>, <b>지도</b>를 알려 줄게요.</p>`}
+      {h:'이제 시작해요',p:`<p>집 안을 걸어 다니며 가족에게 다가가 보세요. 한 해씩 저절로 자라요.</p>${room?'':`<p>위쪽의 <b>5살로</b> 단추를 누르면 <b>언제든</b> 다섯 살로 건너뛸 수 있어요. 꼭 누르지 않아도 되고, 안 눌러도 다섯 살이 되면 <b>관계</b>와 <b>미션</b>을 알려 줄게요.</p>`}`}
     ]; }
   // ---- 5살 안내 ----
   function steps5(){ const L=G.life, r=ME('r'), e=ME('e');
@@ -113,7 +112,7 @@
     const d=$('sixU'); if(d&&!d.hidden) return;
     if(L.age>5){ f.tut=3; return; }
     if(f.tut===1&&L.age<5){ f.unS=f.unS||{}; f.unS.h=1; f.gInfo=1;
-      run('처음 안내',steps0(),G.room?'시작하기':'5살로 가기 ▶',()=>{ if(G.room){ f.tut=2; persist(); return; } f.tut=2; if(jump(5)) persist(); }); return; }
+      run('처음 안내',steps0(),'시작하기',()=>{ f.tut=2; persist(); }); return; }
     if(f.tut<=2&&L.age===5){ f.unS=f.unS||{}; SIX.forEach(k=>{ if(f.un&&f.un[k]!=null) f.unS[k]=1; });
       run('다섯 살 안내',steps5(),'시작하기',()=>{ f.tut=3; persist(); }); } }
   setInterval(()=>{ try{ check(); }catch(e){ console.warn(e); } },600);
@@ -121,6 +120,14 @@
   { const _iv=sixUnlockShow; sixUnlockShow=function(L,k){ if(L&&L.f&&L.f.tut&&L.f.tut<3&&L.age<5&&(k==='r'||k==='e')) return; return _iv.apply(this,arguments); }; }
   // 74의 '6살로' 단추는 처음 안내 중(0~4살)에는 숨긴다
   { const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ const L=G.life, b=$('btnSkip6'); if(b&&L&&L.f&&L.f.tut&&L.f.tut<3&&L.age<5) b.hidden=true; }catch(e){} return r; }; }
+
+  // ---- '5살로' 단추: 0~4살 어느 때나 (의무 아님) ----
+  { const row=document.querySelector('.hbtns'), pz=$('btnPause'), b=document.createElement('button'); b.id='btnSkip5'; b.type='button'; b.className='hbtn sk6'; b.hidden=true; b.textContent='5살로 ▶'; b.title='집 안에서 지내는 시기를 건너뛰어 5살로 가요'; if(row) row.insertBefore(b,pz||null);
+    const can=()=>{ const L=G.life; return !!(L&&L.f&&L.f.tut&&L.f.tut<3&&!G.teacher&&!G.room&&G.running&&!L.dead&&L.age<5&&!tutOpen()); };
+    const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ b.hidden=!can(); }catch(e){} return r; }; setInterval(()=>{ try{ b.hidden=!can(); }catch(e){} },1000);
+    b.onclick=()=>{ if(!can()||!$('sheet').hidden) return; G.hardPause=1; const L=G.life, n=5-L.age;
+      sheet(`<h2>5살로 건너뛸까요?</h2><p class="sub">지금(${L.age}살)부터 5살까지 <b>${n}년</b>이 한꺼번에 지나가요. 그동안의 작은 선택은 저절로 정해지고, 지나간 일은 '기억'에 남아요. 5살이 되면 관계와 미션 안내가 나와요.</p><div class="row"><button class="btn primary" id="btnSk5Go">5살로 가기</button><button class="btn" id="btnOk">아직 안 갈래요</button></div>`);
+      $('btnSk5Go').onclick=()=>{ closeSheet(); if(jump(5)) persist(); }; $('btnOk').onclick=()=>{ G.hardPause=0; closeSheet(); }; }; }
 
   // ---- 새 삶을 시작할 때 ----
   { const _go=$('btnLive').onclick; $('btnLive').onclick=function(){ const L=G.life, tut=G.opts.tut!==0;
