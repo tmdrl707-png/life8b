@@ -67,10 +67,11 @@ const UNIV2={
 };
 function tierName(L,i,d){ const C=L.C, UN=UNIV[L.c], fit=a=>{ const x=a.filter(n=>d==='sci'||!TECH_U.test(n)); return x.length?x:a; }, town=(L.set==='U'&&L.town)||C.city;
   if(i===0) return UN?pickOne(fit(UN[0])):`${C.city} 국립대학교`;
-  if(i===1) return UN?pickOne(fit(UN[1])):`${C.city} 대학교`;
   // 지역 4년제·2년제도 실제 학교 이름으로 (UNIV2: [지역 4년제, 2년제·직업대학])
   const U2=UNIV2[L.c];
-  if(i===2) return U2?pickOne(fit(U2[0])):(UN&&UN[1].length?pickOne(fit(UN[1])):`${C.city} 대학교`);
+  // 중상위와 지역 4년제가 같은 학교로 나오지 않게(예: 도전·적정이 둘 다 강원대학교) — 지역 4년제 목록에 있는 학교는 중상위에서 뺀다
+  if(i===1){ if(!UN) return `${C.city} 대학교`; const a=U2?UN[1].filter(n=>!U2[0].includes(n)):UN[1]; return pickOne(fit(a.length?a:UN[1])); }
+  if(i===2) return U2?pickOne(fit(U2[0])):(town!==C.city?`${town} 대학교`:`${C.city} 시립대학교`);
   return U2?pickOne(U2[1]):`${C.city} 기술대학`; }
 // 그 층에서 성적으로 바라볼 만한 학과들 (너무 어려운 학과는 후보에서 뺀다)
 function majorsFor(L,d,ti){ const D=DIRS[d]; if(ti===3) return [D.jc]; const q=acadQ(L), need=UT_NEED[ti];

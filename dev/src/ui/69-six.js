@@ -291,3 +291,9 @@ touchables=(old=>function(){ const r=old(), L=G.life; if(!L||L.age<19||(typeof P
   if(m==='home'){ HOME.f.forEach(f=>out.push({k:f[0],r:f.slice(1)})); out.push({k:'yard',p:HOME.s.yard}); }
   else if(m==='out'){ OUT.trees.forEach(t=>out.push({k:'tree',p:t})); if(L.set==='R') OUT.fields.forEach(f=>out.push({k:'field',r:f})); }
   return r.concat(out.filter(o=>playPool(o.k,st).length)); })(touchables);
+
+// 학교에 아직 안 다니는 아이에게 '학교에서 오늘…'을 묻지 않는다 (0~20살 점검, 11-14)
+talkFill=(old=>function(L,s,pet){ let t=old(L,s,pet); if(L&&L.f&&!L.f.school&&!L.f.elem&&!L.f.sec) t=t.replace('학교에서 오늘 재미있는 일 있었어?','오늘 밖에서 재미있는 일 있었어?'); return t; })(talkFill);
+
+// 아이에게 돈 드는 일은 '집 살림'으로 보인다 (엔진 64-young과 짝)
+chips=(old=>function(fx,tr){ const L=G.life; if(fx&&L&&L.age<16&&fx['@']<0&&!L.f.job){ const f2=Object.assign({},fx); delete f2['@']; return old(f2,tr)+'<span class="chip dn">집 살림 −</span>'; } return old(fx,tr); })(chips);

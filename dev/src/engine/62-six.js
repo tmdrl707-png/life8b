@@ -23,7 +23,7 @@ Life.prototype.valW=function(){ const p=(this.val&&this.val.p)||{}, w={}; let s=
 function allowYear(L){ return L.C.med*(.10+.20*clamp(L.w,0,1)); }
 Life.prototype.moneyIdx=function(){ const C=this.C, a=this.age, f=this.f;
   if(a<16&&!f.job) return clamp(this.w*100,3,97);
-  if(a<19&&!f.univ&&!(f.job&&!f.school)){ const al=allowYear(this), sv=Math.max(0,(f.sv||0)+(f.pk&&f.pk.y===a?f.pk.left:0)); return clamp(20+36*sv/(al*2.6)+(this.w-.5)*16,4,94); }
+  if(a<19&&!f.univ&&!(f.job&&!f.school)){ const al=allowYear(this), sv=Math.max(0,(f.sv||0)+(f.pk&&f.pk.y===a?f.pk.left:al)+Math.max(-al*3,this.cash||0)); return clamp(20+36*sv/(al*2.6)+(this.w-.5)*16,4,94); }
   const nwM=(this.cash+this.house)/Math.max(C.med,1e-9); let m=nwM>=0?34+10*Math.log2(1+nwM/6):34-26*Math.min(1,-nwM/24);
   const inc=this.inc||0; if(f.job&&!f.school) m+=clamp(8*Math.log2(Math.max(.1,inc/C.med)),-10,10); else if(f.school) m+=2; else if(!f.retired&&a<65) m-=6;
   m+=clamp((30-a)*1.2,0,13);   // 갓 어른이 된 때는 모은 돈이 없는 것이 보통이다
