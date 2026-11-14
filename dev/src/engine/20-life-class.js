@@ -38,6 +38,8 @@ class Life{
     return this.relTag(String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|과\(와\)|를\(을\)|가\(이\)|는\(은\))?/g,(m,k,p)=>{ const w=map[k]; if(w==null) return m; if(!p) return w;
       const pair={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로'],'과(와)':['과','와'],'를(을)':['을','를'],'가(이)':['이','가'],'는(은)':['은','는']}[p]; return josa(w,pair[0],pair[1]); }).split(C.fest+' 날').join(/(날|일)$/.test(C.fest)?C.fest:C.fest+' 날')); }
   static load(o){ const L=Object.assign(Object.create(Life.prototype),o); L.pending=null; if(!Array.isArray(L.recent)) L.recent=[];
+    // Firebase는 빈 {}·[]를 저장하지 않아 불러오면 사라진다(8살에 선택한 적이 없던 삶이 '화면 문제'로 멈춤) → 비어 있던 칸을 되살린다
+    for(const k of ['done','used','usedM','f','tr']) if(L[k]==null||typeof L[k]!=='object') L[k]={}; for(const k of ['hist','news','money','mem','jobs','kids']) if(!Array.isArray(L[k])) L[k]=L[k]&&typeof L[k]==='object'?Object.values(L[k]):[];
     if(!L.c){ L.c='KR'; L.f.elem=L.age>=7?1:0; L.f.sec=L.age>=13?1:0; }
     if(!COUNTRIES[L.c]) L.c='KR';
     if(!L.fam){ try{ initFamily(L,{sib:L.sib,dad:1,keep:1}); L.fam.sibs.forEach(s=>{ if(s.d<=L.age) s.born=1; }); L.refreshSib(); }catch(e){} }

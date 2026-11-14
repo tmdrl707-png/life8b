@@ -20,7 +20,7 @@ function openDev(){ const d=devEl(); d.hidden=false;
     $('devGo').onclick=go; $('devCode').onkeydown=e=>{ if(e.key==='Enter') go(); }; $('devX').onclick=()=>d.hidden=true; $('devCode').focus(); return; }
   const seg=(k,arr)=>`<div class="seg" data-k="${k}">${arr.map(([v,t])=>`<button data-v="${v}" class="${String(DEV[k])===String(v)?'on':''}">${t}</button>`).join('')}</div>`;
   d.innerHTML=`<div class="dbox"><h2>개발자 모드 <small class="note">나라와 시점을 골라 바로 확인 · 기록은 저장되지 않아요</small></h2>
-    <div class="drow"><label for="devC">나라</label><select id="devC">${$('tCountry').innerHTML}</select></div>
+    <div class="drow"><label for="devC">나라</label><select id="devC">${$('tCountry').innerHTML.replace(/<option value="\?"[^>]*>[^<]*<\/option>/,'')}</select></div>
     <div class="drow"><label>사는 곳</label>${seg('set',[['U','도시'],['R','농촌']])}</div>
     <div class="drow"><label>가정 형편</label>${seg('famI',[[0,'넉넉한'],[1,'보통'],[2,'어려운']])}</div>
     <div class="drow"><label>성별</label>${seg('sex',[[0,'남자'],[1,'여자']])}</div>

@@ -2847,6 +2847,8 @@ class Life{
     return this.relTag(String(s).replace(/\{(\w+)\}(을\(를\)|이\(가\)|은\(는\)|와\(과\)|\(으\)로|과\(와\)|를\(을\)|가\(이\)|는\(은\))?/g,(m,k,p)=>{ const w=map[k]; if(w==null) return m; if(!p) return w;
       const pair={'을(를)':['을','를'],'이(가)':['이','가'],'은(는)':['은','는'],'와(과)':['과','와'],'(으)로':['으로','로'],'과(와)':['과','와'],'를(을)':['을','를'],'가(이)':['이','가'],'는(은)':['은','는']}[p]; return josa(w,pair[0],pair[1]); }).split(C.fest+' 날').join(/(날|일)$/.test(C.fest)?C.fest:C.fest+' 날')); }
   static load(o){ const L=Object.assign(Object.create(Life.prototype),o); L.pending=null; if(!Array.isArray(L.recent)) L.recent=[];
+    // Firebase는 빈 {}·[]를 저장하지 않아 불러오면 사라진다(8살에 선택한 적이 없던 삶이 '화면 문제'로 멈춤) → 비어 있던 칸을 되살린다
+    for(const k of ['done','used','usedM','f','tr']) if(L[k]==null||typeof L[k]!=='object') L[k]={}; for(const k of ['hist','news','money','mem','jobs','kids']) if(!Array.isArray(L[k])) L[k]=L[k]&&typeof L[k]==='object'?Object.values(L[k]):[];
     if(!L.c){ L.c='KR'; L.f.elem=L.age>=7?1:0; L.f.sec=L.age>=13?1:0; }
     if(!COUNTRIES[L.c]) L.c='KR';
     if(!L.fam){ try{ initFamily(L,{sib:L.sib,dad:1,keep:1}); L.fam.sibs.forEach(s=>{ if(s.d<=L.age) s.born=1; }); L.refreshSib(); }catch(e){} }
@@ -7783,6 +7785,16 @@ Q(4,5,'*','mom','"오늘 날씨가 어떤지 창문으로 보고 알려 줄래?"
 Q(5,5,'*','dad','"아빠 신발 끈 묶는 거 한번 보여 줄게. 따라 해 볼래?"','table','끈을 엇갈려 당겨 매듭을 만든다.','삐뚤빼뚤하지만 내 손으로 묶었다. 뿌듯했다.','매듭이 자꾸 풀렸다. 몇 번을 다시 해 보았다.','t3 k1','K','t');
 Q(5,5,'*','mom','"엄마랑 비밀 이야기 하자. 오늘 제일 기뻤던 일은 뭐야?"','tv','오늘 있었던 일을 하나씩 떠올려 이야기한다.','기뻤던 일을 또박또박 말했다. 엄마가 꼭 안아 주셨다.','한참 생각하다 잊어버렸다. 엄마가 웃으며 기다려 주셨다.','r3 j2','K','r');
 Q(5,5,'*','gran','"할머니 안경이 어디 갔을까? 같이 찾아봐 줄래?"','desk','방 안을 구석구석 살펴본다.','이불 밑에서 안경을 찾아냈다! 할머니가 고맙다고 하셨다.','한참 찾았지만 못 찾았다. 할머니 머리 위에 있었다.','e2 r2 k1','K','e');
+
+/* 행복 계산: 능력치를 '그 나이에 이를 수 있는 최고점'과의 비율로 본다 (11-14 선생님 요청)
+   - 어린 때는 지식·기술·경험 숫자가 작아 행복이 지나치게 낮게 나왔다. 그 나이에 도달 가능한 값(SIX_MAX)에 견준 비율을 행복에 쓴다.
+   - 위쪽 동그라미(능력치 표시)는 예전 그대로 '양'(s.h·s.r·s.e·s.k·s.t)이다. 행복 쪽 값(joyComps)만 바뀐다. */
+const SIX_MAX={h:[[0,92],[90,92]],r:[[0,40],[2,50],[7,68],[13,82],[19,90],[90,92]],e:[[0,6],[4,14],[7,28],[13,50],[19,72],[30,88],[90,95]],k:[[0,8],[7,22],[13,48],[19,72],[30,90],[90,96]],t:[[0,4],[10,16],[13,34],[19,68],[30,92],[90,96]]};
+function sixMax(k,a){ const T=SIX_MAX[k]; if(a<=T[0][0]) return T[0][1]; for(let i=1;i<T.length;i++){ const [a1,v1]=T[i]; if(a<=a1){ const [a0,v0]=T[i-1]; return v0+(v1-v0)*(a-a0)/(a1-a0); } } return T[T.length-1][1]; }
+const JOY_GAMMA=.9;   // 1이면 단순 비율, 낮을수록 낮은 비율을 덜 깎음 (자동으로 산 삶 평균 행복이 45~55점쯤이 되게 맞춤)
+const sixRatio=(L,k)=>100*Math.pow(clamp((L.s[k]||0)/sixMax(k,L.age),0,1),JOY_GAMMA);
+{ const _jc=Life.prototype.joyComps; Life.prototype.joyComps=function(){ const c=_jc.apply(this,arguments), a=this.age;
+    c.h=sixRatio(this,'h'); c.r=sixRatio(this,'r'); c.e=sixRatio(this,'e'); c.k=a<7?Math.max(sixRatio(this,'k'),55):sixRatio(this,'k'); c.t=a<10?Math.max(55,sixRatio(this,'t')):clamp(.6*sixRatio(this,'t')+.4*this.workSat(),0,100); return c; }; }
 </script>
 
 <!-- =====================================================================
@@ -7860,23 +7872,6 @@ Q(5,5,'*','gran','"할머니 안경이 어디 갔을까? 같이 찾아봐 줄래
     <h2>교사용 모드</h2>
     <div class="panel stack" id="tGate"><label class="field" for="tCode">입장 코드<input id="tCode" type="password" inputmode="numeric"></label><p class="err" id="tErr"></p><button class="btn primary" id="btnTCode">확인</button></div>
     <div id="tBody" class="stack" hidden>
-      <div class="panel stack" id="tRec">
-        <h3>내 체험 기록</h3>
-        <p class="small sub">교사용 모드에서 산 삶은 자동으로 저장됩니다. 이 기기에 남고, 로그인했다면 내 계정에도 저장되어 다른 기기에서 이어서 할 수 있습니다.</p>
-        <div id="tSaves"></div>
-        <b>마친 삶</b>
-        <ul class="lives" id="tLives"></ul>
-      </div>
-      <div class="panel stack" id="tIds">
-        <h3>학생 아이디 관리</h3>
-        <p class="small sub">학생은 따로 가입하지 않습니다. 처음 적은 아이디와 비밀번호가 그대로 계정이 되고, 다음부터는 그 비밀번호를 확인합니다. 여기서 아이디 목록을 보고, 비밀번호를 잊은 학생의 비밀번호를 초기화(다음 로그인 때 새로 정함)하거나, 아이디를 지우거나, 미리 등록할 수 있습니다.</p>
-        <div class="row"><input type="text" id="tIdFilter" placeholder="아이디 찾기" autocapitalize="off"><button class="btn ghost" id="btnTIdReload">새로 불러오기</button></div>
-        <div id="tIdList"><p class="small sub">불러오는 중…</p></div>
-        <details><summary>아이디 미리 등록 · 등록된 아이디만 쓰게 하기</summary>
-          <div class="stack-s" style="margin-top:8px"><textarea id="tIdAdd" rows="4" placeholder="한 줄에 아이디 하나씩 (2~10자)"></textarea><div class="row"><button class="btn" id="btnTIdAdd">등록하기</button></div>
-          <label class="row small"><input type="checkbox" id="tIdClosed"> 등록된 아이디만 로그인할 수 있게 하기 (새 아이디 만들기 막기)</label></div></details>
-        <p class="small" id="tIdMsg" role="status"></p>
-      </div>
       <div class="panel stack">
         <h3>학급 방 운영</h3>
         <p class="small sub">방을 열면 그 반 학생들은 모두 같은 나이로 움직입니다. '다음 해로'를 누르거나 자동으로 흐르게 하면 반 전체가 함께 다음 해로 넘어갑니다. 멈춰 둔 동안에도 학생들은 그 해 안에서 계속 살 수 있습니다.</p>
@@ -7897,25 +7892,16 @@ Q(5,5,'*','gran','"할머니 안경이 어디 갔을까? 같이 찾아봐 줄래
           <h3>들어온 학생</h3><ul class="lives" id="rMembers"></ul>
         </div>
       </div>
-      <div class="panel stack">
-        <h3>학생과 똑같이 체험하기</h3>
-        <p class="small sub">학생과 같은 방식으로, 어느 나라 어떤 가정에 태어날지 모른 채 태어나 이름을 짓고 삶을 시작합니다. 작은 선택, 큰 사건, 미션, 갈림길, 마지막 장면까지 모두 같습니다.</p>
-        <div class="stack-s"><b>시간</b><div class="seg" id="tLikeSeg"><button data-v="solo" class="on">혼자 내 속도로 (한 해 60초)</button><button data-v="room">열어 둔 방과 같은 시간으로</button></div><p class="small sub" id="tLikeNote"></p></div>
-        <p class="err" id="tLikeErr"></p>
-        <div class="row"><button class="btn primary" id="btnTLike">무작위로 태어나기</button></div>
-        <p class="small sub">교사용 모드의 삶은 위의 '내 체험 기록'에 저장되며, 학생 명단에는 올라가지 않습니다.</p>
-      </div>
-      <div class="panel stack" id="tForm">
-        <h3>삶을 골라서 체험하기</h3>
-        <label class="field" for="tCountry">나라 <span class="sub small" style="font-weight:400">세계 193개 나라 가운데 고르기</span><select id="tCountry"></select></label>
-        <div class="stack-s"><b>사는 곳</b><div class="seg" data-k="set"><button data-v="U" class="on">도시</button><button data-v="R">농촌</button></div></div>
-        <div class="stack-s"><b>가정 형편</b><div class="seg" data-k="famI"><button data-v="0">넉넉한 가정</button><button data-v="1" class="on">보통 가정</button><button data-v="2">어려운 가정</button></div></div>
-        <div class="stack-s"><b>성별</b><div class="seg" data-k="sex"><button data-v="0" class="on">남자</button><button data-v="1">여자</button></div></div>
-        <div class="stack-s"><b>함께 사는 가족</b><div class="seg" data-k="home"><button data-v="11" class="on">할머니·동생</button><button data-v="10">할머니</button><button data-v="01">동생</button><button data-v="00">부모님만</button></div></div>
-        <div class="stack-s"><b>시작 나이</b><span class="small sub">그 나이까지의 삶은 자동으로 채워집니다.</span><div class="seg" data-k="age"><button data-v="0" class="on">0세</button><button data-v="6">6세</button><button data-v="13">13세</button><button data-v="19">19세</button><button data-v="37">37세</button><button data-v="61">61세</button><button data-v="79">79세</button></div></div>
-        <div class="stack-s"><b>시간의 빠르기</b><div class="seg" data-k="sec"><button data-v="8">시연 8초</button><button data-v="20">20초</button><button data-v="35">35초</button><button data-v="60" class="on">1분</button><button data-v="120">2분</button><button data-v="300">5분</button><button data-v="600">10분</button><button data-v="1800">30분</button><button data-v="3600">1시간</button></div><p class="small sub">한 해(어른은 두 해)의 길이예요. 100살까지 1분이면 1시간, 1시간이면 60시간이 걸려요.</p></div>
-        <button class="btn primary" id="btnTStart">이 삶으로 시작하기</button>
-        <p class="small sub">이 삶도 '내 체험 기록'에 저장되어 이어서 할 수 있습니다.</p>
+      <div class="panel stack" id="tExp">
+        <h3>체험하기 <span class="small sub">· 선생님이 직접 해 보기</span></h3>
+        <p class="small sub">나라를 '무작위'로 두고 0세로 시작하면 학생과 똑같이 태어나 이름을 짓고 시작합니다.</p>
+        <label class="field" for="tCountry">나라<select id="tCountry"></select></label>
+        <div class="stack-s"><b>시작 나이</b><div class="seg" data-k="age"><button data-v="0" class="on">0세</button><button data-v="6">6세</button><button data-v="13">13세</button><button data-v="19">19세</button><button data-v="37">37세</button><button data-v="61">61세</button></div><span class="small sub">그 나이까지의 삶은 자동으로 채워집니다.</span></div>
+        <div class="stack-s"><b>시간</b><div class="seg" data-k="time"><button data-v="solo" class="on">내 속도로</button><button data-v="room">열어 둔 방과 같은 시간으로</button></div>
+          <div class="seg" data-k="sec" id="tSecSeg"><button data-v="20">한 해 20초</button><button data-v="60" class="on">1분</button><button data-v="180">3분</button></div><p class="small sub" id="tExpNote"></p></div>
+        <p class="err" id="tExpErr"></p>
+        <div class="row"><button class="btn primary" id="btnTExp">체험 시작</button><button class="btn" id="btnTCont" hidden>이어서 살기</button></div>
+        <p class="small sub">저장된 체험 기록과 학생 아이디 관리는 첫 화면의 '개발자 모드'에 있습니다.</p>
       </div>
     </div>
     <button class="btn ghost" id="btnTBack">돌아가기</button>
@@ -7950,6 +7936,27 @@ Q(5,5,'*','gran','"할머니 안경이 어디 갔을까? 같이 찾아봐 줄래
   <div id="hWait" class="gbox" hidden></div>
   <div id="sheet" hidden><div class="box gbox" id="sheetBox"></div></div>
 </section>
+
+<!-- 개발자 모드의 기록·아이디 관리(교사용 화면에서 옮김. 개발자 창이 열릴 때 그 안으로 들어감) -->
+<div id="devRecHome" hidden>
+      <div class="panel stack" id="tRec">
+        <h3>내 체험 기록</h3>
+        <p class="small sub">교사용 모드에서 산 삶은 자동으로 저장됩니다. 이 기기에 남고, 로그인했다면 내 계정에도 저장되어 다른 기기에서 이어서 할 수 있습니다.</p>
+        <div id="tSaves"></div>
+        <b>마친 삶</b>
+        <ul class="lives" id="tLives"></ul>
+      </div>
+      <div class="panel stack" id="tIds">
+        <h3>학생 아이디 관리</h3>
+        <p class="small sub">학생은 따로 가입하지 않습니다. 처음 적은 아이디와 비밀번호가 그대로 계정이 되고, 다음부터는 그 비밀번호를 확인합니다. 여기서 아이디 목록을 보고, 비밀번호를 잊은 학생의 비밀번호를 초기화(다음 로그인 때 새로 정함)하거나, 아이디를 지우거나, 미리 등록할 수 있습니다.</p>
+        <div class="row"><input type="text" id="tIdFilter" placeholder="아이디 찾기" autocapitalize="off"><button class="btn ghost" id="btnTIdReload">새로 불러오기</button></div>
+        <div id="tIdList"><p class="small sub">불러오는 중…</p></div>
+        <details><summary>아이디 미리 등록 · 등록된 아이디만 쓰게 하기</summary>
+          <div class="stack-s" style="margin-top:8px"><textarea id="tIdAdd" rows="4" placeholder="한 줄에 아이디 하나씩 (2~10자)"></textarea><div class="row"><button class="btn" id="btnTIdAdd">등록하기</button></div>
+          <label class="row small"><input type="checkbox" id="tIdClosed"> 등록된 아이디만 로그인할 수 있게 하기 (새 아이디 만들기 막기)</label></div></details>
+        <p class="small" id="tIdMsg" role="status"></p>
+      </div>
+</div>
 
 <!-- 마지막 장면 -->
 <section id="s-end" hidden><div class="in" id="endIn"></div></section>
@@ -8084,7 +8091,7 @@ async function renderTRec(){ $('tSaves').innerHTML='<p class="small sub">기록�
   $('tSaves').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const id=b.dataset.go, s=d.saves[id]; if(!s) return; G.teacher=true; G.tid=id; G.sec=s.sec||60; G.troom=s.room&&TR.code===s.room?s.room:null; G.life=Life.load(s.dump); startGame(); });
   $('tSaves').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ if(b.dataset.armed!=='1'){ b.dataset.armed='1'; b.textContent='정말 지울까요?'; return; } delete d.saves[b.dataset.del]; TStore.save(true,b.dataset.del); renderTRec(); });
   $('tLives').querySelectorAll('[data-ldel]').forEach(b=>b.onclick=()=>{ if(b.dataset.armed!=='1'){ b.dataset.armed='1'; b.textContent='정말 지울까요?'; return; } const l=lv[+b.dataset.ldel]; d.lives=d.lives.filter(x=>x!==l); TStore.save(true,'lives'); renderTRec(); }); }
-function openTeacherBody(){ $('tGate').hidden=true; $('tBody').hidden=false; show('teacher'); renderTRoom(); renderTRec(); renderTIds(true); }
+function openTeacherBody(){ $('tGate').hidden=true; $('tBody').hidden=false; show('teacher'); renderTRoom(); TStore.load().then(d=>{ const s=Object.entries(d.saves).sort((a,b)=>b[1].t-a[1].t)[0], c=$('btnTCont'); if(c){ c.hidden=!s; c.onclick=()=>{ if(!s) return; G.teacher=true; G.tid=s[0]; G.sec=s[1].sec||60; G.troom=s[1].room&&TR.code===s[1].room?s[1].room:null; G.life=Life.load(s[1].dump); startGame(); }; } }); }
 // 학생 아이디 관리
 const TI={list:[],loaded:0};
 async function renderTIds(reload){ const box=$('tIdList'); if(!box) return;
@@ -8227,7 +8234,7 @@ $('btnLive').onclick=()=>{ const L=G.life; L.setGiven($('bName').value.trim()||L
 function birthFit(){ const t=$('bTitle'); if(!t) return; const go=()=>{ t.style.fontSize=''; let fs=parseFloat(getComputedStyle(t).fontSize)||40; for(let i=0;i<30&&t.scrollWidth>t.clientWidth+1&&fs>14;i++){ fs-=2; t.style.fontSize=fs+'px'; } }; go(); setTimeout(go,300); setTimeout(go,1200); }
 addEventListener('resize',()=>{ try{ if(!$('s-birth').hidden) birthFit(); }catch(e){} });
 /* ========== 교사용 모드: 학급 방 운영 + 삶 골라 체험 ========== */
-const TSEL={c:'KR',set:'U',famI:'1',sex:'0',home:'11',age:'0',sec:'60'};
+const TSEL={c:'?'};
 $('btnTeacher').onclick=()=>openTeacher(); $('btnTeacher2').onclick=()=>openTeacher();
 function openTeacher(){ if(G.tok) return openTeacherBody(); $('tGate').hidden=false; $('tBody').hidden=true; $('tCode').value=''; $('tErr').textContent=''; show('teacher'); }
 $('btnTBack').onclick=()=>{ G.teacher=false; G.troom=null; if(Store.sess&&G.data) openHub(); else show('login'); };
@@ -8235,13 +8242,17 @@ $('btnTCode').onclick=()=>{ if($('tCode').value===CFG.TEACHER_CODE){ G.tok=1; op
 // 교사용 나라 고르기: 지역별로 묶은 193개 나라
 (function(){ const sel=$('tCountry'), byR={}; CKEYS.forEach(k=>{ const c=COUNTRIES[k]; (byR[c.rg]=byR[c.rg]||[]).push(k); });
   sel.innerHTML=Object.keys(REGIONS).map(r=>`<optgroup label="${REGIONS[r].n}">${(byR[r]||[]).sort((a,b)=>COUNTRIES[a].n.localeCompare(COUNTRIES[b].n,'ko')).map(k=>`<option value="${k}"${k==='KR'?' selected':''}>${COUNTRIES[k].n}</option>`).join('')}</optgroup>`).join('');
-  sel.onchange=()=>{ TSEL.c=sel.value; }; })();
-$('tForm').addEventListener('click',e=>{ const b=e.target.closest('.seg button'); if(!b) return; const seg=b.parentElement; TSEL[seg.dataset.k]=b.dataset.v; [...seg.children].forEach(x=>x.classList.toggle('on',x===b)); });
-$('btnTStart').onclick=()=>{ G.teacher=true; G.troom=null; G.tid=tNewId(); G.sec=+TSEL.sec; const L=new Life({c:TSEL.c,set:TSEL.set,famI:+TSEL.famI,sex:+TSEL.sex,gran:TSEL.home[0]==='1',sib:TSEL.home[1]==='1'}); if(+TSEL.age>0){ let tries=0, X=L; while(tries++<40){ X=new Life({c:TSEL.c,set:TSEL.set,famI:+TSEL.famI,sex:+TSEL.sex,gran:TSEL.home[0]==='1',sib:TSEL.home[1]==='1'}).runAuto(+TSEL.age); if(!X.dead) break; } X.dead=false; G.life=X; startGame(); return; } G.life=L; startGame(); };
-// 학생과 똑같이: 무작위 출생 → 이름 짓기 → 같은 흐름. 방을 열어 두었다면 그 방의 시간에 맞출 수 있다
-let tLike='solo';
-$('tLikeSeg').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; tLike=b.dataset.v; [...$('tLikeSeg').children].forEach(x=>x.classList.toggle('on',x===b)); $('tLikeErr').textContent=''; $('tLikeNote').textContent=tLike==='room'?(TR.code?`${TR.code} 방의 시간에 맞춰 삽니다. 방의 나이가 앞서 있으면 그 나이까지 빠르게 따라갑니다.`:'먼저 위에서 방을 열어 주세요.'):''; };
-$('btnTLike').onclick=()=>{ if(tLike==='room'&&!TR.code){ $('tLikeErr').textContent='먼저 위에서 방을 열어 주세요.'; return; } G.teacher=true; G.tid=tNewId(); G.troom=tLike==='room'?TR.code:null; birth(); };
+  })();
+// 체험하기(선생님이 직접 해 보기): 나라(무작위 가능)·시작 나이·시간만 고른다
+const TEXP={age:'0',time:'solo',sec:'60'};
+(function(){ const sel=$('tCountry'); if(sel&&!sel.querySelector('option[value="?"]')){ sel.insertAdjacentHTML('afterbegin','<option value="?">무작위 (학생처럼)</option>'); sel.value='?'; TSEL.c='?'; } })();
+function tExpSync(){ const room=TEXP.time==='room'; $('tSecSeg').hidden=room; $('tExpNote').textContent=room?(TR.code?`${TR.code} 방의 시간에 맞춰 삽니다. 방의 나이가 앞서 있으면 그 나이까지 빠르게 따라갑니다.`:'먼저 위에서 방을 열어 주세요.'):''; $('tExpErr').textContent=''; }
+$('tExp').addEventListener('click',e=>{ const b=e.target.closest('.seg button'); if(!b) return; const seg=b.parentElement; TEXP[seg.dataset.k]=b.dataset.v; [...seg.children].forEach(x=>x.classList.toggle('on',x===b)); tExpSync(); });
+$('btnTExp').onclick=()=>{ const room=TEXP.time==='room'; if(room&&!TR.code){ $('tExpErr').textContent='먼저 위에서 방을 열어 주세요.'; return; }
+  const rnd=$('tCountry').value==='?', age=+TEXP.age; G.teacher=true; G.tid=tNewId(); G.troom=room?TR.code:null;
+  if(rnd&&age===0){ birth(); return; }   // 학생과 똑같이: 무작위 출생 → 이름 짓기
+  G.sec=room?60:+TEXP.sec; const mk=()=>new Life(rnd?undefined:{c:$('tCountry').value,set:'U',famI:1,sex:0});
+  let X=mk(); if(age>0){ for(let i=0;i<40;i++){ X=mk().runAuto(age); if(!X.dead) break; } X.dead=false; } G.life=X; startGame(); };
 $('btnROpen').onclick=async()=>{
   const c=cleanCode($('rCode').value); $('rErr').textContent='';
   if(!c){ $('rErr').textContent='방 코드를 적어 주세요. (예: 2-3)'; return; }
@@ -11225,7 +11236,7 @@ function openDev(){ const d=devEl(); d.hidden=false;
     $('devGo').onclick=go; $('devCode').onkeydown=e=>{ if(e.key==='Enter') go(); }; $('devX').onclick=()=>d.hidden=true; $('devCode').focus(); return; }
   const seg=(k,arr)=>`<div class="seg" data-k="${k}">${arr.map(([v,t])=>`<button data-v="${v}" class="${String(DEV[k])===String(v)?'on':''}">${t}</button>`).join('')}</div>`;
   d.innerHTML=`<div class="dbox"><h2>개발자 모드 <small class="note">나라와 시점을 골라 바로 확인 · 기록은 저장되지 않아요</small></h2>
-    <div class="drow"><label for="devC">나라</label><select id="devC">${$('tCountry').innerHTML}</select></div>
+    <div class="drow"><label for="devC">나라</label><select id="devC">${$('tCountry').innerHTML.replace(/<option value="\?"[^>]*>[^<]*<\/option>/,'')}</select></div>
     <div class="drow"><label>사는 곳</label>${seg('set',[['U','도시'],['R','농촌']])}</div>
     <div class="drow"><label>가정 형편</label>${seg('famI',[[0,'넉넉한'],[1,'보통'],[2,'어려운']])}</div>
     <div class="drow"><label>성별</label>${seg('sex',[[0,'남자'],[1,'여자']])}</div>
@@ -13135,6 +13146,80 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
   addEventListener('resize',()=>setTimeout(placeToasts,60)); setInterval(()=>{ try{ placeToasts(); }catch(e){} },700);
   { const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ placeToasts(); }catch(e){} return r; }; }
   window.HUB={open:()=>setOpen(true),close:()=>setOpen(false),settings:openP};
+})();
+/* 82-devrec: 개발자 모드에 '기록·아이디' 탭 (11-14 선생님 요청)
+   - 교사용 화면에 있던 '내 체험 기록'(#tRec)·'학생 아이디 관리'(#tIds)를 개발자 창으로 옮겼다. 창을 열 때 그 안으로 들어오고, 다시 그릴 때는 #devRecHome으로 돌려놓는다.
+   - 저장된 삶을 자세히 본다(lifeNowHTML: 이름·나이·나라·사는 곳·형편·여섯 능력치·행복·돈·직업·최근 기억), 지금 삶·쉬는 삶·마친 삶을 하나씩 지울 수 있다.
+   - 학생 아이디: 비밀번호 초기화·아이디 지우기·미리 등록·등록 전용은 예전 그대로(ui/02). */
+(function(){
+  const css=document.createElement('style'); css.textContent=`
+#devP .dtabs{display:flex;gap:6px;border-bottom:2px solid #E3DCCB;margin:-2px 0 4px}
+#devP .dtabs button{border:0;background:none;font:700 15px inherit;padding:8px 14px;color:#7A6F55;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer}
+#devP .dtabs button.on{color:#1E2B37;border-bottom-color:#E2703A}
+#devP .panel{border:1.5px solid #E3DCCB;border-radius:12px;padding:12px;background:#fff;display:flex;flex-direction:column;gap:8px}
+#devP .panel h3{margin:0}#devP .lives{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#devP .lives li{border:1px solid #E3DCCB;border-radius:10px;padding:8px 10px;background:#FBFAF6}
+#devP .small{font-size:.85rem}#devP .sub{color:#5A6A78}
+#devP .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#devP .btn{font:inherit;font-size:.88rem;padding:6px 12px;border-radius:8px;border:1.5px solid #8A94A0;background:#fff;color:#1E2B37;cursor:pointer}
+#devP .btn.primary{background:#2B5FB8;border-color:#2B5FB8;color:#fff}#devP .btn.ghost{background:transparent}
+#devP .btn.danger{border-color:#C2405A;color:#B03030}
+#devP .idrow{display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;align-items:center}#devP .idrow .btns{display:flex;gap:6px;flex-wrap:wrap}
+#devP input[type=text],#devP textarea{font:inherit;padding:6px 10px;border-radius:8px;border:1.5px solid #C9C2B2;width:100%;box-sizing:border-box}
+#devP .nowL{border-left:4px solid #2B5FB8;padding:6px 10px;background:#F2F6FD;border-radius:0 10px 10px 0;margin:6px 0}
+#devP .nowL h5{margin:0 0 4px;font-size:.95rem}
+#devP .six{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:4px 10px;margin:4px 0}
+#devP .six div{font-size:.84rem}#devP .six i{display:block;height:7px;border-radius:4px;background:#DDE3EC;margin-top:2px;overflow:hidden}#devP .six i b{display:block;height:100%;background:#4C9BFF}
+#devP .six .lk{opacity:.5}
+#devP ol.mm{margin:4px 0 0 18px;padding:0;font-size:.82rem;color:#3A4250}`;
+  document.head.appendChild(css);
+  const when=t=>{ if(!t) return ''; const x=new Date(t); return `${x.getMonth()+1}/${x.getDate()} ${String(x.getHours()).padStart(2,'0')}:${String(x.getMinutes()).padStart(2,'0')}`; };
+  // ---- 저장된 삶 하나를 자세히 ----
+  window.lifeNowHTML=function(dump){ let L; try{ L=Life.load(dump); }catch(e){ return '<p class="small sub">이 삶을 읽지 못했어요.</p>'; }
+    try{ const C=L.C||{}, f=L.f||{}, v=L.sixNow(), job=(()=>{ try{ const j=L.job; return j&&(j.n||j.name)||''; }catch(e){ return ''; } })();
+      const bars=SIX.map(k=>{ const open=L.sixOpen(k), n=Math.round(clamp(v[k]||0,0,100)); return `<div class="${open?'':'lk'}">${SIX_N[k]} <b>${open?n:'—'}</b>${open?'':` <span class="sub">(${SIX_AGE[k]}살에 열림)</span>`}<i><b style="width:${open?n:0}%"></b></i></div>`; }).join('');
+      const mem=(L.mem||[]).slice(-6).map(m=>`<li>${m.a!=null?m.a+'살 · ':''}${esc(String(m.t||'').slice(0,90))}</li>`).join('');
+      const fam=(FAM[L.famI]||{}).n||'';
+      return `<div class="nowL"><h5>${esc(L.name)} · ${L.dead?(L.lifespan||L.age):L.age}세${L.dead?' (마침)':''}</h5>
+        <p class="small">${esc(C.n||'')} ${SETN[L.set]||''} · ${esc(fam)} · ${L.sex?'여자':'남자'} · 선택 ${L.n||0}번${job?' · 일: '+esc(job):''}${f.retired?' · 은퇴':''}</p>
+        <div class="six">${bars}</div>
+        <p class="small">행복 <b>${Math.round((L.s&&L.s.j)||0)}</b> · 가진 돈 <b>${fmtWon(L.cash||0)}</b>${L.house?' · 집 '+fmtWon(L.house):''}${L.sick?' · 아픔':''}</p>
+        ${mem?`<details><summary class="small">최근 기억 ${Math.min(6,(L.mem||[]).length)}개</summary><ol class="mm">${mem}</ol></details>`:''}</div>`; }catch(e){ return '<p class="small sub">자세히 보지 못했어요.</p>'; } };
+  // ---- 학생 계정의 일부를 지우기 ----
+  Store.adminPatch=async function(o,path,val){ if(this.fb){ await this.db('PUT','users/'+o.key+'/'+path,val===undefined?null:val); }
+    else{ const a=ls('life8b_acc_'+o.id)||{}, d=a.data=a.data||{}, p=path.split('/'), k=p.pop(); let t=d; for(const x of p){ if(t[x]==null||typeof t[x]!=='object') return; t=t[x]; } if(val==null) delete t[k]; else t[k]=val; ls('life8b_acc_'+o.id,a); }
+    ls('life8b_cache_'+o.id,null); };
+  const arm=(b,txt)=>{ if(b.dataset.armed!=='1'){ b.dataset.armed='1'; b.dataset.t0=b.textContent; b.textContent=txt||'정말 지울까요?'; setTimeout(()=>{ if(b.isConnected&&b.dataset.armed==='1'){ b.dataset.armed='0'; b.textContent=b.dataset.t0; } },4000); return false; } return true; };
+  // ---- 학생 계정 기록 보기 (자세히 + 하나씩 지우기) ----
+  async function showUser(o,bx){ bx.hidden=false; bx.innerHTML='<p class="small sub">불러오는 중…</p>';
+    let d; try{ d=await Store.adminUser(o); }catch(e){ bx.innerHTML=`<p class="err">${esc(Store.msg(e))}</p>`; return; } d=d||{};
+    const lv=(d.lives||[]).map((l,i)=>({l,i})).reverse(), slots=Object.entries(d.slots||{});
+    bx.innerHTML=`<p class="small sub">마지막 저장 ${when(d.t)||'—'}${d.room?' · 학급 방 '+esc(d.room):''}</p>
+      <b class="small">지금 살고 있는 삶</b>${d.save?lifeNowHTML(d.save)+'<div class="row"><button class="btn danger" data-dsave>이 삶 지우기</button></div>':'<p class="small sub">없습니다.</p>'}
+      ${slots.length?`<b class="small">쉬고 있는 삶 ${slots.length}개</b>${slots.map(([id,s])=>`${lifeNowHTML(s.d||s)}<div class="row"><button class="btn danger" data-dslot="${esc(id)}">이 삶 지우기</button></div>`).join('')}`:''}
+      <b class="small">마친 삶 ${lv.length}개</b>${lv.length?`<ul class="lives">${lv.map(({l,i})=>`<li><details><summary>${lifeSummaryHTML(l)}</summary>${lifeDetailHTML(l)}<div class="row" style="margin-top:6px"><button class="btn danger" data-dlive="${i}">이 기록 지우기</button></div></details></li>`).join('')}</ul>`:'<p class="small sub">없습니다.</p>'}`;
+    const redo=()=>showUser(o,bx), run=async(f)=>{ try{ await f(); }catch(e){ bx.insertAdjacentHTML('afterbegin',`<p class="err">${esc(Store.msg(e))}</p>`); return; } redo(); };
+    const s1=bx.querySelector('[data-dsave]'); if(s1) s1.onclick=()=>{ if(arm(s1)) run(()=>Store.adminPatch(o,'save',null)); };
+    bx.querySelectorAll('[data-dslot]').forEach(b=>b.onclick=()=>{ if(arm(b)) run(()=>Store.adminPatch(o,'slots/'+b.dataset.dslot,null)); });
+    bx.querySelectorAll('[data-dlive]').forEach(b=>b.onclick=()=>{ if(arm(b)){ const i=+b.dataset.dlive; run(()=>Store.adminPatch(o,'lives',(d.lives||[]).filter((_,k)=>k!==i))); } }); }
+  // renderTIds가 그린 뒤 '기록 보기'를 자세히 보기로 바꾼다
+  { const _r=renderTIds; renderTIds=async function(){ const r=await _r.apply(this,arguments); try{ const box=$('tIdList'); box.querySelectorAll('[data-iv]').forEach(b=>b.onclick=()=>{ const o=TI.list.find(x=>x.id===b.dataset.iv), bx=box.querySelector(`[data-ibox="${CSS.escape(o.id)}"]`); if(!bx) return; if(!bx.hidden){ bx.hidden=true; return; } showUser(o,bx); }); }catch(e){} return r; }; }
+  // 내 체험 기록에도 자세히 보기
+  { const _t=renderTRec; renderTRec=async function(){ const r=await _t.apply(this,arguments); try{ const d=TStore.data; $('tSaves').querySelectorAll('li').forEach(li=>{ const g=li.querySelector('[data-go]'); if(!g||!d.saves[g.dataset.go]||li.querySelector('.nowL')) return; li.insertAdjacentHTML('beforeend',`<details><summary class="small">자세히 보기</summary>${lifeNowHTML(d.saves[g.dataset.go].dump)}</details>`); }); }catch(e){} return r; }; }
+  // ---- 개발자 창에 탭 ----
+  let tab='play';
+  const home=()=>$('devRecHome');
+  const stash=()=>{ const h=home(); ['tRec','tIds'].forEach(id=>{ const e=$(id); if(e&&h&&e.parentElement!==h) h.appendChild(e); }); };
+  const _od=openDev;
+  openDev=function(){ stash(); _od.apply(this,arguments); if(!G.tok) return; const d=$('devP'), box=d.querySelector('.dbox'); if(!box) return;
+    const h2=box.querySelector('h2'), tabs=document.createElement('div'); tabs.className='dtabs';
+    tabs.innerHTML=`<button data-t="play" class="${tab==='play'?'on':''}">체험</button><button data-t="rec" class="${tab==='rec'?'on':''}">기록·아이디</button>`; h2.insertAdjacentElement('afterend',tabs);
+    tabs.onclick=e=>{ const b=e.target.closest('button'); if(!b) return; tab=b.dataset.t; openDev(); };
+    if(tab==='rec'){ [...box.children].forEach(c=>{ if(c===h2||c===tabs||c.querySelector('#devX')) return; c.style.display='none'; }); h2.innerHTML='개발자 모드 <small class="note">저장된 기록과 아이디 · 자세히 보기와 지우기</small>';
+      const wrap=document.createElement('div'); wrap.style.cssText='display:flex;flex-direction:column;gap:12px'; wrap.appendChild($('tRec')); wrap.appendChild($('tIds')); tabs.insertAdjacentElement('afterend',wrap);
+      const r=$('tRec'); r.querySelector('h3').textContent='선생님 체험 기록 (교사용 모드에서 한 체험)'; renderTRec(); renderTIds(true);
+      wrap.addEventListener('click',e=>{ if(e.target.closest('[data-go]')) setTimeout(()=>{ if(G.life&&G.running) d.hidden=true; },50); }); }
+  };
 })();
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->

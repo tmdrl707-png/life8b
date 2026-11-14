@@ -74,23 +74,6 @@
     <h2>교사용 모드</h2>
     <div class="panel stack" id="tGate"><label class="field" for="tCode">입장 코드<input id="tCode" type="password" inputmode="numeric"></label><p class="err" id="tErr"></p><button class="btn primary" id="btnTCode">확인</button></div>
     <div id="tBody" class="stack" hidden>
-      <div class="panel stack" id="tRec">
-        <h3>내 체험 기록</h3>
-        <p class="small sub">교사용 모드에서 산 삶은 자동으로 저장됩니다. 이 기기에 남고, 로그인했다면 내 계정에도 저장되어 다른 기기에서 이어서 할 수 있습니다.</p>
-        <div id="tSaves"></div>
-        <b>마친 삶</b>
-        <ul class="lives" id="tLives"></ul>
-      </div>
-      <div class="panel stack" id="tIds">
-        <h3>학생 아이디 관리</h3>
-        <p class="small sub">학생은 따로 가입하지 않습니다. 처음 적은 아이디와 비밀번호가 그대로 계정이 되고, 다음부터는 그 비밀번호를 확인합니다. 여기서 아이디 목록을 보고, 비밀번호를 잊은 학생의 비밀번호를 초기화(다음 로그인 때 새로 정함)하거나, 아이디를 지우거나, 미리 등록할 수 있습니다.</p>
-        <div class="row"><input type="text" id="tIdFilter" placeholder="아이디 찾기" autocapitalize="off"><button class="btn ghost" id="btnTIdReload">새로 불러오기</button></div>
-        <div id="tIdList"><p class="small sub">불러오는 중…</p></div>
-        <details><summary>아이디 미리 등록 · 등록된 아이디만 쓰게 하기</summary>
-          <div class="stack-s" style="margin-top:8px"><textarea id="tIdAdd" rows="4" placeholder="한 줄에 아이디 하나씩 (2~10자)"></textarea><div class="row"><button class="btn" id="btnTIdAdd">등록하기</button></div>
-          <label class="row small"><input type="checkbox" id="tIdClosed"> 등록된 아이디만 로그인할 수 있게 하기 (새 아이디 만들기 막기)</label></div></details>
-        <p class="small" id="tIdMsg" role="status"></p>
-      </div>
       <div class="panel stack">
         <h3>학급 방 운영</h3>
         <p class="small sub">방을 열면 그 반 학생들은 모두 같은 나이로 움직입니다. '다음 해로'를 누르거나 자동으로 흐르게 하면 반 전체가 함께 다음 해로 넘어갑니다. 멈춰 둔 동안에도 학생들은 그 해 안에서 계속 살 수 있습니다.</p>
@@ -111,25 +94,16 @@
           <h3>들어온 학생</h3><ul class="lives" id="rMembers"></ul>
         </div>
       </div>
-      <div class="panel stack">
-        <h3>학생과 똑같이 체험하기</h3>
-        <p class="small sub">학생과 같은 방식으로, 어느 나라 어떤 가정에 태어날지 모른 채 태어나 이름을 짓고 삶을 시작합니다. 작은 선택, 큰 사건, 미션, 갈림길, 마지막 장면까지 모두 같습니다.</p>
-        <div class="stack-s"><b>시간</b><div class="seg" id="tLikeSeg"><button data-v="solo" class="on">혼자 내 속도로 (한 해 60초)</button><button data-v="room">열어 둔 방과 같은 시간으로</button></div><p class="small sub" id="tLikeNote"></p></div>
-        <p class="err" id="tLikeErr"></p>
-        <div class="row"><button class="btn primary" id="btnTLike">무작위로 태어나기</button></div>
-        <p class="small sub">교사용 모드의 삶은 위의 '내 체험 기록'에 저장되며, 학생 명단에는 올라가지 않습니다.</p>
-      </div>
-      <div class="panel stack" id="tForm">
-        <h3>삶을 골라서 체험하기</h3>
-        <label class="field" for="tCountry">나라 <span class="sub small" style="font-weight:400">세계 193개 나라 가운데 고르기</span><select id="tCountry"></select></label>
-        <div class="stack-s"><b>사는 곳</b><div class="seg" data-k="set"><button data-v="U" class="on">도시</button><button data-v="R">농촌</button></div></div>
-        <div class="stack-s"><b>가정 형편</b><div class="seg" data-k="famI"><button data-v="0">넉넉한 가정</button><button data-v="1" class="on">보통 가정</button><button data-v="2">어려운 가정</button></div></div>
-        <div class="stack-s"><b>성별</b><div class="seg" data-k="sex"><button data-v="0" class="on">남자</button><button data-v="1">여자</button></div></div>
-        <div class="stack-s"><b>함께 사는 가족</b><div class="seg" data-k="home"><button data-v="11" class="on">할머니·동생</button><button data-v="10">할머니</button><button data-v="01">동생</button><button data-v="00">부모님만</button></div></div>
-        <div class="stack-s"><b>시작 나이</b><span class="small sub">그 나이까지의 삶은 자동으로 채워집니다.</span><div class="seg" data-k="age"><button data-v="0" class="on">0세</button><button data-v="6">6세</button><button data-v="13">13세</button><button data-v="19">19세</button><button data-v="37">37세</button><button data-v="61">61세</button><button data-v="79">79세</button></div></div>
-        <div class="stack-s"><b>시간의 빠르기</b><div class="seg" data-k="sec"><button data-v="8">시연 8초</button><button data-v="20">20초</button><button data-v="35">35초</button><button data-v="60" class="on">1분</button><button data-v="120">2분</button><button data-v="300">5분</button><button data-v="600">10분</button><button data-v="1800">30분</button><button data-v="3600">1시간</button></div><p class="small sub">한 해(어른은 두 해)의 길이예요. 100살까지 1분이면 1시간, 1시간이면 60시간이 걸려요.</p></div>
-        <button class="btn primary" id="btnTStart">이 삶으로 시작하기</button>
-        <p class="small sub">이 삶도 '내 체험 기록'에 저장되어 이어서 할 수 있습니다.</p>
+      <div class="panel stack" id="tExp">
+        <h3>체험하기 <span class="small sub">· 선생님이 직접 해 보기</span></h3>
+        <p class="small sub">나라를 '무작위'로 두고 0세로 시작하면 학생과 똑같이 태어나 이름을 짓고 시작합니다.</p>
+        <label class="field" for="tCountry">나라<select id="tCountry"></select></label>
+        <div class="stack-s"><b>시작 나이</b><div class="seg" data-k="age"><button data-v="0" class="on">0세</button><button data-v="6">6세</button><button data-v="13">13세</button><button data-v="19">19세</button><button data-v="37">37세</button><button data-v="61">61세</button></div><span class="small sub">그 나이까지의 삶은 자동으로 채워집니다.</span></div>
+        <div class="stack-s"><b>시간</b><div class="seg" data-k="time"><button data-v="solo" class="on">내 속도로</button><button data-v="room">열어 둔 방과 같은 시간으로</button></div>
+          <div class="seg" data-k="sec" id="tSecSeg"><button data-v="20">한 해 20초</button><button data-v="60" class="on">1분</button><button data-v="180">3분</button></div><p class="small sub" id="tExpNote"></p></div>
+        <p class="err" id="tExpErr"></p>
+        <div class="row"><button class="btn primary" id="btnTExp">체험 시작</button><button class="btn" id="btnTCont" hidden>이어서 살기</button></div>
+        <p class="small sub">저장된 체험 기록과 학생 아이디 관리는 첫 화면의 '개발자 모드'에 있습니다.</p>
       </div>
     </div>
     <button class="btn ghost" id="btnTBack">돌아가기</button>
@@ -164,6 +138,27 @@
   <div id="hWait" class="gbox" hidden></div>
   <div id="sheet" hidden><div class="box gbox" id="sheetBox"></div></div>
 </section>
+
+<!-- 개발자 모드의 기록·아이디 관리(교사용 화면에서 옮김. 개발자 창이 열릴 때 그 안으로 들어감) -->
+<div id="devRecHome" hidden>
+      <div class="panel stack" id="tRec">
+        <h3>내 체험 기록</h3>
+        <p class="small sub">교사용 모드에서 산 삶은 자동으로 저장됩니다. 이 기기에 남고, 로그인했다면 내 계정에도 저장되어 다른 기기에서 이어서 할 수 있습니다.</p>
+        <div id="tSaves"></div>
+        <b>마친 삶</b>
+        <ul class="lives" id="tLives"></ul>
+      </div>
+      <div class="panel stack" id="tIds">
+        <h3>학생 아이디 관리</h3>
+        <p class="small sub">학생은 따로 가입하지 않습니다. 처음 적은 아이디와 비밀번호가 그대로 계정이 되고, 다음부터는 그 비밀번호를 확인합니다. 여기서 아이디 목록을 보고, 비밀번호를 잊은 학생의 비밀번호를 초기화(다음 로그인 때 새로 정함)하거나, 아이디를 지우거나, 미리 등록할 수 있습니다.</p>
+        <div class="row"><input type="text" id="tIdFilter" placeholder="아이디 찾기" autocapitalize="off"><button class="btn ghost" id="btnTIdReload">새로 불러오기</button></div>
+        <div id="tIdList"><p class="small sub">불러오는 중…</p></div>
+        <details><summary>아이디 미리 등록 · 등록된 아이디만 쓰게 하기</summary>
+          <div class="stack-s" style="margin-top:8px"><textarea id="tIdAdd" rows="4" placeholder="한 줄에 아이디 하나씩 (2~10자)"></textarea><div class="row"><button class="btn" id="btnTIdAdd">등록하기</button></div>
+          <label class="row small"><input type="checkbox" id="tIdClosed"> 등록된 아이디만 로그인할 수 있게 하기 (새 아이디 만들기 막기)</label></div></details>
+        <p class="small" id="tIdMsg" role="status"></p>
+      </div>
+</div>
 
 <!-- 마지막 장면 -->
 <section id="s-end" hidden><div class="in" id="endIn"></div></section>

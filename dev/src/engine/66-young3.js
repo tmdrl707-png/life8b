@@ -10,3 +10,13 @@ Q(4,5,'*','mom','"오늘 날씨가 어떤지 창문으로 보고 알려 줄래?"
 Q(5,5,'*','dad','"아빠 신발 끈 묶는 거 한번 보여 줄게. 따라 해 볼래?"','table','끈을 엇갈려 당겨 매듭을 만든다.','삐뚤빼뚤하지만 내 손으로 묶었다. 뿌듯했다.','매듭이 자꾸 풀렸다. 몇 번을 다시 해 보았다.','t3 k1','K','t');
 Q(5,5,'*','mom','"엄마랑 비밀 이야기 하자. 오늘 제일 기뻤던 일은 뭐야?"','tv','오늘 있었던 일을 하나씩 떠올려 이야기한다.','기뻤던 일을 또박또박 말했다. 엄마가 꼭 안아 주셨다.','한참 생각하다 잊어버렸다. 엄마가 웃으며 기다려 주셨다.','r3 j2','K','r');
 Q(5,5,'*','gran','"할머니 안경이 어디 갔을까? 같이 찾아봐 줄래?"','desk','방 안을 구석구석 살펴본다.','이불 밑에서 안경을 찾아냈다! 할머니가 고맙다고 하셨다.','한참 찾았지만 못 찾았다. 할머니 머리 위에 있었다.','e2 r2 k1','K','e');
+
+/* 행복 계산: 능력치를 '그 나이에 이를 수 있는 최고점'과의 비율로 본다 (11-14 선생님 요청)
+   - 어린 때는 지식·기술·경험 숫자가 작아 행복이 지나치게 낮게 나왔다. 그 나이에 도달 가능한 값(SIX_MAX)에 견준 비율을 행복에 쓴다.
+   - 위쪽 동그라미(능력치 표시)는 예전 그대로 '양'(s.h·s.r·s.e·s.k·s.t)이다. 행복 쪽 값(joyComps)만 바뀐다. */
+const SIX_MAX={h:[[0,92],[90,92]],r:[[0,40],[2,50],[7,68],[13,82],[19,90],[90,92]],e:[[0,6],[4,14],[7,28],[13,50],[19,72],[30,88],[90,95]],k:[[0,8],[7,22],[13,48],[19,72],[30,90],[90,96]],t:[[0,4],[10,16],[13,34],[19,68],[30,92],[90,96]]};
+function sixMax(k,a){ const T=SIX_MAX[k]; if(a<=T[0][0]) return T[0][1]; for(let i=1;i<T.length;i++){ const [a1,v1]=T[i]; if(a<=a1){ const [a0,v0]=T[i-1]; return v0+(v1-v0)*(a-a0)/(a1-a0); } } return T[T.length-1][1]; }
+const JOY_GAMMA=.9;   // 1이면 단순 비율, 낮을수록 낮은 비율을 덜 깎음 (자동으로 산 삶 평균 행복이 45~55점쯤이 되게 맞춤)
+const sixRatio=(L,k)=>100*Math.pow(clamp((L.s[k]||0)/sixMax(k,L.age),0,1),JOY_GAMMA);
+{ const _jc=Life.prototype.joyComps; Life.prototype.joyComps=function(){ const c=_jc.apply(this,arguments), a=this.age;
+    c.h=sixRatio(this,'h'); c.r=sixRatio(this,'r'); c.e=sixRatio(this,'e'); c.k=a<7?Math.max(sixRatio(this,'k'),55):sixRatio(this,'k'); c.t=a<10?Math.max(55,sixRatio(this,'t')):clamp(.6*sixRatio(this,'t')+.4*this.workSat(),0,100); return c; }; }

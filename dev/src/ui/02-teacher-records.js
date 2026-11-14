@@ -30,7 +30,7 @@ async function renderTRec(){ $('tSaves').innerHTML='<p class="small sub">기록�
   $('tSaves').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const id=b.dataset.go, s=d.saves[id]; if(!s) return; G.teacher=true; G.tid=id; G.sec=s.sec||60; G.troom=s.room&&TR.code===s.room?s.room:null; G.life=Life.load(s.dump); startGame(); });
   $('tSaves').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ if(b.dataset.armed!=='1'){ b.dataset.armed='1'; b.textContent='정말 지울까요?'; return; } delete d.saves[b.dataset.del]; TStore.save(true,b.dataset.del); renderTRec(); });
   $('tLives').querySelectorAll('[data-ldel]').forEach(b=>b.onclick=()=>{ if(b.dataset.armed!=='1'){ b.dataset.armed='1'; b.textContent='정말 지울까요?'; return; } const l=lv[+b.dataset.ldel]; d.lives=d.lives.filter(x=>x!==l); TStore.save(true,'lives'); renderTRec(); }); }
-function openTeacherBody(){ $('tGate').hidden=true; $('tBody').hidden=false; show('teacher'); renderTRoom(); renderTRec(); renderTIds(true); }
+function openTeacherBody(){ $('tGate').hidden=true; $('tBody').hidden=false; show('teacher'); renderTRoom(); TStore.load().then(d=>{ const s=Object.entries(d.saves).sort((a,b)=>b[1].t-a[1].t)[0], c=$('btnTCont'); if(c){ c.hidden=!s; c.onclick=()=>{ if(!s) return; G.teacher=true; G.tid=s[0]; G.sec=s[1].sec||60; G.troom=s[1].room&&TR.code===s[1].room?s[1].room:null; G.life=Life.load(s[1].dump); startGame(); }; } }); }
 // 학생 아이디 관리
 const TI={list:[],loaded:0};
 async function renderTIds(reload){ const box=$('tIdList'); if(!box) return;
