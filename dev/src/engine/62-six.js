@@ -30,9 +30,10 @@ Life.prototype.moneyIdx=function(){ const C=this.C, a=this.age, f=this.f;
   return clamp(m,2,98); };
 Life.prototype.sixNow=function(){ const s=this.s; s.m=Math.round(this.moneyIdx()*10)/10; return {h:s.h,r:s.r,e:s.e,k:s.k,t:s.t,m:s.m}; };
 // 행복의 목표값 (0~100). 돈은 많을수록 덜 보탠다
-Life.prototype.joyTarget=function(){ const s=this.s, a=this.age, w=this.valW(), rel=k=>clamp(55+(s[k]-sixExp(k,a))*1.3,0,100);
-  const mi=this.moneyIdx(), c={h:s.h,r:s.r,e:rel('e'),k:a<7?55:rel('k'),t:a<10?55:clamp(.6*rel('t')+.4*this.workSat(),0,100),m:100*(1-Math.exp(-mi/40))/(1-Math.exp(-2.5))};
-  let v=0; SIX.forEach(k=>v+=w[k]*c[k]); return v-1; };
+// 행복에 들어가는 여섯 값(0~100, 그 나이에 견준 값)
+Life.prototype.joyComps=function(){ const s=this.s, a=this.age, rel=k=>clamp(55+(s[k]-sixExp(k,a))*1.3,0,100), mi=this.moneyIdx();
+  return {h:s.h,r:s.r,e:rel('e'),k:a<7?55:rel('k'),t:a<10?55:clamp(.6*rel('t')+.4*this.workSat(),0,100),m:100*(1-Math.exp(-mi/40))/(1-Math.exp(-2.5))}; };
+Life.prototype.joyTarget=function(){ const w=this.valW(), c=this.joyComps(); let v=0; SIX.forEach(k=>v+=w[k]*c[k]); return v-1; };
 // 열린 능력치: 이번에 새로 열린 것들을 돌려준다
 Life.prototype.unlockCheck=function(){ const f=this.f, U=f.un||(f.un={}), a=this.age, n=[]; SIX.forEach(k=>{ if(U[k]==null&&a>=SIX_AGE[k]){ U[k]=a; n.push(k); } }); return n; };
 Life.prototype.sixOpen=function(k){ const U=this.f.un; return !!U&&U[k]!=null; };

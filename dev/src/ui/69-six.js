@@ -85,10 +85,22 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .sixl{display:flex;flex-direction:column;gap:9px}.sixl .rw{display:grid;grid-template-columns:22px 5.4em minmax(0,1fr) 2.6em;gap:8px;align-items:center}.sixl .rw .ic{width:20px;height:20px;color:var(--c);display:inline-grid}
 .sixl .rw .bt{height:10px;border-radius:9px;background:#E3E7EC;overflow:hidden}.sixl .rw .bt i{display:block;height:100%;background:var(--c)}.sixl .rw b{text-align:right}.sixl .tip{grid-column:2/-1;font-size:.8rem;color:#5A6A78;margin-top:-5px}
 .vstar{color:#E0A33A}
+.jtop{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.jbig{display:flex;flex-direction:column;gap:2px}.jbig b{font-size:2.2rem;line-height:1;font-variant-numeric:tabular-nums}.jbig span{font-weight:700;color:#5A6A78}
+.jbig em{font-style:normal;font-weight:800}.jbig em.up{color:#3A8A3A}.jbig em.dn{color:#C0392B}.jbig small{font-weight:500}
+.jspw{flex:1;min-width:180px}.jsp{width:100%;height:auto;display:block}.jsp .jt{font-size:9px;fill:#7C8A96}
+.jstack{display:flex;height:16px;border-radius:9px;overflow:hidden;background:#E3E7EC;margin:4px 0 6px}.jstack i{display:block;height:100%;transition:width .6s}
+.jlg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.8rem;color:#5A6A78}.jlg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.jhint{margin:.6rem 0 .2rem;padding:.5rem .8rem;border-radius:10px;background:rgba(224,163,58,.12);line-height:1.5}
+.jrows{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-top:8px}@media (max-width:640px){.jrows{grid-template-columns:1fr}}
+.jrw{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center}.jrw.off{opacity:.55}
+.jr{position:relative;display:inline-block}.jr svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}.jr .ic{position:absolute;inset:25%;color:var(--c);display:grid}.jr .ic svg{position:static;transform:none}
+.jn{display:flex;flex-direction:column;gap:1px;min-width:0}.jn>span{font-size:.78rem;color:#5A6A78;line-height:1.35}
+.js{font-size:.78rem;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap}.js.ok{background:#E5F3EA;color:#2F7A4F}.js.mid{background:#F3EFE6;color:#7A6A3A}.js.low{background:#FBE7E4;color:#B0402E}
+.jvals{display:flex;flex-wrap:wrap;gap:8px}.jvals>span{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:rgba(127,140,150,.12);font-weight:700}.jvals .ic{width:18px;height:18px;color:var(--c);display:inline-grid}.jvals .ic svg{width:100%;height:100%}
 </style>`);
 
 /* ---------- 1) 위쪽 표시 ---------- */
-const sixHudV=()=>{ const v=ls('life8b_sixhud'); return /^[ABCD]$/.test(v)?v:'A'; };
+const sixHudV=()=>{ const v=ls('life8b_sixhud'); return /^[ABCD]$/.test(v)?v:'B'; };
 const sixInfoV=()=>{ const v=ls('life8b_sixinfo'); return /^M[12]$/.test(v)?v:'M1'; };
 const SIX_FX={};
 function sixState(L){ const v=L.sixNow(), H=(L.hist||[]).filter(x=>x.a<L.age), prev=H.length?H[H.length-1]:null, val=(L.val&&L.val.p)||{};
@@ -215,11 +227,30 @@ function sixInfoBody(L,tab){ const S=sixState(L), a=L.age, V=sixInfoV(), j=Math.
     const top=V==='M1'?`<div class="sixw"><div>${hx}</div><div class="sixc">${S.map(card).join('')}</div></div>`:`<div class="sixw"><div class="sixl">${S.map(row).join('')}</div><div>${hx}</div></div>`;
     return `<section class="icard"><h3>삶의 모양 <small>꽉 찬 정육각형이 만점(100) · ★ 내가 소중히 여긴 것</small></h3>${top}</section>
       <section class="icard"><h3>나이에 따라</h3>${lineChartSVG(L)||'<p class="isub">한 해가 지나면 그래프가 생겨요</p>'}</section>`; }
-  const p=(L.val&&L.val.p)||{}, ks=SIX.filter(k=>p[k]).sort((x,y)=>p[y]-p[x]);
-  return `<section class="icard"><h3>지금 나의 행복 <small>${j}</small></h3><div style="display:flex;align-items:center;gap:14px">${joyFace(j,54)}<div style="flex:1"><div class="sixl"><div class="rw" style="--c:#E2703A"><span></span><span>행복</span><div class="bt"><i style="width:${j}%"></i></div><b>${j}</b></div></div></div></div>
-      <p class="isub">아래 여섯 가지가 높을수록 행복이 커지고, 큰 기쁨이나 슬픔은 한 번에 크게 바꾸기도 해요.</p></section>
-    <section class="icard"><h3>삶을 시작할 때 소중하다고 고른 것</h3>${ks.length?`<p class="ibig">${ks.map(k=>`${SIX_N[k]} <span class="vstar">${'★'.repeat(p[k])}</span>`).join(' · ')}</p><p class="isub">★이 붙은 것은 나의 행복에 더 크게 닿아요. 같은 일을 겪어도 무엇을 소중히 여기느냐에 따라 행복이 달라집니다.</p>`:'<p class="isub">이 삶은 소중한 것을 고르지 않고 시작했어요. 여섯 가지가 모두 비슷하게 행복에 닿아요.</p>'}
-      <div class="sixl">${S.filter(x=>x.open).map(x=>`<div class="rw" style="--c:${SIX_COL[x.k]}"><span class="ic">${sixIc(x.k)}</span><span>${SIX_N[x.k]}${x.star?` <span class="vstar">${'★'.repeat(x.star)}</span>`:''}</span><div class="bt"><i style="width:${x.v.toFixed(1)}%"></i></div><b>${Math.round(x.v)}</b></div>`).join('')}</div></section>`; }
+  return sixJoyBody(L,S); }
+// '내 행복을 만드는 것': 지금 행복 · 행복을 받쳐 주는 여섯 가지(몫) · 처음에 고른 소중한 것 · 그 밖의 것
+function sixRing(k,v,open,sz){ const C=2*Math.PI*12.5; return `<span class="jr" style="--c:${open?SIX_COL[k]:'#AAB4BE'};width:${sz}px;height:${sz}px"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="12.5" fill="none" stroke="#E3E7EC" stroke-width="3.4"/>${open?`<circle cx="15" cy="15" r="12.5" fill="none" stroke="var(--c)" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="${(C*clamp(v,0,100)/100).toFixed(1)} ${C.toFixed(1)}"/>`:''}</svg><span class="ic">${sixIc(open?k:'lock')}</span></span>`; }
+function sixJoyBody(L,S){ const j=Math.round(L.s.j||0), a=L.age, H=(L.hist||[]).filter(h=>h.j!=null&&h.a<a), prev=H.length?H[H.length-1]:null, dj=prev?j-prev.j:0;
+  const w=L.valW(), c=L.joyComps(), p=(L.val&&L.val.p)||{}, op=S.filter(x=>x.open), lk=S.filter(x=>!x.open);
+  // 행복의 흐름(작은 선)
+  let spark=''; if(H.length>=2){ const pts=H.concat([{a,j}]), a0=pts[0].a, a1=Math.max(a0+1,a), X=v=>4+(v-a0)/(a1-a0)*232, Y=v=>44-clamp(v,0,100)*.4;
+    spark=`<svg class="jsp" viewBox="0 0 240 48" role="img" aria-label="나이에 따른 행복"><line x1="4" x2="236" y1="24" y2="24" stroke="#E3E7EC" stroke-dasharray="3 3"/><polyline fill="none" stroke="#E2703A" stroke-width="2.2" stroke-linejoin="round" points="${pts.map(h=>X(h.a).toFixed(1)+','+Y(h.j).toFixed(1)).join(' ')}"/><circle cx="${X(a).toFixed(1)}" cy="${Y(j).toFixed(1)}" r="3.4" fill="#E2703A"/><text x="4" y="47" class="jt">${a0}살</text><text x="236" y="47" text-anchor="end" class="jt">지금</text></svg>`; }
+  const word=j>=72?'아주 행복해요':j>=58?'행복한 편이에요':j>=42?'그럭저럭 지내요':j>=28?'조금 힘들어요':'많이 힘들어요';
+  // 몫: 무게 × 값. 아직 모르는 것은 한 칸으로
+  const part=k=>w[k]*c[k], tot=SIX.reduce((s,k)=>s+part(k),0)||1, lkS=lk.reduce((s,x)=>s+part(x.k),0);
+  const seg=op.map(x=>`<i style="width:${(part(x.k)/tot*100).toFixed(1)}%;background:${SIX_COL[x.k]}" title="${SIX_N[x.k]}"></i>`).join('')+(lkS?`<i style="width:${(lkS/tot*100).toFixed(1)}%;background:#C4CCD4" title="아직 모르는 것"></i>`:'');
+  const st=v=>v>=65?['든든해요','ok']:v>=45?['보통이에요','mid']:['부족해요','low'];
+  const best=op.slice().sort((x,y)=>part(y.k)-part(x.k))[0], need=op.filter(x=>(x.k!=='m'||a>=16)&&(!best||x.k!==op.slice().sort((p1,p2)=>part(p2.k)-part(p1.k))[0].k)).sort((x,y)=>w[y.k]*(100-c[y.k])-w[x.k]*(100-c[x.k]))[0];
+  const rows=op.map(x=>{ const s=st(c[x.k]); return `<div class="jrw">${sixRing(x.k,x.v,1,34)}<div class="jn"><b>${SIX_N[x.k]}${x.star?` <span class="vstar">${'★'.repeat(x.star)}</span>`:''}</b><span>${SIX_TIP[x.k]}</span></div><span class="js ${s[1]}">${s[0]}</span></div>`; }).join('')
+    +lk.map(x=>`<div class="jrw off">${sixRing(x.k,0,0,34)}<div class="jn"><b>?</b><span>${x.at}살에 알게 돼요</span></div><span class="js"></span></div>`).join('');
+  const ks=SIX.filter(k=>p[k]).sort((x,y)=>p[y]-p[x]), JP=L.joyParts?L.joyParts():null, nm={n:'나라의 형편',c:'함께 웃는 문화'};
+  return `<section class="icard"><h3>지금 나의 행복</h3><div class="jtop">${joyFace(j,62)}<div class="jbig"><b>${j}</b><span>${word}${dj?` <em class="${dj>0?'up':'dn'}">${dj>0?'▲':'▼'}${Math.abs(dj)}</em> <small>지난해보다</small>`:''}</span></div>${spark?`<div class="jspw">${spark}</div>`:''}</div></section>
+    <section class="icard"><h3>행복을 받쳐 주는 것 <small>지금 행복을 이루는 몫</small></h3><div class="jstack" role="img" aria-label="행복을 이루는 몫">${seg}</div>
+      <div class="jlg">${op.map(x=>`<span><i style="background:${SIX_COL[x.k]}"></i>${SIX_N[x.k]}</span>`).join('')}${lkS?'<span><i style="background:#C4CCD4"></i>아직 모르는 것</span>':''}</div>
+      ${best&&need&&best.k!==need.k?`<p class="jhint">지금 행복을 가장 많이 받쳐 주는 것은 <b style="color:${SIX_COL[best.k]}">${SIX_N[best.k]}</b>, 채우면 가장 많이 좋아질 것은 <b style="color:${SIX_COL[need.k]}">${SIX_N[need.k]}</b>${need.k==='r'?'예요':'이에요'}.</p>`:''}
+      <div class="jrows">${rows}</div><p class="isub">★이 붙은 것은 내 행복에 더 크게 닿아요. 큰 기쁨이나 슬픔은 행복을 한 번에 크게 바꾸기도 해요.</p></section>
+    <section class="icard"><h3>삶을 시작할 때 소중하다고 고른 것</h3>${ks.length?`<div class="jvals">${ks.map(k=>`<span style="--c:${SIX_COL[k]}"><span class="ic">${sixIc(k)}</span>${SIX_N[k]} <span class="vstar">${'★'.repeat(p[k])}</span></span>`).join('')}</div>${L.val&&L.val.a&&L.val.a.length?`<p class="isub">"${esc(VOW_Q[0][1][L.val.a[0]]||'')}"을 가장 먼저 골랐어요. 살아 보니 정말 그런지 지켜보세요.</p>`:''}`:'<p class="isub">이 삶은 소중한 것을 고르지 않고 시작했어요. 여섯 가지가 비슷하게 행복에 닿아요.</p>'}</section>
+    ${JP?`<section class="icard"><h3>그 밖에 영향을 주는 것</h3>${Object.keys(nm).map(k=>`<div class="happy"><span>${nm[k]}</span><div class="hbar">${barSvg(JP[k]||0)}</div><span class="num">${(JP[k]||0)>=0?'+':''}${(JP[k]||0).toFixed(0)}</span></div>`).join('')}<p class="isub">태어난 나라의 형편과, 곁의 사람들과 함께 웃는 문화도 행복을 바꿉니다.</p></section>`:''}`; }
 openInfo=(old=>function(tab){ old(tab); try{ const t=tab||'me'; if(t!=='shape'&&t!=='joy') return; const b=$('sheetBox').querySelector('.ibody'); if(b) b.innerHTML=sixInfoBody(G.life,t); }catch(e){ console.warn(e); } })(openInfo);
 // 진로 이야기 대화창의 작은 그림 카드도 육각형으로
 
