@@ -59,7 +59,7 @@ function renderHud(){
   const sk=$('hSick'); sk.hidden=!isSick(); if(isSick()) sk.textContent=L.f.dying?'마지막 시간 · 집에서 가족과 함께':`몸이 아파요 · 집에서 쉬는 중`;
   const imp=$('btnImp'); imp.hidden=!G.teacher||!L.cur; if(G.teacher&&L.cur){ const left=L.majorLeft()+(L.pending?1:0); imp.textContent=left?`중요 사건 바로 보기 ▶ ${left}`:'올해 중요 사건 없음'; imp.classList.toggle('off',!left); }
   $('s-game').classList.toggle('tmode',!!G.teacher);
-  $('hQuest').innerHTML=L.cur?L.cur.scenes.filter(c=>!c.done).map(c=>`<li>${esc(scenePos(c.i).n)}</li>`).join(''):'';
+  $('hQuest').innerHTML='';   // 지도 위의 ! 표시로 알 수 있으니 글자 목록은 따로 두지 않는다 (11-14)
   const q=L.q, m=$('hMission');
   if(q&&q.st>0){ const d=QUESTS[q.i]; m.textContent=q.st===1?`? 미션 · ${L.spotName(d.target)}에 다녀오기`:`? 미션 · ${giverName(d.giver)}에게 돌아가기`; m.hidden=false; } else m.hidden=true;
   $('btnNext').hidden=!!caughtUp()||!G.teacher; $('hWait').hidden=!caughtUp();

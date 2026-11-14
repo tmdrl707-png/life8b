@@ -8996,7 +8996,7 @@ function renderHud(){
   const sk=$('hSick'); sk.hidden=!isSick(); if(isSick()) sk.textContent=L.f.dying?'마지막 시간 · 집에서 가족과 함께':`몸이 아파요 · 집에서 쉬는 중`;
   const imp=$('btnImp'); imp.hidden=!G.teacher||!L.cur; if(G.teacher&&L.cur){ const left=L.majorLeft()+(L.pending?1:0); imp.textContent=left?`중요 사건 바로 보기 ▶ ${left}`:'올해 중요 사건 없음'; imp.classList.toggle('off',!left); }
   $('s-game').classList.toggle('tmode',!!G.teacher);
-  $('hQuest').innerHTML=L.cur?L.cur.scenes.filter(c=>!c.done).map(c=>`<li>${esc(scenePos(c.i).n)}</li>`).join(''):'';
+  $('hQuest').innerHTML='';   // 지도 위의 ! 표시로 알 수 있으니 글자 목록은 따로 두지 않는다 (11-14)
   const q=L.q, m=$('hMission');
   if(q&&q.st>0){ const d=QUESTS[q.i]; m.textContent=q.st===1?`? 미션 · ${L.spotName(d.target)}에 다녀오기`:`? 미션 · ${giverName(d.giver)}에게 돌아가기`; m.hidden=false; } else m.hidden=true;
   $('btnNext').hidden=!!caughtUp()||!G.teacher; $('hWait').hidden=!caughtUp();
@@ -12472,6 +12472,49 @@ openHub=(old=>function(){ old(); try{ const d=lvEnsure(G.data); if(!d||!$('hubNo
 }catch(e){ console.warn(e); } })(openHub);
 /* 72-young-ui: 7살이 안 된 아이의 '확실' 표시는 '늘 이렇게 돼요'로 (확실 = 안전하다로 읽히지 않게, 11-14) */
 function sureWord(){ const L=G.life; return '확실'; }
+/* 73-start-simple: 학생이 삶을 시작할 때 보는 설정은 '시간의 빠르기' 하나만 (11-14 선생님 요청)
+   빠르게 = 한 해 1분 · 보통 = 3분 · 느리게 = 5분. 나머지(돌아보는 카드·무거운 장면 담담하게·확률 숫자)는 기본값으로 고정. */
+const YL3=[[60,'빠르게 · 한 해 1분'],[180,'보통 · 한 해 3분'],[300,'느리게 · 한 해 5분']];
+renderBSet=function(){ const o=G.opts; if(!YL3.some(x=>x[0]===+o.yl)) o.yl=180; o.card=1; o.soft=1; o.prob=2;
+  $('bSet').innerHTML=`<h3>플레이 시간</h3>
+    <div class="stack-s"><div class="seg" data-o="yl">${YL3.map(([v,t])=>`<button data-v="${v}" class="${+o.yl===v?'on':''}">${t}</button>`).join('')}</div>
+    <p class="small sub">100살까지 산다면 <b>${lifeTimeText(o.yl)}</b> 안팎이 걸려요 (어른이 되면 한 번에 두 해씩 흘러요). 살아가는 중에는 위쪽의 '저장하기'로 저장하고 쉬었다가 이어서 할 수 있어요.</p></div>
+    ${!G.teacher&&G.data&&G.data.room?`<p class="small sub notice">지금 '${esc(G.data.room)}' 반에 들어가 있어요. 선생님이 반 설정을 정해 두었다면 그 설정이 먼저 적용됩니다.</p>`:''}`; };
+/* 74-skip6: 집 안에서 '관계' 설명(2살)까지 들은 뒤에는 바로 6살로 건너뛰어 밖을 돌아다닐 수 있다 (11-14 선생님 요청)
+   건너뛰는 동안의 해는 보통 삶처럼 자동으로 지나가며(작은 선택은 무작위), 기억은 그대로 남는다. 학급 방에서 반이 함께 움직이는 동안에는 쓰지 않는다. */
+(function(){
+  const b=document.createElement('button'); b.id='btnSkip6'; b.className='abtn'; b.hidden=true; b.textContent='6살로 가기 ▶'; ($('s-game')||document.body).appendChild(b);
+  const css=document.createElement('style'); css.textContent='#btnSkip6{right:max(12px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--gb-paper);color:var(--gb-ink);padding:10px 16px;font-size:.9rem}#btnSkip6[hidden]{display:none}@media (max-height:460px){#btnSkip6{font-size:.8rem;padding:7px 12px;bottom:calc(10px + env(safe-area-inset-bottom,0px))}}'; document.head.appendChild(css);
+  const can=()=>{ const L=G.life; return !!(L&&L.f&&!G.teacher&&!caughtUp()&&G.running&&!L.dead&&L.age>=2&&L.age<6&&L.f.unS&&L.f.unS.r); };
+  const show=()=>{ b.hidden=!can(); };
+  const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ show(); }catch(e){} return r; };
+  setInterval(()=>{ try{ show(); }catch(e){} },1500);
+  b.onclick=()=>{ if(!can()) return; const L=G.life; resolveOpen(); G.hardPause=0;
+    const d=$('sixU'); if(d&&!d.hidden){ d.hidden=true; d.innerHTML=''; paused=false; }
+    L.endPeriod(); if(!L.dead&&L.age<6) L.runAuto(6);
+    if(L.dead){ G.running=false; finishLife(); return; }
+    G.sickT=0; L.news=[]; W.car=false; W.map='out'; const dr=doorOf('home'); W.x=dr[0]; W.y=dr[1]+.9; W.dir=0; NPCMAP={};
+    beginPeriod(); toast('여섯 살이 되었어요. 이제 집 밖으로 나가 동네를 돌아다녀 보세요.'); b.hidden=true; };
+})();
+/* 75-sc-sex: 장면 그림 속 주인공의 성별이 이 삶과 다르면 쓰지 않는다 (11-14 선생님 요청: "성별에 따른 이미지가 안 맞는 경우가 너무 많다")
+   art/sc 그림을 하나씩 보고, 한 사람이 뚜렷하게 주인공인 그림에만 성별(m·f)을 적었다(가족·무리 그림은 적지 않음 = 누구에게나 맞음).
+   - 일상(life@end_…) 그림은 성별이 맞는 비슷한 그림으로 바꾼다.
+   - 그 밖의 그림(집 밖 town·돈·학교 못 감·반려동물 …)은 맞는 그림이 없으면 예전 도트 그림(성별 없는 풍경)으로 대신한다.
+   새 그림을 더하면 여기에도 성별을 적는다. */
+const SC_SEX={};
+const scTag=(s,names)=>names.split(/\s+/).forEach(n=>{ if(n) SC_SEX[n]=s; });
+scTag('m',`town town13_SA town13_AF town13_LA town19_EA town19_SE town19_SA town19_ME town19_AF town19_LA town19_WE
+  town75_EA town75_SE town75_SA town75_ME town75_LA town75_WE money_young pet pet_SA pet_ME noschool noschool_SE noschool_SA noschool_LA
+  sick_adult sick_old sport_teen travel travel_train job jobloss jobloss_SA jobloss_ME jobloss_LA money_old_SE money_old_SA money_old_ME
+  friend_ME friend_old_ME friend_old_SA end_garden end_bench end_fishing end_study_night end_rain_window`);
+scTag('f',`town13_SE town13_ME town75_AF money_old money_old_AF money_old_LA money_old_WE noschool_ME noschool_AF pet_WE
+  jobloss_SE jobloss_AF jobloss_WE end_videocall`);
+// 일상 그림 가운데 성별이 안 맞을 때 대신 쓸 비슷한 그림 (누구에게나 맞는 것)
+const SC_SEXALT=a=>a<13?'end_playground':a<30?'end_friends':a<60?'end_neighbors':'end_album';
+(function(){ const _n=scArtName;
+  scArtName=function(kind,L){ const n=_n.apply(this,arguments); if(!n||!L||L.sex==null) return n; const t=SC_SEX[n]; if(!t||t===(L.sex===1?'f':'m')) return n;
+    return /^end_/.test(n)?SC_SEXALT(L.age||0):null; };
+})();
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
 <script id="visual-enhancer">
