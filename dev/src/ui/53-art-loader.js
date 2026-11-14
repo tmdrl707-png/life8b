@@ -156,7 +156,7 @@ function scVar(kind,txt,age,L){ try{ const g=L&&L.C&&RG_ART[L.C.rg]; if(!g||age=
     const pool=age<13?['end_playground',meal,'end_playground','end_stargaze']:age<30?['end_friends','end_study_night',meal,'end_bench','end_rain_window','end_stargaze']:age<60?[meal,'end_bench','end_neighbors','end_rain_window','end_window_night']:['life_'+g+(L.sex===0?'_m':'_f'),'end_couple','end_garden','end_grandkids','end_album','end_window_night','end_videocall','end_fishing','end_dawn_walk',meal];
     return 'life@'+pool[scHash(t+'|'+age)%pool.length]; }catch(e){ return kind; } }
 const scBase=k=>String(k||'').split('@')[0];
-function scArtName(kind,L){ if(kind==='title') return 'title'; kind=String(kind||''); if(kind.includes('@')){ const [b,n]=kind.split('@'); return scHas(n)?n:scArtName(b,L); }
+function scArtName(kind,L){ if(kind==='title') return 'title'; kind=String(kind||''); if(kind==='garden') kind='life@end_garden'; else if(kind==='play') kind='life@'+((L&&L.age||0)<13?'end_playground':'end_friends'); if(kind.includes('@')){ const [b,n]=kind.split('@'); return scHas(n)?n:scArtName(b,L); }
   if(!SC_ART.has(kind)) return null; const C=L&&L.C, g=C&&RG_ART[C.rg];
   if(g&&kind==='town') return 'town'+townStage(L.age||0)+'_'+g;
   if(g&&kind==='life') return 'life_'+g+(L.sex===0?'_m':'_f'); if(g&&kind==='farewell') return 'farewell_'+g;
@@ -229,11 +229,25 @@ function scAgeFix(kind,txt,a){ if(!kind||!G.life||G.life.dead) return kind; cons
 
 
 // 기록 카드의 사진 세 장: 필름 사진 흉내(거친 그림) 대신 다른 화면과 같은 수채화 장면 그림을 쓴다. 그림이 없을 때만 예전 방식.
+function sceneThumbName(m,L){ const k=endKindOf(m), k0=(typeof softOn==='function'&&softOn()&&/^(farewell|sick|hosp|unrest)$/.test(k))?'life':(SCENE_TITLE[k]?k:'life');
+  const a0=L.age; L.age=m.a; try{ return scArtName(scVar(k0,memT(m)+' '+(m.q||''),m.a,L),L); }catch(e){ return null; } finally{ L.age=a0; } }
+// 세 장(어릴 때·한창때·나이 들어서)을 고르되 같은 그림이 두 번 나오지 않게
+function sceneThumbPick(pool,L){ const out=sceneThumbPick0(pool,L), seen=new Set(), extra=(L.mem||[]).filter(m=>m&&m.a>0&&!/^(money|sick|hosp|jobloss|farewell)$/.test(photoKind(m)));
+  // 받은 기억이 적어 같은 그림이 겹치면, 비슷한 나이의 다른 기억으로 바꾼다
+  return out.map(m=>{ const nm=sceneThumbName(m,L); if(nm&&!seen.has(nm)){ seen.add(nm); return m; }
+    const alt=extra.filter(x=>!out.includes(x)).sort((x,y)=>Math.abs(x.a-m.a)-Math.abs(y.a-m.a)).find(x=>{ const n2=sceneThumbName(x,L); return n2&&!seen.has(n2); });
+    if(alt){ seen.add(sceneThumbName(alt,L)); return alt; } return m; }).sort((x,y)=>x.a-y.a); }
+function sceneThumbPick0(pool,L){ if(pool.length<=3) return pool; const n=pool.length, parts=[pool.slice(0,Math.ceil(n/3)),pool.slice(Math.ceil(n/3),Math.ceil(2*n/3)),pool.slice(Math.ceil(2*n/3))], used=new Set(), out=[];
+  parts.forEach((p,i)=>{ const ord=i===0?p:i===2?p.slice().reverse():p.slice(Math.floor(p.length/2)).concat(p.slice(0,Math.floor(p.length/2)));
+    const m=ord.find(m=>{ const nm=sceneThumbName(m,L); return nm&&!used.has(nm); })||ord.find(m=>!out.includes(m)); if(m){ out.push(m); used.add(sceneThumbName(m,L)); } });
+  return out; }
 async function drawSceneThumb(cv,m,L){
-  const k=endKindOf(m), k0=(typeof softOn==='function'&&softOn()&&/^(farewell|sick|hosp|unrest)$/.test(k))?'life':(SCENE_TITLE[k]?k:'life');
-  const kind=typeof scVar==='function'?scVar(k0,memT(m)+' '+(m.q||''),m.a,L):k0, n=scArtName(kind,L);
+  const n=sceneThumbName(m,L);
   if(!n) throw new Error('no art');
   const im=await artLoad('art/sc/'+n+'.webp?v=1114');
   const W=480,H=360; cv.width=W; cv.height=H; const x=cv.getContext('2d'), s=Math.max(W/im.width,H/im.height), w=im.width*s, h=im.height*s;
   x.drawImage(im,(W-w)/2,(H-h)/2,w,h);
 }
+
+// 그림 없이 옛 도트 그림이 나오던 장면 종류(텃밭·놀이)에도 이름을 붙인다 (2026-11-14 전체 나라 점검)
+SCENE_TITLE.garden='텃밭'; SCENE_TITLE.play='놀이';

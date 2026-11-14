@@ -9764,7 +9764,7 @@ function finishLife(){
   // ⑤ 기억 고르기 → ⑥ 고른 장면이 스쳐 간다
   const scKind=m=>{ const k=endKindOf(m); if(softOn()&&/^(farewell|sick|hosp|unrest)$/.test(k)) return 'life'; const k2=SCENE_TITLE[k]?k:'life'; return typeof scVar==='function'?scVar(k2,memT(m)+' '+(m.q||''),m.a,L):k2; };
   const card=(m,j,n)=>`<article class="ncard anim"><div class="nimg"><canvas class="escene" data-sc="${scKind(m)}" width="640" height="320"></canvas><span class="nage">${m.a}살 · ${by+m.a}년</span>${n>1?`<span class="nno">${j+1} / ${n}</span>`:''}</div><div class="nbody">${m.q?`<p class="mq">${esc(m.q)}${m.l?`<span class="ml">→ ${esc(m.l)}</span>`:''}</p>`:''}<p>${esc(memT(m))}</p></div></article>`;
-  const PKC=pickCands(L), PK={sel:[],fav:null}, three=pickThree(L);
+  const PKC=pickCands(L), PK={sel:[],fav:null}, three=(typeof sceneThumbPick==="function"?sceneThumbPick(pickThree(L),L):pickThree(L));
   const sceneSlide=()=>{ const ms=PK.sel.length?PK.sel.slice().sort((x,y)=>(x===PK.fav?-1:y===PK.fav?1:0)).map(i=>PKC[i]).filter(Boolean):three;
     if(!ms.length) return '<p class="big">엄마 품에서 방긋 웃던 날이 있었습니다.</p>';
     return `<div class="eone"><p class="soft">눈을 감기 전, ${PK.sel.length?'고른 장면이':'마음에 남은 장면이'} 스쳐 갑니다.</p><div class="cardrow n${ms.length}">${ms.map((m,j)=>card(m,j,ms.length)).join('')}</div>${hp&&!young?`<p class="soft">가장 행복했던 해는 ${by+hp.a}년, ${hp.a}살 무렵이었습니다.</p>`:''}</div>`; };
@@ -9925,7 +9925,7 @@ async function drawCard(mems,o){
   // 사진 세 장
   // 어릴 때 · 한창때 · 나이 들어서 한 장씩 (돈·아픔 같은 기억보다는 장면이 있는 기억을 먼저)
   const pool0=(mems||[]).filter(m=>m&&m.a>0), nice=pool0.filter(m=>!/^(money|sick|hosp|jobloss|farewell)$/.test(photoKind(m))), pool=nice.length>=3?nice:pool0;
-  const ps=pool.length<=3?pool:[pool[0],pool[Math.floor(pool.length/2)],pool[pool.length-1]], pw=196, ph=147, gap=(Wd-96-pw*3)/2;
+  const ps=sceneThumbPick(pool,L), pw=196, ph=147, gap=(Wd-96-pw*3)/2;
   const pcs=await Promise.all(ps.map(async(m,i)=>{ const pc=document.createElement('canvas'); try{ await drawSceneThumb(pc,m,L); }catch(e0){ try{ await drawMemPhoto(pc,m,L,L.mem.indexOf(m)); }catch(e){ try{ drawPhoto(pc,m,L,i); }catch(e2){} } } return pc; }));
   ps.forEach((m,i)=>{ const pc=pcs[i]; const px=48+i*(pw+gap), py=380+(i%2)*10;
     x.save(); x.translate(px+pw/2,py+ph/2); x.rotate((i-1)*.03); x.fillStyle='rgba(0,0,0,.18)'; x.fillRect(-pw/2-6,-ph/2-4,pw+16,ph+40); x.fillStyle='#F6F2EA'; x.fillRect(-pw/2-8,-ph/2-8,pw+16,ph+40); x.drawImage(pc,-pw/2,-ph/2,pw,ph);
@@ -10397,7 +10397,7 @@ function scVar(kind,txt,age,L){ try{ const g=L&&L.C&&RG_ART[L.C.rg]; if(!g||age=
     const pool=age<13?['end_playground',meal,'end_playground','end_stargaze']:age<30?['end_friends','end_study_night',meal,'end_bench','end_rain_window','end_stargaze']:age<60?[meal,'end_bench','end_neighbors','end_rain_window','end_window_night']:['life_'+g+(L.sex===0?'_m':'_f'),'end_couple','end_garden','end_grandkids','end_album','end_window_night','end_videocall','end_fishing','end_dawn_walk',meal];
     return 'life@'+pool[scHash(t+'|'+age)%pool.length]; }catch(e){ return kind; } }
 const scBase=k=>String(k||'').split('@')[0];
-function scArtName(kind,L){ if(kind==='title') return 'title'; kind=String(kind||''); if(kind.includes('@')){ const [b,n]=kind.split('@'); return scHas(n)?n:scArtName(b,L); }
+function scArtName(kind,L){ if(kind==='title') return 'title'; kind=String(kind||''); if(kind==='garden') kind='life@end_garden'; else if(kind==='play') kind='life@'+((L&&L.age||0)<13?'end_playground':'end_friends'); if(kind.includes('@')){ const [b,n]=kind.split('@'); return scHas(n)?n:scArtName(b,L); }
   if(!SC_ART.has(kind)) return null; const C=L&&L.C, g=C&&RG_ART[C.rg];
   if(g&&kind==='town') return 'town'+townStage(L.age||0)+'_'+g;
   if(g&&kind==='life') return 'life_'+g+(L.sex===0?'_m':'_f'); if(g&&kind==='farewell') return 'farewell_'+g;
@@ -10470,14 +10470,28 @@ function scAgeFix(kind,txt,a){ if(!kind||!G.life||G.life.dead) return kind; cons
 
 
 // 기록 카드의 사진 세 장: 필름 사진 흉내(거친 그림) 대신 다른 화면과 같은 수채화 장면 그림을 쓴다. 그림이 없을 때만 예전 방식.
+function sceneThumbName(m,L){ const k=endKindOf(m), k0=(typeof softOn==='function'&&softOn()&&/^(farewell|sick|hosp|unrest)$/.test(k))?'life':(SCENE_TITLE[k]?k:'life');
+  const a0=L.age; L.age=m.a; try{ return scArtName(scVar(k0,memT(m)+' '+(m.q||''),m.a,L),L); }catch(e){ return null; } finally{ L.age=a0; } }
+// 세 장(어릴 때·한창때·나이 들어서)을 고르되 같은 그림이 두 번 나오지 않게
+function sceneThumbPick(pool,L){ const out=sceneThumbPick0(pool,L), seen=new Set(), extra=(L.mem||[]).filter(m=>m&&m.a>0&&!/^(money|sick|hosp|jobloss|farewell)$/.test(photoKind(m)));
+  // 받은 기억이 적어 같은 그림이 겹치면, 비슷한 나이의 다른 기억으로 바꾼다
+  return out.map(m=>{ const nm=sceneThumbName(m,L); if(nm&&!seen.has(nm)){ seen.add(nm); return m; }
+    const alt=extra.filter(x=>!out.includes(x)).sort((x,y)=>Math.abs(x.a-m.a)-Math.abs(y.a-m.a)).find(x=>{ const n2=sceneThumbName(x,L); return n2&&!seen.has(n2); });
+    if(alt){ seen.add(sceneThumbName(alt,L)); return alt; } return m; }).sort((x,y)=>x.a-y.a); }
+function sceneThumbPick0(pool,L){ if(pool.length<=3) return pool; const n=pool.length, parts=[pool.slice(0,Math.ceil(n/3)),pool.slice(Math.ceil(n/3),Math.ceil(2*n/3)),pool.slice(Math.ceil(2*n/3))], used=new Set(), out=[];
+  parts.forEach((p,i)=>{ const ord=i===0?p:i===2?p.slice().reverse():p.slice(Math.floor(p.length/2)).concat(p.slice(0,Math.floor(p.length/2)));
+    const m=ord.find(m=>{ const nm=sceneThumbName(m,L); return nm&&!used.has(nm); })||ord.find(m=>!out.includes(m)); if(m){ out.push(m); used.add(sceneThumbName(m,L)); } });
+  return out; }
 async function drawSceneThumb(cv,m,L){
-  const k=endKindOf(m), k0=(typeof softOn==='function'&&softOn()&&/^(farewell|sick|hosp|unrest)$/.test(k))?'life':(SCENE_TITLE[k]?k:'life');
-  const kind=typeof scVar==='function'?scVar(k0,memT(m)+' '+(m.q||''),m.a,L):k0, n=scArtName(kind,L);
+  const n=sceneThumbName(m,L);
   if(!n) throw new Error('no art');
   const im=await artLoad('art/sc/'+n+'.webp?v=1114');
   const W=480,H=360; cv.width=W; cv.height=H; const x=cv.getContext('2d'), s=Math.max(W/im.width,H/im.height), w=im.width*s, h=im.height*s;
   x.drawImage(im,(W-w)/2,(H-h)/2,w,h);
 }
+
+// 그림 없이 옛 도트 그림이 나오던 장면 종류(텃밭·놀이)에도 이름을 붙인다 (2026-11-14 전체 나라 점검)
+SCENE_TITLE.garden='텃밭'; SCENE_TITLE.play='놀이';
 /* ========== [2-2 상호작용] 말 걸기 · 만져 보기 · 건물 안 · 학교 밖 활동 ==========
    1) 다가가 말 걸기: 퀘스트가 없어도 가족·선생님·친구·동료·동네 사람·동물과 짧은 말이 오간다 (한 해에 몇 번만 능력치가 조금 오른다)
    2) 만져 보기: 집 안의 물건(부엌·식탁·소파·텔레비전·침대·책상·마당), 학교의 칠판·책장·탁자, 밖의 나무와 밭을 나이에 맞게 가지고 논다
