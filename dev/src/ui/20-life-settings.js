@@ -1,6 +1,6 @@
 /* ========== 이번 삶의 설정 (빠르기 · 한 해 돌아보기 · 멈춤 질문 · 이별 장면) ========== */
 const PACE_PICKS={short:7,normal:10};   // 한 해(어른은 두 해)에 고르는 일의 평균 수 (자동 진행 200번으로 잰 값)
-G.opts=Object.assign({pace:'normal',yl:60,card:1,ask:0,soft:1,prob:2,read:1},ls('life8b_opts')||{});   // 중학생 수업: 무거운 장면은 처음부터 '짧고 담담하게'
+G.opts=Object.assign({pace:'normal',yl:180,card:1,ask:0,soft:1,prob:2,read:1},ls('life8b_opts')||{});   // 중학생 수업: 무거운 장면은 처음부터 '짧고 담담하게'
 const secOf=L=>L&&L.yl?L.yl:L&&L.pace==='short'?35:CFG.PERIOD_SEC;   // 한 해(어른은 두 해)의 길이(초): 시작할 때 고른 값
 // 100살까지 산다면 걸리는 시간 (어린 시절 19번 + 어른은 두 해씩 41번 = 60번)
 function lifeTimeText(yl){ const m=Math.round(60*yl/60), h=Math.floor(m/60), mm=m%60; return h?`${h}시간${mm?' '+mm+'분':''}`:`${m}분`; }

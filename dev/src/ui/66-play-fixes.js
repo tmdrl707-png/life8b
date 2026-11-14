@@ -55,7 +55,7 @@ function miniRect(){ const r=reachOf(G.life.age), c=$('mini'), asp=c?c.height/c.
 (()=>{ const _da=decAuto; decAuto=function(){ try{ if(DEC.mode==='auto'){ const bs=[...$('sheetBox').querySelectorAll('.opts button:not([disabled])')];
     if(bs.length){ let pick=bs.find(b=>b.querySelector('.sure'))||null;
       if(!pick){ let best=-1; bs.forEach(b=>{ const m=String(b.textContent).match(/(\d+)%/); const v=m?+m[1]:-1; if(v>best){ best=v; pick=b; } }); }
-      if(pick){ DEC.on=0; G.autoPicked=1; pick.click(); G.autoPicked=0; toast('시기를 놓쳐 저절로 정해졌어요.','news'); return; } } } }catch(e){}
+      if(pick){ DEC.on=0; G.autoPicked=1; pick.click(); G.autoPicked=0; toast(DEC_TIMED?'시기를 놓쳐 저절로 정해졌어요.':'한 해가 지나가 저절로 정해졌어요.','news'); return; } } } }catch(e){}
   return _da.apply(this,arguments); }; })();
 
 /* ---------- 일곱 살 아래: '지식 조금 ↑' 같은 칸 대신 부모님 말로 (11-14) ---------- */

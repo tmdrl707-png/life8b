@@ -71,42 +71,42 @@ function endWide(){
     if(txt.length>1) sl.classList.add('cols2'); }
 }
 if(END_WIDE.addEventListener) END_WIDE.addEventListener('change',()=>{ if(!$('s-end').hidden) endWide(); });
-// 태어나는 순간: 나라 → 사는 곳 → 가정 형편 → 함께 사는 가족 순서로, 칸이 돌아가는 동안 화면을 눌러 직접 멈춘다 (11-14 선생님 요청)
-// 결과는 이미 정해져 있다(L). 누르는 순간 그 칸이 실제 결과로 멈춘다. 오래 안 누르면 저절로 멈춘다.
+// 태어나는 순간: 나라 → 사는 곳 → 가정 형편 → 성별 순서로, 칸이 돌아가는 동안 화면을 눌러 직접 멈춘다 (11-14 선생님 요청)
+// 결과는 이미 정해져 있다(L). 누르는 순간 그 칸이 실제 결과로 멈춘다. 저절로 멈추지는 않는다.
 let BROLL=0;
 function birthReveal(cards){
   const box=$('bInfo'), sec=$('s-birth'), my=++BROLL;
   const still=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)||navigator.webdriver;   // 움직임 줄이기·자동 시험에서는 바로 보여 줌
-  const names=['태어날 나라','사는 곳','가정 형편','함께 사는 가족'];
+  const names=['태어날 나라','사는 곳','가정 형편','성별'];
   box.innerHTML=cards.map((c,i)=>`<div class="roll wait"><b>?</b><span>${names[i]||'&nbsp;'}</span></div>`).join('');
   const els=[...box.children]; let hint=$('bHint'); if(!hint){ hint=document.createElement('p'); hint.id='bHint'; hint.className='small sub'; box.parentNode.insertBefore(hint,box); }
-  const fin=i=>{ els[i].classList.remove('spin','wait'); els[i].classList.add('done'); els[i].innerHTML=`<b>${esc(cards[i].b)}</b><span>${esc(cards[i].s)}</span>`; };
+  let big=$('rvBig'); if(big) big.remove(); big=document.createElement('div'); big.id='rvBig'; big.innerHTML='<small>&nbsp;</small><b>?</b><span>&nbsp;</span>'; hint.parentNode.insertBefore(big,hint);
+  const bs=big.children; big.hidden=true;
+  const fin=i=>{ els[i].classList.remove('spin','wait'); els[i].classList.add('done'); els[i].innerHTML=`<b>${esc(cards[i].b)}</b><span>${esc(cards[i].s)}</span>`; bs[0].textContent=names[i]; bs[1].textContent=cards[i].b; bs[2].textContent=cards[i].s; big.classList.add('fin'); };
   const tap=()=>{ if(my!==BROLL){ document.removeEventListener('click',tap); return; } if(ready) stop=true; };
-  const end=()=>{ sec.classList.remove('rolling'); document.removeEventListener('click',tap); hint.textContent=''; };
+  const end=()=>{ sec.classList.remove('rolling'); document.removeEventListener('click',tap); hint.textContent=''; big.remove(); };
   if(still){ cards.forEach((_,i)=>fin(i)); end(); return; }
-  sec.classList.add('rolling'); let i=0, stop=false, auto=0, ready=true;
-  document.addEventListener('click',tap);   // 화면 아무 데나 눌러도 된다
+  sec.classList.add('rolling'); big.hidden=false; let i=0, stop=false, ready=false;
+  setTimeout(()=>document.addEventListener('click',tap),0);   // '태어나기'를 누른 그 클릭이 바로 멈춤으로 이어지지 않게 (화면 아무 데나 눌러도 된다)
   const next=()=>{ if(my!==BROLL) return;
     if(i>=cards.length){ end(); return; }
-    const k=i, el=els[k], pool=cards[k].pool; let n=0; clearTimeout(auto);
-    el.classList.remove('wait'); el.classList.add('spin'); el.lastChild.textContent='▶ 눌러서 멈추기';
-    hint.textContent=`${k+1} / ${cards.length}  ·  ${names[k]||''} — 화면을 눌러 멈춰 보세요`;
-    auto=setTimeout(()=>{ stop=true; },9000);
+    const k=i, el=els[k], pool=cards[k].pool; let n=0; stop=false;
+    el.classList.remove('wait'); el.classList.add('spin'); big.classList.remove('fin'); bs[0].textContent=`${k+1} / ${cards.length} · ${names[k]}`; bs[2].textContent='▶ 화면을 눌러 멈추기'; ready=true;
+    hint.textContent='';
     const tick=()=>{ if(my!==BROLL) return;
-      if(stop){ clearTimeout(auto); stop=false; fin(k); i++; ready=false; setTimeout(()=>{ ready=true; next(); },450); return; }
-      el.firstChild.textContent=pool[Math.floor(Math.random()*pool.length)]; n++; setTimeout(tick,70); };
+      if(stop){ stop=false; fin(k); i++; ready=false; setTimeout(next,i>=cards.length?1100:900); return; }
+      bs[1].textContent=pool[Math.floor(Math.random()*pool.length)]; n++; setTimeout(tick,70); };
     tick(); };
-  setTimeout(next,400);
+  setTimeout(next,600);
 }
 function birth(o){
   const L=G.life=new Life(o&&o.c?o:undefined); G.sec=CFG.PERIOD_SEC;
   const C=L.C; $('bTitle').textContent=`${C.n} · ${SETN[L.set]}`; $('bLine').textContent=`${FAM[L.famI].n}의 ${SEX[L.sex]}아이`;
-  const fam=['엄마','아빠'].concat(L.gran?['할머니']:[],L.sib?[(()=>{ try{ const hs=L.homeSibs().sort((x,y)=>Math.abs(x.d)-Math.abs(y.d)); return hs.length?sibTerm(L,hs[0]).replace(/^(큰|작은|막내|둘째|셋째|넷째)/,''):'동생'; }catch(e){ return '동생'; } })()]:[]);
   birthReveal([
     {b:C.n,s:`세계에서 태어나는 아기 1000명 중 ${(()=>{ const v=birthShare(L.c)*1000; return v>=10?Math.round(v):v>=1?v.toFixed(1):v.toFixed(2); })()}명`,pool:CKEYS.map(k=>COUNTRIES[k].n)},
     {b:SETN[L.set],s:`사는 곳 (도시 ${Math.round(C.pU*100)}% · 농촌 ${Math.round((1-C.pU)*100)}%)`,pool:['도시','농촌']},
     {b:FAM[L.famI].n.replace(' 가정',''),s:'가정 형편',pool:FAM.map(f=>f.n.replace(' 가정',''))},
-    {b:fam.join(' · '),s:'함께 사는 가족',pool:['엄마 · 아빠','엄마 · 아빠 · 할머니','엄마 · 아빠 · 동생','엄마 · 아빠 · 할머니 · 동생']}]);
+    {b:`${L.sex?'여자':'남자'}아이`,s:'성별',pool:['남자아이','여자아이']}]);
   $('bName').value=L.given; $('bSur').textContent=L.sur?`· 성은 아빠(${L.ppl.dad.n})를 따라 '${L.sur}'`:'· 이 나라에서는 성 없이 이름만 쓰는 사람이 많아요';
   $('bFact').textContent=`${C.fact} 태어난 곳은 ${L.town}, 아빠는 ${L.ppl.dad.n}, 엄마는 ${L.ppl.mom.n}입니다.`;
   $('bCmp').innerHTML=cmpHTML(L); renderBSet();

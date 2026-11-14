@@ -61,7 +61,7 @@ function renderHud(){
   $('s-game').classList.toggle('tmode',!!G.teacher);
   $('hQuest').innerHTML='';   // 지도 위의 ! 표시로 알 수 있으니 글자 목록은 따로 두지 않는다 (11-14)
   const q=L.q, m=$('hMission');
-  if(q&&q.st>0){ const d=QUESTS[q.i]; m.textContent=q.st===1?`? 미션 · ${L.spotName(d.target)}에 다녀오기`:`? 미션 · ${giverName(d.giver)}에게 돌아가기`; m.hidden=false; } else m.hidden=true;
+  m.hidden=true;   // '미션 · ○○ 다녀오기' 글자는 없앴다 (11-14 개발자 피드백)
   $('btnNext').hidden=!!caughtUp()||!G.teacher; $('hWait').hidden=!caughtUp();
   if(caughtUp()) $('hWait').textContent=G.roomInfo&&G.roomInfo.auto>0&&!G.roomInfo.paused?'반 전체가 같은 해를 살고 있어요':'선생님이 다음 해를 열 때까지 이 해를 살아요';
   requestAnimationFrame(()=>{ const hh=$('hud').offsetHeight; $('s-game').style.setProperty('--hudH',(hh+6)+'px'); HUDH=hh; });

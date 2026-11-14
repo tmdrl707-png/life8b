@@ -1,2 +1,2 @@
 /* 72-young-ui: 7살이 안 된 아이의 '확실' 표시는 '늘 이렇게 돼요'로 (확실 = 안전하다로 읽히지 않게, 11-14) */
-function sureWord(){ const L=G.life; return '확실'; }
+function sureWord(){ return probMode()===2?'잘될 확률 100%':'될 가능성 높음'; }   // (11-14 개발자 피드백: '확실'은 모두 100%로)

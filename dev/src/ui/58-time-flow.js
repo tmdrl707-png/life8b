@@ -1,17 +1,19 @@
 /* ---------- [2-3 시간·사건 진행] 시간은 멈추지 않는다 (학생): 선택 창이 떠 있어도 한 해가 흐르고, 제한 시간이 지나면 저절로 정해진다 ----------
+   (11-14 피드백으로 DEC_TIMED=false: '15초 안에 고르기'는 없앴다. 창은 한 해가 끝나면 정리된다.)
    큰 사건·큰 갈림길·달력의 고르는 일: 제한 시간(한 해 길이의 1/5, 최소 12초)이 지나면 무작위로 정해진다.
    작은 선택·미션: 제한 시간이 지나면 창이 닫히고, 그해가 끝날 때까지 하지 않으면 '놓친 순간'이 된다.
    교사용·개발자 모드와 '저장하기'·'나가기' 창에서는 예전처럼 시간이 멈춘다. */
 const DEC={on:0,left:0,total:0,mode:null,next:null,tt:0};
+const DEC_TIMED=false;   // 11-14 피드백: 창마다 '15초 안에 고르세요' 제한을 없앴다. 창은 그해가 끝날 때(resolveOpen)에만 저절로 정리된다.
 const flowOn=()=>!!(G.life&&!G.teacher&&!G.hardPause);
 const decWin=()=>{ const n=($('sheetBox').innerText||'').length, base=Math.max(12,Math.min(25,10+n/22)); return Math.max(base,yearLen()*.2*.5)*Math.min(2,RD()); };   // 글이 길수록 12~25초
 function decStart(){ const m=DEC.next; DEC.next=null; if(!m||!flowOn()||!$('sheetBox').querySelector('.opts button')){ DEC.on=0; return; }
-  DEC.on=1; DEC.mode=m; DEC.total=DEC.left=decWin(); DEC.tt=0;
+  DEC.on=1; DEC.mode=m; DEC.total=DEC.left=DEC_TIMED?decWin():Infinity; DEC.tt=0; if(!DEC_TIMED) return;
   $('sheetBox').insertAdjacentHTML('afterbegin',`<div class="decbar" role="timer"><i></i><span></span></div>`); decRender(true); }
 function decRender(force){ const b=$('sheetBox').querySelector('.decbar'); if(!b) return; b.querySelector('i').style.width=Math.max(0,DEC.left/DEC.total*100)+'%';
   const sec=Math.ceil(Math.max(0,DEC.left)); if(force||sec!==DEC.tt){ DEC.tt=sec; b.querySelector('span').textContent=DEC.mode==='auto'?`${sec}초 안에 고르지 않으면 저절로 정해져요`:`${sec}초 안에 고르지 않으면 이 순간은 지나가요`; b.classList.toggle('hot',sec<=5); } }
-function decAuto(){ const m=DEC.mode; DEC.on=0; if(m==='auto'){ const bs=[...$('sheetBox').querySelectorAll('.opts button:not([disabled])')]; if(bs.length){ G.autoPicked=1; bs[Math.floor(Math.random()*bs.length)].click(); G.autoPicked=0; toast('시기를 놓쳐 저절로 정해졌어요.','news'); return; } }
-  closeSheet(); if(m==='close') toast('고르지 않아 이 순간은 지나갔어요. 그해가 가기 전에 다시 다가갈 수 있어요.'); }
+function decAuto(){ const m=DEC.mode; DEC.on=0; if(m==='auto'){ const bs=[...$('sheetBox').querySelectorAll('.opts button:not([disabled])')]; if(bs.length){ G.autoPicked=1; bs[Math.floor(Math.random()*bs.length)].click(); G.autoPicked=0; toast(DEC_TIMED?'시기를 놓쳐 저절로 정해졌어요.':'한 해가 지나가 저절로 정해졌어요.','news'); return; } }
+  closeSheet(); if(m==='close') toast(DEC_TIMED?'고르지 않아 이 순간은 지나갔어요. 그해가 가기 전에 다시 다가갈 수 있어요.':'한 해가 지나가 이 순간은 지나갔어요.'); }
 // 열려 있는 창을 정리한다 (해가 끝날 때)
 function resolveOpen(){ for(let i=0;i<8;i++){ if(dlgOpen()){ dlgClose(); continue; } if($('sheet').hidden) return; if(DEC.on){ decAuto(); continue; }
     const ok=$('btnOk')||$('sheetBox').querySelector('.btn.primary'); if(ok){ ok.click(); continue; } closeSheet(); } }

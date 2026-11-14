@@ -17,7 +17,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 (function(){ const _show=dlgShow; dlgShow=function(){ _show(); const it=DLG.q[0], d=$('dlg'); if(it&&it.html&&d) d.insertAdjacentHTML('beforeend',`<div class="dimg">${it.html}</div>`); };
   const _opts=dlgOpts; dlgOpts=function(it){ _opts(it); if(!it.sub&&!it.ps) return; const bs=$('dlg').querySelectorAll('.dopts button');
     bs.forEach((b,i)=>{ const p=it.ps?it.ps[i]:undefined; if(p!==undefined) b.insertAdjacentHTML('beforeend',dlgPct(p)); if(it.sub&&it.sub[i]) b.insertAdjacentHTML('beforeend',`<small>${esc(it.sub[i])}</small>`); }); }; })();
-function dlgPct(p){ const m=probMode(); if(!m) return ''; if(p==null) return '<span class="dp">'+sureWord()+'</span>'; const lv=p>=.65?['hi','높음']:p>=.4?['mid','보통']:['lo','낮음']; return `<span class="dp ${lv[0]}">${m===2?Math.round(p*100)+'%':'될 가능성 '+lv[1]}</span>`; }
+function dlgPct(p){ const m=probMode(); if(!m) return ''; if(p==null) return '<span class="dp">'+(m===2?'100%':'높음')+'</span>'; const lv=p>=.65?['hi','높음']:p>=.4?['mid','보통']:['lo','낮음']; return `<span class="dp ${lv[0]}">${m===2?Math.round(p*100)+'%':'될 가능성 '+lv[1]}</span>`; }
 const pentCard=L=>`<p>지금 나의 삶의 모양</p>${radarSVG(L.s,[])}`;
 
 // 2) 사람이 나오는 작은 선택 → 대화창
