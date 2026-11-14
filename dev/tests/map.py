@@ -11,11 +11,11 @@ async def main():
         code=sys.argv[1] if len(sys.argv)>1 else 'KR'
         async def start(age):
             await ev("()=>{ if(!$('devP')||$('devP').hidden) openDev(); }"); await pg.select_option('#devC',code); await pg.fill('#devA',str(age)); await pg.click('#devPlay'); await pg.wait_for_timeout(700)
-            await ev("()=>{ if(dlgOpen()) dlgClose(); if(!$('sheet').hidden) closeSheet(); const c=G.life.cur; c.mDone=c.plan; (c.cal||[]).forEach(x=>x.done=1); c.sk=null; G.life.f.dying=0; G.sickT=0; }")
+            await ev("()=>{ if(dlgOpen()) dlgClose(); if(!$('sheet').hidden) closeSheet(); const c=G.life.cur; c.mDone=c.plan; (c.cal||[]).forEach(x=>x.done=1); c.sk=null; G.life.f.dying=0; G.sickT=0; if(W.zone) setZone(0); }")
         async def clean(): await ev("()=>{ if(dlgOpen()) dlgClose(); if(!$('sheet').hidden) closeSheet(); $('flash').hidden=true; }")
         for age in [7,11,15,30]:
             await start(age); await clean()
-            await ev("()=>{ W.map='out'; const d=doorOf('home'); W.x=d[0]; W.y=d[1]+1; NPCMAP={}; }"); await pg.wait_for_timeout(900); await clean()
+            await ev("()=>{ W.map='out'; if(W.zone) setZone(0); const d=doorOf('home'); W.x=d[0]; W.y=d[1]+1; NPCMAP={}; }"); await pg.wait_for_timeout(900); await clean()
             print(age,'살 · 갈 수 있는 곳',await ev("JSON.stringify(reachOf(G.life.age))"),'나무',await ev("OUT.trees.length"))
             await pg.screenshot(path=S+f'map_{code}_{age}.png')
             # 막힘 확인: 범위 밖으로 걸어가기
@@ -25,7 +25,7 @@ async def main():
         # 건물 안: 30살로 동네 건물 하나씩 들어가 본다
         await start(30); await clean()
         for k in ['shop','friend','lib','market','rest','cafe','bank','hosp','hall','post','station','gym','study']:
-            await clean(); await ev(f"()=>{{ W.map='out'; W.car=false; const d=doorOf('{k}'); W.x=d[0]; W.y=d[1]+.3; NPCMAP={{}}; }}")
+            await clean(); await ev(f"()=>{{ W.map='out'; if(W.zone) setZone(0); W.car=false; const d=doorOf('{k}'); W.x=d[0]; W.y=d[1]+.3; NPCMAP={{}}; }}")
             await pg.keyboard.down('ArrowUp'); await pg.wait_for_timeout(250); await pg.keyboard.up('ArrowUp'); await pg.wait_for_timeout(500)
             inside=await ev("W.map")
             # 주인 옆으로 가서 말 걸기

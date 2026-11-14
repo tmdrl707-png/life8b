@@ -12,7 +12,7 @@ async def main():
         await pg.click('#btnDev'); await pg.fill('#devCode','2026'); await pg.click('#devGo'); await pg.wait_for_timeout(300)
         async def start(age):
             await ev(f"(()=>{{ DEV.c='{C}'; $('devA').value={age}; devStart('play'); }})()"); await pg.wait_for_timeout(1500)
-            await ev("(()=>{ if(!$('sheet').hidden) closeSheet(); if(typeof dlgOpen==='function'&&dlgOpen()) DLG.close&&DLG.close(); G.life.cur.t=999; paused=false; })()")
+            await ev("(()=>{ if(!$('sheet').hidden) closeSheet(); if(typeof dlgOpen==='function'&&dlgOpen()) DLG.close&&DLG.close(); G.life.cur.t=999; paused=false; if(W.zone) setZone(0); })()")
         async def walk(dx,dy,n=40):
             await pg.wait_for_timeout(900)
             for i in range(n):

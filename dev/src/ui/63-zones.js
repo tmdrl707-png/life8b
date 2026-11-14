@@ -15,7 +15,7 @@ const ZONES=[{ id:0, data:Object.fromEntries(ZKEYS.map(k=>[k,OUT[k]])),
 // 지도 하나 만들기: 건물 · 길 · 풍경을 받아 이웃집과 나무를 채운다
 function mkZone(id,o){ const Z={w:o.w,h:o.h,RY:o.RY,b:o.b,deco:[],s:Object.assign({},o.s||{}),patch:Object.assign({play:ZOFF,nature:ZOFF,mount:ZOFF,sea:ZOFF,sand:ZOFF},o.patch||{}),roads:o.roads,hw:[9999,0,0,0],fields:o.fields||[],trees:[]};
   for(const k in Z.b){ const b=Z.b[k]; if(!Z.s[k]) Z.s[k]=[b[0]+b[2]/2,b[1]+b[3]+.6]; }
-  Object.defineProperty(Z.b,'home',{value:ZOFF,enumerable:false});   // 그리는 코드가 '우리 집' 자리를 찾을 때를 위해 (보이지 않음)
+  Object.defineProperty(Z.b,'home',{value:ZOFF,enumerable:false,writable:true,configurable:true});   // 그리는 코드가 '우리 집' 자리를 찾을 때를 위해 (보이지 않음)
   const near=(x,y,r,p)=>x>r[0]-p&&x<r[0]+r[2]+p&&y>r[1]-p&&y<r[1]+r[3]+p, hit=(r,p)=>Object.values(Z.b).some(b=>near(r[0]+r[2]/2,r[1]+r[3]/2,[b[0]-r[2]/2,b[1]-r[3]/2,b[2]+r[2],b[3]+r[3]],p))
     ||Z.deco.some(d=>near(r[0]+r[2]/2,r[1]+r[3]/2,[d[0]-r[2]/2,d[1]-r[3]/2,d[2]+r[2],d[3]+r[3]],p))||Z.roads.some(q=>near(r[0]+r[2]/2,r[1]+r[3]/2,[q[0]-r[2]/2,q[1]-r[3]/2,q[2]+r[2],q[3]+r[3]],p))
     ||Object.values(Z.patch).some(q=>near(r[0]+r[2]/2,r[1]+r[3]/2,[q[0]-r[2]/2,q[1]-r[3]/2,q[2]+r[2],q[3]+r[3]],p))||Z.fields.some(q=>near(r[0]+r[2]/2,r[1]+r[3]/2,[q[0]-r[2]/2,q[1]-r[3]/2,q[2]+r[2],q[3]+r[3]],p))
@@ -76,7 +76,7 @@ ZONES[0].title=()=>'우리 동네';
 const ZIN={z4lodge:'rest',z4shop:'shop',z1lib:'lib',z1shop:'shop',z1rest:'rest',z1gym:'gym',z1friend:'friend',z2clinic:'hosp',z2market:'market',z2hall:'hall',z2rest:'rest',z3lib:'lib',z3hosp:'hosp',z3cafe:'cafe',z3bank:'bank',z3station:'station',z3mall:'market'};
 for(const k in ZIN) if(PLACE_IN[ZIN[k]]) PLACE_IN[k]=PLACE_IN[ZIN[k]];
 W.zone=0; W.zt=0;
-const zoneOfSpot=k=>SPOT_ZONE[k]||0;
+let zoneOfSpot=k=>SPOT_ZONE[k]||0;
 function zoneTitle(z){ const L=G.life; try{ return ZONES[z].title(L); }catch(e){ return ''; } }
 // 지도 바꾸기
 function setZone(z,x,y){ const Z=ZONES[z]; if(!Z) return; const old=W.zone;
@@ -137,7 +137,7 @@ const _lb=loopBody; loopBody=function(t){ zoneSync(); return _lb(t); };
 function zoneExit(to){ const Z=ZONES[W.zone]; let g=Z.gates.find(q=>q.to===to)||Z.gates.find(q=>q.to===0)||Z.gates[0]; return g?g.beyond:[W.x,W.y]; }
 const _targets=targets; targets=function(){ const L=G.life, out=_targets(); if(!L||!L.cur) return out;
   out.forEach(t=>{ let sp=null; if(t.type==='s'){ const c=L.cur.scenes[t.k]; sp=c&&SCENES[c.i].spot; } else if(t.type==='q'&&L.q){ const d=QUESTS[L.q.i]; sp=L.q.st===1?d.target:d.giver; }
-    if(!sp) return; const z=t.m==='out'?zoneOfSpot(sp):0;
+    if(!sp) return; const z=t.m==='out'?zoneOfSpot(sp):t.m==='home'&&typeof homeZone==='function'?homeZone():0;
     if(z!==W.zone){ t.m='out'; t.p=zoneExit(z); t.key=null; } else if(t.m==='out'&&!t.p) t.p=OUT.s[sp]||zoneExit(0); });
   return out; };
 // 미니맵: 지도 이름과 다른 지도로 가는 길
