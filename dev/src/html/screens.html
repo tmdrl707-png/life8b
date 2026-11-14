@@ -55,14 +55,16 @@
 
   <!-- 출생 -->
   <section id="s-birth" class="stack" hidden>
-    <canvas id="birthCv" class="pixcv" width="160" height="80" aria-label="태어난 나라의 모습"></canvas>
-    <div class="stack-s"><p class="sub">이번에 당신이 살아 볼 한 사람은</p><h1 id="bTitle"></h1><p id="bLine"></p></div>
-    <div class="panel"><div class="kpi" id="bInfo"></div></div>
-    <p id="bFact"></p>
-    <div class="panel stack-s"><h3>이 나라에서 태어난다는 것</h3><div id="bCmp"></div></div>
+    <div class="bhero">
+      <figure class="bart"><img id="bArt" alt="태어난 곳의 모습" hidden><canvas id="birthCv" class="pixcv" width="160" height="80" aria-label="태어난 나라의 모습"></canvas></figure>
+      <div class="bhead"><p class="kick">이번에 당신이 살아 볼 한 사람은</p><h1 id="bTitle"></h1><p id="bLine" class="lead"></p></div>
+    </div>
+    <div class="panel bpick"><div class="kpi" id="bInfo"></div></div>
+    <p id="bFact" class="lead"></p>
+    <div class="panel stack-s bcmp"><h3>이 나라에서 태어난다는 것</h3><div id="bCmp"></div></div>
     <p class="small sub">태어날 나라도, 가정도 고를 수 없었습니다. 세계 193개 나라 가운데, 실제로 아기가 태어나는 비율대로 정해졌습니다.</p>
     <div class="panel stack" id="bSet"></div>
-    <p class="small sub notice"><b>시작하기 전에</b> · 이 게임은 중학생 수업을 위해 만들었습니다. 삶에는 가족이나 주인공의 죽음, 질병, 가난, 재해, 분쟁 같은 일이 실제 통계에 따라 일어날 수 있습니다. 위의 '무거운 장면' 설정으로 이런 장면을 짧게 볼 수 있어요. 마음이 힘들어지면 언제든 '멈춤'이나 '나가기'를 누르고 선생님께 이야기해 주세요. 담임 선생님, Wee클래스 상담 선생님, 청소년상담 1388(전화·문자·카카오톡)에서도 이야기를 들어 줍니다.</p>
+    <p class="small sub notice"><b>시작하기 전에</b> · 이 게임은 중학생 수업을 위해 만들었습니다. 삶에는 가족이나 주인공의 죽음, 질병, 가난, 재해, 분쟁 같은 일이 실제 통계에 따라 일어날 수 있습니다. 이런 장면은 짧고 담담하게 보여 줘요. 마음이 힘들어지면 언제든 '저장하기'나 '나가기'를 누르고 선생님께 이야기해 주세요. 담임 선생님, Wee클래스 상담 선생님, 청소년상담 1388(전화·문자·카카오톡)에서도 이야기를 들어 줍니다.</p>
     <div class="panel stack"><label class="field" for="bName">이 아이의 이름을 지어 주세요 <span class="sub small" id="bSur"></span><input id="bName" maxlength="8" autocomplete="off"></label>
       <button class="btn primary" id="btnLive">삶을 시작하기</button></div>
   </section>

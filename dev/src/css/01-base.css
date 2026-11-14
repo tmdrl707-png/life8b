@@ -46,7 +46,7 @@ h3{font-size:1rem;margin:0} p{margin:0}
 .seg button.on{background:var(--ink);color:#fff}
 /* 태어나는 순간 뽑기 */
 #s-birth>*{transition:opacity .6s}
-#s-birth.rolling>*:not(:nth-child(3)){display:none}
+#s-birth.rolling>*:not(.bpick){display:none}
 #s-birth.rolling,#s-birth.rolling .kpi{cursor:pointer}
 .kpi .roll{min-height:5.2rem}
 .kpi .roll.spin{border-color:#E8A33D;background:#FFF8E8}
@@ -216,7 +216,7 @@ h3{font-size:1rem;margin:0} p{margin:0}
 #rvBig span{display:block;font-weight:700;color:#9a6b17}
 #rvBig.fin span{color:#566574}
 #s-birth.rolling{min-height:100vh;display:flex;flex-direction:column;justify-content:center}
-#s-birth.rolling>:nth-child(3){max-width:100%;box-sizing:border-box}
+#s-birth.rolling>.bpick{max-width:100%;box-sizing:border-box}
 #s-birth.rolling .kpi{grid-template-columns:repeat(4,minmax(0,1fr));gap:.4rem}
 #s-birth.rolling .kpi .roll{min-height:0;padding:.4rem .45rem;text-align:center}
 #s-birth.rolling .kpi .roll b{font-size:.95rem}

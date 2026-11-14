@@ -3,7 +3,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function ls(k,v){ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } }
 const PAGES=['login','hub','birth','teacher','browse'];
-function show(name){ document.body.classList.toggle('landing',name==='login'); PAGES.forEach(p=>$('s-'+p).hidden=(p!==name)); $('pages').hidden=!PAGES.includes(name); $('s-game').hidden=(name!=='game'); $('s-end').hidden=(name!=='end'); window.scrollTo(0,0); if(name!=='teacher') clearInterval(TR.poll); }
+function show(name){ document.body.classList.toggle('landing',name==='login'||name==='birth'); document.body.classList.toggle('bnight',name==='birth'); PAGES.forEach(p=>$('s-'+p).hidden=(p!==name)); $('pages').hidden=!PAGES.includes(name); $('s-game').hidden=(name!=='game'); $('s-end').hidden=(name!=='end'); window.scrollTo(0,0); if(name!=='teacher') clearInterval(TR.poll); }
 document.body.classList.toggle('landing',!$('s-login').hidden);
 // 첫 화면: 오늘 0시부터 세계에서 태어난 아기 수 (1년 약 1억 3,200만 명 ≒ 1초에 약 4.2명)
 (function liveBirths(){ const PER=(typeof BSUM!=='undefined'&&BSUM>0?BSUM*1e4:130e6)/(365.25*86400), el=$('liveN'); let shown=-1;

@@ -101,7 +101,8 @@ function birthReveal(cards){
 }
 function birth(o){
   const L=G.life=new Life(o&&o.c?o:undefined); G.sec=CFG.PERIOD_SEC;
-  const C=L.C; $('bTitle').textContent=`${C.n} · ${SETN[L.set]}`; $('bLine').textContent=`${FAM[L.famI].n}의 ${SEX[L.sex]}아이`;
+  const C=L.C; $('bTitle').innerHTML=`<em>${esc(C.n)}</em><span class="dot"> · </span>${esc(SETN[L.set])}`; $('bLine').textContent=`${FAM[L.famI].n}의 ${SEX[L.sex]}아이`;
+  { const im=$('bArt'), cv=$('birthCv'), rg=(typeof RG_ART!=='undefined'&&RG_ART[C.rg])||'WE'; im.hidden=true; cv.hidden=false; im.onload=()=>{ im.hidden=false; cv.hidden=true; }; im.onerror=()=>{ im.hidden=true; cv.hidden=false; }; im.src=`art/sc/town6_${rg}.webp`; }
   birthReveal([
     {b:C.n,s:`세계에서 태어나는 아기 1000명 중 ${(()=>{ const v=birthShare(L.c)*1000; return v>=10?Math.round(v):v>=1?v.toFixed(1):v.toFixed(2); })()}명`,pool:CKEYS.map(k=>COUNTRIES[k].n)},
     {b:SETN[L.set],s:`사는 곳 (도시 ${Math.round(C.pU*100)}% · 농촌 ${Math.round((1-C.pU)*100)}%)`,pool:['도시','농촌']},
