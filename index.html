@@ -56,11 +56,15 @@ h3{font-size:1rem;margin:0} p{margin:0}
 .seg button.on{background:var(--ink);color:#fff}
 /* 태어나는 순간 뽑기 */
 #s-birth>*{transition:opacity .6s}
-#s-birth.rolling>*:not(:nth-child(3)){opacity:0;pointer-events:none}
-#s-birth.rolling .kpi{cursor:pointer}
+#s-birth.rolling>*:not(:nth-child(3)){display:none}
+#s-birth.rolling,#s-birth.rolling .kpi{cursor:pointer}
 .kpi .roll{min-height:5.2rem}
 .kpi .roll.spin{border-color:#E8A33D;background:#FFF8E8}
 .kpi .roll.spin b{color:#8a6a2a;letter-spacing:.02em}
+.kpi .roll.spin{animation:rpulse .7s ease-in-out infinite alternate}
+.kpi .roll.wait{opacity:.5}
+@keyframes rpulse{from{box-shadow:0 0 0 0 rgba(232,163,61,.0)}to{box-shadow:0 0 0 5px rgba(232,163,61,.45)}}
+#bHint{text-align:center;margin:0 0 .5rem;font-weight:700}
 .kpi .roll.done{animation:rpop .38s ease-out}
 @keyframes rpop{0%{transform:scale(.9)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
 .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:.6rem}
@@ -8089,25 +8093,32 @@ function endWide(){
     if(txt.length>1) sl.classList.add('cols2'); }
 }
 if(END_WIDE.addEventListener) END_WIDE.addEventListener('change',()=>{ if(!$('s-end').hidden) endWide(); });
-// 태어나는 순간: 나라 → 사는 곳 → 가정 형편 → 함께 사는 가족 순서로 하나씩 무작위로 정해진다 (누르면 건너뜀)
+// 태어나는 순간: 나라 → 사는 곳 → 가정 형편 → 함께 사는 가족 순서로, 칸이 돌아가는 동안 화면을 눌러 직접 멈춘다 (11-14 선생님 요청)
+// 결과는 이미 정해져 있다(L). 누르는 순간 그 칸이 실제 결과로 멈춘다. 오래 안 누르면 저절로 멈춘다.
 let BROLL=0;
 function birthReveal(cards){
   const box=$('bInfo'), sec=$('s-birth'), my=++BROLL;
-  const still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  box.innerHTML=cards.map(()=>'<div class="roll"><b>?</b><span>&nbsp;</span></div>').join('');
-  const els=[...box.children];
-  const fin=i=>{ els[i].classList.remove('spin'); els[i].classList.add('done'); els[i].innerHTML=`<b>${esc(cards[i].b)}</b><span>${esc(cards[i].s)}</span>`; };
-  const end=()=>{ sec.classList.remove('rolling'); box.onclick=null; };
+  const still=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)||navigator.webdriver;   // 움직임 줄이기·자동 시험에서는 바로 보여 줌
+  const names=['태어날 나라','사는 곳','가정 형편','함께 사는 가족'];
+  box.innerHTML=cards.map((c,i)=>`<div class="roll wait"><b>?</b><span>${names[i]||'&nbsp;'}</span></div>`).join('');
+  const els=[...box.children]; let hint=$('bHint'); if(!hint){ hint=document.createElement('p'); hint.id='bHint'; hint.className='small sub'; box.parentNode.insertBefore(hint,box); }
+  const fin=i=>{ els[i].classList.remove('spin','wait'); els[i].classList.add('done'); els[i].innerHTML=`<b>${esc(cards[i].b)}</b><span>${esc(cards[i].s)}</span>`; };
+  const tap=()=>{ if(my!==BROLL){ document.removeEventListener('click',tap); return; } if(ready) stop=true; };
+  const end=()=>{ sec.classList.remove('rolling'); document.removeEventListener('click',tap); hint.textContent=''; };
   if(still){ cards.forEach((_,i)=>fin(i)); end(); return; }
-  sec.classList.add('rolling'); let i=0, skip=false; box.onclick=()=>{ skip=true; };
-  const step=()=>{ if(my!==BROLL) return;
-    if(i>=cards.length||skip){ for(;i<cards.length;i++) fin(i); end(); return; }
-    const k=i, el=els[k], pool=cards[k].pool; let n=0; el.classList.add('spin');
+  sec.classList.add('rolling'); let i=0, stop=false, auto=0, ready=true;
+  document.addEventListener('click',tap);   // 화면 아무 데나 눌러도 된다
+  const next=()=>{ if(my!==BROLL) return;
+    if(i>=cards.length){ end(); return; }
+    const k=i, el=els[k], pool=cards[k].pool; let n=0; clearTimeout(auto);
+    el.classList.remove('wait'); el.classList.add('spin'); el.lastChild.textContent='▶ 눌러서 멈추기';
+    hint.textContent=`${k+1} / ${cards.length}  ·  ${names[k]||''} — 화면을 눌러 멈춰 보세요`;
+    auto=setTimeout(()=>{ stop=true; },9000);
     const tick=()=>{ if(my!==BROLL) return;
-      if(skip||n>=12){ fin(k); i++; setTimeout(step,380); return; }
-      el.firstChild.textContent=pool[Math.floor(Math.random()*pool.length)]; n++; setTimeout(tick,50+n*12); };
+      if(stop){ clearTimeout(auto); stop=false; fin(k); i++; ready=false; setTimeout(()=>{ ready=true; next(); },450); return; }
+      el.firstChild.textContent=pool[Math.floor(Math.random()*pool.length)]; n++; setTimeout(tick,70); };
     tick(); };
-  setTimeout(step,300);
+  setTimeout(next,400);
 }
 function birth(o){
   const L=G.life=new Life(o&&o.c?o:undefined); G.sec=CFG.PERIOD_SEC;
@@ -12460,7 +12471,7 @@ openHub=(old=>function(){ old(); try{ const d=lvEnsure(G.data); if(!d||!$('hubNo
   if(rd) $('btnBrowse').onclick=openBrowse; else if(!full) $('btnNew').onclick=lvNew;
 }catch(e){ console.warn(e); } })(openHub);
 /* 72-young-ui: 7살이 안 된 아이의 '확실' 표시는 '늘 이렇게 돼요'로 (확실 = 안전하다로 읽히지 않게, 11-14) */
-function sureWord(){ const L=G.life; return L&&L.age<7?'늘 이렇게 돼요':'확실'; }
+function sureWord(){ const L=G.life; return '확실'; }
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
 <script id="visual-enhancer">

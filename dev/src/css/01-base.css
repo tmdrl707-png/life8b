@@ -46,11 +46,15 @@ h3{font-size:1rem;margin:0} p{margin:0}
 .seg button.on{background:var(--ink);color:#fff}
 /* 태어나는 순간 뽑기 */
 #s-birth>*{transition:opacity .6s}
-#s-birth.rolling>*:not(:nth-child(3)){opacity:0;pointer-events:none}
-#s-birth.rolling .kpi{cursor:pointer}
+#s-birth.rolling>*:not(:nth-child(3)){display:none}
+#s-birth.rolling,#s-birth.rolling .kpi{cursor:pointer}
 .kpi .roll{min-height:5.2rem}
 .kpi .roll.spin{border-color:#E8A33D;background:#FFF8E8}
 .kpi .roll.spin b{color:#8a6a2a;letter-spacing:.02em}
+.kpi .roll.spin{animation:rpulse .7s ease-in-out infinite alternate}
+.kpi .roll.wait{opacity:.5}
+@keyframes rpulse{from{box-shadow:0 0 0 0 rgba(232,163,61,.0)}to{box-shadow:0 0 0 5px rgba(232,163,61,.45)}}
+#bHint{text-align:center;margin:0 0 .5rem;font-weight:700}
 .kpi .roll.done{animation:rpop .38s ease-out}
 @keyframes rpop{0%{transform:scale(.9)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
 .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:.6rem}
