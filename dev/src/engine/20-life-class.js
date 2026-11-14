@@ -40,6 +40,7 @@ class Life{
   static load(o){ const L=Object.assign(Object.create(Life.prototype),o); L.pending=null; if(!Array.isArray(L.recent)) L.recent=[];
     // Firebase는 빈 {}·[]를 저장하지 않아 불러오면 사라진다(8살에 선택한 적이 없던 삶이 '화면 문제'로 멈춤) → 비어 있던 칸을 되살린다
     for(const k of ['done','used','usedM','f','tr']) if(L[k]==null||typeof L[k]!=='object') L[k]={}; for(const k of ['hist','news','money','mem','jobs','kids']) if(!Array.isArray(L[k])) L[k]=L[k]&&typeof L[k]==='object'?Object.values(L[k]):[];
+    if(L.cur&&typeof L.cur==='object') for(const k of ['scenes','ml']) if(L.cur[k]!=null&&!Array.isArray(L.cur[k])) L.cur[k]=Object.values(L.cur[k]); else if(L.cur&&L.cur[k]==null) L.cur[k]=[];
     if(!L.c){ L.c='KR'; L.f.elem=L.age>=7?1:0; L.f.sec=L.age>=13?1:0; }
     if(!COUNTRIES[L.c]) L.c='KR';
     if(!L.fam){ try{ initFamily(L,{sib:L.sib,dad:1,keep:1}); L.fam.sibs.forEach(s=>{ if(s.d<=L.age) s.born=1; }); L.refreshSib(); }catch(e){} }

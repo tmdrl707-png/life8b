@@ -57,7 +57,7 @@ function epiPlan(L){ const a=L.age, out={act:{},s1:{},inf:{},pan:null}, f=L.f;
   if(f.mmr==null) f.mmr=R()<measCov(L)?1:0; if(f.yfv==null) f.yfv=R()<[.45,.6,.8,.9][L.C.tier-1]?1:0;
   for(let yy=0;yy<L.step;yy++){ const y=L.by+a+yy; EPI_KEYS.forEach(k=>{ const i=epiOut(L,k,y); if(i) out.act[k]=Math.max(out.act[k]||0,i); }); const p=panOf(L,y); if(p&&!out.pan) out.pan=p; }
   if(a>=65) out.act.flu=1; if(out.pan) out.act.pan=1; return out; }
-function epiCur(L){ if(!L.cur) return null; if(!L.cur.epi) L.cur.epi=epiPlan(L); L.cur.pan=L.cur.epi.pan; return L.cur.epi; }
+function epiCur(L){ if(!L.cur) return null; if(!L.cur.epi) L.cur.epi=epiPlan(L); { const e=L.cur.epi; if(!e.act) e.act={}; if(!e.s1) e.s1={}; if(!e.inf) e.inf={}; }  /* Firebase가 빈 {}를 지워서 불러오면 없다 */ L.cur.pan=L.cur.epi.pan; return L.cur.epi; }
 function epiOn(L,k){ const e=epiCur(L); return !!(e&&e.act[k]); }
 // 평소 사망률에서 덜어 낼 몫: 이 나이에 풍토성 유행으로 숨질 기대 확률 (한 해)
 // 조심하고 제때 치료받는 쪽을 고른 사람 기준의 몫만 덜어 낸다: 그렇게 살면 평소 수명 그대로, 조심하지 않으면 그만큼 더 위험해진다

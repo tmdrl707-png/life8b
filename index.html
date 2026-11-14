@@ -2849,6 +2849,7 @@ class Life{
   static load(o){ const L=Object.assign(Object.create(Life.prototype),o); L.pending=null; if(!Array.isArray(L.recent)) L.recent=[];
     // Firebase는 빈 {}·[]를 저장하지 않아 불러오면 사라진다(8살에 선택한 적이 없던 삶이 '화면 문제'로 멈춤) → 비어 있던 칸을 되살린다
     for(const k of ['done','used','usedM','f','tr']) if(L[k]==null||typeof L[k]!=='object') L[k]={}; for(const k of ['hist','news','money','mem','jobs','kids']) if(!Array.isArray(L[k])) L[k]=L[k]&&typeof L[k]==='object'?Object.values(L[k]):[];
+    if(L.cur&&typeof L.cur==='object') for(const k of ['scenes','ml']) if(L.cur[k]!=null&&!Array.isArray(L.cur[k])) L.cur[k]=Object.values(L.cur[k]); else if(L.cur&&L.cur[k]==null) L.cur[k]=[];
     if(!L.c){ L.c='KR'; L.f.elem=L.age>=7?1:0; L.f.sec=L.age>=13?1:0; }
     if(!COUNTRIES[L.c]) L.c='KR';
     if(!L.fam){ try{ initFamily(L,{sib:L.sib,dad:1,keep:1}); L.fam.sibs.forEach(s=>{ if(s.d<=L.age) s.born=1; }); L.refreshSib(); }catch(e){} }
@@ -5623,7 +5624,7 @@ function epiPlan(L){ const a=L.age, out={act:{},s1:{},inf:{},pan:null}, f=L.f;
   if(f.mmr==null) f.mmr=R()<measCov(L)?1:0; if(f.yfv==null) f.yfv=R()<[.45,.6,.8,.9][L.C.tier-1]?1:0;
   for(let yy=0;yy<L.step;yy++){ const y=L.by+a+yy; EPI_KEYS.forEach(k=>{ const i=epiOut(L,k,y); if(i) out.act[k]=Math.max(out.act[k]||0,i); }); const p=panOf(L,y); if(p&&!out.pan) out.pan=p; }
   if(a>=65) out.act.flu=1; if(out.pan) out.act.pan=1; return out; }
-function epiCur(L){ if(!L.cur) return null; if(!L.cur.epi) L.cur.epi=epiPlan(L); L.cur.pan=L.cur.epi.pan; return L.cur.epi; }
+function epiCur(L){ if(!L.cur) return null; if(!L.cur.epi) L.cur.epi=epiPlan(L); { const e=L.cur.epi; if(!e.act) e.act={}; if(!e.s1) e.s1={}; if(!e.inf) e.inf={}; }  /* Firebase가 빈 {}를 지워서 불러오면 없다 */ L.cur.pan=L.cur.epi.pan; return L.cur.epi; }
 function epiOn(L,k){ const e=epiCur(L); return !!(e&&e.act[k]); }
 // 평소 사망률에서 덜어 낼 몫: 이 나이에 풍토성 유행으로 숨질 기대 확률 (한 해)
 // 조심하고 제때 치료받는 쪽을 고른 사람 기준의 몫만 덜어 낸다: 그렇게 살면 평소 수명 그대로, 조심하지 않으면 그만큼 더 위험해진다
@@ -13257,6 +13258,26 @@ html.ui-sr-0 #hRes{display:none!important}
       const r=$('tRec'); r.querySelector('h3').textContent='선생님 체험 기록 (교사용 모드에서 한 체험)'; renderTRec(); renderTIds(true);
       wrap.addEventListener('click',e=>{ if(e.target.closest('[data-go]')) setTimeout(()=>{ if(G.life&&G.running) d.hidden=true; },50); }); }
   };
+})();
+/* 83-autoresume: 게임 중에 새로고침(또는 탭이 다시 열림)해도 처음 화면이 아니라 하던 삶으로 바로 돌아온다 (11-14)
+   - 삶이 돌아가는 동안 이 탭(sessionStorage)에 '지금 삶 번호'를 적어 둔다.
+   - 로그인이 이어진 뒤 처음 열리는 처음 화면에서, 적어 둔 삶이 아직 있으면 바로 이어서 시작한다.
+   - '나가기'로 일부러 처음 화면에 나가면 적어 둔 것을 지운다. */
+(function(){
+  const K='life8b_play';
+  const get=()=>{ try{ return sessionStorage.getItem(K); }catch(e){ return null; } };
+  const put=v=>{ try{ if(v==null) sessionStorage.removeItem(K); else sessionStorage.setItem(K,v); }catch(e){} };
+  setInterval(()=>{ try{ if(G.running&&G.life&&!G.teacher&&!G.dev&&G.data&&Store.sess&&!$('s-game').hidden) put(String((G.data&&G.data.cur)||'1')); }catch(e){} },1000);
+  let first=true;
+  const _oh=openHub; openHub=function(){ const r=_oh.apply(this,arguments); const f=first; first=false;
+    try{ if(!f){ put(null); return r; }
+      const id=get(); if(!id||G.teacher||G.dev) return r;
+      const d=G.data; if(!d) return r;
+      if(d.save&&(d.cur===id||id==='1'||d.cur==null)){ G.life=Life.load(d.save); G.sec=secOf(G.life); startGame(); }
+      else if(d.slots&&d.slots[id]&&typeof lvGo==='function') lvGo(id);
+      else put(null);
+    }catch(e){ put(null); console.warn(e); }
+    return r; };
 })();
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
