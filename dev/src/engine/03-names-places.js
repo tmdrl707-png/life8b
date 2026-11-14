@@ -275,5 +275,4 @@ const SPOTS = {
 };
 const ZONE_AGE = {H:0,A:6,B:13,C:19,D:19};   // D: 자동차로만 갈 수 있는 먼 곳 (19~74세)
 const ageOfPi = pi => pi<19 ? pi : 19+2*(pi-19);   // 몇 번째 해인지 → 나이 (어른은 두 해씩 흐른다)
-const JOBN = {office:'회사',dream:'작업실',shop:'내 가게',farm:'농장',part:'일터'};
 

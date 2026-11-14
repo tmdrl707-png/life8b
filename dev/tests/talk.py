@@ -1,16 +1,14 @@
 # 말 걸기·만져 보기·인생 기록 메뉴 시험: 집(아기)·밖(어린이)·학교(청소년)에서 A 버튼을 눌러 보고, 엔딩의 기록 메뉴를 모두 넘겨 본다
 import asyncio,sys
 from playwright.async_api import async_playwright
+import sys,os; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__))); from lib import *
 import os; S=os.path.join(os.path.dirname(os.path.abspath(__file__)),'out')+'/'; os.makedirs(S,exist_ok=True)
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); ctx=await b.new_context(viewport={'width':1280,'height':720}); await ctx.route('https://**',lambda r:r.abort())
         pg=await ctx.new_page(); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)[:200])); ev=pg.evaluate
         await pg.goto('http://localhost:8765/index.html')
-        await pg.click('#btnTeacher'); await pg.fill('#tCode','2026'); await pg.click('#btnTCode'); await pg.select_option('#tCountry',sys.argv[1] if len(sys.argv)>1 else 'KR'); await pg.click('#btnTStart')
-        await pg.wait_for_timeout(9000)
-        for sel in ['#btnGo','#btnBorn','#btnStart']:
-            if await pg.locator(sel).count() and await pg.is_visible(sel): await pg.click(sel); break
+        await teacher(pg,sys.argv[1] if len(sys.argv)>1 else 'KR',0)
         await pg.wait_for_timeout(800)
         async def tryAt(tag,x,y):
             await ev(f"(()=>{{ if($('sixU')&&!$('sixU').hidden) $('sixUOk').click(); if(dlgOpen()) dlgClose(); if(!$('sheet').hidden) closeSheet(); $('flash').hidden=true; const c=G.life.cur; c.mDone=c.plan; (c.cal||[]).forEach(x=>x.done=1); c.sk=null; W.x={x}; W.y={y}; G.life.cur.scenes.forEach(c=>c.done=1); if(G.life.q) G.life.q=null; }})()"); await pg.wait_for_timeout(400)

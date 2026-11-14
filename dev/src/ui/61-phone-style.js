@@ -3,7 +3,6 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 @media (orientation:landscape) and (max-height:560px){
   .hud{max-width:min(54vw,440px)!important}
   #mini{width:104px!important;height:76px!important} #miniWrap::after{font-size:.5rem!important;padding:1px 3px!important;top:5px!important;right:5px!important} #miniWrap span{font-size:.55rem!important}
-  #miniRad{width:96px!important}
   #hQuest li{font-size:.62rem;padding:2px 6px}
   #toasts{width:min(29vw,16rem)!important;gap:4px!important;top:calc(6px + env(safe-area-inset-top,0px))!important}
   #toasts .toast{font-size:.7rem;line-height:1.38;padding:5px 8px 7px;border-radius:9px;box-shadow:0 4px 10px rgba(0,0,0,.25)}
@@ -21,7 +20,6 @@ document.head.insertAdjacentHTML('beforeend',`<style>
   #sheet .scene-cap{font-size:.62rem;margin-top:-2px}
   #sheet h2{font-size:1rem!important;line-height:1.4} #sheet .place{font-size:.7rem}
   #sheet .opts button{min-height:34px!important;font-size:.82rem!important;padding:6px 10px!important}
-  .decbar{height:20px;margin:-2px 0 4px} .decbar span{font-size:.68rem;line-height:20px}
   #errBox{font-size:.68rem;padding:6px 10px;max-width:60vw}
   .ihead h2{font-size:.95rem} .itabs button{font-size:.76rem;padding:5px 10px}
   .hinfo{font-size:.68rem!important;padding:3px 7px!important} .hl b{font-size:.9rem!important} #hName,.hmon{font-size:.62rem!important}

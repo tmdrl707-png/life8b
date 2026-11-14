@@ -25,71 +25,7 @@ const CLOTHES=['#E05838','#3870D0','#40A048','#E8B030','#9050C0','#E07098','#30A
 function randLook(rg,base){ const w=SKIN_W[rg]||SKIN_W.EA; let si=drawIdx(w); if(base){ si=clamp(base.si+(R()<.7?0:R()<.5?-1:1),0,5); }
   const light=['EU','EE','NA'].includes(rg)&&R()<.45;
   return {si,skin:SKINS[si],hair:light?pickOne(HAIRS_LIGHT):pickOne(HAIRS_DARK),body:pickOne(CLOTHES),pants:pickOne(['#384868','#484040','#586878','#283850','#6A5040'])}; }
-function personSpriteOld(o){
-  const key=['P',o.dir,o.fr,o.st,o.skin,o.hair,o.body,o.pants,o.long?1:0,o.hat||''].join('|');
-  if(o.dir===2){ return cached(key,16,16,(x,c)=>{ drawSpr(x,personSprite(Object.assign({},o,{dir:1})),0,0); const f=flipX(c); x.clearRect(0,0,16,16); x.drawImage(f,0,0); }); }
-  return cached(key,16,16,(x,c)=>{
-    const P=(X,Y,W,H,col)=>pr(x,X,Y,W,H,col), sk=o.skin, skD=shade(sk,.85), hr=o.hair, hrD=shade(hr,.75), hrL=shade(hr,1.35), bd=o.body, bdD=shade(bd,.75), pt=o.pants, sh='#403030', d=o.dir, fr=o.fr, st=o.st;
-    if(st==='baby'){                       // 기어 다니는 아기
-      if(d===1){ const a=fr===1?1:0; P(3,9,8,4,bd); P(3,12,8,1,bdD); P(2+a,13,2,1,sk); P(8-a,13,2,1,sk); P(9,6,5,5,sk); P(9,6,5,1,hr); P(12,5,2,2,hr); P(10,8,1,1,INK); P(13,10,1,1,skD); }
-      else { const a=fr===1?1:0; P(5,9,6,4,bd); P(5,12,6,1,bdD); P(3,10+a,2,2,sk); P(11,11-a,2,2,sk); P(5,3,6,6,sk); P(5,8,6,1,skD); P(6,2,4,2,hr); if(d===0){ P(6,5,1,1,INK); P(9,5,1,1,INK); } else P(5,3,6,4,hr); }
-      outline(c); return; }
-    const kid=st==='kid', el=st==='elder', yo=kid?2:el?1:0;     // 아이는 몸이 짧고, 노인은 조금 굽었다
-    const bodyY=8+yo, bodyH=kid?3:4, legY=bodyY+bodyH, legH=kid?1:2;
-    // 다리
-    const L1=fr===1?1:0, L2=fr===2?1:0;
-    if(d===1){ if(fr===0){ P(6,legY,4,legH,pt); P(5,legY+legH,5,1,sh); } else { P(5,legY,2,legH+L1-L2,pt); P(9,legY,2,legH+L2-L1,pt); P(4,legY+legH+L1-L2,3,1,sh); P(9,legY+legH+L2-L1,3,1,sh); } }
-    else { P(5,legY,2,legH-L2,pt); P(9,legY,2,legH-L1,pt); P(5,legY+legH-L2,2,1,sh); P(9,legY+legH-L1,2,1,sh); }
-    // 긴 머리는 몸 뒤로
-    if(o.long&&d!==3){ if(d===1){ P(9,3+yo,3,7,hr); } else { P(3,4+yo,1,6,hr); P(12,4+yo,1,6,hr); } }
-    // 몸과 팔
-    if(d===1){ P(5,bodyY,6,bodyH,bd); P(5,bodyY+bodyH-1,6,1,bdD); const sw=fr===1?1:fr===2?-1:0; P(7+sw,bodyY+1,2,bodyH-1,bdD); P(7+sw,bodyY+bodyH,2,1,sk); }
-    else { P(4,bodyY,8,bodyH,bd); P(4,bodyY+bodyH-1,8,1,bdD); P(10,bodyY,2,bodyH,bdD); const a1=fr===1?1:0, a2=fr===2?1:0;
-      P(3,bodyY+a1,1,bodyH-1,bd); P(12,bodyY+a2,1,bodyH-1,bdD); P(3,bodyY+bodyH-1+a1,1,1,sk); P(12,bodyY+bodyH-1+a2,1,1,sk); if(o.long&&d===3) P(4,bodyY,8,2,hr); }
-    // 머리
-    const hy=1+yo;
-    if(d===3){ P(3,hy,10,7,hr); P(4,hy,6,1,hrL); P(3,hy+6,10,1,hrD); }
-    else if(d===1){ P(4,hy+1,7,6,sk); P(4,hy+6,7,1,skD); P(4,hy,8,3,hr); P(9,hy+1,3,5,hr); P(10,hy+5,2,1,hrD); P(5,hy,3,1,hrL); P(5,hy+3,1,1,hr); P(5,hy+4,1,2,INK); P(4,hy+6,1,1,skD); }
-    else { P(4,hy+1,8,6,sk); P(4,hy+6,8,1,skD); P(3,hy,10,3,hr); P(3,hy+3,1,3,hr); P(12,hy+3,1,3,hr); P(4,hy+3,2,1,hr); P(10,hy+3,2,1,hr); P(5,hy,3,1,hrL); P(5,hy+4,1,2,INK); P(10,hy+4,1,2,INK); P(4,hy+5,1,1,shade(sk,.9)); }
-    if(o.hat){ P(2,hy-1,12,2,o.hat); P(4,hy-2,8,1,o.hat); }
-    if(el){ if(d===1) P(3,bodyY+1,1,legY+legH-bodyY,'#7A5A3C'); else if(d!==3) P(13,bodyY+1,1,legY+legH-bodyY,'#7A5A3C'); }
-    outline(c);
-  });
-}
 /* ---------- 탈것 · 동물 (오른쪽을 향한 그림, 왼쪽은 뒤집는다) ---------- */
-function vehicleSprite2(kind,face,col,rider){
-  const rk=rider?[rider.skin,rider.hair,rider.body,rider.pants||'',rider.st||'',rider.long?1:0,rider.sty|0].join(','):'';
-  const key=['V2',kind,face,col,rk].join('|'), w=kind==='car'?28:kind==='horse'?30:kind==='moto'?28:26, h=kind==='car'?18:kind==='horse'?30:28;
-  if(face<0) return cached(key,w,h,(x)=>x.drawImage(flipX(vehicleSprite(kind,1,col,rider)),0,0));
-  return cached(key,w,h,(x,c)=>{ const P=(X,Y,W,H,cc)=>pr(x,X,Y,W,H,cc), cD=shade(col,.7), cL=shade(col,1.35), tire='#303038', rim='#A8B0B8';
-    const ln=(x0,y0,x1,y1,cc,t)=>{ const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1); for(let i=0;i<=n;i++) P(Math.round(x0+(x1-x0)*i/n),Math.round(y0+(y1-y0)*i/n),t||1,t||1,cc); };
-    const wheel=(cx,cy,th)=>{ [[-1,-3],[0,-3],[1,-3],[-2,-2],[2,-2],[-3,-1],[3,-1],[-3,0],[3,0],[-3,1],[3,1],[-2,2],[2,2],[-1,3],[0,3],[1,3]].forEach(([dx,dy])=>P(cx+dx,cy+dy,1,1,tire));
-      if(th){ [[-1,-2],[0,-2],[1,-2],[-2,-1],[2,-1],[-2,0],[2,0],[-2,1],[2,1],[-1,2],[0,2],[1,2]].forEach(([dx,dy])=>P(cx+dx,cy+dy,1,1,'#484852')); }
-      P(cx,cy,1,1,rim); if(!th){ P(cx-2,cy,1,1,rim); P(cx+2,cy,1,1,rim); P(cx,cy-2,1,1,rim); P(cx,cy+2,1,1,rim); } };
-    // 타는 사람: 걷는 그림과 똑같은 사람의 윗몸을 안장에 앉히고, 굽힌 다리와 앞으로 뻗은 팔만 더 그린다
-    const R=rider?Object.assign({pants:'#384868',st:'adult'},rider):null;
-    const seat=(sx,sy,hand,foot)=>{ if(!R) return; const st=R.st==='baby'||R.st==='tod'?'kid':R.st, D=personDims(st), pt=R.pants, ptD=shade(pt,.8);
-      const half=personSprite({dir:2,fr:0,st,skin:R.skin,hair:R.hair,body:R.body,pants:pt,long:R.long,sty:R.sty|0,half:1});
-      ln(sx,sy,foot[0],foot[1]-1,pt,2); P(foot[0]-1,foot[1],4,1,'#3A2E2E');                       // 굽힌 다리와 신발
-      x.drawImage(half,sx-8,sy-23);                                                            // 윗몸 (엉덩이가 안장 위에)
-      const shY=sy-D.tH+1; ln(sx+1,shY,hand[0]-1,hand[1],shade(R.body,.85),2); P(hand[0],hand[1],2,2,R.skin); };
-    if(kind==='car'){ P(1,8,26,6,col); P(1,12,26,2,cD); P(6,3,15,6,col); P(8,4,5,4,'#BFE3F5'); P(14,4,5,4,'#BFE3F5'); P(8,4,2,1,'#FFFFFF'); P(2,8,4,1,cL); P(25,9,2,2,'#FFE9A8'); P(1,10,1,2,'#E05050');
-      P(4,13,5,4,tire); P(19,13,5,4,tire); P(6,14,1,2,rim); P(21,14,1,2,rim); }
-    else if(kind==='cycle'){
-      wheel(5,23); wheel(20,23);
-      ln(5,23,10,18,col); ln(5,23,11,23,col); ln(11,23,10,18,col); ln(10,18,17,18,col); ln(11,23,17,18,col); ln(17,18,20,23,col);
-      P(17,14,1,4,'#505860'); P(16,14,3,1,'#505860'); P(8,17,4,1,'#3A3030'); P(10,22,3,2,'#404850');
-      seat(10,17,[16,13],[12,23]); P(17,14,1,1,'#505860'); }
-    else if(kind==='moto'){
-      wheel(5,23,1); wheel(22,23,1);
-      P(7,18,13,3,col); P(8,17,10,1,col); P(8,17,4,1,cL); P(7,20,13,1,cD); P(10,21,6,2,'#4A4C54'); P(3,19,6,1,'#7A7E86'); P(19,13,1,7,'#606870'); P(18,13,3,1,'#606870'); P(21,16,2,2,'#FFE9A8');
-      P(7,16,6,1,'#2E2A2A'); seat(10,16,[18,12],[14,21]); }
-    else { const b='#9A6A40', bD=shade(b,.75), bL=shade(b,1.2);
-      P(4,15,18,7,b); P(4,15,18,1,bL); P(4,21,18,1,bD); P(20,8,5,9,b); P(22,6,6,5,b); P(27,8,1,2,b); P(25,8,1,1,INK); P(22,4,2,3,bD); P(19,8,2,7,'#4A3020'); P(2,15,3,6,'#4A3020');
-      P(5,22,2,7,bD); P(9,22,2,7,b); P(16,22,2,7,bD); P(20,22,2,7,b); P(5,28,2,1,'#2A2020'); P(9,28,2,1,'#2A2020'); P(16,28,2,1,'#2A2020'); P(20,28,2,1,'#2A2020');
-      P(8,13,8,3,'#C04040'); P(8,15,8,1,'#8A2A2A'); seat(12,14,[21,11],[14,21]); }
-    outline(c); });
-}
 function animalSprite(kind,fr,face){
   const key=['A',kind,fr,face].join('|');
   if(face<0) return cached(key,12,12,(x)=>x.drawImage(flipX(animalSprite(kind,fr,1)),0,0));

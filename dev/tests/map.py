@@ -1,16 +1,16 @@
 # 넓어진 동네 지도와 건물 안 시험: 나이별 갈 수 있는 범위(가림막)·미니맵, 건물에 들어가 말 걸기·물건 만지기
 import asyncio,sys
 from playwright.async_api import async_playwright
+import sys,os; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__))); from lib import *
 import os; S=os.path.join(os.path.dirname(os.path.abspath(__file__)),'out')+'/'; os.makedirs(S,exist_ok=True)
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); ctx=await b.new_context(viewport={'width':1366,'height':768}); await ctx.route('https://**',lambda r:r.abort())
         pg=await ctx.new_page(); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)[:200]+' | '+(e.stack or '').split('\n')[1][:160] if e.stack else str(e))); ev=pg.evaluate
         await pg.goto('http://localhost:8765/index.html'); await pg.wait_for_timeout(800)
-        await pg.click('#btnDev'); await pg.fill('#devCode','2026'); await pg.click('#devGo')
         code=sys.argv[1] if len(sys.argv)>1 else 'KR'
         async def start(age):
-            await ev("()=>{ if(!$('devP')||$('devP').hidden) openDev(); }"); await pg.select_option('#devC',code); await pg.fill('#devA',str(age)); await pg.click('#devPlay'); await pg.wait_for_timeout(700)
+            await dev(pg,code,age)
             await ev("()=>{ if(dlgOpen()) dlgClose(); if(!$('sheet').hidden) closeSheet(); const c=G.life.cur; c.mDone=c.plan; (c.cal||[]).forEach(x=>x.done=1); c.sk=null; G.life.f.dying=0; G.sickT=0; if(W.zone) setZone(0); }")
         async def clean(): await ev("()=>{ if(dlgOpen()) dlgClose(); if(!$('sheet').hidden) closeSheet(); $('flash').hidden=true; }")
         for age in [7,11,15,30]:

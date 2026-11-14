@@ -128,7 +128,6 @@ function bubbleSprite(type){ return cached('BUB'+type,13,14,(x,c)=>{ const P=(X,
   P(1,1,11,9,'#FFFFFF'); P(5,10,3,2,'#FFFFFF'); P(6,12,1,1,'#FFFFFF');
   if(type==='q'){ P(5,2,3,1,col); P(4,3,1,1,col); P(8,3,1,2,col); P(7,5,1,1,col); P(6,6,1,1,col); P(6,8,1,1,col); } else { P(6,2,1,5,col); P(5,2,3,4,col); P(6,8,1,1,col); }
   outline(c); }); }
-function gateSprite(){ return cached('GATE',12,32,(x,c)=>{ const P=(X,Y,Wd,H,cc)=>pr(x,X,Y,Wd,H,cc); for(let i=0;i<2;i++){ P(1+i*7,4,3,26,'#E8E8E0'); P(1+i*7,10,3,4,'#E05050'); P(1+i*7,20,3,4,'#E05050'); } P(0,6,12,3,'#F2C14E'); P(0,16,12,3,'#F2C14E'); outline(c); }); }
 
 /* ---------- 한 장면 그리기 ---------- */
 function draw(t){

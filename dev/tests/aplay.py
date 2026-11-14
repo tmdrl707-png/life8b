@@ -1,13 +1,14 @@
 # 플레이어처럼: 해마다 달력의 일을 직접 열어 고르고(아무 선택지나), 작은 선택도 하고, 나머지는 시간이 흐르게 둔다
 import asyncio,sys,random,re,json
 from playwright.async_api import async_playwright
+import sys,os; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__))); from lib import *
 import os; S=os.path.join(os.path.dirname(os.path.abspath(__file__)),'out')+'/'; os.makedirs(S,exist_ok=True)
 BAD=re.compile(r'undefined|NaN|\{[a-zA-Z0-9]+\}|\bnull\b|\[object')
 async def play(b,code,seed):
     random.seed(seed); errs=[]; issues=[]; ctx=await b.new_context(viewport={'width':900,'height':420}); await ctx.route('https://**',lambda r:r.abort())
     pg=await ctx.new_page(); ev=pg.evaluate; pg.on('pageerror',lambda e:errs.append(str(e)[:200]))
     await pg.goto('http://localhost:8765/index.html')
-    await pg.click('#btnTeacher'); await pg.fill('#tCode','2026'); await pg.click('#btnTCode'); await pg.select_option('#tCountry',code); await pg.click('#tForm [data-k=sec] [data-v="8"]'); await pg.click('#btnTStart')
+    await teacher(pg,code,0)
     await ev("G.sec=4; if(G.life.cur) G.life.cur.t=4")
     async def handle_sheet():
         await ev("(()=>{ if($('sixU')&&!$('sixU').hidden) $('sixUOk').click(); })()")

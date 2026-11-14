@@ -408,9 +408,5 @@ class Life{
   topTrait(){ return Object.keys(this.tr).sort((x,y)=>this.tr[y]-this.tr[x])[0]; }
 }
 // 사건 문장으로 장면 그림의 종류를 짐작한다
-function sceneKindOf(t){ t=String(t||'');
-  const R=[[/홍수|물에 잠|강물이 넘|큰비|우기에 길|몬순/,'flood'],[/지진|땅이 크게 흔들/,'quake'],[/폭풍|태풍|큰바람|허리케인|사이클론|토네이도/,'storm'],[/가뭄|비가 오지 않|물이 귀/,'drought'],[/더위|폭염/,'heat'],[/추위|눈보라|큰 눈|겨울|난방/,'cold'],[/산불|불이|숲에 큰불/,'fire'],[/화산/,'volcano'],[/바닷물|파도|먼바다/,'sea'],[/어수선|분쟁/,'unrest'],
-    [/태어났|동생이 태어|손주/,'baby'],[/떠나보|떠나셨|먼 길을/,'farewell'],[/결혼|가정을 꾸|잔치|혼사/,'wedding'],[/입원|아파|병|열이|돌림병|말라리아|진단|앓/,'sick'],[/졸업/,'grad'],[/집을 샀|집이 생|우리 집|새 아파트|집을 짓|지은 집/,'house'],[/시험|입학|학교|성적|수능|공부|합격/,'school'],
-    [/일자리를 잃|사람을 줄|문을 닫|실직/,'jobloss'],[/월급|돈|사업|물가|살림|빚/,'money'],[/일|직장|면접|회사|농사|공장/,'job'],[/축제|행사|명절|잔치/,'fest'],[/대회|경기|선수|결승|달리기/,'sport'],[/이사|도시로|떠난다|다른 나라|여행/,'travel'],[/강아지|동물/,'pet'],[/친구|고백|좋아하는/,'friend'],[/무대|발표회/,'stage']];
-  for(const [re,k] of R) if(re.test(t)) return k; return 'life'; }
+function sceneKindOf(){} /* 실제 정의: engine/57-repeat.js */
 

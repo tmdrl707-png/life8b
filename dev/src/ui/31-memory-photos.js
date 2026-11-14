@@ -405,5 +405,3 @@ function drawRealPhoto0(cv,img,m,L,idx){ const r=phRng(Math.floor(hashStr(m.t+'|
 async function drawMemPhoto(cv,m,L,idx){ const src=photoSrc(m,L,idx);
   if(src&&src.p&&(src.place||/^(town|travel|sea|fest|harvest)$/.test(photoKind(m)))){ try{ const img=await phGet(src.p); drawRealPhoto(cv,img,m,L,idx); return src; }catch(e){} }
   drawPhoto(cv,m,L,idx); return null; }
-function photoCredit(src){ if(!src||!src.p) return '그림'; const f=src.p[0], a=(src.p[2]||'').replace(/\s+/g,' ').trim().slice(0,32);
-  return `<a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(f.replace(/ /g,'_'))}" target="_blank" rel="noopener">사진${src.place?' · '+esc(src.place):''}: ${esc(a||'위키미디어 공용')} · ${esc(src.p[3]||'')}</a>`; }

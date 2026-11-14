@@ -6,22 +6,6 @@
 // 작은 알림: 더 크게, 글이 길수록 더 오래, 누르면 바로 닫힘
 (function(){ const _fl=flash; flash=function(place,t,fx,tr,bad){ _fl(place,t,fx,tr,bad); const f=$('flash'); clearTimeout(flash.t); const ms=clamp(3200+String(t||'').length*55,3800,8000);
   flash.t=setTimeout(()=>f.hidden=true,ms); f.onclick=()=>{ clearTimeout(flash.t); f.hidden=true; }; }; })();
-// ---- 미니맵 아래 작은 오각형 (최소화할 수 있다)
-function miniRadarSVG(v){ const cx=100, cy=98, R=58, ang=i=>-Math.PI/2+i*2*Math.PI/5, pt=(i,val)=>[cx+Math.cos(ang(i))*R*val/100,cy+Math.sin(ang(i))*R*val/100];
-  const poly=f=>AXES.map((k,i)=>pt(i,f(k)).map(z=>z.toFixed(1)).join(',')).join(' ');
-  let g=`<polygon points="${poly(()=>100)}" fill="rgba(124,149,174,.08)" stroke="#7C95AE" stroke-width="1.6"/><polygon points="${poly(()=>50)}" fill="none" stroke="#D8E0E8"/><polygon points="${poly(k=>clamp(v[k]||0,0,100))}" fill="rgba(226,112,58,.3)" stroke="#E2703A" stroke-width="2.4" stroke-linejoin="round"/>`;
-  AXES.forEach((k,i)=>{ const q=pt(i,128); g+=`<text x="${q[0].toFixed(1)}" y="${(q[1]+4).toFixed(1)}" text-anchor="middle" font-size="15" font-weight="700" fill="${AX_COL[k]}">${AX_N[k]} ${Math.round(v[k]||0)}</text>`; });
-  return `<svg viewBox="-28 0 256 196" class="mrad" role="img" aria-label="삶의 모양 ${AXES.map(k=>AX_N[k]+' '+Math.round(v[k]||0)).join(', ')}">${g}</svg>`; }
-let MINIRAD_OFF=false; try{ MINIRAD_OFF=localStorage.getItem('life8b_minirad')==='0'; }catch(e){}
-function renderMiniRad(){ const L=G.life, hud=$('hud'); if(!L||!hud) return; let el=$('miniRad');
-  if(!el){ el=document.createElement('div'); el.id='miniRad'; el.className='gbox'; ($('s-game')||document.body).appendChild(el);
-    el.onclick=e=>{ if(e.target.closest('.mrtog')){ MINIRAD_OFF=!MINIRAD_OFF; try{ localStorage.setItem('life8b_minirad',MINIRAD_OFF?'0':'1'); }catch(er){} renderMiniRad(); } else if(!MINIRAD_OFF&&$('sheet').hidden) openInfo('shape'); }; }
-  const mw=$('miniWrap'), r=mw?mw.getBoundingClientRect():null, pr=el.offsetParent?el.offsetParent.getBoundingClientRect():{top:0,left:0}, qs=document.querySelector('#hud ~ .qchips, #qChips, .qtags');
-  let top=r?r.bottom-pr.top+8:110; const chips=[...document.querySelectorAll('#hQuest li')].filter(x=>x.offsetParent); chips.forEach(c=>{ const b=c.getBoundingClientRect(); if(b.left<(r?r.right:200)) top=Math.max(top,b.bottom-pr.top+6); });
-  el.style.top=top+'px'; el.style.left=(r?r.left-pr.left:12)+'px'; if(r) el.style.width=MINIRAD_OFF?'auto':Math.min(r.width,190)+'px';
-  el.classList.toggle('off',MINIRAD_OFF);
-  el.innerHTML=MINIRAD_OFF?`<button class="mrtog" type="button" aria-label="삶의 모양 펼치기">⬠ 삶의 모양 ＋</button>`:`<div class="mrhd"><span>삶의 모양</span><button class="mrtog" type="button" aria-label="삶의 모양 접기">－</button></div>${miniRadarSVG(L.s)}`; }
-// 11-13 선생님 결정: 게임 화면의 작은 오각형은 띄우지 않는다(내 정보 '삶의 모양'에서 본다). renderMiniRad는 남겨 두되 부르지 않는다.
 // ---- 내 정보: 메뉴로 나눈다
 const INFO_TABS=[['me','개인 정보'],['fam','우리 가족'],['shape','삶의 모양'],['joy','내 행복을 만드는 것']];
 function infoRow(k,v){ return `<div class="irow"><div class="ik">${k}</div><div class="iv">${v}</div></div>`; }

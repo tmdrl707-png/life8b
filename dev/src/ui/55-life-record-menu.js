@@ -27,5 +27,4 @@ function recTab(w,k){ w.querySelectorAll(':scope>.rtabs button').forEach(x=>{ co
   w.querySelectorAll(':scope>.rpane').forEach(p=>p.hidden=p.dataset.r!==k); }
 document.addEventListener('click',e=>{ const b=e.target&&e.target.closest?e.target.closest('.rtabs button, .rpane .rnext'):null; if(!b) return; const w=b.closest('.rtabs-wrap'); if(!w) return; e.preventDefault(); recTab(w,b.dataset.r||b.dataset.go); });
 // '지나온 삶'과 교사용 기록에서도 같은 메뉴로
-lifeDetailHTML=function(l){ return lifeTabs(l); };
 

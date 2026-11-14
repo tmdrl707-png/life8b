@@ -83,7 +83,7 @@ const AX_BASE={j:38,k:21,t:13,e:18,r:49}, TR_BASE={D:20,B:9,K:12,C:12,G:4};
 function dirScore(L,d){ const D=DIRS[d], s=L.s, f=L.f; let v=D.ax.reduce((a,k)=>a+(s[k]!=null?s[k]:AX_BASE[k])/AX_BASE[k],0)/D.ax.length*50; v+=(L.tr[D.tr]||0)/TR_BASE[D.tr]*6; if(f.dirs&&f.dirs[d]) v+=f.dirs[d]*6; let h=7; for(const c of String(L.name||'')+d) h=(Math.imul(h,31)+c.charCodeAt(0))>>>0; return v+(h%1000)/1000*8; }   // 비슷하면 사람마다 다르게
 function dirRank(L){ return DIR_KEYS.slice().sort((a,b)=>dirScore(L,b)-dirScore(L,a)); }
 // 오각형에서 가장 돋보이는 두 축 (말로 보여 줄 때)
-function topAxes(L){ return ['j','k','t','e','r'].filter(k=>L.s[k]!=null).sort((a,b)=>L.s[b]/AX_BASE[b]-L.s[a]/AX_BASE[a]).slice(0,2); }
+function topAxes(){} /* 실제 정의: engine/64-young.js */
 function ensureDir(L){ const f=L.f; if(!f.dir) f.dir=(f.major&&MAJ_DIR[f.major])||dirRank(L)[0]; if(!f.major||!MAJ_DIR[f.major]||MAJ_DIR[f.major]!==f.dir&&!(f.dirs&&f.dirs[MAJ_DIR[f.major]])) f.major=pickMajor(L,f.dir,Math.min(2,myTier(L))); return f.dir; }
 // 관심 분야 둘: 가장 큰 것과 그다음 (진로 이야기에서 고른 횟수 → 삶의 모양 순)
 function dirPair(L){ const f=L.f, A=ensureDir(L), r=Object.keys(f.dirs||{}).filter(d=>d!==A&&DIRS[d]).sort((a,b)=>f.dirs[b]-f.dirs[a]).concat(dirRank(L).filter(d=>d!==A)); return [A,r[0]]; }

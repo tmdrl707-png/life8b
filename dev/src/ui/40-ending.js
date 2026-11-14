@@ -224,27 +224,7 @@ function lifeStory(L){ const P=L.ppl||{}, sc=L.sch||{}, f=L.f, by=L.by||2026, ro
   if(L.f.hob&&L.f.hob.length) rows.push(['취미',L.f.hob.map(h=>`${esc(h.n)} (Lv.${h.lv}, ${h.a}살부터)`).join(' · ')]);
   return `<p class="soft">이 사람의 이야기</p><dl class="whoami">${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl><p class="note">대학은 실제 대학 이름이고, 사람·회사·가게 이름은 그 나라에 있을 법한 가상의 이름입니다.</p>`; }
 // 돈 이야기
-function moneyStep(L){ const C=L.C, h=(L.money||[]), nw=L.nw, yr=C.med*12;
-  if(!h.length) return `<p class="soft">돈 이야기</p><p>${esc(L.name)}의 삶에서 돈은 가족이 꾸렸습니다.</p>`;
-  const pts=h.map(m=>({a:m.a,v:m.cash+m.house})), mx=Math.max(...pts.map(p=>Math.abs(p.v)),1), W=320, H=120, x=i=>i/(pts.length-1||1)*W, y=v=>H/2-v/mx*(H/2-8);
-  const svg=`<svg class="nwsvg" viewBox="0 0 ${W} ${H+18}" role="img" aria-label="나이에 따른 재산의 흐름"><rect x="0" y="0" width="${W}" height="${H}" fill="rgba(255,255,255,.04)"/><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="#4A5C6B"/><polyline points="${pts.map((p,i)=>x(i).toFixed(1)+','+y(p.v).toFixed(1)).join(' ')}" fill="none" stroke="#FFC9A8" stroke-width="2.5"/><text x="0" y="${H+14}" fill="#AFC0CD" font-size="11">${pts[0].a}살</text><text x="${W}" y="${H+14}" fill="#AFC0CD" font-size="11" text-anchor="end">${pts[pts.length-1].a}살</text><text x="4" y="${H/2-4}" fill="#8FA3B3" font-size="10">0원</text></svg>`;
-  const cards=[[fmtWon(L.earned||0),'평생 번 돈 (배우자 포함)'],[fmtWon(L.maxNW||0),'재산이 가장 많았을 때'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산 (집 포함)'],[L.house?fmtWon(L.house):(L.f.houseN?'팔았음':'없음'),L.f.houseA?`마지막 집 (${L.f.houseA}살에 마련)`:'내 집']];
-  const yrs=nw/yr, msg = nw<0?'빚이 남았지만, 그 돈으로 가족이 함께 살 집과 시간을 얻었습니다.':yrs>=15?`이 나라 보통 벌이로 ${Math.round(yrs)}년을 모아야 하는 만큼을 남겼습니다. 넉넉한 편이었습니다.`:yrs>=4?`이 나라 보통 벌이 ${Math.round(yrs)}년치쯤을 남겼습니다. 큰 부자는 아니었지만, 그때그때 필요한 만큼으로 살았습니다.`:'남긴 재산은 많지 않았습니다. 버는 만큼 가족과 함께 쓰며 살았습니다.';
-  return `<p class="soft">돈 이야기</p><div class="msum">${cards.map(c=>`<div><b>${c[0]}</b><span>${c[1]}</span></div>`).join('')}</div>${svg}<p>${msg}</p><p class="note">${C.n}의 보통 한 해 벌이는 약 ${fmtWon(yr)}입니다. 모든 돈은 그 나라 돈을 한국 돈으로 바꾼 근사치이고, 집을 살 때 빌린 돈은 '가진 돈'에서 마이너스로 셉니다.</p>`; }
 // 행복은 어디서 왔을까: 한 삶 동안 행복을 받쳐 준 것들의 평균
-function happyStep(L){
-  const hp=L.hp||{}, n=Math.max(1,hp.cnt||1), nm={m:'살림(돈)',n:'나라의 형편',r:'곁의 사람들',c:'함께 웃는 문화',h:'건강'}, avg={}; for(const k in nm) avg[k]=(hp[k]||0)/n;
-  const aj=L.hist.length?Math.round(L.hist.reduce((s,x)=>s+x.j,0)/L.hist.length):Math.round(L.s.j), ks=Object.keys(nm).sort((a,b)=>avg[b]-avg[a]), best=ks[0], mx=Math.max(...Object.values(avg).map(Math.abs),1);
-  const fmt=v=>{ const r=Math.round(v); return (r>0?'+':'')+(r===0?0:r); };
-  const bars=Object.keys(nm).map(k=>`<div class="tbar hp"><span>${nm[k]}</span><i style="width:${Math.max(2,Math.abs(avg[k])/mx*100)}%;background:${avg[k]>=0?'#8FD3B0':'#E8A0A0'}"></i><span class="num">${fmt(avg[k])}</span></div>`).join('');
-  const poor=L.C.tier<=2, moneyLow=avg.m<0, msg = best==='m'||best==='n' ? '이 삶에서는 넉넉한 살림이 행복을 크게 받쳐 주었습니다. 그래도 곁의 사람들이 없었다면 그 행복은 훨씬 작았을 거예요.'
-    : moneyLow ? '살림은 넉넉하지 않았습니다. 그래도 '+josa(nm[best],'이','가')+' 행복을 더 크게 받쳐 주었습니다. 가진 것이 적어도 행복할 수 있었습니다.'
-    : josa(nm[best],'이','가')+' 이 삶의 행복을 가장 크게 받쳐 주었습니다.';
-  const job=L.jobs&&L.jobs.length?`<p class="soft">거쳐 온 일: ${L.jobs.map(x=>esc(x.n)).join(' → ')}${L.maxInc?` · 가장 많이 벌 때 한 달 약 ${fmtPay(L.maxInc)} (이 나라 보통 벌이 약 ${fmtPay(L.C.med)})`:''}</p>`:'';
-  return `<p class="soft">행복은 어디서 왔을까</p><p class="big">${esc(L.name)}의 평균 행복은 ${aj}점이었습니다.</p>${bars}<p>${msg}</p>${job}
-    <blockquote>세계행복보고서 2026에서 코스타리카는 4위, 멕시코는 12위, 한국은 67위였습니다. 두 나라 모두 한국보다 1인당 소득이 적지만 스스로 행복하다고 답한 정도는 훨씬 높았습니다. 행복은 돈만이 아니라 서로 기댈 수 있는 사람, 스스로 삶을 정할 수 있는 자유, 나누는 마음 같은 것들이 함께 만듭니다.<cite>세계행복보고서(World Happiness Report) 2026</cite></blockquote>
-    <p>${poor?'넉넉하지 않은 곳에서도':'어디에서 태어나든'} 지금 가진 것에 감사하고 곁의 사람을 아끼며 사는 삶은, 충분히 행복할 수 있습니다.</p>`;
-}
 async function drawCard(mems,o){
   const L=G.life, c=$('card'), x=c.getContext('2d'), Wd=c.width, H=c.height, F=FONT, by=L.by||2026;
   const T=(s,px,py,size,color,weight,align)=>{ x.font=`${weight||400} ${size}px ${F}`; x.fillStyle=color; x.textAlign=align||'left'; x.textBaseline='alphabetic'; x.fillText(s,px,py); };

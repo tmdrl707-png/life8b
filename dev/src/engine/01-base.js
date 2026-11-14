@@ -27,19 +27,16 @@ const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
 const pickOne = a=>a[Math.floor(R()*a.length)];
 function drawIdx(ps){ let x=R(),i=0; for(;i<ps.length-1;i++){ x-=ps[i]; if(x<0)break; } return i; }
 
-const SETN = {U:'도시',R:'농촌'}, P_SET = {U:.8,R:.2};
-const FAM  = [ {n:'넉넉한 가정',w:.25}, {n:'보통 가정',w:0}, {n:'어려운 가정',w:-.22} ], P_FAM=[.2,.6,.2];
+const SETN = {U:'도시',R:'농촌'};
+const FAM  = [ {n:'넉넉한 가정',w:.25}, {n:'보통 가정',w:0}, {n:'어려운 가정',w:-.22} ];
 const SEX  = ['남자','여자'], P_SEX=[.512,.488];
 const STAT = {h:'건강',j:'행복',k:'지식',r:'관계'};
 const TRAIT= {D:'성실함',B:'용기',K:'다정함',C:'호기심',G:'감사'};
 const STAGES=[[0,'유아기'],[6,'어린이'],[13,'청소년'],[19,'청년'],[36,'중년'],[60,'노년']];
-const SEASONS=['봄','여름','가을','겨울'];
-const NAMES=[['도윤','서준','하준','민재','지호','건우','우진','현우','태양','은호'],['서연','하은','지우','수아','다은','채원','윤서','지민','소율','예린']];
 function stageOf(a){ let s=STAGES[0][1]; for(const [x,n] of STAGES) if(a>=x) s=n; return s; }
 // 변화 글자: h건강 j행복 k지식 r관계 + 숫자 · $월급 변화(%) · x1 일자리를 잃음 · 대문자 하나는 성향(D B K C G)
 function parseFx(str){ const fx={}; let tr=null; for(const t of (str||'').split(' ')){ if(!t) continue; if(/^[DBKCG]$/.test(t)) tr=t; else fx[t[0]]=+t.slice(1); } return {fx,tr}; }
 // 받침에 맞는 조사: josa('사과','을','를') → '사과를'. '으로/로'는 ㄹ 받침도 '로'
-function hasJong(w){ const c=String(w).charCodeAt(String(w).length-1); return c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28>0; }
 function josa(w,a,b){ w=String(w); const c=w.charCodeAt(w.length-1), jong=c>=0xAC00&&c<=0xD7A3?(c-0xAC00)%28:0; if(a==='으로') return w+(jong>0&&jong!==8?'으로':'로'); return w+(jong>0?a:b); }
 // 월급 보이기: 한국 돈 만 원 단위 값을 읽기 쉽게
 function fmtPay(m){ if(m>=10000) return (m/10000).toFixed(m>=100000?0:1).replace(/\.0$/,'')+'억 원'; if(m>=100) return Math.round(m/10)*10+'만 원'; if(m>=1) return Math.round(m)+'만 원'; return Math.max(1,Math.round(m*10))+'천 원'; }

@@ -10,7 +10,7 @@ with sync_playwright() as p:
         return pg.evaluate("[!$('s-hub').hidden,$('loginErr').textContent]")
     print('login1',login('민지','abc123'))
     # 삶 하나 살고 끝내기 -> 허브
-    pg.click('#btnNew'); pg.wait_for_timeout(500); pg.evaluate("(()=>{ if($('s-vow')&&!$('s-vow').hidden){ VOW.a=['r','h','k']; VOW.st=VOW_Q.length+1; vowDraw(); $('vNext').click(); } })()"); pg.wait_for_timeout(300); pg.click('#btnLive'); pg.wait_for_timeout(500)
+    pg.click('#btnNew'); pg.wait_for_timeout(500); pg.evaluate("(()=>{ if($('s-vow')&&!$('s-vow').hidden){ VOW.a=[['r'],['h'],['k'],['r'],['h']]; VOW.st=VOW_Q.length+1; vowDraw(); $('vNext').click(); } })()"); pg.wait_for_timeout(300); pg.click('#btnLive'); pg.wait_for_timeout(500)
     pg.evaluate(FIN); pg.evaluate("finishLife()"); pg.wait_for_timeout(600)
     for _ in range(40):
         if not pg.locator('#btnStep').count(): break
@@ -24,7 +24,7 @@ with sync_playwright() as p:
     pg.click('#btnLogout'); pg.wait_for_timeout(300)
     print('login2 wrong',login('민지','zzzzzz')); 
     # 교사
-    pg.click('#btnTeacher'); pg.fill('#tCode','2026'); pg.click('#btnTCode'); pg.wait_for_timeout(800)
+    pg.evaluate("G.tok=1; openDev()"); pg.click('#devP [data-t=rec]'); pg.wait_for_timeout(800)   # 11-14: 아이디 관리는 개발자 모드 '기록·아이디' 탭으로 옮김
     pg.screenshot(path=S+'tids0.png',full_page=True)
     print('list',pg.inner_text('#tIdList')[:200].replace('\n',' | '))
     pg.click('[data-iv="민지"]'); pg.wait_for_timeout(500); pg.click('[data-ibox="민지"] summary'); pg.wait_for_timeout(300); pg.screenshot(path=S+'tids1.png',full_page=True)
@@ -34,7 +34,7 @@ with sync_playwright() as p:
     # 초기화
     pg.click('[data-ir="민지"]'); pg.click('[data-ir="민지"]'); pg.wait_for_timeout(300); print('reset',pg.inner_text('#tIdMsg'))
     pg.screenshot(path=S+'tids2.png',full_page=True)
-    pg.click('#btnTBack'); pg.wait_for_timeout(400)
+    pg.evaluate("$('devP').hidden=true"); pg.wait_for_timeout(400)
     print('hub?',pg.evaluate("[!$('s-login').hidden,!$('s-hub').hidden]"))
     pg.evaluate("show('login')")
     print('closed new',login('새친구','abc123'))
@@ -44,6 +44,6 @@ with sync_playwright() as p:
     pg.click('#btnLogout'); pg.wait_for_timeout(200)
     print('old pw rejected',login('민지','abc123'))
     # 삭제
-    pg.click('#btnTeacher'); pg.wait_for_timeout(800)
+    pg.evaluate("G.tok=1; openDev()"); pg.click('#devP [data-t=rec]'); pg.wait_for_timeout(800)
     pg.click('[data-id="나래"]'); pg.click('[data-id="나래"]'); pg.wait_for_timeout(300); print('del',pg.inner_text('#tIdMsg'))
     print(errs); b.close()

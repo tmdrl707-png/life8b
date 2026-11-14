@@ -88,6 +88,6 @@ function setJob(L,id){
 }
 function loseJob(L){ const id=L.f.job, old=jobInfo(L,id); setJob(L,L.set==='R'?'farm':'day'); if(famOfJob(L,id)!=='hand'||eduLevel(L)>=3){ L.f.lostJob=id; L.f.needJob=2; } return old; }
 // 그 나라의 연금·가족의 도움
-function pension(L){ return L.C.med*(L.C.tier>=4?.5:L.C.tier===3?.3:.15); }
+function pension(){} /* 실제 정의: engine/33-institutions.js */
 
 

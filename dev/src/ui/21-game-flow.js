@@ -78,7 +78,7 @@ function chips(fx,tr){ let h=''; if(fx) for(const k in fx){ const v=fx[k]; if(!v
     else if(STAT[k]) h+=`<span class="chip ${v>0?'up':'dn'}">${STAT[k]} ${v>0?'+':'−'}${Math.abs(v)}</span>`; }
   return h?`<div class="chips">${h}</div>`:''; }
 // 장면 그림: 창이 열려 있는 동안 조금씩 움직인다
-function sceneHTML(kind){ return kind?`<canvas class="scene" width="640" height="320" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[kind]||'삶'} —</div>`:''; }
+function sceneHTML(){} /* 실제 정의: ui/53-art-loader.js */
 function animScenes(){ const cs=[...$('sheetBox').querySelectorAll('canvas.scene')]; if(!cs.length) return; const t0=performance.now();
   const step=()=>{ if($('sheet').hidden) return; let alive=false; cs.forEach(c=>{ if(!c.isConnected) return; alive=true; const x=c.getContext('2d'); x.setTransform(c.width/160,0,0,c.width/160,0,0); x.imageSmoothingEnabled=false; x.clearRect(0,0,160,80); drawScene(x,c.dataset.sc,(performance.now()-t0)/1000,G.life); }); if(alive) requestAnimationFrame(step); }; step(); }
 function popup(tag,txt,fx,after,cls,sc,nt){ if(softOn()&&/^(farewell|sick|hosp|unrest)$/.test(sc||'')) sc=null; if(G.life&&G.life.pv) txt=G.life.pv(txt); sheet(`${sceneHTML(sc)}<div class="place">${esc(tag)}</div><p class="evt">${esc(txt)}</p>${nt?`<p class="nt">${esc(nt)}</p>`:''}${chips(fx)}<button class="btn primary" id="btnOk">확인 ▶</button>`,'event '+(cls||'')); renderHud(); $('btnOk').onclick=()=>{ closeSheet(); if(after) after(); }; }
@@ -87,13 +87,12 @@ function sheet(html,cls){ $('sheetBox').className='box gbox '+(cls||''); $('shee
 function closeSheet(){ $('sheet').hidden=true; paused=false; lastT=performance.now(); }
 // 선택지의 '될 가능성' 표시: 0 숨김 · 1 모두 높음/보통/낮음 · 2 모두 숫자(기본). 학급 방의 선생님 설정이 먼저. 확률이 없는 선택은 '확실'
 function roomCfg(k){ const r=G.roomInfo, c=r&&r.cfg; return !G.teacher&&c&&c[k]!=null&&c[k]!==''?c[k]:null; }
-function probMode(){ return 2; }   // 항상 보인다(숨기기 없음): 1 높음·보통·낮음 · 2 숫자
+// 확률은 늘 숫자(%)로 보인다 (11-14: 숨기기·'높음/보통/낮음' 설정 없앰)
 function softOn(){ const v=roomCfg('soft'); if(v!=null) return +v===1; return !!(G.life&&G.life.opt&&G.life.opt.soft); }
 const RD=()=>Math.max(1,+(G.opts.read||1));   // 글이 떠 있는 시간 배율 (천천히 읽기)
-const pct=(p,big)=>{ const m=probMode(); if(!m) return ''; if(p==null||p>=.999) return `<span class="pl sure">${sureWord()}</span>`;
-  const lv=p>=.65?['hi','높음']:p>=.4?['mid','보통']:['lo','낮음'];
-  return m===2?`<span class="pl ${lv[0]}">잘될 확률 ${Math.round(p*100)}%</span>`:`<span class="pl ${lv[0]}">될 가능성 ${lv[1]}</span>`; };
-function onOpts(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e.target.closest('button'); if(b) fn(+b.dataset.i); }; }
+const pct=(p,big)=>{ if(p==null||p>=.999) return `<span class="pl sure">${sureWord()}</span>`;
+  return `<span class="pl ${p>=.65?'hi':p>=.4?'mid':'lo'}">잘될 확률 ${Math.round(p*100)}%</span>`; };
+function onOpts(){} /* 실제 정의: ui/50-stats-ui.js */
 // 작은 선택
 function openScene(k){
   const L=G.life, c=L.cur.scenes[k], sc=SCENES[c.i], txt=L.tx(Array.isArray(sc.txt)?sc.txt[L.set==='U'?0:1]:sc.txt), place=scenePos(c.i).n;
@@ -110,17 +109,10 @@ function openCross(){
 function openMajor(){
   const L=G.life, m=MAJORS[L.cur.m], sc=m.sc||m.hz||sceneKindOf(m.txt);
   sheet(`${sceneHTML(sc)}<div class="place">${L.age}살 · 큰 사건</div><h2>${esc(L.tx(m.txt))}</h2><div class="opts">${m.opts.map((o,i)=>`<button data-i="${i}">${esc(L.tx(o.l))}${pct(L.majorP(o),1)}</button>`).join('')}</div><p class="small sub">어떤 선택도 결과를 보장하지 않습니다. 쌓아 온 것들이 확률을 바꿀 뿐입니다.</p>`,'cross big');
-  gateUI('m',m.opts); onOpts(i=>{ const r=L.chooseMajor(i); popup(`${L.age}살 · ${L.tx(r.label)} · ${r.ok?'잘됨':'뜻대로 되지 않음'}${probMode()===2?` (확률 ${Math.round(r.p*100)}%)`:''}`,r.t,r.fx,()=>{ renderHud(); persist(); if(r.sick) startSick(); },r.ok?'':'bad',r.sc); });
+  gateUI('m',m.opts); onOpts(i=>{ const r=L.chooseMajor(i); popup(`${L.age}살 · ${L.tx(r.label)} · ${r.ok?'잘됨':'뜻대로 되지 않음'} (확률 ${Math.round(r.p*100)}%)`,r.t,r.fx,()=>{ renderHud(); persist(); if(r.sick) startSick(); },r.ok?'':'bad',r.sc); });
 }
 // 미션: 부탁을 받고 → 다른 곳에 다녀와서 → 돌아와 알린다
-function openQuest(){
-  const L=G.life, q=L.q, d=QUESTS[q.i];
-  if(q.st===0){ sheet(`<div class="place">${esc(giverName(d.giver))} · 부탁</div><h2>${esc(L.tx(d.ask))}</h2><div class="opts"><button data-i="1">할게요<span>${esc(L.spotName(d.target))}에 다녀오기</span></button><button data-i="0">지금은 어려워요</button></div>`,'quest');
-    onOpts(i=>{ L.questAccept(!!i); closeSheet(); if(i) flash('미션 시작',`${L.spotName(d.target)}에 다녀오자. 지도의 파란 점을 보세요.`); renderHud(); persist(); }); }
-  else if(q.st===1){ sheet(`<div class="place">미션 · ${esc(L.spotName(d.target))}</div><h2>${esc(L.tx(d.at))}</h2><div class="opts"><button data-i="0">해 본다${pct(L.questP())}</button></div>`,'quest');
-    onOpts(()=>{ const r=L.questDo(); closeSheet(); flash('미션',r.ok?`잘 해냈다. ${giverName(d.giver)}에게 돌아가자.`:`뜻대로 되지 않았다. 일단 ${giverName(d.giver)}에게 돌아가자.`,null,null,!r.ok); renderHud(); persist(); }); }
-  else { const r=L.questEnd(); popup(r.ok?'미션 완료':'미션 · 뜻대로 되지 않음',r.t,r.fx,()=>{ renderHud(); persist(); },r.ok?'':'bad'); }
-}
+function openQuest(){} /* 실제 정의: ui/54-talk.js */
 function endPeriod(){
   const L=G.life; if(!L||L.dead) return;
   if(G.teacher){ if($('sheet').hidden) teacherYearEnd(); return; }
@@ -195,17 +187,7 @@ $('btnInfo').onclick=()=>{
   $('btnOk').onclick=closeSheet;
 };
 // 능력치: 지금 값 막대 + 지난해와 비교 + 나이에 따른 변화 꺾은선
-const STAT_COL={h:'#2F8F7A',j:'#E2703A',k:'#3870D0',r:'#C2577A'};
-function statPanel(L){ const H=(L.hist||[]).filter(x=>x.a<L.age), prev=H.length?H[H.length-1]:null;
-  const bars=Object.keys(STAT).map(k=>{ const v=Math.round(L.s[k]), d=prev?v-prev[k]:0;
-    return `<div class="sbar"><span>${STAT[k]}</span><div class="tr" role="img" aria-label="${STAT[k]} ${v}"><i style="width:${v}%;background:${STAT_COL[k]}"></i><em style="left:50%"></em></div><span class="v"><b>${v}</b>${prev&&d?` <small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:''}</span></div>`; }).join('');
-  return `<div class="chart"><h3>능력치 <span class="sub small">(0~100 · 가운데 선이 50 · ▲▼는 지난해와 비교)</span></h3>${bars}${statLine(L)}</div>`; }
-function statLine(L){ const H=(L.hist||[]).slice(); H.push({a:L.age,h:L.s.h,j:L.s.j,k:L.s.k,r:L.s.r}); if(H.length<3) return '';
-  const W=480, Hh=150, pl=28, pr=8, pt=8, pb=20, a0=H[0].a, a1=Math.max(a0+1,H[H.length-1].a), X=a=>pl+(a-a0)/(a1-a0)*(W-pl-pr), Y=v=>pt+(1-v/100)*(Hh-pt-pb);
-  let g=''; [0,25,50,75,100].forEach(v=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="#E2E8EE"/><text x="${pl-4}" y="${Y(v)+3}" text-anchor="end">${v}</text>`; });
-  const step=Math.max(5,Math.ceil((a1-a0)/6/5)*5); for(let a=Math.ceil(a0/step)*step;a<=a1;a+=step) g+=`<text x="${X(a)}" y="${Hh-4}" text-anchor="middle">${a}살</text>`;
-  const lines=Object.keys(STAT).map(k=>`<polyline points="${H.map(p=>X(p.a).toFixed(1)+','+Y(p[k]).toFixed(1)).join(' ')}" fill="none" stroke="${STAT_COL[k]}" stroke-width="2" stroke-linejoin="round"/>`).join('');
-  return `<svg class="lchart" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="나이에 따른 능력치 변화">${g}${lines}</svg><div class="lgd">${Object.keys(STAT).map(k=>`<span><i style="background:${STAT_COL[k]}"></i>${STAT[k]}</span>`).join('')}</div>`; }
+function statPanel(){} /* 실제 정의: ui/50-stats-ui.js */
 function traitPanel(L){ const ks=Object.keys(TRAIT), mx=Math.max(1,...ks.map(k=>L.tr[k]||0)); if(!ks.some(k=>L.tr[k])) return '';
   return `<div class="chart"><h3>성향 <span class="sub small">(그 성향으로 고른 횟수)</span></h3>${ks.map(k=>`<div class="sbar"><span>${TRAIT[k]}</span><div class="tr"><i style="width:${(L.tr[k]||0)/mx*100}%;background:#7C95AE"></i></div><span class="v">${L.tr[k]||0}번</span></div>`).join('')}</div>`; }
 function jobsTable(L){ const J=L.jobs||[]; if(!J.length) return '';
@@ -216,15 +198,7 @@ function moneySvg(L){ const h=(L.money||[]).map(m=>m.cash+m.house); if(h.length<
   return `<svg class="msvg" viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="#C0C8D0" stroke-width="1"/><polyline points="${pts}" fill="none" stroke="#3870D0" stroke-width="2"/></svg><span class="sub small">${L.money[0].a}살부터 지금까지 가진 돈(집 포함)의 흐름</span>`; }
 function barSvg(v){ const w=Math.min(50,Math.abs(v)*3.2), pos=v>=0; return `<svg viewBox="0 0 100 8" width="100%" height="8" preserveAspectRatio="none"><rect x="0" y="3.5" width="100" height="1" fill="#C0C8D0"/><rect x="${pos?50:50-w}" y="0" width="${w}" height="8" fill="${pos?'#48B888':'#E07070'}"/><rect x="49.5" y="0" width="1" height="8" fill="#283038"/></svg>`; }
 $('btnMem').onclick=()=>openMem('all');
-function openMem(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()=>true,big:m=>m.big,fam:m=>m.fam||/엄마|아빠|아내|남편|아들|딸|손주|동생|형|누나|언니|오빠|할머니|할아버지|가족/.test(m.t+(m.q||'')),pick:m=>!!m.q}[flt], list=all.filter(test).slice(0,80);
-  const tab=(k,n)=>`<button data-f="${k}" class="${flt===k?'on':''}">${n}</button>`;
-  sheet(`<h2>${esc(L.name)}의 기억</h2><p class="small sub">선택 ${L.n}번 · 놓친 순간 ${L.miss}번 · 주황 줄은 큰 일 · ▣ 표시 줄을 누르면 그 장면을 다시 봅니다</p>
-    <div class="mtabs">${tab('all','전체')}${tab('big','큰 사건')}${tab('pick','내가 고른 순간')}${tab('fam','가족')}</div>
-    <div class="tscroll"><table class="dtbl"><thead><tr><th>나이</th><th>그때의 상황 · 나의 선택</th><th>그 결과</th></tr></thead><tbody>${list.length?list.map((m,i)=>`<tr class="${m.sc?'sc':''} ${m.big?'big':''}" data-i="${i}"><td class="a">${m.a}살</td><td class="q">${m.q?esc(m.q):'<span class="sub">—</span>'}${m.l?`<br><b style="font-weight:600;color:#2858A8">→ ${esc(m.l)}</b>`:''}</td><td>${esc(memT(m))}${m.rp>1?` <span class="rp">×${m.rp}</span>`:''}${m.f?'<span class="tag">뜻대로 안 됨</span>':''}${m.sc?' <span class="sub">▣</span>':''}</td></tr>`).join(''):'<tr><td colspan="3" class="sub">아직 없어요</td></tr>'}</tbody></table></div>
-    <p class="small sub">최근 기억부터 ${list.length}개를 보여 줍니다.</p><button class="btn" id="btnOk">닫기</button>`);
-  $('btnOk').onclick=closeSheet;
-  $('sheetBox').querySelectorAll('.mtabs button').forEach(b=>b.onclick=()=>openMem(b.dataset.f));
-  $('sheetBox').querySelector('tbody').onclick=e=>{ const tr=e.target.closest('tr.sc'); if(!tr) return; const m=list[+tr.dataset.i]; popup(`${m.a}살의 기억`,memT(m),null,()=>openMem(flt),'',m.sc,m.q?`${m.q}${m.l?' → '+m.l:''}`:null); }; }
+function openMem(){} /* 실제 정의: ui/52-polish.js */
 $('btnExit').onclick=()=>{ sheet(`<h2>메인 화면으로 나갈까요?</h2><p class="sub">${G.teacher?'삶은 저절로 저장돼요. 교사용 모드의 \'내 체험 기록\'에서 언제든 이어서 살 수 있어요.':'삶은 저절로 저장돼요. 나가도 같은 아이디로 들어오면 이어서 살 수 있어요.'}</p><div class="row"><button class="btn primary" id="btnQuit">메인 화면으로 나가기</button><button class="btn" id="btnOk">계속 살기</button></div>`);
   $('btnOk').onclick=closeSheet; $('btnQuit').onclick=()=>{ G.running=false; closeSheet(); if(G.teacher){ persist(true); G.teacher=false; G.life=null; G.tid=null; openTeacherBody(); } else { persist(true); openHub(); } }; };
 $('miniWrap').onclick=()=>{ if(!$('sheet').hidden) return; openMaps('town'); };

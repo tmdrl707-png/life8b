@@ -1,12 +1,13 @@
 import asyncio
 from playwright.async_api import async_playwright
+import sys,os; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__))); from lib import *
 import os; S=os.path.join(os.path.dirname(os.path.abspath(__file__)),'out')+'/'; os.makedirs(S,exist_ok=True)
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); ctx=await b.new_context(viewport={'width':1280,'height':760},device_scale_factor=1); await ctx.route('https://**',lambda r:r.abort())
         pg=await ctx.new_page(); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
         await pg.goto('http://localhost:8765/index.html')
-        await pg.click('#btnTeacher'); await pg.fill('#tCode','2026'); await pg.click('#btnTCode'); await pg.select_option('#tCountry','KR'); await pg.click('#btnTStart')
+        await teacher(pg,'KR',0)
         await pg.evaluate("""()=>{ const L=G.life; for(let y=0;y<45;y++){ L.startPeriod(); let g=0; while(L.pending&&g++<6) L.choose(0); const cal=L.ensureCal()||[]; cal.forEach((it,k)=>{ if(!it.done){ const ev=L.calEv(it); L.calDo(k,ev&&ev.opts?0:null); } }); L.endPeriod(); if(L.dead) break; } L.lifespan=L.age; }""")
         await pg.evaluate("finishLife()"); await pg.wait_for_timeout(600)
         n=0; heads=[]

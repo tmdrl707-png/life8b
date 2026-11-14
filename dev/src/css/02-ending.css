@@ -57,11 +57,6 @@
 #flash{width:min(94%,34rem);padding:18px 20px;pointer-events:auto;cursor:pointer}
 #flash p{font-size:1.22rem;line-height:1.65}
 #flash .place{font-size:.9rem}
-#miniRad{position:absolute;z-index:6;padding:6px 8px 4px;border-radius:12px;background:rgba(255,253,246,.94);cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.18)}
-#miniRad.off{padding:4px 6px}
-#miniRad .mrhd{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;font-weight:800;color:#33404C}
-#miniRad .mrtog{border:1.5px solid #7C8A96;background:#fff;border-radius:8px;font-size:.8rem;font-weight:800;padding:2px 8px;cursor:pointer;color:#33404C;min-height:28px}
-#miniRad .mrad{width:100%;display:block}
 #sheet .box.info,#sheet .box.mem{width:min(100%,40rem);gap:12px}
 .ihead{position:sticky;top:-14px;z-index:4;background:inherit;margin:-14px -4px 0;padding:14px 48px 8px 4px;background:#FAF8F2;border-bottom:1px solid #E3DDCF}
 .ihead h2{margin:2px 0 8px;font-size:1.25rem}

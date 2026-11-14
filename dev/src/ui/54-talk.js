@@ -38,7 +38,6 @@ function tkYear(L){ const c=L.cur; if(!c) return {n:0,o:0,who:{},obj:{}}; return
 function tinyGain(L,g,why){ const s0=Object.assign({},L.s), p=L._ctx; L._why=why||''; L._ctx='scene'; try{ L.apply(g); } finally{ L._ctx=p; L._why=null; }
   const up=[]; for(const k of ['t','e','k','j','r','h']) if(L.s[k]!=null&&L.s[k]-s0[k]>.05) up.push((AX_N[k]||STAT[k])+' 조금 ↑'); return up; }
 const chipT=up=>up&&up.length?`<div class="tchips">${up.map(u=>`<span>${esc(u)}</span>`).join('')}</div>`:'';
-function tflash(place,t,up){ flash(place,t,null); const f=$('flash'); if(up&&up.length) f.insertAdjacentHTML('beforeend',chipT(up)); }
 
 
 /* ---------- 아래 대화창: 한 글자씩 나오고, 누르면(또는 A·스페이스·엔터) 다음으로 ---------- */
@@ -334,7 +333,7 @@ CC=cc0; }
    미션의 효과(부탁을 들어준 결과)는 예전과 같은 크기로 적용되고, 바뀐 능력치는 대화창 아래 작은 표로 보여 준다. */
 const qSay=t=>String(t).replace(/^["“]|["”]$/g,'');
 function qChips(s0,s1){ const up=[]; for(const k of ['j','k','t','e','r','h']){ const d=(s1[k]||0)-(s0[k]||0); if(Math.abs(d)>.05) up.push((AX_N[k]||STAT[k])+(d>0?' ↑':' ↓')); } return up; }
-function qPctText(p){ const m=probMode(); if(m===2) return ` (잘될 확률 ${Math.round(p*100)}%)`; if(m===1){ return p>=.65?' (될 가능성 높음)':p>=.4?' (될 가능성 보통)':' (될 가능성 낮음)'; } return ''; }
+function qPctText(p){ return ` (잘될 확률 ${Math.round(p*100)}%)`; }
 openQuest=function(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return; const d=QUESTS[q.i], who=giverName(d.giver), there=L.spotName(d.target);
   if(q.st===0){
     dlgRun([{who,t:qSay(L.tx(d.ask)),opts:[`할게요 (${there}에 다녀오기)`,'지금은 어려워요'],then:i=>{ const yes=i===0; L.questAccept(yes); renderHud(); persist();

@@ -127,7 +127,7 @@ animalSprite=function(kind,fr,face){ if(!ART.ok||!artHas(kind)) return _animalSp
 const SC_ART=new Set(['house','flood','quake','storm','drought','heat','cold','fire','volcano','sea','unrest','baby','birth','farewell','wedding','sick','hosp','school','grad','noschool','job','harvest','jobloss','money','mine','fest','sport','travel','pet','friend','stage','town','life']);
 const SC_RURAL=new Set(['house','school','birth','baby','job','hosp']);
 const SC_IMG={};
-const SC_REG=new Set(['life','farewell']), RG_ART={EA:'EA',SE:'SE',SA:'SA',AF:'AF',ME:'ME',CA:'ME',LA:'LA',EU:'WE',NA:'WE',OC:'WE'};
+const RG_ART={EA:'EA',SE:'SE',SA:'SA',AF:'AF',ME:'ME',CA:'ME',LA:'LA',EU:'WE',NA:'WE',OC:'WE'};
 const SC_VAR=new Set(["baby_AF", "baby_EA", "baby_LA", "baby_ME", "baby_SA", "baby_SE", "baby_WE", "fest_AF", "fest_LA", "fest_ME", "fest_SA", "fest_SE", "fest_WE", "hosp_AF", "hosp_LA", "hosp_ME", "hosp_SA", "hosp_SE", "hosp_WE", "house_AF", "house_LA", "house_ME", "house_SA", "house_SE", "job_AF", "job_LA", "job_ME", "job_SA", "job_SE", "job_WE", "school_AF", "school_LA", "school_ME", "school_SA", "school_SE", "school_WE", "school_r", "wedding_AF", "wedding_EA", "wedding_LA", "wedding_ME", "wedding_SA", "wedding_SE", "wedding_WE"]);
 // 집 밖으로 나가는 장면(town): 나이 4단계(6·13·19·75세) × 지역 7곳
 const townStage=a=>a<10?6:a<19?13:a<75?19:75;
@@ -165,7 +165,6 @@ function scArtName(kind,L){ if(kind==='title') return 'title'; kind=String(kind|
   if(g){ const k=(kind==='birth'&&g!=='EA'&&g!=='WE')?'baby':kind; if(SC_VAR.has(k+'_'+g)) return k+'_'+g; }
   return kind; }
 function scImg(n){ let e=SC_IMG[n]; if(!e){ e=SC_IMG[n]={im:null}; artLoad('art/sc/'+n+'.webp?v=1114').then(im=>e.im=im).catch(()=>{ e.err=1; }); } return e.im; }
-function scPreload(kinds,L){ kinds.forEach(k=>{ const n=scArtName(k,L); if(n) scImg(n); }); }
 const _drawScene=drawScene;
 drawScene=function(x,kind,t,L){ const n=scArtName(kind,L), im=n&&scImg(n);
   // 그림을 받는 동안에는 예전 도트 그림을 잠깐 보이지 않고 빈 종이 색으로 기다린다(11-13 점검: 옛 배경이 툭 튀어나왔다 바뀜). 못 받았을 때만 예전 그림
