@@ -7,7 +7,7 @@
 - 단일 파일 앱. `dev/src/template.html`의 `<!--#include 경로-->` 줄마다 조각이 끼워져 `index.html`이 된다. **이 줄의 순서가 실행 순서**다.
 - 폴더 = 개발 단위. 파일 앞 번호는 예전부터의 순서 번호일 뿐이다.
   `1-ops` 운영 · `2-1-world` 세계·화면 · `2-2-talk` 상호작용 · `2-3-time` 시간·사건 진행 · `2-4-art` 그림 · `3-ending` 엔딩·기록 · `4-engine` 내용(자료·삶 계산) · `css/`·`html/` 함께 씀.
-- 모든 조각은 한 스크립트다. 맨 바깥 `function 이름`이 두 곳에 있으면 rebuild.py가 멈춘다. 앞 조각의 함수를 바꿀 때는 감싼다:
+- 모든 조각은 한 스크립트다. 맨 바깥 `function 이름`이 두 곳에 있으면 rebuild.py가 멈춘다. 조각마다 `node --check` 문법 검사도 한다(한 줄 함수 안에 `//` 주석을 넣으면 뒤가 모두 주석이 되니 `/* */`를 쓴다). 앞 조각의 함수를 바꿀 때는 감싼다:
   `const _x=이름; 이름=function(...){ ... _x.apply(this,arguments) ... }` 또는 `이름=(old=>function(...){...})(이름)`. 감싸는 조각이 뒤에 와야 한다.
   Life 메서드는 `const P=Life.prototype, _e=P.endPeriod; P.endPeriod=function(){...}`.
 - 2026-11-15에 여러 단위가 섞인 조각을 단위별로 나눴다: `41-start`(운영)/`41-start-life-record`(엔딩), `66-play-fixes`(+`-dev`·`-auto`·`-talk`), `69-six`(+`-talk`·`-vow`·`-dev`, 엔진 부분 `4-engine/u69-six-life`), `77-move`(엔진 부분 `u77-move-life`), `78-feedback`(+`-talk`·`-time`). `u`가 붙은 엔진 파일은 화면 쪽 순서 자리에서 실행된다.
@@ -54,12 +54,15 @@
 ## 4 내용·삶 계산 (4-engine)
 - 자료: `02-countries`(193개국 `COUNTRIES`, `CKEYS`), `03-names-places`, `04-scenes-base`·`10-kr-only`·`11-common`·`12-regional`(장면), `13-jobs`, `14-world-map`, `15-life-data`, `16-result-text`(실패 문장 `tryForm`·`FAIL_TAIL`), `30-calendar`(153KB, 달력 일 `CAL_SIG`), `34~39`(다양한 일·어른의 날·나라별 삶·감염병·나라 사건·직업·지역 사건).
 - `20-life-class` **Life(가장 조심)**: `Life.load`(저장 호환), `dump`, `runAuto`, `startPeriod`/`endPeriod`, 돈 `ledger`(꼭 드는 생활비 `ess`, 집 대출 80%, 그 밖의 빚 `debtCap`, 1.8배 넘으면 채무 조정 `f.rehab`).
+- 재산(m) 표시 `moneyIdx`(62-six): 0~15살 집 형편, 16~18살 모은 용돈(`f.sv`, 통장 돈은 한 해 용돈만큼까지만 셈), 어른은 순자산과 벌이.
 - 덧붙인 규칙: `50-stats2`, `53-chance`(선택지 확률 `setPd`, 얻는 것이 없으면 '확실'), `54-career`(흥미 `f.dir`, 목표 학과 `f.major`, `careerDue`, 대학 `univMenu`·`myTier`·`majorsFor`), `55-realism`·`57-repeat`(되풀이 한도 `THB`·`festPace`·`SEAS_MAX`·`mjN`, 월급의 나이별 모습 `setJob`), `58-simple`, `59-missions`·`63-missions2`·`66-young3`(나이별 미션, 장소 무게 `QW`), `60-map2`(`workZone`·`spotRoute`), `61-choices`(`majSet`·`majSure`), `62-six`(여섯 능력치 `SIX_AGE`·`moneyIdx`·`valW`/`joyTarget`), `64-young`·`65-young2`(0~20살 문장 바로잡기 `YF`·`RES_VAR`), `66-young3`; 행복 `joyComps`(`SIX_MAX`·`JOY_GAMMA`).
+- 사망(20-life-class `endPeriod` 끝): 5살 전은 `C.u5`(UN IGME)를 형편 배수 평균·회복 몫으로 나눈 값(`u5Norm`, 01-base), 5~39살은 `.0002+u5/120000`(+분쟁 `.0003`), 40살부터 곰페르츠 곡선(기준 나이 `C.ref`, 건강이 낮으면 높아짐). 감염병 사망은 37-epidemic이 따로 내고 그만큼 바탕 사망에서 덜어 낸다(바닥 .25). 나라별 기대수명은 `67-calib`의 `REF_ADJ`로 맞춘다(2026-11-15, 193개국 평균 오차 약 ±1.5년).
 - 새 장면·미션·달력 일은 **목록 맨 뒤에** 더한다(예전 저장의 번호).
 - 엔진을 고칠 때: `python3 dev/tests/golden.py save`(고치기 전) → 고친 뒤 `python3 dev/tests/golden.py`. 결과가 바뀌어야 하는 수정이면 다름이 나오는 게 맞고, 정리만 했으면 '같음'이어야 한다.
 
 ## 시험 (dev/tests)
 - 공통 도우미 `lib.py`: `page(b,phone)`, `dev(pg,'KR',age)`, `teacher(pg,'KR',age)`, `student(pg,id)`, `settle(pg)`, `to_end(pg)`. 화면이 바뀌면 lib.py만 고친다.
-- 엔진: `golden.py`(기준값), `sim.py <js>`(sim_money·sim_prob·sim_univ·sim_dir·sim_debt·sim_audit).
+- 엔진: `golden.py`(기준값), `sim.py <js>`(sim_money·sim_prob·sim_univ·sim_dir·sim_debt·sim_audit), 페이지 2개로 나눠 돌리기 `simp.py <js> 나라들 수`: `sim_mort`(5살 전·5~19살 사망, 기대수명), `sim_calib`(나라별 평균 수명), `sim_dis`(재해 횟수), `sim_wage`(30·40·50살 월수입), `sim_stats`(한꺼번에, 느림).
+- 학생처럼 0~20살: `young.py [삶 수] [한 해 초] [tut]`(미션이 한 해의 몇 %에 왔는지·해냈는지, 능력치, 이상한 글자, 엔딩까지).
 - 화면: `aplay.py KR`(한 삶 직접 고르며), `aendshow.py`·`endearly.py`·`endL.py`·`picks.py`(엔딩), `career.py`, `quest.py`, `talk.py`, `map.py`, `zones.py`, `tutorial.py`, `hub.py`, `flow.py`·`flow2.py`(시간 흐름), `ids.py`(로그인·아이디), `devmode.py`, `mobile.py`·`rot.py`·`m1.py`, `roll.py`(태어나는 연출).
 - 결과 그림은 `dev/tests/out/`(커밋 안 함). 출력은 짧게: 오류와 핵심 값만 찍는다.

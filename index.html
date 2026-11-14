@@ -891,6 +891,8 @@ const CFG = {
 };
 
 const R = Math.random;
+// 5살 전 사망 보정 (2026-11-15 실제 통계 점검): 형편별 배수의 나라 평균을 1로 맞추고, 크게 아픈 아이의 30%가 회복하는 몫(÷0.7)을 되돌려 C.u5(UN IGME 5살 전 사망률)와 맞춘다
+const u5Norm = C => ((C.fam[0]*.6 + C.fam[1] + C.fam[2]*1.35) || 1) * .7;
 const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
 const pickOne = a=>a[Math.floor(R()*a.length)];
 function drawIdx(ps){ let x=R(),i=0; for(;i<ps.length-1;i++){ x-=ps[i]; if(x<0)break; } return i; }
@@ -3152,8 +3154,8 @@ class Life{
     if(f.dying){ const rec=a<13?.3:a<60?.22:a<75?.1:.04;
       if(a<99&&R()<rec){ f.dying=0; s.h=Math.max(s.h,45); add('기적처럼 몸이 회복되었다. 다시 일어나 밖으로 나갈 수 있게 되었다.',{j:8,r:3},1,'life'); }
       else return die('ill'); }
-    else { const qy = a<5 ? C.u5/1000*(a===0?.6:.1)*[.6,1,1.35][this.famI] : a<40 ? .0002+C.u5/60000+(C.hz.includes('unrest')?.0015:0) : (.0005+.05*Math.exp(.095*(a-C.ref)))*(1.7-s.h/100*1.4);
-      const qe=Math.max(qy*.45,qy-epiBase(this,a));
+    else { const qy = a<5 ? C.u5/1000*(a===0?.6:.1)*[.6,1,1.35][this.famI]/u5Norm(C) : a<40 ? .0002+C.u5/120000+(C.hz.includes('unrest')?.0003:0) : (.0005+.05*Math.exp(.095*(a-C.ref)))*(1.7-s.h/100*1.4);
+      const qe=Math.max(qy*.25,qy-epiBase(this,a));   // 감염병 사망은 37-epidemic이 따로 내므로 그 몫을 덜어 낸다 (11-15: 바닥 .45→.25, 감염병이 많은 나라의 아이 사망이 실제보다 높았음)
       if(a>=99 || R()<1-Math.pow(1-clamp(qe,0,.7),step)){
         if(a>=13&&a<40&&R()<.55) return die('sudden');
         if(a>=40&&R()<.12) return die('sudden');
@@ -3549,8 +3551,9 @@ Object.assign(Life.prototype,{
   // 올해의 큰 사건을 미리 정해 둔다 (교사용 '중요 사건' 수가 정확하도록)
   planMajors(n){ const a=this.age, C=this.C, el=[], w=[], thA=this.thA||(this.thA={});
     MAJORS.forEach((m,i)=>{ const u=this.usedM[i]; if(!this.inC(m)||a<m.a[0]||a>m.a[1]||(m.set!=='*'&&m.set!==this.set)||!this.reqOK(m.req)) return;
-      if(m.hz&&!C.hz.includes(m.hz)) return; const th=m.th===undefined?(m.th=themeOf(m.txt)):m.th; if(th&&thA[th[0]]!=null&&a-thA[th[0]]<th[2]) return; if(m.maxTier&&C.tier>m.maxTier) return; if(m.minTier&&C.tier<m.minTier) return; if(u!=null&&(!m.rep||a-u<(m.repY||9))) return;
-      el.push(i); w.push((th&&th[0]==='grade'&&C.tier<=2?.35:1)*(m.c?2.2:1)*(m.hz?1.6:1)*(m.req&&/^(jk:|sig)/.test(m.req)?1.5:1)*(m.money||1)); });
+      if(m.hz&&!C.hz.includes(m.hz)) return; if(m.hz&&m.hz!=='unrest'&&!hzYear(this,i)) return;   // 재해가 덜 잦은 나라는 그해 후보에서 빠진다(한 해에 한 번 정함, 67-calib HZ_X)
+      const th=m.th===undefined?(m.th=themeOf(m.txt)):m.th; if(th&&thA[th[0]]!=null&&a-thA[th[0]]<th[2]) return; if(m.maxTier&&C.tier>m.maxTier) return; if(m.minTier&&C.tier<m.minTier) return; if(u!=null&&(!m.rep||a-u<(m.repY||9))) return;
+      el.push(i); w.push((th&&th[0]==='grade'&&C.tier<=2?.35:1)*(m.c?2.2:1)*(m.hz?1.6*(m.hz==='unrest'?1:Math.max(1,hzX(C))):1)*(m.req&&/^(jk:|sig)/.test(m.req)?1.5:1)*(m.money||1)); });
     const out=[]; while(out.length<n&&el.length){ let r=R()*w.reduce((s,y)=>s+y,0), i=0; for(;i<el.length-1;i++){ r-=w[i]; if(r<0) break; } out.push(el.splice(i,1)[0]); w.splice(i,1); }
     out.forEach(i=>{ const th=MAJORS[i].th; if(th) thA[th[0]]=a; });
     return out; },
@@ -5614,12 +5617,14 @@ function epiOn(L,k){ const e=epiCur(L); return !!(e&&e.act[k]); }
 // 조심하고 제때 치료받는 쪽을 고른 사람 기준의 몫만 덜어 낸다: 그렇게 살면 평소 수명 그대로, 조심하지 않으면 그만큼 더 위험해진다
 function epiBase(L,a){ let e=0;
   for(const k of EPI_KEYS.concat(a>=65?['flu']:[])){ const d=EPI[k]; let i=1; if(d.where){ i=d.where[L.c]; if(!i) continue; } const po=k==='flu'?1:d.out(i,L);
-    e+=po*d.att(a,i,L)*(k==='flu'?1:d.prev)*d.cfr(a,L)*d.tGood; } return e*.6; }   // 자동으로 고를 때 늘 조심하는 쪽이 골라지는 몫을 감안해 조금 덜 덜어 낸다
+    e+=po*d.att(a,i,L)*(k==='flu'?1:d.prev)*d.cfr(a,L)*d.tGood*epiU5(L,a); } return e*.6; }   // 자동으로 고를 때 늘 조심하는 쪽이 골라지는 몫을 감안해 조금 덜 덜어 낸다
 // 걸렸는지 정한다 (1단계의 선택 m: 예방하면 prev배, 안 하면 1.3배)
 function epiCatch(L,k,m){ const e=epiCur(L), d=EPI[k], a=L.age, i=e.act[k]||1; let p=d.att(a,i,L)*m; if(k==='pan') p=(e.pan&&e.pan.w===0?.25:e.pan&&e.pan.w===1?.2:.1)*m*(L.f.panVac?.35:1);
   p=1-Math.pow(1-clamp(p,0,.95),k==='pan'||k==='flu'?1:L.step); e.s1[k]=1; const got=R()<p; if(got) e.inf[k]=1; return got; }
 // 앓고 나서 숨지는지 (2단계의 선택 m: 바로 치료면 tGood배, 기다리면 tBad배)
-function epiFatal(L,k,m){ const d=EPI[k]; return R()<clamp(d.cfr(L.age,L)*m,0,.9); }
+function epiFatal(L,k,m){ const d=EPI[k]; return R()<clamp(d.cfr(L.age,L)*m*epiU5(L,L.age),0,.9); }
+// 5살 전 감염병 사망 보정(67-calib의 EPI_U5): 감염병만으로 실제 5살 전 사망률(UN IGME)을 넘던 나라
+function epiU5(L,a){ return a<5&&typeof EPI_U5!=='undefined'&&EPI_U5[L.c]||1; }
 function epiDie(L,k){ const d=EPI[k]; L.cz={k:'epi_'+k,n:d.n,nt:d.nt}; L._epiDie=k; }
 // 달력에 없이 지나간 유행(어린 아기, 자동으로 사는 삶)은 해가 끝날 때 보통의 선택으로 정한다
 Object.assign(Life.prototype,{
@@ -7545,7 +7550,7 @@ Life.prototype.valW=function(){ const p=(this.val&&this.val.p)||{}, w={}; let s=
 function allowYear(L){ return L.C.med*(.10+.20*clamp(L.w,0,1)); }
 Life.prototype.moneyIdx=function(){ const C=this.C, a=this.age, f=this.f;
   if(a<16&&!f.job) return clamp(this.w*100,3,97);
-  if(a<19&&!f.univ&&!(f.job&&!f.school)){ const al=allowYear(this), sv=Math.max(0,(f.sv||0)+(f.pk&&f.pk.y===a?f.pk.left:al)+Math.max(-al*3,this.cash||0)); return clamp(20+36*sv/(al*2.6)+(this.w-.5)*16,4,94); }
+  if(a<19&&!f.univ&&!(f.job&&!f.school)){ const al=allowYear(this), sv=Math.max(0,(f.sv||0)+(f.pk&&f.pk.y===a?f.pk.left:al)+clamp(this.cash||0,-al,al)); /* 11-15: 통장 돈(cash)은 한 해 용돈만큼까지만 — 용돈이 아주 적은 나라에서 몇만 원 때문에 94로 튀던 것 */ return clamp(20+36*sv/(al*2.6)+(this.w-.5)*16,4,94); }
   const nwM=(this.cash+this.house)/Math.max(C.med,1e-9); let m=nwM>=0?34+10*Math.log2(1+nwM/6):34-26*Math.min(1,-nwM/24);
   const inc=this.inc||0; if(f.job&&!f.school) m+=clamp(8*Math.log2(Math.max(.1,inc/C.med)),-10,10); else if(f.school) m+=2; else if(!f.retired&&a<65) m-=6;
   m+=clamp((30-a)*1.2,0,13);   // 갓 어른이 된 때는 모은 돈이 없는 것이 보통이다
@@ -7777,6 +7782,26 @@ const JOY_GAMMA=.9;   // 1이면 단순 비율, 낮을수록 낮은 비율을 �
 const sixRatio=(L,k)=>100*Math.pow(clamp((L.s[k]||0)/sixMax(k,L.age),0,1),JOY_GAMMA);
 { const _jc=Life.prototype.joyComps; Life.prototype.joyComps=function(){ const c=_jc.apply(this,arguments), a=this.age;
     c.h=sixRatio(this,'h'); c.r=sixRatio(this,'r'); c.e=sixRatio(this,'e'); c.k=a<7?Math.max(sixRatio(this,'k'),55):sixRatio(this,'k'); c.t=a<10?Math.max(55,sixRatio(this,'t')):clamp(.6*sixRatio(this,'t')+.4*this.workSat(),0,100); return c; }; }
+/* 67-calib: 나라별 기대수명 맞추기 (2026-11-15 실제 통계 점검)
+   각 나라에서 삶 150개를 끝까지 살려 본 평균 수명이 그 나라 기대수명(C.le, UN 세계인구전망)과 달랐던 만큼
+   어른 사망 곡선의 기준 나이(C.ref)를 옮긴다(차이의 0.9배, 잰 값의 흔들림을 감안). 남아프리카의 HIV처럼
+   어른 사망이 아이 사망에 비해 높은 나라(짐바브웨·레소토·나이지리아 등)는 기준 나이가 앞당겨진다.
+   다시 잴 때: python3 dev/tests/simp.py dev/tests/sim_calib.js <나라들> 150 → 차이를 이 표에 더한다. */
+const REF_ADJ={AD:2.0,AE:-2.4,AF:0.1,AG:0.6,AL:-0.5,AM:0.3,AO:0.3,AR:0.1,AT:0.4,AU:2.2,AZ:-0.7,BA:-1.9,BB:-2.8,BD:0.6,BE:-1.2,BF:-1.1,BG:0.4,BH:-2.2,BI:2.2,BJ:-2.2,BN:0.1,BO:-1.5,BR:-0.9,BS:-2.1,BT:-2.5,BW:0.8,BZ:-2.4,CA:1.1,CD:-0.7,CF:-3.9,CG:-2.4,CH:-0.6,CI:-4.2,CL:-1.0,CM:-1.7,CN:-1.4,CO:-1.6,CR:0.8,CU:-0.3,CV:-0.5,CY:1.2,CZ:0.8,DE:-0.8,DJ:-3.0,DK:-0.9,DM:0.8,DO:-1.6,DZ:-1.5,EC:-0.9,EE:-0.6,EG:-2.1,ER:0.6,ES:-0.1,ET:-2.2,FI:-0.9,FJ:-0.4,FM:-3.8,FR:2.5,GA:-1.3,GB:0.6,GD:-0.5,GE:-1.9,GH:-3.1,GM:0.7,GN:-4.0,GQ:-2.7,GR:-0.1,GT:-4.0,GW:0.9,GY:-1.0,HN:-0.7,HR:-0.6,HT:-2.7,HU:-1.1,ID:-1.4,IE:-0.9,IL:0.3,IN:-2.0,IQ:-1.2,IR:0.2,IS:0.8,IT:0.5,JM:0.9,JO:0.1,JP:-0.2,KE:-3.6,KG:-1.1,KH:-1.9,KI:-4.3,KM:-2.6,KN:-0.4,KP:-2.6,KR:2.4,KW:-1.7,KZ:-0.1,LA:-4.0,LB:-0.5,LC:1.3,LI:-0.4,LR:-2.5,LS:-4.7,LU:1.5,LV:-1.1,LY:-0.7,MA:-0.6,MC:-0.3,MD:-1.0,ME:-1.0,MG:0.7,MH:-2.8,MK:-2.4,ML:-2.3,MM:-2.9,MN:-2.3,MR:-1.4,MT:2.0,MU:-0.5,MV:1.8,MW:-1.2,MX:-0.9,MY:-1.0,MZ:-3.0,NA:-4.3,NE:0.7,NG:-4.3,NI:0.8,NL:0.3,NO:0.5,NP:-2.9,NR:-4.2,NZ:0.5,OM:-1.9,PA:-1.7,PE:1.6,PG:-0.3,PH:-1.6,PK:-3.1,PL:-0.7,PT:-1.0,PW:-2.0,PY:-3.2,QA:-0.3,RO:-0.5,RS:-2.3,RU:0.6,RW:2.4,SA:1.4,SB:0.3,SC:-2.0,SD:1.9,SE:0.6,SG:2.1,SI:-0.7,SK:-0.8,SL:0.5,SM:-0.9,SN:1.5,SO:-2.7,SR:-0.7,SS:-2.4,ST:0.4,SV:-2.6,SY:3.6,SZ:-1.6,TD:-1.7,TG:-0.3,TH:0.6,TJ:-2.4,TL:-1.9,TM:-1.4,TN:-0.5,TO:0.9,TR:0.8,TT:-0.1,TV:-3.4,TZ:0.1,UA:-0.7,UG:1.4,US:0.2,UY:-0.7,UZ:-1.5,VC:-2.7,VE:-2.5,VN:-0.7,VU:-1.3,WS:-2.3,YE:1.0,ZA:-4.1,ZM:-0.3,ZW:-6.3};
+for(const k in REF_ADJ) if(COUNTRIES[k]) COUNTRIES[k].ref+=REF_ADJ[k];
+// 5살 전 감염병 치명률 배수: 말라리아·콜레라·에볼라 등이 겹친 나라에서 5살 전 사망이 실제(UN IGME)보다 1.2~1.6배 높게 나와 줄인다
+const EPI_U5={CD:.55,SO:.75,SL:.6,ET:.7};
+// 보통 월급: 우리나라는 실제 통계로 (국가데이터처 '2024년 임금근로일자리 소득': 월평균 375만 원). 다른 나라는 1인당 국민총소득에서 낸 값(02-countries의 medianPay)
+COUNTRIES.KR.med=375;
+// 재해 큰 사건이 오는 정도(planMajors의 무게 배수). 기준: EM-DAT에서 '재해 피해를 입은 사람'은 해마다 세계 인구의 2~3%(1994~2013년 해마다 2억 1800만 명),
+// 2020~21년 가장 많이 입은 나라는 중국·인도·필리핀·남아공·아프가니스탄·방글라데시·남수단·소말리아·에티오피아(IFRC 세계재난보고서 2022).
+// 잰 값(50살까지 10년에 몇 번)이 피해 비율보다 높던 나라는 줄이고, 피해가 잦은 나라는 늘린다. 표에 없는 나라: 부유한 나라(tier 4) 1, 나머지 .1(잰 값이 EM-DAT보다 높았던 이집트·탄자니아·우간다 등)
+const HZ_X={PH:1.8,SO:3,AF:1.6,ET:1.3,KE:1.3,MW:1.5,ZW:1.5,MZ:1.3,MG:1.3,NE:1.3,SS:1.5,SD:1.2,HT:1.5,ER:1.5,MN:1.5,BD:1,VN:1,MM:1,KH:1,LK:1,
+  PK:.23,CN:.14,IN:.12,NG:.05,ID:.03,MX:.03,BR:.2,CD:.07};
+// 1보다 작은 값 x는 '그해 후보에 드는 확률'이라 잦기는 대략 1-e^(-4x)배가 된다(잰 값: NG 1→.46, .25→.27, .1→.16 /10년)
+function hzX(C){ const v=HZ_X[C.code]; return v!=null?v:C.tier>=4?1:.1; }
+const HZ_DEC=new WeakMap();   // 삶마다 '올해 이 재해가 후보에 드는지'를 한 해에 한 번만 정한다(저장하지 않음)
+function hzYear(L,i){ const x=hzX(L.C); if(x>=1) return true; let d=HZ_DEC.get(L); if(!d||d.a!==L.age){ d={a:L.age,x:{}}; HZ_DEC.set(L,d); } if(d.x[i]==null) d.x[i]=R()<x; return d.x[i]; }
 </script>
 
 <!-- =====================================================================

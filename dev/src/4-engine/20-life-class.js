@@ -354,8 +354,8 @@ class Life{
     if(f.dying){ const rec=a<13?.3:a<60?.22:a<75?.1:.04;
       if(a<99&&R()<rec){ f.dying=0; s.h=Math.max(s.h,45); add('기적처럼 몸이 회복되었다. 다시 일어나 밖으로 나갈 수 있게 되었다.',{j:8,r:3},1,'life'); }
       else return die('ill'); }
-    else { const qy = a<5 ? C.u5/1000*(a===0?.6:.1)*[.6,1,1.35][this.famI] : a<40 ? .0002+C.u5/60000+(C.hz.includes('unrest')?.0015:0) : (.0005+.05*Math.exp(.095*(a-C.ref)))*(1.7-s.h/100*1.4);
-      const qe=Math.max(qy*.45,qy-epiBase(this,a));
+    else { const qy = a<5 ? C.u5/1000*(a===0?.6:.1)*[.6,1,1.35][this.famI]/u5Norm(C) : a<40 ? .0002+C.u5/120000+(C.hz.includes('unrest')?.0003:0) : (.0005+.05*Math.exp(.095*(a-C.ref)))*(1.7-s.h/100*1.4);
+      const qe=Math.max(qy*.25,qy-epiBase(this,a));   // 감염병 사망은 37-epidemic이 따로 내므로 그 몫을 덜어 낸다 (11-15: 바닥 .45→.25, 감염병이 많은 나라의 아이 사망이 실제보다 높았음)
       if(a>=99 || R()<1-Math.pow(1-clamp(qe,0,.7),step)){
         if(a>=13&&a<40&&R()<.55) return die('sudden');
         if(a>=40&&R()<.12) return die('sudden');

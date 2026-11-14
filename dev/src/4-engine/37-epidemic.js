@@ -63,12 +63,14 @@ function epiOn(L,k){ const e=epiCur(L); return !!(e&&e.act[k]); }
 // 조심하고 제때 치료받는 쪽을 고른 사람 기준의 몫만 덜어 낸다: 그렇게 살면 평소 수명 그대로, 조심하지 않으면 그만큼 더 위험해진다
 function epiBase(L,a){ let e=0;
   for(const k of EPI_KEYS.concat(a>=65?['flu']:[])){ const d=EPI[k]; let i=1; if(d.where){ i=d.where[L.c]; if(!i) continue; } const po=k==='flu'?1:d.out(i,L);
-    e+=po*d.att(a,i,L)*(k==='flu'?1:d.prev)*d.cfr(a,L)*d.tGood; } return e*.6; }   // 자동으로 고를 때 늘 조심하는 쪽이 골라지는 몫을 감안해 조금 덜 덜어 낸다
+    e+=po*d.att(a,i,L)*(k==='flu'?1:d.prev)*d.cfr(a,L)*d.tGood*epiU5(L,a); } return e*.6; }   // 자동으로 고를 때 늘 조심하는 쪽이 골라지는 몫을 감안해 조금 덜 덜어 낸다
 // 걸렸는지 정한다 (1단계의 선택 m: 예방하면 prev배, 안 하면 1.3배)
 function epiCatch(L,k,m){ const e=epiCur(L), d=EPI[k], a=L.age, i=e.act[k]||1; let p=d.att(a,i,L)*m; if(k==='pan') p=(e.pan&&e.pan.w===0?.25:e.pan&&e.pan.w===1?.2:.1)*m*(L.f.panVac?.35:1);
   p=1-Math.pow(1-clamp(p,0,.95),k==='pan'||k==='flu'?1:L.step); e.s1[k]=1; const got=R()<p; if(got) e.inf[k]=1; return got; }
 // 앓고 나서 숨지는지 (2단계의 선택 m: 바로 치료면 tGood배, 기다리면 tBad배)
-function epiFatal(L,k,m){ const d=EPI[k]; return R()<clamp(d.cfr(L.age,L)*m,0,.9); }
+function epiFatal(L,k,m){ const d=EPI[k]; return R()<clamp(d.cfr(L.age,L)*m*epiU5(L,L.age),0,.9); }
+// 5살 전 감염병 사망 보정(67-calib의 EPI_U5): 감염병만으로 실제 5살 전 사망률(UN IGME)을 넘던 나라
+function epiU5(L,a){ return a<5&&typeof EPI_U5!=='undefined'&&EPI_U5[L.c]||1; }
 function epiDie(L,k){ const d=EPI[k]; L.cz={k:'epi_'+k,n:d.n,nt:d.nt}; L._epiDie=k; }
 // 달력에 없이 지나간 유행(어린 아기, 자동으로 사는 삶)은 해가 끝날 때 보통의 선택으로 정한다
 Object.assign(Life.prototype,{

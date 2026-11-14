@@ -23,6 +23,8 @@ const CFG = {
 };
 
 const R = Math.random;
+// 5살 전 사망 보정 (2026-11-15 실제 통계 점검): 형편별 배수의 나라 평균을 1로 맞추고, 크게 아픈 아이의 30%가 회복하는 몫(÷0.7)을 되돌려 C.u5(UN IGME 5살 전 사망률)와 맞춘다
+const u5Norm = C => ((C.fam[0]*.6 + C.fam[1] + C.fam[2]*1.35) || 1) * .7;
 const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
 const pickOne = a=>a[Math.floor(R()*a.length)];
 function drawIdx(ps){ let x=R(),i=0; for(;i<ps.length-1;i++){ x-=ps[i]; if(x<0)break; } return i; }

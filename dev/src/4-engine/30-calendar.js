@@ -340,8 +340,9 @@ Object.assign(Life.prototype,{
   // 올해의 큰 사건을 미리 정해 둔다 (교사용 '중요 사건' 수가 정확하도록)
   planMajors(n){ const a=this.age, C=this.C, el=[], w=[], thA=this.thA||(this.thA={});
     MAJORS.forEach((m,i)=>{ const u=this.usedM[i]; if(!this.inC(m)||a<m.a[0]||a>m.a[1]||(m.set!=='*'&&m.set!==this.set)||!this.reqOK(m.req)) return;
-      if(m.hz&&!C.hz.includes(m.hz)) return; const th=m.th===undefined?(m.th=themeOf(m.txt)):m.th; if(th&&thA[th[0]]!=null&&a-thA[th[0]]<th[2]) return; if(m.maxTier&&C.tier>m.maxTier) return; if(m.minTier&&C.tier<m.minTier) return; if(u!=null&&(!m.rep||a-u<(m.repY||9))) return;
-      el.push(i); w.push((th&&th[0]==='grade'&&C.tier<=2?.35:1)*(m.c?2.2:1)*(m.hz?1.6:1)*(m.req&&/^(jk:|sig)/.test(m.req)?1.5:1)*(m.money||1)); });
+      if(m.hz&&!C.hz.includes(m.hz)) return; if(m.hz&&m.hz!=='unrest'&&!hzYear(this,i)) return;   // 재해가 덜 잦은 나라는 그해 후보에서 빠진다(한 해에 한 번 정함, 67-calib HZ_X)
+      const th=m.th===undefined?(m.th=themeOf(m.txt)):m.th; if(th&&thA[th[0]]!=null&&a-thA[th[0]]<th[2]) return; if(m.maxTier&&C.tier>m.maxTier) return; if(m.minTier&&C.tier<m.minTier) return; if(u!=null&&(!m.rep||a-u<(m.repY||9))) return;
+      el.push(i); w.push((th&&th[0]==='grade'&&C.tier<=2?.35:1)*(m.c?2.2:1)*(m.hz?1.6*(m.hz==='unrest'?1:Math.max(1,hzX(C))):1)*(m.req&&/^(jk:|sig)/.test(m.req)?1.5:1)*(m.money||1)); });
     const out=[]; while(out.length<n&&el.length){ let r=R()*w.reduce((s,y)=>s+y,0), i=0; for(;i<el.length-1;i++){ r-=w[i]; if(r<0) break; } out.push(el.splice(i,1)[0]); w.splice(i,1); }
     out.forEach(i=>{ const th=MAJORS[i].th; if(th) thA[th[0]]=a; });
     return out; },

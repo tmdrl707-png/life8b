@@ -1,6 +1,6 @@
 """조각을 모아 index.html 한 파일을 만든다.
 사용: 저장소 맨 위에서
-  python3 dev/rebuild.py              index.html 만들기 (+이름 겹침 검사)
+  python3 dev/rebuild.py              index.html 만들기 (+이름 겹침 검사, 조각마다 node --check 문법 검사)
   python3 dev/rebuild.py -u 2-2       그 단위의 조각 목록과, 그 단위가 다른 단위의 함수를 감싸는 곳 (빌드 안 함)
   python3 dev/rebuild.py -w 이름      그 함수·메서드를 정의하거나 감싸는 모든 곳을 실행 순서대로 (빌드 안 함)
   python3 dev/rebuild.py -v           만든 뒤 감싸기 목록
@@ -74,6 +74,15 @@ for name, body in js:
 if dup:
     sys.exit('같은 이름이 두 조각에 있습니다 (뒤의 것이 앞의 것을 덮어씁니다):\n' + '\n'.join(sorted(set(dup))) + '\n한쪽 이름을 바꾸거나, 일부러 바꾸는 것이면 "이름=function(...)" 으로 감싸 주세요. index.html 은 만들지 않았습니다.')
 
+# ---- 문법 검사: 조각마다 node --check (한 줄 함수 안의 '//' 주석이 뒤를 삼키는 실수 등). node가 없으면 건너뛴다 ----
+import shutil, subprocess, tempfile
+if shutil.which('node'):
+    bad = []
+    for name, body in js:
+        with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf8') as t: t.write(body); tp = t.name
+        r = subprocess.run(['node', '--check', tp], capture_output=True, text=True); os.unlink(tp)
+        if r.returncode: bad.append(f'  {name}: ' + (r.stderr.strip().split('\n') + [''])[0][:20] + ' ' + next((l for l in r.stderr.split('\n') if 'Error' in l), '')[:160])
+    if bad: sys.exit('문법 오류가 있는 조각 (index.html 은 만들지 않았습니다):\n' + '\n'.join(bad))
 open(os.path.join(ROOT, 'index.html'), 'w', encoding='utf8', newline='\n').write(s)
 b = s.encode('utf8')
 print(f'index.html {len(b)} bytes · 조각 {len(order)}개 · sha256 {hashlib.sha256(b).hexdigest()[:16]}')
