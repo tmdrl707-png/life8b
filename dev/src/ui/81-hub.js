@@ -1,6 +1,6 @@
 /* 81-hub: 오른쪽 위 '모음' 단추 + 설정(톱니바퀴) + 화면 투명도·알림 자리 (11-14 선생님 요청)
    - 모음 단추(#btnHub, 네 칸 그림)를 누르면 아래로 내 정보·기록·메시지(#btnFr, ui/80)·설정(#btnSet)·나가기가 펼쳐진다(11-14 밤: 상태란 아래의 단추 줄을 옮겨 옴. 예전 #btnInfo·#btnMem·#btnExit은 숨겨 두고 이 단추들이 눌러 준다). 새 메뉴는 HUB_ITEMS 순서대로 #hubTray에 더한다.
-   - 설정 패널(#setPanel): 게임 속도(한 해 1·3·5분)·글이 떠 있는 시간·확률 표시·능력치 표시·화면 투명도·큰 글씨. 열어도 시간은 멈추지 않는다.
+   - 설정 패널(#setPanel): 게임 속도(한 해 1·3·5분)·글이 떠 있는 시간·능력치 표시·화면 투명도·큰 글씨. 열어도 시간은 멈추지 않는다.
    - 미니맵을 뺀 화면 상자(상태란·미션·알림 카드·길 안내·안내 글)는 반투명(--hudA, 설정에서 3단계).
    - 작은 일 알림 카드(#toasts)는 상태란 바로 오른쪽에 붙는다(자리가 좁으면 상태란 아래). */
 (function(){
@@ -114,7 +114,6 @@ html.ui-sr-0 #hRes{display:none!important}
       <div class="sg"><h4>게임 속도</h4>${sq('yl',[[60,'빠르게 · 1분'],[180,'보통 · 3분'],[300,'느리게 · 5분']],yl,room||G.teacher)}
         <p>${room?'학급 방에서는 선생님이 반의 시간을 정해요.':G.teacher?'교사용 체험은 시작할 때 고른 속도로 흘러요.':`한 해가 흐르는 데 걸리는 시간이에요. 지금 해에도 바로 적용돼요. 100살까지 약 <b>${lifeTimeText(yl)}</b>.`}</p></div>
       <div class="sg"><h4>글이 떠 있는 시간</h4>${sq('read',[[1,'보통'],[1.8,'길게 (천천히 읽기)']],+(G.opts.read||1)>1?1.8:1)}<p>알림 카드가 화면에 머무는 시간이에요.</p></div>
-      <div class="sg"><h4>잘될 확률 표시</h4>${sq('prob',[[1,'높음·보통·낮음'],[2,'숫자(%)']],probMode(),rp!=null)}<p>${rp!=null?'선생님이 반 설정으로 정해 두었어요.':'선택지마다 항상 보여요. 보여 주는 방식만 고를 수 있어요.'}</p></div>
       <div class="sg"><h4>능력치 표시 모양</h4>${sq('six',[['A','막대'],['B','동그라미'],['C','육각형'],['D','점']],sixV)}</div>
       <div class="sg"><h4>화면 상자 투명도</h4>${sq('a',[['s','진하게'],['m','보통'],['t','투명하게']],UI.a)}<p>지도를 뺀 상태란·알림·안내 상자가 비쳐 보이는 정도예요.</p></div>
       <div class="sg"><h4>글씨 크기</h4>${sq('big',[[0,'보통'],[1,'크게']],big?1:0)}</div>
@@ -128,7 +127,6 @@ html.ui-sr-0 #hRes{display:none!important}
   function set(k,v){ const L=G.life;
     if(k==='yl'){ v=+v; if(!L||G.teacher||(G.room&&!G.teacher)) return; const old=L.yl||G.sec||v; L.yl=v; G.opts.yl=v; G.sec=secOf(L); if(L.cur&&L.cur.t>0) L.cur.t=L.cur.t*v/old; if(L.cur&&L.cur.el) L.cur.el=L.cur.el*v/old; ls('life8b_opts',G.opts); try{ persist(); }catch(e){} toast(`게임 속도: 한 해 ${v/60}분`); }
     else if(k==='read'){ G.opts.read=+v; ls('life8b_opts',G.opts); }
-    else if(k==='prob'){ G.opts.prob=+v; ls('life8b_opts',G.opts); }
     else if(k==='six'){ ls('life8b_sixhud',v); }
     else if(k==='a'){ UI.a=v; saveUI(); applyA(); }
     else if(k==='mp'||k==='ms'||k==='sp'||k==='sr'){ UI[k]=String(v); saveUI(); applyUI(); }

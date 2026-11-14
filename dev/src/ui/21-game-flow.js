@@ -11,7 +11,7 @@ const caughtUp=()=>G.room&&G.roomPi!=null&&G.life.pi>=G.roomPi;
 const seasonOf=L=>L.C.seasons[L.pi%4];
 function beginPeriod(first){
   const L=G.life; if(!L.comps){ try{ L.makeComps(); }catch(e){} }
-  const cur=L.startPeriod(); if(cur.t==null) cur.t=G.sec; if(cur.mt==null) cur.mt=Math.min(12,G.sec*.2); if(cur.qt==null) cur.qt=9;
+  const cur=L.startPeriod(); if(cur.t==null) cur.t=G.sec; if(cur.mt==null) cur.mt=Math.min(12,G.sec*.2); if(cur.qt==null) cur.qt=L.q?9:3;   // 새 해가 시작되면 미션을 일찍 찾아온다
   NPCMAP={}; G.sickT=0;
   toast(`${L.by+L.age}년 · ${L.age}살 · ${seasonOf(L)}`,'year');
   const news=L.news||[]; L.news=[];
@@ -87,7 +87,7 @@ function sheet(html,cls){ $('sheetBox').className='box gbox '+(cls||''); $('shee
 function closeSheet(){ $('sheet').hidden=true; paused=false; lastT=performance.now(); }
 // 선택지의 '될 가능성' 표시: 0 숨김 · 1 모두 높음/보통/낮음 · 2 모두 숫자(기본). 학급 방의 선생님 설정이 먼저. 확률이 없는 선택은 '확실'
 function roomCfg(k){ const r=G.roomInfo, c=r&&r.cfg; return !G.teacher&&c&&c[k]!=null&&c[k]!==''?c[k]:null; }
-function probMode(){ const v=roomCfg('prob'), n=v!=null?+v:(G.opts.prob==null?2:+G.opts.prob); return n===1?1:2; }   // 항상 보인다(숨기기 없음): 1 높음·보통·낮음 · 2 숫자
+function probMode(){ return 2; }   // 항상 보인다(숨기기 없음): 1 높음·보통·낮음 · 2 숫자
 function softOn(){ const v=roomCfg('soft'); if(v!=null) return +v===1; return !!(G.life&&G.life.opt&&G.life.opt.soft); }
 const RD=()=>Math.max(1,+(G.opts.read||1));   // 글이 떠 있는 시간 배율 (천천히 읽기)
 const pct=(p,big)=>{ const m=probMode(); if(!m) return ''; if(p==null||p>=.999) return `<span class="pl sure">${sureWord()}</span>`;
@@ -314,7 +314,7 @@ function loopBody(t){
     // 한 해 안에서도 일은 계속 생긴다: 작은 선택은 채워지고, 큰 사건과 미션이 찾아온다
     G.spawnT-=dt; if(G.spawnT<=0){ G.spawnT=5; if(L.cur.scenes.filter(c=>!c.done).length<3&&L.spawn()>=0) renderHud(); }
     const catching=G.room&&G.roomPi!=null&&L.pi<G.roomPi-1;   // 반을 따라잡는 동안에는 큰 사건과 미션을 쉰다
-    if(!catching){ L.cur.qt-=dt; if(L.cur.qt<=0){ L.cur.qt=(L.age===5?10:L.age>=3&&L.age<5?22:35); if(!L.q&&L.questOffer()) toast(`${giverName(QUESTS[L.q.i].giver)}에게 부탁받을 일이 생겼어요. 파란 물음표를 찾아가 보세요.`); }
+    if(!catching){ L.cur.qt-=dt; if(L.cur.qt<=0){ L.cur.qt=(L.age===5?10:L.age>=3&&L.age<5?22:Math.min(35,G.sec*.16)); if(!caughtUp()&&L.cur.t<G.sec*.4&&!L.q){ L.cur.qt=2; } else if(!L.q&&L.questOffer()) toast(`${giverName(QUESTS[L.q.i].giver)}에게 부탁받을 일이 생겼어요. 파란 물음표를 찾아가 보세요.`); }
     L.cur.el=(L.cur.el||0)+dt;
     if(L.cur.mDone>=L.cur.plan&&caughtUp()&&!L.f.dying&&L.cur.el>=majorAt(L.cur.mDone)) L.addMajor();   // 반이 같은 해에 머무는 동안에도 큰 일은 이어진다
     if(L.cur.mDone<L.cur.plan&&L.cur.el>=majorAt(L.cur.mDone)){ if(L.major()!=null) openMajor(); else L.cur.mDone++; }
@@ -325,6 +325,7 @@ function loopBody(t){
     npcUpdate(dt);
     // 가까이 있는 것
     near=null; let best=1.5; if(!W.car||C_VEH()==='horse') for(const tg of targets()){ if(tg.m!==W.map) continue; const d=Math.hypot(tg.p[0]-W.x,tg.p[1]-W.y); if(d<best){ best=d; near=tg; } }
+    if(near&&near.type!=='q'){ let qb=null, qd=1.9; for(const tg of targets()){ if(tg.type!=='q'||tg.m!==W.map) continue; const d=Math.hypot(tg.p[0]-W.x,tg.p[1]-W.y); if(d<qd){ qd=d; qb=tg; } } if(qb) near=qb; }   // 파란 미션이 가까우면 같은 곳의 작은 선택보다 먼저
     if(!near&&typeof nearExtra==='function') near=nearExtra();   // 퀘스트·장면이 없으면: 사람에게 말 걸기, 물건 만져 보기
     const act=$('btnAct'); if(near){ const nm=near.lab||(near.n+(near.type==='q'?' · 미션':' · 다가가기')); if(act.hidden||act.dataset.k!==nm){ act.textContent=nm; act.dataset.k=nm; act.className='abtn'+(near.type==='q'?' q':near.type==='t'||near.type==='o'?' t':''); act.hidden=false; } } else act.hidden=true;
     const car=$('btnCar'), showCar=W.map==='out'&&canDrive()&&(W.car||C_VEH()==='horse'||onRoad(W.x,W.y,.7)); car.hidden=!showCar; if(showCar) car.textContent=W.car?'내리기':L.C.veh.n+' 타기';

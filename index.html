@@ -7888,8 +7888,8 @@ const sixRatio=(L,k)=>100*Math.pow(clamp((L.s[k]||0)/sixMax(k,L.age),0,1),JOY_GA
           </div>
           <div class="stack-s" id="rCfg"><b>학생 화면 설정 <span class="small sub">· 이 방에 들어온 학생 모두에게 적용</span></b>
             <div class="stack-s small">무거운 장면 (가족과의 이별 · 큰 병 · 분쟁)<div class="seg" data-c="soft"><button data-v="">학생이 고름</button><button data-v="0">그대로 보기</button><button data-v="1">짧고 담담하게</button></div></div>
-            <div class="stack-s small">선택지의 '될 가능성' 표시<div class="seg" data-c="prob"><button data-v="">학생이 고름</button><button data-v="1">높음·보통·낮음</button><button data-v="2">모두 숫자로</button></div></div>
-            <p class="small sub">학생 화면에는 몇 초 안에 반영됩니다. 일어나는 일 자체(확률)는 바뀌지 않고, 보여 주는 방식만 바뀝니다.</p></div>
+            
+            <p class="small sub">학생 화면에는 몇 초 안에 반영됩니다.</p></div>
           <h3>들어온 학생</h3><ul class="lives" id="rMembers"></ul>
         </div>
       </div>
@@ -8970,7 +8970,6 @@ function renderBSet(){ const o=G.opts, L=G.life, seg=(k,arr)=>`<div class="seg" 
     <div class="stack-s"><b>시간의 빠르기</b>${seg('yl',[[35,'한 해 35초'],[60,'한 해 1분'],[120,'한 해 2분'],[300,'한 해 5분']])}<p class="small sub">100살까지 산다면 <b>${lifeTimeText(o.yl||60)}</b>이 걸려요 (어른이 되면 한 번에 두 해씩 흘러요). 선택을 고르는 동안에도 시간은 흐르고, 오래 고르지 않으면 저절로 정해져요.${(o.yl||60)<=35?' 한 해 35초는 달마다 일어나는 일과 큰 사건이 절반입니다.':''} 삶은 저절로 저장되어 다음 시간에 이어서 살 수 있어요.</p></div>
     <div class="stack-s"><b>한 해를 돌아보는 카드</b>${seg('card',[[1,'켜기'],[0,'끄기']])}<p class="small sub">해가 바뀔 때 지난해의 한 장면과 이 나라의 숫자 한 가지를 보여 줍니다.</p></div>
     <div class="stack-s"><b>무거운 장면 (가족과의 이별 · 큰 병 · 분쟁)</b>${seg('soft',[[0,'그대로 보기'],[1,'짧고 담담하게']])}<p class="small sub">'짧고 담담하게'를 고르면 가족과의 이별은 짧은 알림으로, 큰 병과 분쟁은 그림 없이 글로만 보여 줍니다. 일어나는 일 자체는 실제 통계 그대로입니다.</p></div>
-    <div class="stack-s"><b>선택지에 '될 가능성' 보여 주기</b>${seg('prob',[[0,'보이지 않기'],[1,'높음·보통·낮음'],[2,'숫자로(%)']])}<p class="small sub">기본은 숫자(%)예요. 얻는 것이 큰 선택일수록 확률이 낮아서, 높은 숫자만 고르면 얻는 것도 작아요. 얻는 것이 없는 선택은 '확실'로 보여요.</p></div>
     <div class="stack-s"><b>글이 떠 있는 시간</b>${seg('read',[[1,'보통'],[1.8,'길게 (천천히 읽기)']])}<p class="small sub">잠깐 나타났다 사라지는 글을 더 오래 보여 줍니다. 삶은 저절로 저장돼요. 오른쪽 위 메뉴의 '나가기'로 나갔다가 이어서 할 수 있어요.</p></div>
     ${!G.teacher&&G.data&&G.data.room?`<p class="small sub notice">지금 '${esc(G.data.room)}' 반에 들어가 있어요. 선생님이 반 설정을 정해 두었다면 그 설정이 먼저 적용됩니다.</p>`:''}`; }
 $('bSet').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const sg=b.closest('.seg'); if(!sg) return; const k=sg.dataset.o; G.opts[k]=k==='pace'?b.dataset.v:+b.dataset.v; if(G.life&&G.life.opt&&k==='soft') G.life.opt.soft=G.opts.soft; ls('life8b_opts',G.opts); renderBSet(); };
@@ -9050,7 +9049,7 @@ const caughtUp=()=>G.room&&G.roomPi!=null&&G.life.pi>=G.roomPi;
 const seasonOf=L=>L.C.seasons[L.pi%4];
 function beginPeriod(first){
   const L=G.life; if(!L.comps){ try{ L.makeComps(); }catch(e){} }
-  const cur=L.startPeriod(); if(cur.t==null) cur.t=G.sec; if(cur.mt==null) cur.mt=Math.min(12,G.sec*.2); if(cur.qt==null) cur.qt=9;
+  const cur=L.startPeriod(); if(cur.t==null) cur.t=G.sec; if(cur.mt==null) cur.mt=Math.min(12,G.sec*.2); if(cur.qt==null) cur.qt=L.q?9:3;   // 새 해가 시작되면 미션을 일찍 찾아온다
   NPCMAP={}; G.sickT=0;
   toast(`${L.by+L.age}년 · ${L.age}살 · ${seasonOf(L)}`,'year');
   const news=L.news||[]; L.news=[];
@@ -9126,7 +9125,7 @@ function sheet(html,cls){ $('sheetBox').className='box gbox '+(cls||''); $('shee
 function closeSheet(){ $('sheet').hidden=true; paused=false; lastT=performance.now(); }
 // 선택지의 '될 가능성' 표시: 0 숨김 · 1 모두 높음/보통/낮음 · 2 모두 숫자(기본). 학급 방의 선생님 설정이 먼저. 확률이 없는 선택은 '확실'
 function roomCfg(k){ const r=G.roomInfo, c=r&&r.cfg; return !G.teacher&&c&&c[k]!=null&&c[k]!==''?c[k]:null; }
-function probMode(){ const v=roomCfg('prob'), n=v!=null?+v:(G.opts.prob==null?2:+G.opts.prob); return n===1?1:2; }   // 항상 보인다(숨기기 없음): 1 높음·보통·낮음 · 2 숫자
+function probMode(){ return 2; }   // 항상 보인다(숨기기 없음): 1 높음·보통·낮음 · 2 숫자
 function softOn(){ const v=roomCfg('soft'); if(v!=null) return +v===1; return !!(G.life&&G.life.opt&&G.life.opt.soft); }
 const RD=()=>Math.max(1,+(G.opts.read||1));   // 글이 떠 있는 시간 배율 (천천히 읽기)
 const pct=(p,big)=>{ const m=probMode(); if(!m) return ''; if(p==null||p>=.999) return `<span class="pl sure">${sureWord()}</span>`;
@@ -9353,7 +9352,7 @@ function loopBody(t){
     // 한 해 안에서도 일은 계속 생긴다: 작은 선택은 채워지고, 큰 사건과 미션이 찾아온다
     G.spawnT-=dt; if(G.spawnT<=0){ G.spawnT=5; if(L.cur.scenes.filter(c=>!c.done).length<3&&L.spawn()>=0) renderHud(); }
     const catching=G.room&&G.roomPi!=null&&L.pi<G.roomPi-1;   // 반을 따라잡는 동안에는 큰 사건과 미션을 쉰다
-    if(!catching){ L.cur.qt-=dt; if(L.cur.qt<=0){ L.cur.qt=(L.age===5?10:L.age>=3&&L.age<5?22:35); if(!L.q&&L.questOffer()) toast(`${giverName(QUESTS[L.q.i].giver)}에게 부탁받을 일이 생겼어요. 파란 물음표를 찾아가 보세요.`); }
+    if(!catching){ L.cur.qt-=dt; if(L.cur.qt<=0){ L.cur.qt=(L.age===5?10:L.age>=3&&L.age<5?22:Math.min(35,G.sec*.16)); if(!caughtUp()&&L.cur.t<G.sec*.4&&!L.q){ L.cur.qt=2; } else if(!L.q&&L.questOffer()) toast(`${giverName(QUESTS[L.q.i].giver)}에게 부탁받을 일이 생겼어요. 파란 물음표를 찾아가 보세요.`); }
     L.cur.el=(L.cur.el||0)+dt;
     if(L.cur.mDone>=L.cur.plan&&caughtUp()&&!L.f.dying&&L.cur.el>=majorAt(L.cur.mDone)) L.addMajor();   // 반이 같은 해에 머무는 동안에도 큰 일은 이어진다
     if(L.cur.mDone<L.cur.plan&&L.cur.el>=majorAt(L.cur.mDone)){ if(L.major()!=null) openMajor(); else L.cur.mDone++; }
@@ -9364,6 +9363,7 @@ function loopBody(t){
     npcUpdate(dt);
     // 가까이 있는 것
     near=null; let best=1.5; if(!W.car||C_VEH()==='horse') for(const tg of targets()){ if(tg.m!==W.map) continue; const d=Math.hypot(tg.p[0]-W.x,tg.p[1]-W.y); if(d<best){ best=d; near=tg; } }
+    if(near&&near.type!=='q'){ let qb=null, qd=1.9; for(const tg of targets()){ if(tg.type!=='q'||tg.m!==W.map) continue; const d=Math.hypot(tg.p[0]-W.x,tg.p[1]-W.y); if(d<qd){ qd=d; qb=tg; } } if(qb) near=qb; }   // 파란 미션이 가까우면 같은 곳의 작은 선택보다 먼저
     if(!near&&typeof nearExtra==='function') near=nearExtra();   // 퀘스트·장면이 없으면: 사람에게 말 걸기, 물건 만져 보기
     const act=$('btnAct'); if(near){ const nm=near.lab||(near.n+(near.type==='q'?' · 미션':' · 다가가기')); if(act.hidden||act.dataset.k!==nm){ act.textContent=nm; act.dataset.k=nm; act.className='abtn'+(near.type==='q'?' q':near.type==='t'||near.type==='o'?' t':''); act.hidden=false; } } else act.hidden=true;
     const car=$('btnCar'), showCar=W.map==='out'&&canDrive()&&(W.car||C_VEH()==='horse'||onRoad(W.x,W.y,.7)); car.hidden=!showCar; if(showCar) car.textContent=W.car?'내리기':L.C.veh.n+' 타기';
@@ -13035,7 +13035,7 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
 })();
 /* 81-hub: 오른쪽 위 '모음' 단추 + 설정(톱니바퀴) + 화면 투명도·알림 자리 (11-14 선생님 요청)
    - 모음 단추(#btnHub, 네 칸 그림)를 누르면 아래로 내 정보·기록·메시지(#btnFr, ui/80)·설정(#btnSet)·나가기가 펼쳐진다(11-14 밤: 상태란 아래의 단추 줄을 옮겨 옴. 예전 #btnInfo·#btnMem·#btnExit은 숨겨 두고 이 단추들이 눌러 준다). 새 메뉴는 HUB_ITEMS 순서대로 #hubTray에 더한다.
-   - 설정 패널(#setPanel): 게임 속도(한 해 1·3·5분)·글이 떠 있는 시간·확률 표시·능력치 표시·화면 투명도·큰 글씨. 열어도 시간은 멈추지 않는다.
+   - 설정 패널(#setPanel): 게임 속도(한 해 1·3·5분)·글이 떠 있는 시간·능력치 표시·화면 투명도·큰 글씨. 열어도 시간은 멈추지 않는다.
    - 미니맵을 뺀 화면 상자(상태란·미션·알림 카드·길 안내·안내 글)는 반투명(--hudA, 설정에서 3단계).
    - 작은 일 알림 카드(#toasts)는 상태란 바로 오른쪽에 붙는다(자리가 좁으면 상태란 아래). */
 (function(){
@@ -13149,7 +13149,6 @@ html.ui-sr-0 #hRes{display:none!important}
       <div class="sg"><h4>게임 속도</h4>${sq('yl',[[60,'빠르게 · 1분'],[180,'보통 · 3분'],[300,'느리게 · 5분']],yl,room||G.teacher)}
         <p>${room?'학급 방에서는 선생님이 반의 시간을 정해요.':G.teacher?'교사용 체험은 시작할 때 고른 속도로 흘러요.':`한 해가 흐르는 데 걸리는 시간이에요. 지금 해에도 바로 적용돼요. 100살까지 약 <b>${lifeTimeText(yl)}</b>.`}</p></div>
       <div class="sg"><h4>글이 떠 있는 시간</h4>${sq('read',[[1,'보통'],[1.8,'길게 (천천히 읽기)']],+(G.opts.read||1)>1?1.8:1)}<p>알림 카드가 화면에 머무는 시간이에요.</p></div>
-      <div class="sg"><h4>잘될 확률 표시</h4>${sq('prob',[[1,'높음·보통·낮음'],[2,'숫자(%)']],probMode(),rp!=null)}<p>${rp!=null?'선생님이 반 설정으로 정해 두었어요.':'선택지마다 항상 보여요. 보여 주는 방식만 고를 수 있어요.'}</p></div>
       <div class="sg"><h4>능력치 표시 모양</h4>${sq('six',[['A','막대'],['B','동그라미'],['C','육각형'],['D','점']],sixV)}</div>
       <div class="sg"><h4>화면 상자 투명도</h4>${sq('a',[['s','진하게'],['m','보통'],['t','투명하게']],UI.a)}<p>지도를 뺀 상태란·알림·안내 상자가 비쳐 보이는 정도예요.</p></div>
       <div class="sg"><h4>글씨 크기</h4>${sq('big',[[0,'보통'],[1,'크게']],big?1:0)}</div>
@@ -13163,7 +13162,6 @@ html.ui-sr-0 #hRes{display:none!important}
   function set(k,v){ const L=G.life;
     if(k==='yl'){ v=+v; if(!L||G.teacher||(G.room&&!G.teacher)) return; const old=L.yl||G.sec||v; L.yl=v; G.opts.yl=v; G.sec=secOf(L); if(L.cur&&L.cur.t>0) L.cur.t=L.cur.t*v/old; if(L.cur&&L.cur.el) L.cur.el=L.cur.el*v/old; ls('life8b_opts',G.opts); try{ persist(); }catch(e){} toast(`게임 속도: 한 해 ${v/60}분`); }
     else if(k==='read'){ G.opts.read=+v; ls('life8b_opts',G.opts); }
-    else if(k==='prob'){ G.opts.prob=+v; ls('life8b_opts',G.opts); }
     else if(k==='six'){ ls('life8b_sixhud',v); }
     else if(k==='a'){ UI.a=v; saveUI(); applyA(); }
     else if(k==='mp'||k==='ms'||k==='sp'||k==='sr'){ UI[k]=String(v); saveUI(); applyUI(); }
@@ -13278,6 +13276,196 @@ html.ui-sr-0 #hRes{display:none!important}
       else put(null);
     }catch(e){ put(null); console.warn(e); }
     return r; };
+})();
+/* 84-quiz-country: 국어·역사·사회 문제를 '그 나라 사람'에 맞춰 내고, 조금 우스꽝스러운 말투로 낸다 (11-14 선생님 요청)
+   - 한국에서 태어난 삶(KR)은 예전 문제 그대로. 다른 나라에서 태어난 삶은:
+       국어 → 그 나라 말(스페인어·프랑스어·일본어 …) 인사·고맙다는 말·물·숫자 맞히기 (말을 정해 둔 나라만, 나머지는 나라 상식)
+       역사 → 그 나라 역사 문제(손으로 쓴 나라는 아래 CH), 그 밖의 나라는 세계사 + '이 명소는 어느 나라?'
+       사회 → 가끔 그 나라 상식(큰 도시·음식·명절·운동·명소·대표 동물·음악)
+   - 나라 자료(engine/02·01)의 값만 쓰므로 새 사실을 지어내지 않는다. 문제는 모두 직접 쓴 짧은 문제다. */
+(function(){
+  const pickN=(a,n)=>a.slice().sort(()=>R()-.5).slice(0,n);
+  const others=(f,ans,n)=>{ const out=[]; for(const c of pickN(CKEYS,CKEYS.length)){ const v=f(COUNTRIES[c]); if(v&&v!==ans&&!out.includes(v)) out.push(v); if(out.length>=n) break; } return out; };
+  const gj=(w,a,b)=>josa(w,a,b);
+  // ---- 나라 상식 (우스꽝스러운 상황 + 그 나라 값) ----
+  const TRI=[
+    C=>({q:`${C.city}의 길거리에서 고소한 냄새가 솔솔! 이 나라 사람들이 즐겨 먹는 음식은 무엇일까?`,ans:C.food,wrong:others(c=>c.food,C.food,3),ex:`${C.n}에서는 ${gj(C.food,'을','를')} 즐겨 먹어요. 배고플 때 읽으면 위험한 문제였죠.`,unit:'나라 상식'}),
+    C=>({q:`"올해도 ${gj(C.fest,'이','가')} 왔다!" 온 동네가 들뜬 이 나라는 어디일까?`,ans:C.n,wrong:others(c=>c.n,C.n,3),ex:`${C.n}의 큰 명절·축제 가운데 하나가 ${C.fest}예요.`,unit:'나라 상식'}),
+    C=>({q:`${C.n}에서 운동장이 시끌시끌! 이 나라에서 인기 있는 운동은?`,ans:C.sport,wrong:others(c=>c.sport,C.sport,3),ex:`${C.n}에서는 ${C.sport}${gj(C.sport,'이','가').slice(C.sport.length)} 인기가 많아요.`,unit:'나라 상식'}),
+    C=>({q:`여행 가방을 쌌다! ${gj(C.landmark,'을','를')} 보러 가려면 어느 나라로 가야 할까?`,ans:C.n,wrong:others(c=>c.n,C.n,3),ex:`${C.landmark}${gj(C.landmark,'은','는').slice(C.landmark.length)} ${C.n}에 있어요. 사진은 많이 찍고, 가방은 잃어버리지 말기!`,unit:'나라 상식'}),
+    C=>({q:`${C.n}${gj(C.n,'을','를').slice(C.n.length)} 대표하는 동물로 자주 꼽히는 친구는? (동물원 퀴즈!)`,ans:C.animal,wrong:others(c=>c.animal,C.animal,3),ex:`${C.n}에서는 ${C.animal}${gj(C.animal,'이','가').slice(C.animal.length)} 대표 동물로 자주 소개돼요.`,unit:'나라 상식'}),
+    C=>({q:`${C.n}의 거리에서 신나는 음악이 들려온다. 이 나라를 대표하는 음악·공연은?`,ans:C.music,wrong:others(c=>c.music,C.music,3),ex:`${C.n}에서는 ${C.music}${gj(C.music,'이','가').slice(C.music.length)} 잘 알려져 있어요.`,unit:'나라 상식'}),
+    C=>({q:`"약속 장소는 ${C.city}${gj(C.city,'이','가').slice(C.city.length)}야!" 이 도시가 가장 큰 도시인 나라는?`,ans:C.n,wrong:others(c=>c.n,C.n,3),ex:`${C.city}${gj(C.city,'은','는').slice(C.city.length)} ${C.n}에서 가장 큰 도시예요.`,unit:'나라 상식'})
+  ];
+  const triv=C=>{ for(let i=0;i<6;i++){ const p=TRI[Math.floor(R()*TRI.length)](C); if(p.wrong.length>=3) return p; } return TRI[0](C); };
+  // ---- 그 나라 말 ----
+  const LG={ // 이름|인사|고마워|물|하나 둘 셋
+    es:'스페인어|Hola|Gracias|Agua|uno, dos, tres', fr:'프랑스어|Bonjour|Merci|Eau|un, deux, trois', pt:'포르투갈어|Olá|Obrigado|Água|um, dois, três', de:'독일어|Hallo|Danke|Wasser|eins, zwei, drei',
+    it:'이탈리아어|Ciao|Grazie|Acqua|uno, due, tre', ja:'일본어|Konnichiwa|Arigatō|Mizu|ichi, ni, san', zh:'중국어|Nǐ hǎo|Xièxie|Shuǐ|yī, èr, sān', ru:'러시아어|Privet|Spasibo|Voda|odin, dva, tri',
+    ar:'아랍어|Marhaba|Shukran|Maa|wahid, ithnan, thalatha', hi:'힌디어|Namaste|Dhanyavaad|Paani|ek, do, teen', tr:'튀르키예어|Merhaba|Teşekkürler|Su|bir, iki, üç', vi:'베트남어|Xin chào|Cảm ơn|Nước|một, hai, ba',
+    th:'태국어|Sawasdee|Khop khun|Nam|nueng, song, sam', id:'인도네시아어|Halo|Terima kasih|Air|satu, dua, tiga', sw:'스와힐리어|Jambo|Asante|Maji|moja, mbili, tatu', en:'영어|Hello|Thank you|Water|one, two, three',
+    nl:'네덜란드어|Hallo|Dank je|Water|een, twee, drie', pl:'폴란드어|Cześć|Dziękuję|Woda|jeden, dwa, trzy', fa:'페르시아어|Salaam|Mersi|Aab|yek, do, se', bn:'벵골어|Nomoshkar|Dhonnobad|Jol|ek, dui, tin',
+    tl:'필리핀어|Kumusta|Salamat|Tubig|isa, dalawa, tatlo', el:'그리스어|Yia sou|Efharisto|Nero|ena, dyo, tria', he:'히브리어|Shalom|Toda|Mayim|echad, shtayim, shalosh', uk:'우크라이나어|Pryvit|Dyakuyu|Voda|odyn, dva, try', sv:'스웨덴어|Hej|Tack|Vatten|ett, två, tre', ur:'우르두어|Adaab|Shukriya|Paani|ek, do, teen' };
+  const LMAP=`es:AR BO CL CO CR CU DO EC SV GT HN MX NI PA PY PE UY VE ES GQ
+fr:FR CD CG CI SN ML BF NE TD GN BJ TG CF GA MG DJ KM HT BI CM MC LU
+pt:BR PT AO MZ GW CV ST TL
+de:DE AT CH LI
+it:IT SM
+ja:JP
+zh:CN
+ru:RU BY KZ KG
+uk:UA
+ar:SA EG DZ MA TN LY SD IQ SY JO LB YE OM AE QA KW BH MR SO PS
+hi:IN
+ur:PK
+bn:BD
+fa:IR AF TJ
+tr:TR
+vi:VN
+th:TH
+id:ID MY BN
+sw:KE TZ
+en:US GB AU NZ CA IE JM GY BZ BS BB TT LR SL GH NG ZA ZW ZM MW NA BW SZ LS SS UG SG PG FJ SB
+nl:NL SR
+pl:PL
+tl:PH
+el:GR CY
+he:IL
+sv:SE`;
+  const LOF={}; LMAP.split('\n').forEach(l=>{ const [k,v]=l.split(':'); v.split(' ').forEach(c=>{ if(COUNTRIES[c]) LOF[c]=k; }); });
+  const LV=k=>{ const [n,hi,th,wa,nu]=LG[k].split('|'); return {n,hi,th,wa,nu}; };
+  const lang=(C,code)=>{ const k=LOF[code]; if(!k) return null; const me=LV(k), oth=Object.keys(LG).filter(x=>x!==k).map(LV);
+    const ws=f=>pickN(oth,8).map(o=>o[f]).filter((v,i,a)=>v!==me[f]&&a.indexOf(v)===i).slice(0,3);
+    const t=Math.floor(R()*4);
+    if(t===0) return {q:`${C.city}의 시장. ${C.food} 가게 아저씨가 활짝 웃으며 "${me.hi}!" 하고 외쳤다. 무슨 뜻일까?`,ans:'안녕하세요(인사)',wrong:['이거 얼마예요?','도와주세요!','다 팔렸어요'],ex:`${me.n}로 "${me.hi}"는 인사말이에요. 일단 웃으며 "${me.hi}!" 하면 반은 성공!`,unit:`${me.n} 시간`};
+    if(t===1) return {q:`${C.food} 한 그릇을 받았다! ${me.n}로 "고맙습니다"는?`,ans:me.th,wrong:ws('th'),ex:`${me.n}로 "고맙습니다"는 "${me.th}"예요. 맛있게 먹고 한 번 더 말하면 더 맛있어져요.`,unit:`${me.n} 시간`};
+    if(t===2) return {q:`더운 날, 목이 바싹 말랐다. ${me.n}로 '물'은?`,ans:me.wa,wrong:ws('wa'),ex:`${me.n}로 물은 "${me.wa}"예요. 여행 가서 가장 먼저 외울 말!`,unit:`${me.n} 시간`};
+    return {q:`${me.n}로 1, 2, 3을 순서대로 세어 보자. 맞는 것은?`,ans:me.nu,wrong:ws('nu'),ex:`${me.n}로 "${me.nu}"예요. 줄을 설 때 쓰면 멋져 보여요.`,unit:`${me.n} 시간`}; };
+  // ---- 그 나라 역사 (손으로 쓴 나라) ----
+  const CH={
+    US:[['미국이 영국에서 독립을 선언한 해는?','1776년',['1492년','1812년','1865년'],'1776년 7월 4일에 독립 선언서를 발표했어요. 그날이 독립기념일이라 불꽃놀이를 해요.'],['미국의 첫 대통령은?','조지 워싱턴',['에이브러햄 링컨','토머스 에디슨','벤저민 프랭클린'],'조지 워싱턴이 초대 대통령이에요. 1달러 지폐 속 얼굴이기도 해요.'],['1969년 사람을 달에 보낸 미국 우주선은?','아폴로 11호',['보이저 1호','챌린저호','스푸트니크 1호'],'닐 암스트롱이 달에 첫 발을 디뎠어요. "작은 한 걸음"으로 유명하죠.']],
+    GB:[['영국에서 왕의 힘을 제한한 1215년의 문서는?','마그나 카르타',['권리 장전','독립 선언서','함무라비 법전'],'마그나 카르타는 왕도 법 아래에 있다는 생각의 시작이에요.'],['증기 기관을 크게 개량해 산업 혁명을 이끈 영국 사람은?','제임스 와트',['아이작 뉴턴','찰스 다윈','윈스턴 처칠'],'와트의 증기 기관 덕분에 공장과 기차가 빨리 퍼졌어요. 단위 W(와트)가 그 이름이에요.'],['영국에서 산업 혁명이 일어난 때는?','18세기',['12세기','15세기','21세기'],'18세기 영국에서 기계와 공장이 크게 늘었어요.']],
+    FR:[['프랑스 혁명이 일어난 해는?','1789년',['1492년','1815년','1914년'],'1789년 바스티유 감옥을 습격하면서 혁명이 시작되었어요.'],['"짐이 곧 국가다"라고 했다고 전해지는, 베르사유 궁전을 지은 왕은?','루이 14세',['나폴레옹','샤를 드골','잔 다르크'],'루이 14세는 해처럼 빛나는 왕이라고 불렸어요. 궁전이 너무 커서 길을 잃을 지경!'],['프랑스를 위해 싸운 소녀로 유명한 인물은?','잔 다르크',['마리 퀴리','에디트 피아프','오드리 헵번'],'잔 다르크는 백년 전쟁 때 프랑스군을 이끌었어요.']],
+    DE:[['베를린 장벽이 무너진 해는?','1989년',['1945년','1961년','2002년'],'1989년에 장벽이 열리고 이듬해 독일이 다시 하나가 되었어요.'],['금속 활자 인쇄술로 책이 널리 퍼지게 한 독일 사람은?','구텐베르크',['아인슈타인','베토벤','괴테'],'구텐베르크의 인쇄기 덕분에 책이 값싸게 퍼졌어요. 복사기의 먼 조상이에요.'],['독일이 다시 하나가 된 해는?','1990년',['1871년','1949년','2000년'],'1990년 10월 3일에 동독과 서독이 하나가 되었어요.']],
+    JP:[['에도 막부를 연 인물은?','도쿠가와 이에야스',['오다 노부나가','메이지 천황','쇼토쿠 태자'],'1603년에 도쿠가와 이에야스가 에도(오늘날의 도쿄)에서 막부를 열었어요.'],['일본이 문을 열고 빠르게 근대화한 1868년의 변화는?','메이지 유신',['쇼와 유신','헤이안 시대','나라 시대'],'메이지 유신 뒤 기차·학교·공장이 빠르게 늘었어요.'],['아시아에서 처음으로 올림픽(하계)을 연 도시는?','도쿄',['베이징','서울','방콕'],'1964년 도쿄 올림픽이 아시아 첫 하계 올림픽이었어요.']],
+    CN:[['기원전 221년에 중국을 처음 통일한 인물은?','진시황',['공자','칭기즈 칸','마오쩌둥'],'진시황이 중국을 하나로 묶고 만리장성을 이었어요.'],['종이를 개량해 널리 쓰이게 한 사람으로 알려진 중국 사람은?','채륜',['장건','사마천','정화'],'채륜 덕분에 글을 적는 값이 많이 내려갔다고 해요.'],['중국에서 처음 쓰이고 세계를 바꾼 "4대 발명"에 들지 않는 것은?','전화기',['종이','화약','나침반'],'4대 발명은 종이·인쇄술·화약·나침반이에요. 전화기는 아니죠!']],
+    IN:[['인도가 영국에서 독립한 해는?','1947년',['1857년','1919년','1965년'],'1947년 8월 15일에 독립했어요. (우리나라 광복절과 같은 날짜!)'],['비폭력으로 독립운동을 이끈 인도의 지도자는?','마하트마 간디',['네루 장군','칭기즈 칸','아소카 왕'],'간디는 물레와 소금 행진으로 비폭력 저항을 보여 줬어요.'],['사랑하는 왕비를 위해 샤 자한 왕이 지은 하얀 건물은?','타지마할',['앙코르와트','자금성','콜로세움'],'타지마할은 무굴 제국의 왕이 왕비를 기리며 지었어요.']],
+    BR:[['브라질은 어느 나라에서 독립했을까?','포르투갈',['스페인','영국','프랑스'],'1822년에 포르투갈에서 독립했어요. 그래서 포르투갈어를 써요.'],['브라질 사람들이 포르투갈어를 쓰는 까닭은?','포르투갈의 지배를 받았기 때문',['스페인과 가까워서','영국 회사가 많아서','축구가 인기라서'],'1500년 포르투갈 사람이 도착한 뒤 오랫동안 지배를 받았어요.']],
+    RU:[['1961년 인류 최초로 우주를 날아간 사람은?','유리 가가린',['닐 암스트롱','알렉세이 레오노프','스티븐 호킹'],'가가린은 소련(러시아)의 우주 비행사예요. "지구는 푸르다"라는 말로 유명해요.'],['상트페테르부르크를 세운 러시아의 황제는?','표트르 대제',['이반 3세','니콜라이 2세','스탈린'],'표트르 대제가 서쪽 바다를 향한 새 도시를 세웠어요.']],
+    IT:[['이탈리아 로마에 있는 거대한 원형 경기장은?','콜로세움',['파르테논','에펠탑','알함브라'],'콜로세움에서는 검투 경기가 열렸어요. 오늘은 사진 찍는 사람들로 북적!'],['"모나리자"를 그린 이탈리아 화가는?','레오나르도 다 빈치',['피카소','반 고흐','모네'],'다 빈치는 화가이면서 과학자·발명가였어요.']],
+    ES:[['1492년 콜럼버스의 항해를 도운 스페인 여왕은?','이사벨 여왕',['엘리자베스 1세','마리 앙투아네트','빅토리아 여왕'],'이사벨 여왕이 항해를 후원했어요. 콜럼버스는 신대륙에 닿았죠.'],['돈키호테를 쓴 스페인 작가는?','세르반테스',['셰익스피어','괴테','도스토옙스키'],'돈키호테는 풍차를 거인이라 여기고 덤비는 엉뚱한 기사 이야기예요.']],
+    MX:[['아즈텍 제국의 수도로, 호수 위에 세운 도시는?','테노치티틀란',['마추픽추','치첸이트사','쿠스코'],'테노치티틀란은 오늘날 멕시코시티 자리예요.'],['멕시코가 스페인에서 독립을 시작한 해는?','1810년',['1492년','1776년','1945년'],'1810년 9월 16일에 독립 운동이 시작되어 지금도 큰 기념일이에요.']],
+    EG:[['이집트의 큰 피라미드는 누구의 무덤으로 지어졌을까?','파라오',['로마 황제','귀족 상인','마을 촌장'],'피라미드는 왕인 파라오의 무덤이에요. 엄청난 크기라서 지금도 신기해요.'],['이집트 글자를 푸는 열쇠가 된 돌은?','로제타석',['함무라비 비석','광개토대왕비','스핑크스'],'로제타석 덕분에 이집트 상형 문자를 읽게 되었어요.']],
+    TR:[['1453년 콘스탄티노플을 차지한 오스만 제국의 술탄은?','메흐메트 2세',['술레이만','아타튀르크','알렉산드로스'],'이후 콘스탄티노플은 이스탄불로 불리게 되었어요.'],['1923년 튀르키예 공화국을 세운 지도자는?','무스타파 케말 아타튀르크',['메흐메트 2세','술레이만 1세','칭기즈 칸'],'"튀르크의 아버지"라는 뜻의 아타튀르크 칭호를 얻었어요.']],
+    GR:[['민주주의가 처음 자리 잡은 고대 그리스의 도시 국가는?','아테네',['스파르타','로마','카르타고'],'아테네에서는 시민들이 모여 나랏일을 결정했어요.'],['올림픽의 뿌리가 된 고대 대회가 열린 곳은?','올림피아',['델포이','알렉산드리아','트로이'],'고대 올림픽은 올림피아에서 4년마다 열렸어요.']],
+    AU:[['오스트레일리아에 오래전부터 살아온 사람들은?','애버리지니(원주민)',['마오리','잉카','이누이트'],'애버리지니는 수만 년 전부터 이 땅에서 살아왔어요.'],['1788년 영국 사람들이 처음 정착한 오스트레일리아의 지역은?','시드니',['퍼스','다윈','캔버라'],'영국 죄수들과 군인들이 시드니 쪽에 도착했어요.']],
+    CA:[['캐나다가 하나의 연방 나라로 출발한 해는?','1867년',['1492년','1776년','1945년'],'1867년 7월 1일, 지금도 캐나다 데이로 기념해요.']],
+    ID:[['인도네시아가 독립을 선언한 해는?','1945년',['1815년','1902년','1965년'],'1945년 8월 17일에 수카르노가 독립을 선언했어요.']],
+    PE:[['마추픽추를 남긴 고대 문명은?','잉카',['마야','아즈텍','이집트'],'잉카 사람들은 안데스 산꼭대기에 돌로 도시를 지었어요.']],
+    TH:[['태국(옛 시암)은 유럽의 식민 지배를 받지 않은 동남아시아 나라로 알려져 있다. 맞을까?','맞다',['틀리다'],'태국은 동남아에서 식민지가 되지 않은 나라로 알려져 있어요. 그래서 "자유의 나라"라는 뜻의 이름이에요.'],['태국의 이전 이름은?','시암',['버마','아유타야 공화국','크메르'],'1939년에 이름을 태국으로 바꾸었어요.']],
+    NL:[['17세기 네덜란드에서 값이 천정부지로 치솟았던 꽃은?','튤립',['장미','벚꽃','해바라기'],'튤립 한 송이 값이 집 한 채 값이 되었다는 이야기도 전해져요.'],['네덜란드가 세계로 무역을 넓히며 세운 유명한 회사는?','동인도 회사',['구글','삼성','아마존'],'17세기 네덜란드 동인도 회사가 아시아와 무역을 했어요.']],
+    IR:[['페르시아 제국을 크게 일으킨 왕은?','키루스 대왕',['알렉산드로스','진시황','칭기즈 칸'],'키루스 대왕은 넓은 땅을 다스리며 여러 민족의 풍습을 존중했다고 전해져요.']],
+    PL:[['"지구가 태양 둘레를 돈다"고 주장한 폴란드의 천문학자는?','코페르니쿠스',['갈릴레이','케플러','뉴턴'],'코페르니쿠스의 지동설은 하늘을 보는 눈을 바꿨어요.']],
+    NO:[['노르웨이 등 북유럽 바다를 누비던 사람들은?','바이킹',['몽골 기병','잉카 전사','십자군'],'바이킹은 배를 잘 다뤘어요. 뿔 투구는 사실 영화 속 상상이래요!']],
+    DK:[['덴마크 등 북유럽 바다를 누비던 사람들은?','바이킹',['몽골 기병','잉카 전사','십자군'],'바이킹은 긴 배를 타고 먼 바다까지 나갔어요.']],
+    SE:[['스웨덴 등 북유럽 바다를 누비던 사람들은?','바이킹',['몽골 기병','잉카 전사','십자군'],'바이킹은 무역과 탐험으로도 유명해요.']]
+  };
+  const WORLD=[
+    ['피라미드를 지은 고대 문명은 어디일까?','이집트',['로마','그리스','마야'],'나일 강가의 이집트에서 왕의 무덤으로 피라미드를 지었어요.'],
+    ['1492년 대서양을 건너 신대륙에 닿은 탐험가는?','콜럼버스',['마젤란','마르코 폴로','제임스 쿡'],'콜럼버스는 인도에 가려다 아메리카에 닿았다고 해요. 길치였나 봐요!'],
+    ['1789년 바스티유 감옥을 습격하며 시작된 사건은?','프랑스 혁명',['러시아 혁명','산업 혁명','명예 혁명'],'프랑스 혁명은 자유·평등·박애를 외쳤어요.'],
+    ['1969년 사람이 처음 달에 발을 디딘 우주선은?','아폴로 11호',['스푸트니크 1호','보이저 1호','갈릴레오호'],'닐 암스트롱과 버즈 올드린이 달 위를 걸었어요.'],
+    ['금속 활자로 책을 빨리 찍어 낸 15세기 독일의 인물은?','구텐베르크',['콜럼버스','다빈치','루터'],'인쇄기 덕분에 책이 널리 퍼졌어요.'],
+    ['로마 제국에서 검투사 경기가 열리던 거대한 원형 경기장은?','콜로세움',['파르테논','타지마할','자금성'],'콜로세움은 지금도 이탈리아 로마에 남아 있어요.'],
+    ['동양과 서양을 잇던 옛 무역길의 이름은?','비단길(실크로드)',['소금길','향신료 도로','차 마시기 길'],'이 길로 비단과 향신료, 종이가 오갔어요.'],
+    ['처음으로 배를 타고 세계 일주를 마친 탐험대를 이끌기 시작한 사람은?','마젤란',['콜럼버스','바스쿠 다 가마','마르코 폴로'],'마젤란은 항해 중 목숨을 잃었지만 그의 배는 세계를 한 바퀴 돌았어요.']
+  ];
+  const hist=(C,code,b)=>{ const L=CH[code]; if(L&&R()<.85){ const [q,a,w,ex]=qzPick(L); return {q:`${q}`,ans:a,wrong:w.length?w:['틀리다'],ex,unit:`${C.n} 역사`,two:w.length<2}; }
+    if(R()<.55){ const [q,a,w,ex]=qzPick(WORLD); return {q,ans:a,wrong:w,ex,unit:'세계사'}; }
+    const p=TRI[3](C); p.unit='세계 속 우리 나라 이야기'; return p; };
+  // ---- 끼워 넣기 ----
+  const _s=QZ2_SUB;
+  const old={국어:_s.국어,역사:_s.역사,사회:_s.사회};
+  _s.국어=function(L,b){ const code=L.c||'KR'; if(code==='KR') return old.국어(L,b); const C=L.C||COUNTRIES[code]; if(!C) return old.국어(L,b);
+    const p=lang(C,code); if(p&&R()<.85) return p; return Object.assign(triv(C),{unit:`${C.n}의 말과 문화`}); };
+  _s.역사=function(L,b){ const code=L.c||'KR'; if(code==='KR') return old.역사(L,b); const C=L.C||COUNTRIES[code]; if(!C) return old.역사(L,b); return hist(C,code,b); };
+  _s.사회=function(L,b){ const code=L.c||'KR'; if(code==='KR'||R()<.35) return old.사회(L,b); const C=L.C||COUNTRIES[code]; if(!C) return old.사회(L,b); return triv(C); };
+  window.QZC={lang,hist,triv,LOF,CH};
+})();
+/* 85-panel-style: '내 정보'(마이페이지)와 '기록'(기억) 창을 게임 화면(오른쪽 위 메뉴·새로 알게 된 것 카드)과 같은 모습으로 다시 꾸민다 (11-14 선생님 요청)
+   - 위쪽은 남색 띠(제목·탭), 아래는 따뜻한 종이색 바탕에 둥근 카드. 본문 글씨는 Pretendard(읽기 편한 글씨)로 키우고, 제목만 게임 글씨(Galmuri11).
+   - 카드 제목 앞에는 칸마다 다른 색 네모, 기록은 '나이' 머리글로 묶고 고른 길은 알약 모양, 장면 표시는 '▶ 장면 보기'.
+   - 내용을 만드는 코드(openInfo·openMem)는 그대로 두고 CSS와 기록 묶기만 더한다. 휴대폰 가로(높이 480px 이하)는 따로 줄여 맞춘다. */
+(function(){
+  const st=document.createElement('style'); st.textContent=`
+#sheet:has(.box.info),#sheet:has(.box.mem){background:rgba(10,14,22,.58);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#sheet .box.info,#sheet .box.mem{--pp:#FBF7EE;--pl:#EADFC8;--pk:#2A2F3A;--pm:#7B6F58;padding:0!important;gap:0!important;border:0!important;border-radius:20px!important;background:var(--pp)!important;color:var(--pk);
+  box-shadow:0 22px 60px rgba(0,0,0,.55),0 0 0 3px #1B2436,0 0 0 5px rgba(255,255,255,.55)!important;width:min(94vw,46rem)!important;max-height:92%!important;overflow:auto;display:flex;flex-direction:column;font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1.02rem;scrollbar-width:thin}
+#sheet .box.info .ihead,#sheet .box.mem .ihead{position:sticky;top:0;margin:0;padding:16px 64px 12px 22px;background:linear-gradient(170deg,#2E3C58 0%,#1B2436 100%);border-bottom:0;box-shadow:0 4px 14px rgba(20,28,44,.28);z-index:4}
+#sheet .box.info .ihead .place,#sheet .box.mem .ihead .place{display:inline-block;font-size:.76rem;font-weight:800;letter-spacing:.06em;color:#1B2436;background:#F6C453;border-radius:999px;padding:2px 10px;margin:0}
+#sheet .box.info .ihead h2,#sheet .box.mem .ihead h2{margin:8px 0 12px;font-family:"Galmuri11","Pretendard",sans-serif;font-size:1.32rem;line-height:1.35;color:#fff;font-weight:400;letter-spacing:.01em;word-break:keep-all}
+#sheet .box.info .itabs,#sheet .box.mem .itabs{gap:8px;padding:0 0 2px}
+#sheet .box.info .itabs button,#sheet .box.mem .itabs button{border:1.5px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#D5DDEE;border-radius:999px;padding:8px 15px;font:700 .93rem "Pretendard","Noto Sans KR",sans-serif;min-height:38px;transition:background .15s,color .15s}
+#sheet .box.info .itabs button:hover,#sheet .box.mem .itabs button:hover{background:rgba(255,255,255,.18)}
+#sheet .box.info .itabs button.on,#sheet .box.mem .itabs button.on{background:#F6C453;border-color:#F6C453;color:#1B2436}
+#sheet .box.info .xclose,#sheet .box.mem .xclose{position:sticky;top:14px;align-self:flex-end;margin:14px 16px -54px 0;width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(255,255,255,.14);color:#fff;font-size:17px;box-shadow:none;z-index:6;flex:none}
+#sheet .box.info .xclose:hover,#sheet .box.mem .xclose:hover{background:#E5645F;border-color:#fff}
+#sheet .box.info .ibody{padding:18px 20px 6px;gap:14px}
+#sheet .box.info .icard{--ac:#4C9BFF;background:#fff;border:1.5px solid var(--pl);border-radius:16px;padding:14px 16px 10px;gap:2px;box-shadow:0 2px 0 rgba(120,100,60,.08)}
+#sheet .box.info .icard:nth-child(4n+2){--ac:#FFB020}#sheet .box.info .icard:nth-child(4n+3){--ac:#3FBF7F}#sheet .box.info .icard:nth-child(4n){--ac:#E5645F}
+#sheet .box.info .icard h3{margin:0 0 6px;font:700 1.08rem "Pretendard","Noto Sans KR",sans-serif;color:var(--pk);align-items:center;gap:9px}
+#sheet .box.info .icard h3::before{content:"";flex:none;width:12px;height:12px;border-radius:4px;background:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 25%,transparent)}
+#sheet .box.info .icard h3 small{font-size:.8rem;color:var(--pm);font-weight:500}
+#sheet .box.info .irow{grid-template-columns:6.8em 1fr;gap:12px;padding:10px 0;border-top:1px solid #F1E9D8;font-size:1.02rem;line-height:1.6}
+#sheet .box.info .icard h3+.irow{border-top:0}
+#sheet .box.info .irow .ik{color:var(--pm);font-weight:700;font-size:.9rem;padding-top:2px}
+#sheet .box.info .irow .iv{color:var(--pk)}
+#sheet .box.info .isub{color:var(--pm);font-size:.88rem;line-height:1.55}
+#sheet .box.info .ibig{font-size:1.1rem}
+#sheet .box.info .pcard{border:1.5px solid #F0E6D0;border-radius:12px;background:#FFFCF5}
+#sheet .box.info .jrow{font-size:.98rem;gap:10px}
+#sheet .box.info .jrow .rt,#sheet .box.info .rbar .rt{height:12px;border-radius:6px;background:#EFE7D5}
+#sheet .box.info .jrow .rt i{background:linear-gradient(90deg,#FFB020,#E2703A);border-radius:6px}
+#sheet .box.info .axgrid{gap:8px}
+#sheet .box.info .axgrid div{background:#FFFCF5;border:1.5px solid #F0E6D0;border-radius:12px;padding:8px 2px}
+#sheet .box.info #btnOk{margin:10px 20px 20px;border-radius:14px;border:0;background:linear-gradient(180deg,#3A4A68,#1B2436);color:#fff;font:800 1rem "Pretendard",sans-serif;min-height:48px;box-shadow:0 4px 0 #0F1624}
+#sheet .box.info #btnOk:active{transform:translateY(2px);box-shadow:0 2px 0 #0F1624}
+/* 기록 */
+#sheet .box.mem>.isub{margin:14px 22px 2px;padding:8px 12px;background:#F4ECD8;border-radius:12px;color:var(--pm);font-size:.88rem;line-height:1.55}
+#sheet .box.mem .mlist{padding:6px 20px 22px;gap:10px}
+#sheet .box.mem .mgrp{position:sticky;top:0;z-index:2;display:flex;align-items:baseline;gap:8px;margin:10px -4px 0;padding:8px 6px 6px;background:linear-gradient(180deg,var(--pp) 70%,rgba(251,247,238,0));font-family:"Galmuri11","Pretendard",sans-serif}
+#sheet .box.mem .mgrp b{font-size:1.1rem;color:#fff;background:#2E3C58;border-radius:999px;padding:3px 13px;font-weight:400}
+#sheet .box.mem .mgrp span{font-size:.82rem;color:var(--pm);font-family:"Pretendard",sans-serif;font-weight:600}
+#sheet .box.mem .mcard{position:relative;grid-template-columns:1fr;gap:0;background:#fff;border:1.5px solid var(--pl);border-left:6px solid #B8C7D8;border-radius:14px;padding:12px 14px;box-shadow:0 2px 0 rgba(120,100,60,.07)}
+#sheet .box.mem .mcard.big{border-left-color:#E2703A;background:#FFF7EC}
+#sheet .box.mem .mcard.sc:hover{border-color:#E2703A;transform:translateY(-1px)}
+#sheet .box.mem .mage{display:none}
+#sheet .box.mem .mtx{display:flex;flex-direction:column;gap:6px}
+#sheet .box.mem .mtx .mq{color:var(--pm);font-size:.9rem;line-height:1.55;padding-left:10px;border-left:3px solid #E3D8BF}
+#sheet .box.mem .mtx .ml{align-self:flex-start;color:#1D4E9E;background:#E4EEFC;border-radius:999px;padding:3px 12px;font-weight:700;font-size:.92rem;line-height:1.45}
+#sheet .box.mem .mtx .mr{font-size:1.04rem;line-height:1.65;color:var(--pk);word-break:keep-all}
+#sheet .box.mem .mtags{margin-top:2px}
+#sheet .box.mem .scmark{background:#2E3C58;border-radius:999px;padding:2px 10px 2px 8px;font-size:.74rem}
+#sheet .box.mem .scmark::before{content:"";display:inline-block;margin-right:5px;border:4px solid transparent;border-left:7px solid #F6C453;border-right:0;vertical-align:-1px}
+@media (max-height:480px){
+  #sheet .box.info,#sheet .box.mem{width:min(96vw,44rem)!important;max-height:95%!important;font-size:.95rem;border-radius:16px!important}
+  #sheet .box.info .ihead,#sheet .box.mem .ihead{padding:9px 56px 8px 16px}
+  #sheet .box.info .ihead h2,#sheet .box.mem .ihead h2{font-size:1.08rem;margin:5px 0 8px}
+  #sheet .box.info .itabs button,#sheet .box.mem .itabs button{padding:5px 12px;font-size:.85rem;min-height:32px}
+  #sheet .box.info .xclose,#sheet .box.mem .xclose{width:34px;height:34px;margin:9px 11px -43px 0;top:9px}
+  #sheet .box.info .ibody{padding:12px 14px 4px;gap:10px}#sheet .box.info .icard{padding:10px 12px 6px}
+  #sheet .box.info .irow{padding:7px 0;font-size:.95rem}#sheet .box.info .irow .ik{font-size:.84rem}
+  #sheet .box.info #btnOk{margin:8px 14px 14px;min-height:40px}
+  #sheet .box.mem>.isub{margin:10px 14px 0}#sheet .box.mem .mlist{padding:4px 14px 16px;gap:8px}#sheet .box.mem .mcard{padding:9px 11px}
+  #sheet .box.mem .mtx .mr{font-size:.97rem}
+}
+@media (max-width:420px){#sheet .box.info .irow{grid-template-columns:5.4em 1fr}}`;
+  document.head.appendChild(st);
+  // 기록: 같은 나이의 기억을 '5살 · 2031년' 머리글 아래로 묶는다
+  function group(){ const ml=$('sheetBox').querySelector('.mlist'); if(!ml||ml.dataset.g) return; ml.dataset.g='1'; let last=null;
+    [...ml.children].forEach(c=>{ const g=c.querySelector&&c.querySelector('.mage'); if(!g) return; const age=g.firstChild?g.firstChild.textContent.trim():'', yr=(g.querySelector('small')||{}).textContent||'';
+      if(age!==last){ last=age; const h=document.createElement('div'); h.className='mgrp'; h.innerHTML='<b>'+esc(age)+'</b><span>'+esc(yr)+'</span>'; ml.insertBefore(h,c); } }); }
+  const _om=openMem; openMem=function(){ const r=_om.apply(this,arguments); try{ group(); }catch(e){} return r; };
 })();
 </script>
 <!-- 엔딩 화면 밤하늘 별빛 + 장면 등장 시차 -->
