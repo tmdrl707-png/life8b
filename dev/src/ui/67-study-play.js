@@ -9,11 +9,11 @@ const MG_CAP=3, BUY_CAP=3;
 // ---------- 1) 미니 게임 ----------
 function mgSpotAt(){ const L=G.life, a=L&&L.age; if(!L||W.car) return null;
   if(W.map==='out'&&a>=4&&a<=14&&OUT.patch&&OUT.patch.play){ const p=OUT.patch.play; if(distTo({r:p})<.9) return {type:'mg',th:'cap',n:L.spotName('play'),lab:`${L.spotName('play')} · 병뚜껑 날리기`}; }
-  if(W.map==='gym'&&a>=7&&a<75&&typeof PLACE_IN!=='undefined'){ for(const f of PLACE_IN.gym.f) if(f[5]==='g_mat'&&distTo({r:f.slice(1,5)})<1.1) return {type:'mg',th:'jump',n:L.spotName('gym'),lab:'매트 · 제자리멀리뛰기'}; }
+  if(W.map==='gym'&&a>=7&&a<75&&typeof PLACE_IN!=='undefined'){ for(const f of PLACE_IN.gym.f) if(f[5]==='g_mat'&&distTo({r:f.slice(1,5)})<1.1) return f[1]>6?{type:'mg',th:'rope',n:L.spotName('gym'),lab:'매트 · 줄넘기 박자 맞추기'}:{type:'mg',th:'jump',n:L.spotName('gym'),lab:'매트 · 제자리멀리뛰기'}; }
   return null; }
 const MG_TH={cap:{t:'병뚜껑 날리기',how:'힘 막대가 초록 칸에 올 때 누르면 병뚜껑이 멀리 날아가요.',unit:'cm',max:300,mem:'놀이터에서 병뚜껑을 {d}cm나 날렸다.',fx:{j:.45,t:.3}},
   jump:{t:'제자리멀리뛰기',how:'힘 막대가 초록 칸에 올 때 누르면 멀리 뛰어요.',unit:'cm',max:260,mem:'체육관에서 제자리멀리뛰기 {d}cm를 뛰었다.',fx:{h:.4,j:.3}}};
-function openMini(nr){ if(dlgOpen()||!$('sheet').hidden) return; const L=G.life, T=MG_TH[nr.th], Y=tkYear(L); Y.mg=Y.mg||0;
+function openMini(nr){ if(dlgOpen()||!$('sheet').hidden) return; if(nr.th==='rope') return openRope(nr); const L=G.life, T=MG_TH[nr.th], Y=tkYear(L); Y.mg=Y.mg||0;
   const age=L.age, sp=age<8?.75:age<13?1:age<60?1.15:.8, zone=age<8?.2:age<13?.16:.13;   // 막대 속도·초록 칸 너비
   const best=(L.f.mgBest||{})[nr.th]||0;
   sheet(`<div class="place">${esc(nr.n)} · 놀이</div><h2>${T.t}</h2><p class="small sub">${T.how} 세 번 해 봐요.${best?` 나의 최고 기록 ${best}${T.unit}`:''}</p>
@@ -45,6 +45,39 @@ function openMini(nr){ if(dlgOpen()||!$('sheet').hidden) return; const L=G.life,
     closeSheet(); renderHud(); persist();
     dlgRun([{who:nr.n,t:tries.length?`가장 좋은 기록은 ${b}${T.unit}${rec?' · 나의 새 기록!':''}`+(Y.mg>=MG_CAP&&!up.length?' (올해는 놀이로 오르는 것이 다 찼어요)':''):'다음에 또 해 보자.',up}]); }
   $('mgGo').onclick=go; $('mgEnd').onclick=()=>{ if(!done) finish(); };
+  const key=e=>{ if($('sheet').hidden||!cv.isConnected){ removeEventListener('keydown',key,true); return; } if(e.key===' '||e.key==='Enter'||e.key==='a'||e.key==='A'){ e.preventDefault(); e.stopImmediatePropagation(); go(); } };
+  addEventListener('keydown',key,true); }
+// ---------- 1-2) 줄넘기 박자 맞추기: 줄이 발 밑을 지나갈 때 눌러 뛴다. 열 번 중 몇 번 맞췄나 ----------
+function openRope(nr){ const L=G.life, Y=tkYear(L); Y.mg=Y.mg||0; const age=L.age, win=age<8?190:age<13?160:age<60?140:200, N=10;
+  const per0=age<8?1000:age<13?850:age<60?760:950, best=(L.f.mgBest||{}).rope||0;
+  sheet(`<div class="place">${esc(nr.n)} · 놀이</div><h2>줄넘기 박자 맞추기</h2><p class="small sub">줄이 발 밑으로 내려올 때 눌러서 뛰어요. 열 번 해 봐요.${best?` 나의 최고 기록 ${best}번`:''}</p>
+    <canvas id="mgCv" width="560" height="170" style="width:100%;max-width:560px;display:block;margin:6px auto;border-radius:8px;background:#F4EBDC"></canvas>
+    <p id="mgMsg" class="ibig" style="text-align:center;min-height:1.5em;margin:4px 0">준비…</p>
+    <div class="opts"><button id="mgGo" type="button">뛰기! (A·스페이스)</button><button id="mgEnd" type="button">그만하기</button></div>`,'event');
+  const cv=$('mgCv'), x=cv.getContext('2d'); let done=false, raf=0, hits=0, tries=0, jumpAt=-9999, started=performance.now()+900;
+  const beats=[]; { let t=started+per0; for(let i=0;i<N;i++){ beats.push({t,hit:false,miss:false}); t+=per0*(1-i*.025); } }
+  const per=i=>i<=0?per0:beats[i].t-beats[i-1].t;
+  function pos(now){ // 가장 가까운 박자에 대한 줄 각도(0=발 밑)
+    let i=beats.findIndex(b=>b.t+win>=now); if(i<0) i=N-1; const prev=i>0?beats[i-1].t:beats[0].t-per0, nx=beats[i].t, u=Math.max(0,Math.min(1,(now-prev)/(nx-prev))); return (u-1)*Math.PI*2; }
+  function frame(now){ if(!cv.isConnected||done){ cancelAnimationFrame(raf); return; } const W0=cv.width,H0=cv.height; x.clearRect(0,0,W0,H0);
+    x.fillStyle='#E6D6BC'; x.fillRect(0,H0-30,W0,30);
+    const th=now<started?-Math.PI*.6:pos(now), yc=75+105*Math.cos(th), hx1=165, hx2=395, hy=78;
+    const jt=now-jumpAt, jy=jt>=0&&jt<420?Math.sin(jt/420*Math.PI)*34:0, fx=280, fy=H0-34-jy;
+    x.strokeStyle='#B5452E'; x.lineWidth=3; x.beginPath(); x.moveTo(hx1,hy); x.quadraticCurveTo(280,yc,hx2,hy); x.stroke();
+    x.strokeStyle='#283038'; x.lineWidth=4; x.lineCap='round'; x.beginPath(); x.moveTo(fx,fy-52); x.lineTo(fx,fy-20); x.moveTo(fx,fy-20); x.lineTo(fx-8,fy); x.moveTo(fx,fy-20); x.lineTo(fx+8,fy); x.moveTo(fx,fy-44); x.lineTo(hx1+4,hy+4); x.moveTo(fx,fy-44); x.lineTo(hx2-4,hy+4); x.stroke();
+    x.fillStyle='#F2C9A0'; x.beginPath(); x.arc(fx,fy-60,9,0,7); x.fill();
+    x.fillStyle='#283038'; x.font='13px sans-serif'; x.textAlign='left'; x.fillText(`맞춘 횟수 ${hits} / ${N}`,14,20);
+    for(const b of beats) if(!b.hit&&!b.miss&&now>b.t+win){ b.miss=true; }
+    if(beats[N-1].t+win+300<now){ finish(); return; }
+    raf=requestAnimationFrame(frame); }
+  raf=requestAnimationFrame(frame);
+  function go(){ if(done) return; const now=performance.now(); if(now<started-200) return; jumpAt=now; tries++; const b=beats.find(b=>!b.hit&&!b.miss&&Math.abs(b.t-now)<=win);
+    if(b){ b.hit=true; hits++; $('mgMsg').textContent=Math.abs(b.t-now)<win*.4?'딱 맞아요!':'좋아요'; } else $('mgMsg').textContent='아직이에요, 줄을 보세요'; }
+  function finish(){ if(done) return; done=true; cancelAnimationFrame(raf); L.f.mgBest=L.f.mgBest||{}; const rec=hits>(L.f.mgBest.rope||0); if(rec) L.f.mgBest.rope=hits;
+    let up=[]; if(Y.mg<MG_CAP&&tries>0){ Y.mg++; up=tinyGain(L,{h:.4*(.6+hits/N*.6),t:.3*(.6+hits/N*.6)},''); if(rec&&hits>=8) L.remember({a:L.age,t:`체육관에서 줄넘기를 열 번 중 ${hits}번 맞춰 넘었다.`,sp:'gym'}); }
+    closeSheet(); renderHud(); persist();
+    dlgRun([{who:nr.n,t:tries?`열 번 가운데 ${hits}번을 맞췄어요${rec?' · 나의 새 기록!':''}`+(Y.mg>=MG_CAP&&!up.length?' (올해는 놀이로 오르는 것이 다 찼어요)':''):'다음에 또 해 보자.',up}]); }
+  $('mgGo').onclick=go; $('mgEnd').onclick=finish;
   const key=e=>{ if($('sheet').hidden||!cv.isConnected){ removeEventListener('keydown',key,true); return; } if(e.key===' '||e.key==='Enter'||e.key==='a'||e.key==='A'){ e.preventDefault(); e.stopImmediatePropagation(); go(); } };
   addEventListener('keydown',key,true); }
 // ---------- 2) 가게·식당에서 사기 ----------
