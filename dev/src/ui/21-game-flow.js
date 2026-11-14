@@ -171,7 +171,7 @@ $('btnCar').onclick=()=>{ const vk=C_VEH();
 // 내 정보: 지금 어떤 삶을 살고 있는지
 $('btnInfo').onclick=()=>{
   const L=G.life, C=L.C, f=L.f, a=L.age;
-  const fam=[], P=L.ppl||{}, rel={mom:'엄마',dad:'아빠',gran:'할머니',sib:'동생',spouse:'배우자'}; PERSON_KEYS.forEach(k=>{ if(!L.spotOK(k)) return; if(k==='kid') return; fam.push(rel[k]&&P[k]?`${rel[k]} ${P[k].n}`:L.spotName(k)); }); L.kidsHome().forEach(k=>fam.push(`${k.sex?'딸':'아들'} ${k.n}`));
+  const fam=[], P=L.ppl||{}, rel={mom:'엄마',dad:'아빠',gran:'할머니',sib:'동생',spouse:'배우자'}; PERSON_KEYS.forEach(k=>{ if(!L.spotOK(k)) return; if(k==='kid') return; fam.push(k==='sib'?`${L.spotName('sib')} ${P[k]?P[k].n:''}`:rel[k]&&P[k]?`${rel[k]} ${P[k].n}`:L.spotName(k)); }); L.kidsHome().forEach(k=>fam.push(`${k.sex?'딸':'아들'} ${k.n}`));
   const sc=L.sch||{}, hi=L.tx('{high}'), school = a<7?'아직 학교에 갈 나이가 아니에요' : f.univ&&f.school?`${sc.univ} 학생` : a<=12?(f.elem?`${sc.elem} ${a-6}학년`:'학교에 다니지 못하고 있어요') : a<=18?(f.sec?(a>=16&&f.hs?`${hi} 학생`:`${sc.mid} 학생`):f.elem?`${sc.elem}까지 다녔어요 · 지금은 일을 도와요`:'학교에 다니지 못했어요 · 일을 도와요') : f.univDone?`${sc.univ} 졸업`:f.sec?`${f.hs?hi:sc.mid} 졸업`:f.elem?`${sc.elem} 졸업`:'학교에 다니지 못했어요';
   const j=L.job, ratio=L.inc/C.med;
   const I=instOf(L), rk=rankName(L), svcNow=L._army||(f.svc&&a>=f.svc[0]&&a<f.svc[1]);

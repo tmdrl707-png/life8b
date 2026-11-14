@@ -169,9 +169,9 @@ Object.assign(Life.prototype,{
   relTag(s){ if(!s||typeof s!=='string') return s; const P=this.ppl||{}, yr=this.cur&&this.cur.yr||{}, me=this.sex, list=[];
     const add=(p,rel)=>{ const n=p&&(p.n||p); if(n&&typeof n==='string'&&n.length>=2&&n!==this.name) list.push([n,rel]); };
     add(P.spouse,me===0?'아내':'남편'); add(P.pre,'사귀는 사람'); add(P.mom,'엄마'); add(P.dad,'아빠'); add(P.gran,'할머니');
-    add(P.sib,'동생'); add(P.friend,'친구'); add(P.teacher,'선생님'); add(P.coll,'동료'); add(P.coll2,'후배'); add(P.boss,'윗사람');
+    add(P.sib,(this.fam&&this.fam.sibs&&P.sib&&this.homeSibs().length)?sibTerm(this,this.homeSibs().sort((x,y)=>Math.abs(x.d)-Math.abs(y.d))[0]):'동생'); add(P.friend,'친구'); add(P.teacher,'선생님'); add(P.coll,'동료'); add(P.coll2,'후배'); add(P.boss,'윗사람');
     (this.kids||[]).forEach(k=>add(k,k.sex===1?'딸':'아들'));
-    ((this.fam&&this.fam.sibs)||[]).forEach(b=>{ if(b&&b.n) add(b,b.d>0?'동생':b.sex===1?(me===0?'누나':'언니'):(me===0?'형':'오빠')); });
+    ((this.fam&&this.fam.sibs)||[]).forEach(b=>{ if(b&&b.n) add(b,b.d>0?(b.sx?'여동생':'남동생'):b.sx===1?(me===0?'누나':'언니'):(me===0?'형':'오빠')); });
     add(yr.hr,'담임 선생님'); add(yr.mate,'짝꿍'); add(yr.mate2,'반 친구'); add(yr.crush,'좋아하는 친구');
     if(s.trim().length<=12) return s;
     const rels={}; list.forEach(([n,r])=>{ (rels[n]=rels[n]||new Set()).add(r); }); const seen={}; list.sort((x,y)=>y[0].length-x[0].length);

@@ -6,7 +6,10 @@
 (function(){ const P=Life.prototype;
   const kid=L=>L.age<19||!!(L.f&&L.f.school);
   const par=L=>{ const fm=L.fam, f=L.f||{}; const mom=!f.pgone&&(!fm||fm.mom.al&&f.div!=='mom'), dad=!f.pgone&&(!fm||fm.dad.al&&f.div!=='dad'); return {mom,dad}; };
+  // 함께 사는 형제가 모두 나보다 위(형·누나·오빠·언니)이면 글 속의 '동생'을 그 호칭으로
+  const olderW=L=>{ try{ const hs=(L.fam&&L.homeSibs)?L.homeSibs():[]; if(!hs.length||!hs.every(x=>x.d<0)) return null; return sibTerm(L,hs.sort((x,y)=>Math.abs(x.d)-Math.abs(y.d))[0]); }catch(e){ return null; } };
   const YF=[
+    [/^(?=[\s\S]*(?<![여남])동생(?!이 태어|이 생|을 낳))[\s\S]*$/,(L,s)=>{ const w=olderW(L); return w?s.replace(/(?<![여남])동생(?!이 태어|이 생|을 낳)/g,w).replace(/\$/g,'$$$$'):null; }],
     [/빗속에 우비를 뒤집어쓰고 오토바이로 출근\(등교\)했다\./,L=>L.age<16?`빗속에 우비를 뒤집어쓰고 ${par(L).dad?'아빠':par(L).mom?'엄마':'어른'} 오토바이 뒤에 타고 등교했다.`:null],
     [/출근\(등교\)/,L=>kid(L)?'등교':'출근'],
     [/학교\(일터\)/,L=>kid(L)?'학교':'일터'],
@@ -37,7 +40,7 @@
     [/^집 안을 깨끗이 청소했다\.$/,L=>L.age<6?'어른들이 집 안을 깨끗이 청소했다.':null],
     [/^물은 늘 끓여서 식혀 마셨다\. 손 씻기도 빼먹지 않았다\.$/,L=>L.age<5?'엄마가 물을 늘 끓여 식혀 먹였다. 손도 자주 씻겨 주었다.':null],
     [/^어린이집에서 첫 친구를 사귀었다\.$/,L=>(L.C.tier<=1||(L.C.tier<=2&&L.set==='R'))?'옆집 아이와 처음으로 단짝이 되었다.':null]];
-  const fix=(L,s)=>{ if(typeof s!=='string'||s.length>400) return s; for(const [re,f] of YF) if(re.test(s)){ const v=f(L); if(v!=null) s=s.replace(re,v); } return s; };
+  const fix=(L,s)=>{ if(typeof s!=='string'||s.length>400) return s; for(const [re,f] of YF) if(re.test(s)){ const v=f(L,s); if(v!=null) s=s.replace(re,v); } return s; };
   const _tx=P.tx; P.tx=function(s){ return _tx.call(this,fix(this,s)); };
   const _pv=P.pv; P.pv=function(t){ return fix(this,_pv.call(this,t)); };
 })();
