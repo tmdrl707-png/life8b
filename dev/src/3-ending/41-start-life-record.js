@@ -1,7 +1,4 @@
-/* ========== 시작 ========== */
-(async function(){ const d=await Store.resume(); if(d){ G.data=d; openHub(); } })();
-const _show=show; show=function(n){ _show(n); if(n==='login') pixLoop('titleCv','title'); };
-pixLoop('titleCv','title');
+/* [3 엔딩·기록] 41-start.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
 
 // 교사용 기록에 남길 한 사람의 삶 (글자만 저장: 다시 그릴 때는 모두 이스케이프한다)
 function lifeRecord(L,o){ const a=L.lifespan, cz=causeOf(L), by=L.by||2026; let rows=[];
@@ -16,6 +13,4 @@ function lifeRecord(L,o){ const a=L.lifespan, cz=causeOf(L), by=L.by||2026; let 
     rows:rows.slice(0,24).map(r=>[r[0].slice(0,30),r[1].slice(0,200)]),mem:pick.map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,140)]),ans:o.ans||[],notes:o.notes||[],sum:o.sum||'',hpf:L.hp?(()=>{ const hp=L.hp, n=Math.max(1,hp.cnt||1), r={}; ['m','n','r','g','c','h'].forEach(k=>r[k]=Math.round((hp[k]||0)/n)); return r; })():null,top3:o.top3&&o.top3.length?o.top3:null,fav:o.fav!=null?o.fav:null,t:Date.now()}; }
 
 // 마친 삶 하나를 자세히: 숫자 요약 · 오각형 · 나이에 따른 흐름 · 이야기 표 · 기억에 남은 일 · 남긴 말 (교사용 기록과 내 기록에서 함께 쓴다)
-function lifeDetailHTML(){} /* 실제 정의: ui/60-end-picks.js */
-function lifeSummaryHTML(){} /* 실제 정의: ui/60-end-picks.js */
 

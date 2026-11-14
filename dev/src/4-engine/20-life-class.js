@@ -408,5 +408,4 @@ class Life{
   topTrait(){ return Object.keys(this.tr).sort((x,y)=>this.tr[y]-this.tr[x])[0]; }
 }
 // 사건 문장으로 장면 그림의 종류를 짐작한다
-function sceneKindOf(){} /* 실제 정의: engine/57-repeat.js */
 

@@ -334,7 +334,7 @@ CC=cc0; }
 const qSay=t=>String(t).replace(/^["“]|["”]$/g,'');
 function qChips(s0,s1){ const up=[]; for(const k of ['j','k','t','e','r','h']){ const d=(s1[k]||0)-(s0[k]||0); if(Math.abs(d)>.05) up.push((AX_N[k]||STAT[k])+(d>0?' ↑':' ↓')); } return up; }
 function qPctText(p){ return ` (잘될 확률 ${Math.round(p*100)}%)`; }
-openQuest=function(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return; const d=QUESTS[q.i], who=giverName(d.giver), there=L.spotName(d.target);
+function openQuest(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return; const d=QUESTS[q.i], who=giverName(d.giver), there=L.spotName(d.target);
   if(q.st===0){
     dlgRun([{who,t:qSay(L.tx(d.ask)),opts:[`할게요 (${there}에 다녀오기)`,'지금은 어려워요'],then:i=>{ const yes=i===0; L.questAccept(yes); renderHud(); persist();
       return yes?[{who,t:pickOne(['고마워! 부탁할게.','역시 믿음직하구나.','조심해서 다녀오렴.'])},{who:'',t:`${there}에 다녀오자. 지도의 파란 점을 보자.`}]

@@ -18,19 +18,6 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 </style>`);
 { const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ const t=document.querySelector('#hud .timer'), w=$('miniWrap'); if(t&&w) t.style.width=w.offsetWidth+'px'; }catch(e){} return r; }; }
 
-/* ---------- 1) 미션(파란색)이 일반 말 걸기보다 먼저 ----------
-   미션 주는 사람·가야 할 곳 가까이에 있으면(2.6칸 안) 그 사람에게 말 걸기·물건 만져 보기보다 미션이 먼저 뜬다. */
-{ const _ne=nearExtra; nearExtra=function(){ const r=_ne.apply(this,arguments);
-    try{ const L=G.life; if(L&&L.q&&r&&(r.type==='t'||r.type==='o')){ let best=null, bd=2.6;
-        for(const tg of targets()){ if(tg.type!=='q'||tg.m!==W.map) continue; const d=Math.hypot(tg.p[0]-W.x,tg.p[1]-W.y); if(d<bd){ bd=d; best=tg; } }
-        if(best) return best; } }catch(e){}
-    return r; }; }
-
-/* ---------- 2) 0살 처음: 위쪽 '내 정보'·'기억' 단추 안내 (한 번만) ---------- */
-{ const _bp=beginPeriod; beginPeriod=function(){ const r=_bp.apply(this,arguments);
-    try{ const L=G.life; if(L&&L.f&&L.age===0&&!L.f.gInfo){ L.f.gInfo=1; setTimeout(()=>{ try{ toast("위쪽의 '내 정보'에서 나와 가족을 볼 수 있고, '기억'에서 지나온 일을 다시 볼 수 있어요."); }catch(e){} },1400); } }catch(e){}
-    return r; }; }
-
 /* ---------- 3) 위쪽 능력치 동그라미를 누르면 설명 ---------- */
 const STAT_INFO={
   h:{w:'몸이 얼마나 튼튼한지예요.',up:'뛰어놀기 · 운동하기 · 잘 먹고 푹 쉬기',dn:'다치거나 아플 때, 한 해 내내 몸을 안 움직였을 때, 나이가 들면서 조금씩'},
@@ -56,13 +43,6 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
   $('btnOk').onclick=closeSheet; $('btnStatMore').onclick=()=>{ closeSheet(); openInfo('shape'); }; }
 { const hud=$('hud'); if(hud){ document.head.insertAdjacentHTML('beforeend','<style>#hRes{cursor:pointer}</style>'); hud.addEventListener('click',e=>{ try{ const el=e.target.closest('#hRes'); if(!el) return; if(e.target.closest('.jw')){ openStatInfo('joy'); return; }
       const si=e.target.closest('.si'); if(!si) return; const k=SIX[[...el.querySelectorAll('.si')].indexOf(si)]; if(k) openStatInfo(k); }catch(er){ console.warn(er); } }); } }
-
-/* ---------- 4) 몸이 아플 때: 얼마나 쉬어야 하는지 보여 주고, 아파서 쉰 해는 '몸을 안 움직였다'로 치지 않는다 ---------- */
-{ setInterval(()=>{ try{ const L=G.life, sk=$('hSick'); if(L&&G.running&&G.sickT>0&&!L.f.dying&&sk&&!sk.hidden) sk.textContent=`몸이 아파요 · 쉬는 중 · 약 ${Math.ceil(G.sickT)}초 남음`; }catch(e){} },400);
-  const _ss=startSick; startSick=function(){ const r=_ss.apply(this,arguments); try{ const L=G.life; if(L&&L.f) L.f.sy=L.age; }catch(e){} return r; };
-  const P=Life.prototype, _ep=P.endPeriod; P.endPeriod=function(){ try{ const L=this, Y=L.cur&&L.cur.tk; if(Y&&typeof G!=='undefined'&&G.life===L){ Y.c=Y.c||{};
-        if(!Y.c.h){ const walked=(W.walk||0)-(G._walk0||0); if(L.f.sy===L.age||G.sickT>0||walked>=150) Y.c.h=1; } G._walk0=W.walk||0; } }catch(e){}
-    return _ep.apply(this,arguments); }; }
 
 /* ---------- 5) 실내 미니맵: 점이 무엇인지 이름표 (집·건물 안) ----------
    주황 점(작은 선택)·파란 점(미션)·회색 점(사람) 옆에 짧은 이름을 붙인다. */

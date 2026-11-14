@@ -121,6 +121,6 @@ function qz2Pick(L,nr){ const all=qz2Subjects(L,nr.mode), Q=L.f.quiz||{}; const 
   let rest=all.filter(s=>s!==main&&s!==Q.u).sort(()=>R()-.5).slice(0,3); const opts=[main,...rest,'그만할래'];
   return {who:nr.n||(nr.mode==='g'?'도서관':'내 자리'),t:nr.mode==='g'?'어떤 책을 펼쳐 볼까?':'어떤 과목을 풀어 볼까?',opts,
     then:i=>{ if(opts[i]==='그만할래') return [{who:nr.n||'내 자리',t:'다음에 또 풀어 보자.'}]; return [qz2Step(L,nr,opts[i])]; }}; }
-openQuiz=function(nr){ if(dlgOpen()) return; const L=G.life; if(!L) return; const gen=nr.mode==='g', adv=nr.mode==='u'||nr.mode==='j'; if(!gen&&!adv&&!qzCan(L)) return;
+function openQuiz(nr){ if(dlgOpen()) return; const L=G.life; if(!L) return; const gen=nr.mode==='g', adv=nr.mode==='u'||nr.mode==='j'; if(!gen&&!adv&&!qzCan(L)) return;
   L.f.quiz=L.f.quiz||{n:0,ok:0,u:''}; if(!gen&&!adv) L.f.quiz.band=qzBand(L.age);
   dlgRun([adv?qz2Step(L,nr,nr.mode==='u'?'대학 공부':'직장 상식'):qz2Pick(L,nr)]); };

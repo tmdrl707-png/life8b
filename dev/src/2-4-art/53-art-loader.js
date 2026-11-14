@@ -198,7 +198,7 @@ personSprite=function(o){ const s=_personSprite(o); if(o.half) return s; const k
 })();
 
 // 사건 창의 장면: '종류@그림'이어도 제목은 기본 종류로, 일상·집 밖 장면은 그 나이에 맞는 그림으로
-sceneHTML=function(kind){ if((kind==='life'||kind==='town')&&G.life){ const L=G.life; let t=''; try{ t=(L.pending&&L.pending.q)||(L.cur&&L.cur.m!=null&&MAJORS[L.cur.m]?L.tx(MAJORS[L.cur.m].txt):''); }catch(e){} kind=scVar(kind,t,L.age,L); }   // 큰 갈림길·큰 사건의 '삶' 그림도 그 나이에 맞게 (젊은 사람에게 할아버지 그림이 나오지 않게)
+function sceneHTML(kind){ if((kind==='life'||kind==='town')&&G.life){ const L=G.life; let t=''; try{ t=(L.pending&&L.pending.q)||(L.cur&&L.cur.m!=null&&MAJORS[L.cur.m]?L.tx(MAJORS[L.cur.m].txt):''); }catch(e){} kind=scVar(kind,t,L.age,L); }   // 큰 갈림길·큰 사건의 '삶' 그림도 그 나이에 맞게 (젊은 사람에게 할아버지 그림이 나오지 않게)
   if(G.life&&!G.life.dead){ const L=G.life; let t=''; try{ t=(L.pending&&L.pending.q)||(L.cur&&L.cur.m!=null&&MAJORS[L.cur.m]?L.tx(MAJORS[L.cur.m].txt):''); }catch(e){} kind=scAgeFix(kind,t,L.age); }
   const b=scBase(kind); return kind?`<canvas class="scene" width="640" height="320" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[b]||'삶'} —</div>`:''; };
 const _popupSc=popup;

@@ -25,7 +25,7 @@ function resBars(L,compact){ const h=Math.round(L.s.h), hs=healthState(h), a=L.a
     mb=`<div class="rbar"><span class="rl">재산</span><div class="rt">${df?`<i class="debt" style="width:${Math.round(df*100)}%"></i>`:`<i class="money" style="width:${Math.max(2,Math.round(fill*100))}%"></i>`}</div><span class="rv"><b class="${L.cash<0?'neg':''}">${fmtWon(L.cash)}</b>${compact?'':`<small>${df?` 빚 · 한도의 ${Math.round(df*100)}%`:` · 쓸 수 있는 돈 ${fmtWon(Math.max(0,sp))}`}</small>`}</span></div>`; }
   return `<div class="res${compact?' cmp':''}">${hb}${mb}</div>`; }
 // 내 정보: 막대·꺾은선 대신 오각형
-statPanel=function(L){ const v=L.s, ov=radarOverlays(L,L.age), H=(L.hist||[]).filter(x=>x.a<L.age&&x.t!=null), prev=H.length?H[H.length-1]:null;
+function statPanel(L){ const v=L.s, ov=radarOverlays(L,L.age), H=(L.hist||[]).filter(x=>x.a<L.age&&x.t!=null), prev=H.length?H[H.length-1]:null;
   const rel=Object.entries(L.rel||{}).sort((a,b)=>b[1]-a[1]).slice(0,6);
   return `<div class="chart"><h3>삶의 모양 <span class="sub small">(0~100 · 꽉 찬 정육각형이 만점)</span></h3>${radarSVG(v,ov)}${radarLegend(ov)}
     <div class="axrow">${AXES.map(k=>{ const d=prev?Math.round(v[k])-prev[k]:0; return `<span><b style="color:${AX_COL[k]}">${AX_N[k]}</b> ${Math.round(v[k])}${d?` <small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:''}</span>`; }).join('')}</div>
@@ -40,7 +40,7 @@ function gateUI(kind,list){ const L=G.life, box=$('sheetBox'); if(!L||!box||!L.o
     if(c>0) b.insertAdjacentHTML('beforeend',`<small class="cost">드는 돈 약 ${fmtWon(c)}</small>`);
     if(why[i]&&!all){ b.disabled=true; b.classList.add('off'); b.insertAdjacentHTML('beforeend',`<small class="why">${esc(why[i])}</small>`); n++; } });
   if(n) L.limN=(L.limN||0)+1; }
-onOpts=function(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e.target.closest('button'); if(b&&!b.disabled) fn(+b.dataset.i); }; };
+function onOpts(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e.target.closest('button'); if(b&&!b.disabled) fn(+b.dataset.i); }; };
 // 게임 화면 위쪽: 건강·재산 막대
 (function(){ const _rh=renderHud; renderHud=function(){ _rh.apply(this,arguments); const L=G.life; if(!L) return; let el=$('hRes');
   if(!el){ const hl=document.querySelector('#hud .hinfo .hl'); if(!hl) return; el=document.createElement('div'); el.id='hRes'; hl.insertAdjacentElement('afterend',el); }

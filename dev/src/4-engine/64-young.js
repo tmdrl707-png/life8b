@@ -51,7 +51,7 @@
 
 // 진로 이야기의 '너는 ○○과 ○○이 돋보여': 행복·재산은 빼고, 아직 열리지 않은 능력치도 빼고 여섯 능력치에서 고른다
 Object.assign(AX_BASE,{h:80});
-topAxes=function(L){ const ks=['h','r','e','k','t'].filter(k=>L.s[k]!=null&&(!L.sixOpen||L.sixOpen(k))); const out=ks.sort((a,b)=>L.s[b]/AX_BASE[b]-L.s[a]/AX_BASE[a]).slice(0,2); while(out.length<2) out.push(['r','h','e'].find(k=>!out.includes(k))); return out; };
+function topAxes(L){ const ks=['h','r','e','k','t'].filter(k=>L.s[k]!=null&&(!L.sixOpen||L.sixOpen(k))); const out=ks.sort((a,b)=>L.s[b]/AX_BASE[b]-L.s[a]/AX_BASE[a]).slice(0,2); while(out.length<2) out.push(['r','h','e'].find(k=>!out.includes(k))); return out; };
 
 // 아이(16살 전)가 겪는 돈 드는 일(전기 나가 발전기, 홍수 피해 …)은 내 통장이 아니라 집 살림(w)에서 나간다.
 // 예전에는 아이의 '가진 돈'이 마이너스가 되어, 어른이 되는 날 빚을 안고 시작했다. 받은 돈(세뱃돈·품삯)은 그대로 모인다.

@@ -2313,7 +2313,6 @@ function setJob(L,id){
 }
 function loseJob(L){ const id=L.f.job, old=jobInfo(L,id); setJob(L,L.set==='R'?'farm':'day'); if(famOfJob(L,id)!=='hand'||eduLevel(L)>=3){ L.f.lostJob=id; L.f.needJob=2; } return old; }
 // 그 나라의 연금·가족의 도움
-function pension(){} /* 실제 정의: engine/33-institutions.js */
 
 
 /* ---------- 세계 지도: 대륙 윤곽(대략, 경도·위도)과 나라별 위치(수도 기준) ---------- */
@@ -3207,7 +3206,6 @@ class Life{
   topTrait(){ return Object.keys(this.tr).sort((x,y)=>this.tr[y]-this.tr[x])[0]; }
 }
 // 사건 문장으로 장면 그림의 종류를 짐작한다
-function sceneKindOf(){} /* 실제 정의: engine/57-repeat.js */
 
 /* =====================================================================
    [한 해의 달력] 한 해(열두 달)에 일어나는 일 열 가지 안팎
@@ -4580,7 +4578,7 @@ setJob=function(L,id){ const prev=L.f.job, j=_setJob0(L,id); if(prev!==id){ L.f.
   if(id==='abroad'){ L.f.migTo=pickOne(I.mig); L.f.migA=L.age; } return j; };
 
 /* ---------- 연금: 공식 일자리에서 오래 일한 사람 · 노인 수당 · 가족의 도움 ---------- */
-pension=function(L){ const C=L.C, f=L.f, I=instOf(L), t=C.tier, y=f.frmY||0;
+function pension(L){ const C=L.C, f=L.f, I=instOf(L), t=C.tier, y=f.frmY||0;
   let p=y>=10?C.med*[.18,.26,.36,.5][t-1]*Math.min(1.2,.6+y/50)*(1+(f.rkMax||0)*.06):0;
   if(I.sp&&L.age>=I.sp[0]) p=Math.max(p,C.med*(t>=4?.22:.14)); else if(I.sp) p=Math.max(p,C.med*.08);
   const kids=(L.kids||[]).length; if(p<C.med*.15) p+=C.med*Math.min(kids,3)*.06;     // 연금이 적으면 자녀들이 보태 준다
@@ -6881,7 +6879,6 @@ const AX_BASE={j:38,k:21,t:13,e:18,r:49}, TR_BASE={D:20,B:9,K:12,C:12,G:4};
 function dirScore(L,d){ const D=DIRS[d], s=L.s, f=L.f; let v=D.ax.reduce((a,k)=>a+(s[k]!=null?s[k]:AX_BASE[k])/AX_BASE[k],0)/D.ax.length*50; v+=(L.tr[D.tr]||0)/TR_BASE[D.tr]*6; if(f.dirs&&f.dirs[d]) v+=f.dirs[d]*6; let h=7; for(const c of String(L.name||'')+d) h=(Math.imul(h,31)+c.charCodeAt(0))>>>0; return v+(h%1000)/1000*8; }   // 비슷하면 사람마다 다르게
 function dirRank(L){ return DIR_KEYS.slice().sort((a,b)=>dirScore(L,b)-dirScore(L,a)); }
 // 오각형에서 가장 돋보이는 두 축 (말로 보여 줄 때)
-function topAxes(){} /* 실제 정의: engine/64-young.js */
 function ensureDir(L){ const f=L.f; if(!f.dir) f.dir=(f.major&&MAJ_DIR[f.major])||dirRank(L)[0]; if(!f.major||!MAJ_DIR[f.major]||MAJ_DIR[f.major]!==f.dir&&!(f.dirs&&f.dirs[MAJ_DIR[f.major]])) f.major=pickMajor(L,f.dir,Math.min(2,myTier(L))); return f.dir; }
 // 관심 분야 둘: 가장 큰 것과 그다음 (진로 이야기에서 고른 횟수 → 삶의 모양 순)
 function dirPair(L){ const f=L.f, A=ensureDir(L), r=Object.keys(f.dirs||{}).filter(d=>d!==A&&DIRS[d]).sort((a,b)=>f.dirs[b]-f.dirs[a]).concat(dirRank(L).filter(d=>d!==A)); return [A,r[0]]; }
@@ -7286,7 +7283,7 @@ const SCENE_RX=[[/홍수|물에 잠|강물이 넘|큰비|몬순|우기에 길/,'
   [/축제|행사|명절|잔치|설날|추석|크리스마스|성탄|이드|디왈리|새해/,'fest'],
   [/대회|선수|결승|달리기|운동회|체육대회|축구|야구|농구|배구|시합|올림픽|월드컵/,'sport'],
   [/이사|도시로|떠난다|다른 나라|여행|기차|비행기/,'travel'],[/친구|고백|좋아하는|짝꿍|단짝/,'friend']];
-sceneKindOf=function(t){ t=String(t||''); for(const [re,k] of SCENE_RX) if(re.test(t)) return k; return 'life'; };
+function sceneKindOf(t){ t=String(t||''); for(const [re,k] of SCENE_RX) if(re.test(t)) return k; return 'life'; };
 
 /* ---------- 나라·사는 곳에 맞지 않던 낱말 ---------- */
 (function(){ const P=Life.prototype;
@@ -7689,7 +7686,7 @@ const QW=a=>a<6?{H:6}:a<9?{H:2,A:3}:a<13?{H:1,A:4,W:2}:a<16?{H:1,A:2,B:4,S:2,N:2
 
 // 진로 이야기의 '너는 ○○과 ○○이 돋보여': 행복·재산은 빼고, 아직 열리지 않은 능력치도 빼고 여섯 능력치에서 고른다
 Object.assign(AX_BASE,{h:80});
-topAxes=function(L){ const ks=['h','r','e','k','t'].filter(k=>L.s[k]!=null&&(!L.sixOpen||L.sixOpen(k))); const out=ks.sort((a,b)=>L.s[b]/AX_BASE[b]-L.s[a]/AX_BASE[a]).slice(0,2); while(out.length<2) out.push(['r','h','e'].find(k=>!out.includes(k))); return out; };
+function topAxes(L){ const ks=['h','r','e','k','t'].filter(k=>L.s[k]!=null&&(!L.sixOpen||L.sixOpen(k))); const out=ks.sort((a,b)=>L.s[b]/AX_BASE[b]-L.s[a]/AX_BASE[a]).slice(0,2); while(out.length<2) out.push(['r','h','e'].find(k=>!out.includes(k))); return out; };
 
 // 아이(16살 전)가 겪는 돈 드는 일(전기 나가 발전기, 홍수 피해 …)은 내 통장이 아니라 집 살림(w)에서 나간다.
 // 예전에는 아이의 '가진 돈'이 마이너스가 되어, 어른이 되는 날 빚을 안고 시작했다. 받은 돈(세뱃돈·품삯)은 그대로 모인다.
@@ -8812,7 +8809,6 @@ const secOf=L=>L&&L.yl?L.yl:L&&L.pace==='short'?35:CFG.PERIOD_SEC;   // 한 해(
 // 100살까지 산다면 걸리는 시간 (어린 시절 19번 + 어른은 두 해씩 41번 = 60번)
 function lifeTimeText(yl){ const m=Math.round(60*yl/60), h=Math.floor(m/60), mm=m%60; return h?`${h}시간${mm?' '+mm+'분':''}`:`${m}분`; }
 // 기대수명까지 사는 데 드는 대략의 시간(분): 한 해의 길이 + 창을 읽고 고르는 시간 (자동 진행으로 잰 평균 선택 수 × 약 4초)
-function renderBSet(){} /* 실제 정의: ui/73-start-simple.js */
 $('bSet').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const sg=b.closest('.seg'); if(!sg) return; const k=sg.dataset.o; G.opts[k]=k==='pace'?b.dataset.v:+b.dataset.v; if(G.life&&G.life.opt&&k==='soft') G.life.opt.soft=G.opts.soft; ls('life8b_opts',G.opts); renderBSet(); };
 // 지금 태어나는 아기 평균 (나라별 출생아 수로 가중)
 let WORLD=null;
@@ -8957,7 +8953,6 @@ function chips(fx,tr){ let h=''; if(fx) for(const k in fx){ const v=fx[k]; if(!v
     else if(STAT[k]) h+=`<span class="chip ${v>0?'up':'dn'}">${STAT[k]} ${v>0?'+':'−'}${Math.abs(v)}</span>`; }
   return h?`<div class="chips">${h}</div>`:''; }
 // 장면 그림: 창이 열려 있는 동안 조금씩 움직인다
-function sceneHTML(){} /* 실제 정의: ui/53-art-loader.js */
 function animScenes(){ const cs=[...$('sheetBox').querySelectorAll('canvas.scene')]; if(!cs.length) return; const t0=performance.now();
   const step=()=>{ if($('sheet').hidden) return; let alive=false; cs.forEach(c=>{ if(!c.isConnected) return; alive=true; const x=c.getContext('2d'); x.setTransform(c.width/160,0,0,c.width/160,0,0); x.imageSmoothingEnabled=false; x.clearRect(0,0,160,80); drawScene(x,c.dataset.sc,(performance.now()-t0)/1000,G.life); }); if(alive) requestAnimationFrame(step); }; step(); }
 function popup(tag,txt,fx,after,cls,sc,nt){ if(softOn()&&/^(farewell|sick|hosp|unrest)$/.test(sc||'')) sc=null; if(G.life&&G.life.pv) txt=G.life.pv(txt); sheet(`${sceneHTML(sc)}<div class="place">${esc(tag)}</div><p class="evt">${esc(txt)}</p>${nt?`<p class="nt">${esc(nt)}</p>`:''}${chips(fx)}<button class="btn primary" id="btnOk">확인 ▶</button>`,'event '+(cls||'')); renderHud(); $('btnOk').onclick=()=>{ closeSheet(); if(after) after(); }; }
@@ -8971,7 +8966,6 @@ function softOn(){ const v=roomCfg('soft'); if(v!=null) return +v===1; return !!
 const RD=()=>Math.max(1,+(G.opts.read||1));   // 글이 떠 있는 시간 배율 (천천히 읽기)
 const pct=(p,big)=>{ if(p==null||p>=.999) return `<span class="pl sure">${sureWord()}</span>`;
   return `<span class="pl ${p>=.65?'hi':p>=.4?'mid':'lo'}">잘될 확률 ${Math.round(p*100)}%</span>`; };
-function onOpts(){} /* 실제 정의: ui/50-stats-ui.js */
 // 작은 선택
 function openScene(k){
   const L=G.life, c=L.cur.scenes[k], sc=SCENES[c.i], txt=L.tx(Array.isArray(sc.txt)?sc.txt[L.set==='U'?0:1]:sc.txt), place=scenePos(c.i).n;
@@ -8991,7 +8985,6 @@ function openMajor(){
   gateUI('m',m.opts); onOpts(i=>{ const r=L.chooseMajor(i); popup(`${L.age}살 · ${L.tx(r.label)} · ${r.ok?'잘됨':'뜻대로 되지 않음'} (확률 ${Math.round(r.p*100)}%)`,r.t,r.fx,()=>{ renderHud(); persist(); if(r.sick) startSick(); },r.ok?'':'bad',r.sc); });
 }
 // 미션: 부탁을 받고 → 다른 곳에 다녀와서 → 돌아와 알린다
-function openQuest(){} /* 실제 정의: ui/54-talk.js */
 function endPeriod(){
   const L=G.life; if(!L||L.dead) return;
   if(G.teacher){ if($('sheet').hidden) teacherYearEnd(); return; }
@@ -9066,7 +9059,6 @@ $('btnInfo').onclick=()=>{
   $('btnOk').onclick=closeSheet;
 };
 // 능력치: 지금 값 막대 + 지난해와 비교 + 나이에 따른 변화 꺾은선
-function statPanel(){} /* 실제 정의: ui/50-stats-ui.js */
 function traitPanel(L){ const ks=Object.keys(TRAIT), mx=Math.max(1,...ks.map(k=>L.tr[k]||0)); if(!ks.some(k=>L.tr[k])) return '';
   return `<div class="chart"><h3>성향 <span class="sub small">(그 성향으로 고른 횟수)</span></h3>${ks.map(k=>`<div class="sbar"><span>${TRAIT[k]}</span><div class="tr"><i style="width:${(L.tr[k]||0)/mx*100}%;background:#7C95AE"></i></div><span class="v">${L.tr[k]||0}번</span></div>`).join('')}</div>`; }
 function jobsTable(L){ const J=L.jobs||[]; if(!J.length) return '';
@@ -9077,7 +9069,6 @@ function moneySvg(L){ const h=(L.money||[]).map(m=>m.cash+m.house); if(h.length<
   return `<svg class="msvg" viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="#C0C8D0" stroke-width="1"/><polyline points="${pts}" fill="none" stroke="#3870D0" stroke-width="2"/></svg><span class="sub small">${L.money[0].a}살부터 지금까지 가진 돈(집 포함)의 흐름</span>`; }
 function barSvg(v){ const w=Math.min(50,Math.abs(v)*3.2), pos=v>=0; return `<svg viewBox="0 0 100 8" width="100%" height="8" preserveAspectRatio="none"><rect x="0" y="3.5" width="100" height="1" fill="#C0C8D0"/><rect x="${pos?50:50-w}" y="0" width="${w}" height="8" fill="${pos?'#48B888':'#E07070'}"/><rect x="49.5" y="0" width="1" height="8" fill="#283038"/></svg>`; }
 $('btnMem').onclick=()=>openMem('all');
-function openMem(){} /* 실제 정의: ui/52-polish.js */
 $('btnExit').onclick=()=>{ sheet(`<h2>메인 화면으로 나갈까요?</h2><p class="sub">${G.teacher?'삶은 저절로 저장돼요. 교사용 모드의 \'내 체험 기록\'에서 언제든 이어서 살 수 있어요.':'삶은 저절로 저장돼요. 나가도 같은 아이디로 들어오면 이어서 살 수 있어요.'}</p><div class="row"><button class="btn primary" id="btnQuit">메인 화면으로 나가기</button><button class="btn" id="btnOk">계속 살기</button></div>`);
   $('btnOk').onclick=closeSheet; $('btnQuit').onclick=()=>{ G.running=false; closeSheet(); if(G.teacher){ persist(true); G.teacher=false; G.life=null; G.tid=null; openTeacherBody(); } else { persist(true); openHub(); } }; };
 $('miniWrap').onclick=()=>{ if(!$('sheet').hidden) return; openMaps('town'); };
@@ -10078,6 +10069,7 @@ async function drawCard(mems,o){
 (async function(){ const d=await Store.resume(); if(d){ G.data=d; openHub(); } })();
 const _show=show; show=function(n){ _show(n); if(n==='login') pixLoop('titleCv','title'); };
 pixLoop('titleCv','title');
+/* [3 엔딩·기록] 41-start.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
 
 // 교사용 기록에 남길 한 사람의 삶 (글자만 저장: 다시 그릴 때는 모두 이스케이프한다)
 function lifeRecord(L,o){ const a=L.lifespan, cz=causeOf(L), by=L.by||2026; let rows=[];
@@ -10092,8 +10084,6 @@ function lifeRecord(L,o){ const a=L.lifespan, cz=causeOf(L), by=L.by||2026; let 
     rows:rows.slice(0,24).map(r=>[r[0].slice(0,30),r[1].slice(0,200)]),mem:pick.map(m=>[m.a,String(m.t).replace(/\s+/g,' ').slice(0,140)]),ans:o.ans||[],notes:o.notes||[],sum:o.sum||'',hpf:L.hp?(()=>{ const hp=L.hp, n=Math.max(1,hp.cnt||1), r={}; ['m','n','r','g','c','h'].forEach(k=>r[k]=Math.round((hp[k]||0)/n)); return r; })():null,top3:o.top3&&o.top3.length?o.top3:null,fav:o.fav!=null?o.fav:null,t:Date.now()}; }
 
 // 마친 삶 하나를 자세히: 숫자 요약 · 오각형 · 나이에 따른 흐름 · 이야기 표 · 기억에 남은 일 · 남긴 말 (교사용 기록과 내 기록에서 함께 쓴다)
-function lifeDetailHTML(){} /* 실제 정의: ui/60-end-picks.js */
-function lifeSummaryHTML(){} /* 실제 정의: ui/60-end-picks.js */
 
 /* ========== 능력치 2판 화면: 오각형 · 건강/재산 막대 · 제한된 선택지 · 엔딩의 삶의 모양 ========== */
 const AX_COL={j:'#E2703A',k:'#3870D0',t:'#7A5AC8',e:'#2F8F7A',r:'#C2577A'};
@@ -10122,7 +10112,7 @@ function resBars(L,compact){ const h=Math.round(L.s.h), hs=healthState(h), a=L.a
     mb=`<div class="rbar"><span class="rl">재산</span><div class="rt">${df?`<i class="debt" style="width:${Math.round(df*100)}%"></i>`:`<i class="money" style="width:${Math.max(2,Math.round(fill*100))}%"></i>`}</div><span class="rv"><b class="${L.cash<0?'neg':''}">${fmtWon(L.cash)}</b>${compact?'':`<small>${df?` 빚 · 한도의 ${Math.round(df*100)}%`:` · 쓸 수 있는 돈 ${fmtWon(Math.max(0,sp))}`}</small>`}</span></div>`; }
   return `<div class="res${compact?' cmp':''}">${hb}${mb}</div>`; }
 // 내 정보: 막대·꺾은선 대신 오각형
-statPanel=function(L){ const v=L.s, ov=radarOverlays(L,L.age), H=(L.hist||[]).filter(x=>x.a<L.age&&x.t!=null), prev=H.length?H[H.length-1]:null;
+function statPanel(L){ const v=L.s, ov=radarOverlays(L,L.age), H=(L.hist||[]).filter(x=>x.a<L.age&&x.t!=null), prev=H.length?H[H.length-1]:null;
   const rel=Object.entries(L.rel||{}).sort((a,b)=>b[1]-a[1]).slice(0,6);
   return `<div class="chart"><h3>삶의 모양 <span class="sub small">(0~100 · 꽉 찬 정육각형이 만점)</span></h3>${radarSVG(v,ov)}${radarLegend(ov)}
     <div class="axrow">${AXES.map(k=>{ const d=prev?Math.round(v[k])-prev[k]:0; return `<span><b style="color:${AX_COL[k]}">${AX_N[k]}</b> ${Math.round(v[k])}${d?` <small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:''}</span>`; }).join('')}</div>
@@ -10137,7 +10127,7 @@ function gateUI(kind,list){ const L=G.life, box=$('sheetBox'); if(!L||!box||!L.o
     if(c>0) b.insertAdjacentHTML('beforeend',`<small class="cost">드는 돈 약 ${fmtWon(c)}</small>`);
     if(why[i]&&!all){ b.disabled=true; b.classList.add('off'); b.insertAdjacentHTML('beforeend',`<small class="why">${esc(why[i])}</small>`); n++; } });
   if(n) L.limN=(L.limN||0)+1; }
-onOpts=function(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e.target.closest('button'); if(b&&!b.disabled) fn(+b.dataset.i); }; };
+function onOpts(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e.target.closest('button'); if(b&&!b.disabled) fn(+b.dataset.i); }; };
 // 게임 화면 위쪽: 건강·재산 막대
 (function(){ const _rh=renderHud; renderHud=function(){ _rh.apply(this,arguments); const L=G.life; if(!L) return; let el=$('hRes');
   if(!el){ const hl=document.querySelector('#hud .hinfo .hl'); if(!hl) return; el=document.createElement('div'); el.id='hRes'; hl.insertAdjacentElement('afterend',el); }
@@ -10320,7 +10310,7 @@ function relBars(L,only){ const rel=Object.entries(L.rel||{}).filter(([k])=>!onl
   return `<div class="rels">${rel.map(([k,x])=>`<div class="rbar"><span class="rl">${REL_N[k]||k}</span><div class="rt"><i class="rel" style="width:${Math.round(x)}%"></i></div><span class="rv">${Math.round(x)}</span></div>`).join('')}</div>`; }
 $('btnInfo').onclick=()=>openInfo('me');
 // ---- 기억: 표 대신 카드
-openMem=function(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()=>true,big:m=>m.big,fam:m=>m.fam||/엄마|아빠|아내|남편|아들|딸|손주|동생|형|누나|언니|오빠|할머니|할아버지|가족/.test(m.t+(m.q||'')),pick:m=>!!m.q}[flt], list=all.filter(test).slice(0,80);
+function openMem(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()=>true,big:m=>m.big,fam:m=>m.fam||/엄마|아빠|아내|남편|아들|딸|손주|동생|형|누나|언니|오빠|할머니|할아버지|가족/.test(m.t+(m.q||'')),pick:m=>!!m.q}[flt], list=all.filter(test).slice(0,80);
   const tab=(k,n)=>`<button data-f="${k}" class="${flt===k?'on':''}">${n}</button>`;
   sheet(`<div class="ihead"><div class="place">기억</div><h2>${esc(L.name)}의 기억</h2><nav class="itabs">${tab('all','전체')}${tab('big','큰 사건')}${tab('pick','내가 고른 순간')}${tab('fam','가족')}</nav></div>
     <p class="isub">선택 ${L.n}번 · 놓친 순간 ${L.miss}번 · 최근 기억부터 ${list.length}개 · <span class="scmark">장면</span> 표시가 있는 기억을 누르면 그 장면을 다시 봅니다</p>
@@ -10532,7 +10522,7 @@ personSprite=function(o){ const s=_personSprite(o); if(o.half) return s; const k
 })();
 
 // 사건 창의 장면: '종류@그림'이어도 제목은 기본 종류로, 일상·집 밖 장면은 그 나이에 맞는 그림으로
-sceneHTML=function(kind){ if((kind==='life'||kind==='town')&&G.life){ const L=G.life; let t=''; try{ t=(L.pending&&L.pending.q)||(L.cur&&L.cur.m!=null&&MAJORS[L.cur.m]?L.tx(MAJORS[L.cur.m].txt):''); }catch(e){} kind=scVar(kind,t,L.age,L); }   // 큰 갈림길·큰 사건의 '삶' 그림도 그 나이에 맞게 (젊은 사람에게 할아버지 그림이 나오지 않게)
+function sceneHTML(kind){ if((kind==='life'||kind==='town')&&G.life){ const L=G.life; let t=''; try{ t=(L.pending&&L.pending.q)||(L.cur&&L.cur.m!=null&&MAJORS[L.cur.m]?L.tx(MAJORS[L.cur.m].txt):''); }catch(e){} kind=scVar(kind,t,L.age,L); }   // 큰 갈림길·큰 사건의 '삶' 그림도 그 나이에 맞게 (젊은 사람에게 할아버지 그림이 나오지 않게)
   if(G.life&&!G.life.dead){ const L=G.life; let t=''; try{ t=(L.pending&&L.pending.q)||(L.cur&&L.cur.m!=null&&MAJORS[L.cur.m]?L.tx(MAJORS[L.cur.m].txt):''); }catch(e){} kind=scAgeFix(kind,t,L.age); }
   const b=scBase(kind); return kind?`<canvas class="scene" width="640" height="320" data-sc="${kind}"></canvas><div class="scene-cap">— ${SCENE_TITLE[b]||'삶'} —</div>`:''; };
 const _popupSc=popup;
@@ -10920,7 +10910,7 @@ CC=cc0; }
 const qSay=t=>String(t).replace(/^["“]|["”]$/g,'');
 function qChips(s0,s1){ const up=[]; for(const k of ['j','k','t','e','r','h']){ const d=(s1[k]||0)-(s0[k]||0); if(Math.abs(d)>.05) up.push((AX_N[k]||STAT[k])+(d>0?' ↑':' ↓')); } return up; }
 function qPctText(p){ return ` (잘될 확률 ${Math.round(p*100)}%)`; }
-openQuest=function(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return; const d=QUESTS[q.i], who=giverName(d.giver), there=L.spotName(d.target);
+function openQuest(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return; const d=QUESTS[q.i], who=giverName(d.giver), there=L.spotName(d.target);
   if(q.st===0){
     dlgRun([{who,t:qSay(L.tx(d.ask)),opts:[`할게요 (${there}에 다녀오기)`,'지금은 어려워요'],then:i=>{ const yes=i===0; L.questAccept(yes); renderHud(); persist();
       return yes?[{who,t:pickOne(['고마워! 부탁할게.','역시 믿음직하구나.','조심해서 다녀오렴.'])},{who:'',t:`${there}에 다녀오자. 지도의 파란 점을 보자.`}]
@@ -11138,9 +11128,9 @@ function mineHTML(l){ const T=l.top3||[]; if(!T.length&&!l.sum) return ''; const
     nav.insertAdjacentHTML('afterbegin','<button type="button" role="tab" data-r="mine" class="on" aria-selected="true">나의 기록</button>'); first.classList.remove('on'); first.setAttribute('aria-selected','false');
     w.querySelectorAll(':scope>.rpane').forEach(p=>p.hidden=true); nav.insertAdjacentHTML('afterend',`<div class="rpane" data-r="mine">${mine}<button type="button" class="btn rnext" data-go="${first.dataset.r}">다음: ${first.textContent} ▶</button></div>`);
     return wrap.innerHTML; }; }
-lifeDetailHTML=function(l){ return lifeTabs(l); };
+function lifeDetailHTML(l){ return lifeTabs(l); };
 // 지나온 삶 목록: 대표 장면 + 한 마디 (눌러서 펼치면 자세히)
-lifeSummaryHTML=function(l){ const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, T=l.top3||[], f=T[l.fav!=null?l.fav:0];
+function lifeSummaryHTML(l){ const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, T=l.top3||[], f=T[l.fav!=null?l.fav:0];
   const kind=f?f[2]:'life'; return `<span class="lsrow">${scThumb(kind,recWho(l),'lsimg')}<span class="lstx"><b>${esc(l.title||'제목 없는 삶')}</b><span>${esc(l.name)} · ${l.age}세 · ${esc(C.n)} ${SETN[l.set]||''}${l.cause?' · '+esc(l.cause):''}</span>${l.sum?`<q>${esc(l.sum)}</q>`:''}<em>눌러서 자세히 보기</em></span></span>`; };
 document.head.insertAdjacentHTML('beforeend',`<style>
 .pkbox{display:flex;flex-direction:column;gap:10px}.pkh{margin:4px 0 0;font-size:1.05rem}.pkh small{font-weight:400;opacity:.8;margin-left:6px}
@@ -11541,7 +11531,6 @@ function qzIntro(L){ if(!qzCan(L)) return null; const a=L.age, sch=a<=12?'elem':
   return {type:'q',qz:1,mode:'s',m:sch,p:[d[1]+d[3]/2,d[2]+d[4]+.75],n:'내 자리 · 문제 풀기',lab:'내 자리 · 문제 풀기',key:null}; }
 (()=>{ const _tg=targets; targets=function(){ const out=_tg(); try{ const L=G.life, t=L&&L.cur&&qzIntro(L); if(t){ out.push(t);
   if(L.f.qzTold!==qzBand(L.age)){ L.f.qzTold=qzBand(L.age); setTimeout(()=>toast(`${L.age<=12?'학교':L.age<=15?'중학교':'고등학교'} 내 자리에서 문제를 풀 수 있어요. 파란 표시를 찾아가 보세요. 맞히면 지식이 자라요.`,'news'),400); } } }catch(e){} return out; }; })();
-function openQuiz(){} /* 실제 정의: ui/70-quiz2.js */
 /* ========== [2-1 세계·화면] 길 찾기 (2026-11-13) ==========
    건물이 어디 있는지 알기 어렵고, 누군가를 찾아가는 미션이 힘들다는 의견에 따라:
    1) 큰 지도(미니맵을 누르면)에 '갈 수 있는 곳' 목록 — 가까운 순. 하나를 누르면 그곳까지 길 안내가 켜진다.
@@ -11641,14 +11630,6 @@ document.head.insertAdjacentHTML('beforeend',`<style id="playFixCss">
 .happy{grid-template-columns:7.5rem minmax(0,1fr) 3rem!important;font-size:.85rem!important}
 .happy .hbar svg{width:100%}
 </style>`);
-// 1) 개발자 창 자리: 미니맵(과 그 아래 할 일 표시) 바로 아래
-function devBarPlace(){ const b=$('devBar'); if(!b||b.hidden) return; const inGame=!$('s-game').hidden&&$('s-end').hidden; b.classList.toggle('side',inGame); if(!inGame) return;
-  const mw=$('miniWrap'); if(!mw||!mw.offsetParent) return; const r=mw.getBoundingClientRect(); let top=r.bottom+6;
-  document.querySelectorAll('#hQuest li').forEach(c=>{ if(!c.offsetParent) return; const q=c.getBoundingClientRect(); if(q.left<r.right) top=Math.max(top,q.bottom+6); });
-  b.style.setProperty('--devTop',Math.round(top)+'px'); b.style.setProperty('--devLeft',Math.round(r.left)+'px'); b.style.setProperty('--devW',Math.round(Math.max(150,r.width))+'px'); }
-(()=>{ const _db=devBar; devBar=function(){ const r=_db.apply(this,arguments); try{ devBarPlace(); }catch(e){} return r; };
-  const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ requestAnimationFrame(devBarPlace); }catch(e){} return r; };
-  addEventListener('resize',()=>setTimeout(devBarPlace,120)); })();
 // 2) 미니맵이 나를 따라 움직이는 창 (갈 수 있는 곳 안에서)
 const MINI_SPAN=30;   // 미니맵에 보이는 가로 칸 수
 function miniRect(){ const r=reachOf(G.life.age), c=$('mini'), asp=c?c.height/c.width:.74;
@@ -11663,12 +11644,23 @@ function miniRect(){ const r=reachOf(G.life.age), c=$('mini'), asp=c?c.height/c.
 (()=>{ const _pos=posOfSpot; posOfSpot=function(key,idx){ const r=_pos(key,idx);
   try{ if(r.m==='out'&&typeof PLACE_IN!=='undefined'&&PLACE_IN[key]&&(key in ENTER)&&OUT.b[key]){ const PI=PLACE_IN[key], n=npcFind(key,'p0'); return {m:key,p:n?[n.x,n.y]:PI.p0.slice(),n:G.life.spotName(key)+' · '+PI.n[0]}; } }catch(e){}
   return r; }; })();
+/* [1 운영] 66-play-fixes.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
+// 1) 개발자 창 자리: 미니맵(과 그 아래 할 일 표시) 바로 아래
+function devBarPlace(){ const b=$('devBar'); if(!b||b.hidden) return; const inGame=!$('s-game').hidden&&$('s-end').hidden; b.classList.toggle('side',inGame); if(!inGame) return;
+  const mw=$('miniWrap'); if(!mw||!mw.offsetParent) return; const r=mw.getBoundingClientRect(); let top=r.bottom+6;
+  document.querySelectorAll('#hQuest li').forEach(c=>{ if(!c.offsetParent) return; const q=c.getBoundingClientRect(); if(q.left<r.right) top=Math.max(top,q.bottom+6); });
+  b.style.setProperty('--devTop',Math.round(top)+'px'); b.style.setProperty('--devLeft',Math.round(r.left)+'px'); b.style.setProperty('--devW',Math.round(Math.max(150,r.width))+'px'); }
+(()=>{ const _db=devBar; devBar=function(){ const r=_db.apply(this,arguments); try{ devBarPlace(); }catch(e){} return r; };
+  const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ requestAnimationFrame(devBarPlace); }catch(e){} return r; };
+  addEventListener('resize',()=>setTimeout(devBarPlace,120)); })();
+/* [2-3 시간·사건 진행] 66-play-fixes.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
 // 5) 고르지 않고 시간이 다 되면: 가장 소극적인 선택('확실')이 골라진다. 확실한 것이 없으면 잘될 확률이 가장 높은 것(11-13 선생님 결정)
 (()=>{ const _da=decAuto; decAuto=function(){ try{ if(DEC.mode==='auto'){ const bs=[...$('sheetBox').querySelectorAll('.opts button:not([disabled])')];
     if(bs.length){ let pick=bs.find(b=>b.querySelector('.sure'))||null;
       if(!pick){ let best=-1; bs.forEach(b=>{ const m=String(b.textContent).match(/(\d+)%/); const v=m?+m[1]:-1; if(v>best){ best=v; pick=b; } }); }
       if(pick){ DEC.on=0; G.autoPicked=1; pick.click(); G.autoPicked=0; toast('한 해가 지나가 저절로 정해졌어요.','news'); return; } } } }catch(e){}
   return _da.apply(this,arguments); }; })();
+/* [2-2 상호작용] 66-play-fixes.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
 
 /* ---------- 일곱 살 아래: '지식 조금 ↑' 같은 칸 대신 부모님 말로 (11-14) ---------- */
 const PV_LINE={h:'쑥쑥 크네. 튼튼해졌구나!',j:'웃는 걸 보니 나도 기분이 좋다.',k:'오, 이런 것도 알게 됐네!',t:'손으로 하는 게 점점 좋아지는구나.',e:'새로운 걸 해 봤구나. 잘했어.',r:'다들 너를 참 좋아하는구나.'};
@@ -11983,76 +11975,6 @@ setInterval(()=>{ try{ const L=G.life, d=$('sixU'); if(!L||!L.f||(d&&!d.hidden)|
   const U=L.f.un||{}, S=L.f.unS||(L.f.unS={}); const k=SIX.find(k=>U[k]!=null&&U[k]>=0&&!S[k]); if(k) sixUnlockShow(L,k);   /* 그 해를 빨리 지나가도 놓치지 않게: 아직 못 본 것은 다음에 띄운다 */ }catch(e){} },700);
 addEventListener('keydown',e=>{ const d=$('sixU'); if(d&&!d.hidden&&(e.key==='Enter'||e.key===' '||e.key==='Escape')){ e.preventDefault(); e.stopImmediatePropagation(); const b=$('sixUOk'); if(b) b.click(); } },true);
 
-/* ---------- 3) 상호작용의 무게 ---------- */
-// 한 번에 오르는 몫을 키운다 (말 걸기·만져 보기·문제·미니 게임·사기 모두 tinyGain을 지난다)
-const SIX_BOOST={r:3,e:3.2,k:4,t:2.2,h:1.8};
-Object.assign(TK_CAP,{B:6,T:7,K:8,Y:8,A:6,O:6});
-tinyGain=(old=>function(L,g,why){ const g2={}, Y=tkYear(L); Y.c=Y.c||{};
-  for(const k in g){ const v=g[k]; g2[k]=v>0?v*(L.sixOpen&&SIX.includes(k)&&!L.sixOpen(k)?.7:(SIX_BOOST[k]||1)):v;   /* 아직 안 열린 능력치는 조금만 */ if(v>0) Y.c[k]=(Y.c[k]||0)+1; }
-  const up=old(L,g2,why)||[]; return up.filter(u=>{ const k=SIX.find(k=>u.startsWith(SIX_N[k]+' ')); return !k||L.sixOpen(k); }).map(u=>u.replace(' 조금 ↑',' ↑')); })(tinyGain);
-// 아직 잠긴 능력치는 사건 칩에서도 감춘다
-chips=(old=>function(fx,tr){ const L=G.life; if(fx&&L&&L.sixOpen){ const f2={}; for(const k in fx) if(!(SIX.includes(k)&&!L.sixOpen(k))) f2[k]=fx[k]; fx=f2; } return old(fx,tr); })(chips);
-// 아직 얻을 것이 남은 사람·동물·물건 위에 반짝이
-function sixSparkTargets(){ const L=G.life, out=[]; if(!L||L.age<1) return out; const st=stg(L.age), Y=tkYear(L), cap=TK_CAP[st];
-  if(Y.n<cap) for(const n of (NPCMAP[W.map]||[])){ if(n.kind==='v') continue; const id=W.map+':'+(n.key||n.a||''); if(!Y.who[id]) out.push([n.x+.45,n.y-1.55]); }
-  if(Y.o<cap) for(const o of touchables()){ const pool=playPool(o.k,st).filter(x=>playOK(L,x[2])), seen=Y.obj[o.k]||[]; if(!pool.some(x=>!seen.includes(x[0]))) continue; const p=o.p?[o.p[0]+.5,o.p[1]-.9]:[o.r[0]+o.r[2]*.82,o.r[1]+.15]; out.push(p); }
-  return out; }
-(()=>{ const _d=draw; draw=function(t){ _d(t); try{ if(!G.life||!draw.cam||paused&&!dlgOpen()) return; const cx=draw.cam.x, cy=draw.cam.y, s=SC*(.5+.1*Math.sin(t*4));
-  for(const [x,y] of sixSparkTargets()){ const sx=(x*PX-cx)*SC, sy=(y*PX-cy)*SC; if(sy<HUDH-6||sy>VH||sx<0||sx>VW) continue;
-    g.save(); g.translate(sx,sy); g.scale(s,s); g.beginPath(); g.moveTo(0,-5); g.quadraticCurveTo(.7,-.7,5,0); g.quadraticCurveTo(.7,.7,0,5); g.quadraticCurveTo(-.7,.7,-5,0); g.quadraticCurveTo(-.7,-.7,0,-5); g.closePath();
-    g.fillStyle='#FFE27A'; g.strokeStyle='rgba(120,80,0,.65)'; g.lineWidth=.9; g.fill(); g.stroke(); g.restore(); } }catch(e){} }; })();
-// 한 해 내내 손을 놓은 것은 해가 바뀔 때 조금 준다 (지금 플레이하는 삶만)
-(function(){ const P=Life.prototype, _e=P.endPeriod; P.endPeriod=function(){ const L=this, a=L.age, live=typeof G!=='undefined'&&G.life===L&&!L._auto, Y=live&&L.cur?(L.cur.tk||{}):null, c=(Y&&Y.c)||{};
-  const res=_e.apply(this,arguments); if(!live||L.dead||a<2||!res||!Array.isArray(res.entries)) return res;
-  const op=k=>L.f.un&&L.f.un[k]!=null&&L.f.un[k]<=a, s=L.s, lost=[];
-  if(op('r')&&!c.r&&s.r>22){ for(const k in (L.rel||{})) L.rel[k]=Math.max(0,L.rel[k]-2.5); s.r=L.relAgg(); lost.push(['올해는 가까운 사람들과 이야기를 거의 나누지 못했다.',{r:-2}]); }
-  if(op('h')&&a>=5&&!c.h&&s.h>30){ s.h=Math.max(30,s.h-1.5); lost.push(['올해는 몸을 별로 움직이지 않았다.',{h:-2}]); }
-  if(op('k')&&!c.k&&s.k>sixExp('k',a)*.65){ s.k=Math.max(sixExp('k',a)*.65,s.k-1.5); lost.push(['올해는 책도 문제도 거의 펼치지 않았다.',{k:-2}]); }
-  if(op('t')&&!c.t&&s.t>sixExp('t',a)*.65){ s.t=Math.max(sixExp('t',a)*.65,s.t-1.2); lost.push(['올해는 손으로 무언가를 만들거나 연습하지 않았다.',{t:-1}]); }
-  if(op('e')&&!c.e&&s.e>sixExp('e',a)*.75){ s.e=Math.max(sixExp('e',a)*.75,s.e-.8); lost.push(['올해는 새로 해 본 일이 별로 없었다.',{e:-1}]); }
-  lost.forEach(([t,fx])=>res.entries.push({t,fx,big:0}));
-  try{ const H=L.hist[L.hist.length-1]; if(H&&H.a===a) SIX.forEach(k=>{ if(k!=='m'&&s[k]!=null) H[k]=Math.round(s[k]); }); }catch(e){}
-  return res; }; })();
-
-/* ---------- 4) 고등학생 용돈 ---------- */
-pocket=(old=>function(L){ if(L.age>=16&&L.age<19){ const y=L.age, P=L.f.pk; if(!P||P.y!==y) L.f.pk={y,left:allowYear(L)}; return L.f.pk; } return old(L); })(pocket);
-
-/* ---------- 5) 삶을 시작하기 전에: 소중한 것 ---------- */
-const VOW_Q=[
-  ['먼 훗날 삶을 돌아볼 때, 무엇이 있으면 "잘 살았다"고 느낄까요?',{h:'아프지 않고 튼튼하게 오래 산 것',r:'곁에 마음을 나눌 사람들이 있었던 것',e:'가 보지 못한 곳, 해 보지 못한 일이 별로 없는 것',k:'세상을 많이 알고 깊이 생각해 본 것',t:'누구보다 잘하는 나만의 솜씨가 있었던 것',m:'돈 걱정 없이 넉넉하게 산 것'}],
-  ['몹시 힘든 날, 가장 큰 힘이 되어 줄 것은 무엇일까요?',{h:'푹 자고 일어난 가뿐한 몸',r:'내 이야기를 끝까지 들어 주는 사람',e:'훌쩍 떠나 처음 보는 풍경',k:'책과 배움 속에서 찾은 답',t:'손에 익은 일에 몰두하는 시간',m:'넉넉하게 모아 둔 돈'}],
-  ['어른이 된 나에게 선물할 수 있다면 무엇을 주고 싶나요?',{h:'건강한 몸',r:'언제든 기댈 수 있는 사람들',e:'세상 곳곳을 겪어 본 기억',k:'넓고 깊은 앎',t:'무엇이든 해내는 솜씨',m:'넉넉한 돈'}],
-  ['가장 신나는 하루는 어떤 하루일까요?',{h:'몸을 마음껏 움직이며 뛰어논 하루',r:'좋아하는 사람들과 웃으며 보낸 하루',e:'처음 해 보는 일로 가득한 하루',k:'새로운 걸 알게 되어 눈이 반짝인 하루',t:'애쓴 일이 마침내 잘 풀린 하루',m:'갖고 싶던 것을 마음 편히 살 수 있었던 하루'}],
-  ['먼 훗날 누군가 나를 이렇게 기억해 주면 좋겠어요.',{h:'늘 건강하고 씩씩했던 사람',r:'곁에 있으면 마음이 편해지던 사람',e:'용감하게 이것저것 해 보던 사람',k:'궁금한 건 끝까지 알아내던 사람',t:'뭐든 손으로 척척 해내던 사람',m:'살림을 든든하게 꾸리던 사람'}]];
-const VOW_LIFE={h:'튼튼한 몸으로 오래 걷는 삶',r:'곁의 사람들과 마음을 나누는 삶',e:'새로운 곳과 새로운 일을 겪어 보는 삶',k:'세상을 알고 깊이 생각하는 삶',t:'나만의 솜씨로 무언가를 해내는 삶',m:'걱정 없이 넉넉한 삶'};
-const VOW={st:0,a:[],ord:[],done:null};
-function vowEl(){ let s=$('s-vow'); if(s) return s; s=document.createElement('section'); s.id='s-vow'; s.hidden=true; s.innerHTML='<canvas aria-hidden="true"></canvas><div class="in"></div>'; document.body.appendChild(s);
-  addEventListener('resize',()=>{ if(!s.hidden) vowStars(); }); return s; }
-function vowStars(){ const cv=$('s-vow').querySelector('canvas'), w=innerWidth, h=innerHeight; cv.width=w; cv.height=h; const c=cv.getContext('2d'); const n=Math.round(Math.min(130,Math.max(60,w*h/9000)));
-  for(let i=0;i<n;i++){ c.beginPath(); c.arc(Math.random()*w,Math.random()*h,Math.random()*1.5+.4,0,6.2832); c.fillStyle=`rgba(255,228,205,${(Math.random()*.7+.15).toFixed(2)})`; c.fill(); } }
-function vowOpen(done){ const s=vowEl(); VOW.st=0; VOW.a=[]; VOW.done=done; VOW.ord=VOW_Q.map(()=>SIX.slice().sort(()=>Math.random()-.5)); s.hidden=false; vowStars(); vowDraw(); }
-function vowPicks(){ const p={}; VOW.a.forEach(l=>{ (Array.isArray(l)?l:[l]).forEach(k=>{ if(k) p[k]=(p[k]||0)+1; }); }); return p; }
-function vowDraw(){ const s=$('s-vow'), box=s.querySelector('.in'), st=VOW.st, N=VOW_Q.length, tot=N+2;
-  const head=lab=>`<div class="pg"><i style="width:${Math.round((st+1)/tot*100)}%"></i></div><div class="hd"><span>${lab}</span><span>${st+1} / ${tot}</span></div>`;
-  if(st===0){ box.innerHTML=`${head('삶을 시작하기 전에')}<div class="bd"><p class="big">곧 지구 어딘가에서 한 아이가 태어납니다. 그 아이가 바로 당신입니다.</p>
-      <p class="soft">어느 나라, 어떤 집에서 태어날지는 아무도 고를 수 없습니다. 하지만 무엇을 소중히 여기며 살지는 지금 정할 수 있습니다.</p>
-      <p class="soft">다섯 가지 질문에 마음 가는 대로 답해 주세요. 마음에 드는 것은 여러 개 골라도 됩니다. 정답은 없습니다.</p></div><div class="ft"><span></span><button class="btn primary" id="vNext">시작하기 →</button></div>`; }
-  else if(st<=N){ const q=VOW_Q[st-1], cur=VOW.a[st-1]||[];
-    box.innerHTML=`${head('소중한 것 · 질문 '+st)}<div class="bd"><p class="big">${esc(q[0])}</p><p class="soft" style="margin:-.2rem 0 .5rem">마음에 드는 것을 모두 골라 보세요 (여러 개 가능)</p><div class="cards" role="group">${VOW.ord[st-1].map(k=>`<button type="button" role="checkbox" aria-checked="${cur.includes(k)}" data-k="${k}" class="${cur.includes(k)?'on':''}">${esc(q[1][k])}</button>`).join('')}</div></div>
-      <div class="ft"><button class="btn" id="vPrev">← 이전</button><button class="btn primary" id="vNext" ${cur.length?'':'disabled'}>${st===N?'결과 보기 →':'다음 →'}</button></div>`;
-    box.querySelector('.cards').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const l=(VOW.a[st-1]=Array.isArray(VOW.a[st-1])?VOW.a[st-1]:[]), k=b.dataset.k, at=l.indexOf(k); if(at>=0) l.splice(at,1); else l.push(k);
-      b.classList.toggle('on',at<0); b.setAttribute('aria-checked',at<0); $('vNext').disabled=!l.length; }; }
-  else { const p=vowPicks(), ks=SIX.filter(k=>p[k]).sort((x,y)=>p[y]-p[x]), top=ks[0], even=ks.length>=3&&p[ks[0]]===p[ks[2]];
-    box.innerHTML=`${head('당신이 소중히 여기는 것')}<div class="bd"><p class="soft">당신은</p><p class="big">${even?'여러 가지를 고루 아끼는 삶':esc(VOW_LIFE[top])}을 바라고 있습니다.</p>
-      <div class="vals">${ks.map(k=>`<span style="--c:${SIX_COL[k]}"><span class="ic">${sixIc(k)}</span>${SIX_N[k]} <b>${'★'.repeat(Math.min(5,p[k]))}</b></span>`).join('')}</div>
-      <p class="soft">이 마음을 안고 태어납니다. 살다 보면 생각이 달라질 수도 있어요. 삶의 마지막에, 무엇이 정말 소중했는지 다시 돌아보게 될 거예요.</p></div>
-      <div class="ft"><button class="btn" id="vPrev">← 다시 고르기</button><button class="btn primary" id="vNext">태어나기 →</button></div>`; }
-  const pv=$('vPrev'); if(pv) pv.onclick=()=>{ clearTimeout(VOW.tm); VOW.st=st>N?1:Math.max(0,st-1); if(st>N) VOW.a=[]; vowDraw(); };
-  $('vNext').onclick=()=>{ clearTimeout(VOW.tm); if(st>N){ s.hidden=true; const f=VOW.done; VOW.done=null; if(f) f({p:vowPicks(),a:VOW.a.slice(),t:Date.now()}); return; } VOW.st++; vowDraw(); };
-  const fb=box.querySelector('.cards button.on')||box.querySelector('.cards button')||$('vNext'); if(fb) fb.focus({preventScroll:true}); }
-// 삶을 시작할 때마다 먼저 묻는다
-birth=(old=>function(o){ vowOpen(v=>{ old(o); if(G.life) G.life.val=v; }); })(birth);
-
 /* ---------- 6) 내 정보 ---------- */
 const SIX_TIP={h:'뛰어놀기·운동·쉬기로 올라요. 다치고 아프면 내려가요.',r:'말 걸기·부탁 들어주기로 가까워져요. 오래 안 찾으면 멀어져요.',e:'처음 해 보는 일·처음 가는 곳에서 늘어요.',k:'수업·책·문제 풀기로 올라요. 안 쓰면 조금 잊어요.',t:'만들기·고치기·연습·일로 늘어요. 손을 놓으면 무뎌져요.',m:'모으면 늘고, 사고 쓰면 줄어요.'};
 function sixInfoBody(L,tab){ const S=sixState(L), a=L.age, V=sixInfoV(), j=Math.round(L.s.j||0);
@@ -12090,18 +12012,26 @@ function sixJoyBody(L,S){ const j=Math.round(L.s.j||0), a=L.age, H=(L.hist||[]).
     <section class="icard"><h3>삶을 시작할 때 소중하다고 고른 것</h3>${ks.length?`<div class="jvals">${ks.map(k=>`<span style="--c:${SIX_COL[k]}"><span class="ic">${sixIc(k)}</span>${SIX_N[k]} <span class="vstar">${'★'.repeat(p[k])}</span></span>`).join('')}</div>${L.val&&L.val.a&&L.val.a.length?`<p class="isub">"${esc(VOW_Q[0][1][L.val.a[0]]||'')}"을 가장 먼저 골랐어요. 살아 보니 정말 그런지 지켜보세요.</p>`:''}`:'<p class="isub">이 삶은 소중한 것을 고르지 않고 시작했어요. 여섯 가지가 비슷하게 행복에 닿아요.</p>'}</section>
     ${JP?`<section class="icard"><h3>그 밖에 영향을 주는 것</h3>${Object.keys(nm).map(k=>`<div class="happy"><span>${nm[k]}</span><div class="hbar">${barSvg(JP[k]||0)}</div><span class="num">${(JP[k]||0)>=0?'+':''}${(JP[k]||0).toFixed(0)}</span></div>`).join('')}<p class="isub">태어난 나라의 형편과, 곁의 사람들과 함께 웃는 문화도 행복을 바꿉니다.</p></section>`:''}`; }
 openInfo=(old=>function(tab){ old(tab); try{ const t=tab||'me'; if(t!=='shape'&&t!=='joy') return; const b=$('sheetBox').querySelector('.ibody'); if(b) b.innerHTML=sixInfoBody(G.life,t); }catch(e){ console.warn(e); } })(openInfo);
-// 진로 이야기 대화창의 작은 그림 카드도 육각형으로
+/* [2-2 상호작용] 69-six.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
 
-/* ---------- 개발자 모드: 시안 고르기 ---------- */
-openDev=(old=>function(){ old(); try{ const d=$('devP'), box=d&&d.querySelector('.dbox'); if(!G.tok||!box||box.querySelector('#sixDev')) return;
-  const sg=(k,arr,cur)=>`<div class="seg" data-six="${k}">${arr.map(([v,t])=>`<button data-v="${v}" class="${cur===v?'on':''}">${t}</button>`).join('')}</div>`;
-  const row=document.createElement('div'); row.id='sixDev'; row.style.cssText='display:flex;flex-direction:column;gap:8px';
-  row.innerHTML=`<div class="drow"><label>능력치 표시</label>${sg('life8b_sixhud',[['A','A 막대'],['B','B 동그라미'],['C','C 육각형'],['D','D 점']],sixHudV())}</div>
-    <div class="drow"><label>내 정보</label>${sg('life8b_sixinfo',[['M1','육각형+카드'],['M2','막대 목록']],sixInfoV())}<button class="btn" id="vowTry">'소중한 것' 설문 미리 보기</button></div>`;
-  const err=$('devErr'); box.insertBefore(row,err); row.querySelectorAll('.seg').forEach(s=>s.onclick=e=>{ const b=e.target.closest('button'); if(!b) return; ls(s.dataset.six,b.dataset.v); [...s.children].forEach(x=>x.classList.toggle('on',x===b)); if(G.life) renderHud(); });
-  $('vowTry').onclick=()=>{ d.hidden=true; vowOpen(v=>{ if(G.life){ G.life.val=v; renderHud(); } }); }; }catch(e){ console.warn(e); } })(openDev);
-// 개발자 모드로 시작한 삶은 '새로 알게 된 것' 카드를 띄우지 않는다 (시험·확인용)
-devStart=(old=>function(){ const r=old.apply(this,arguments); try{ const L=G.life; if(L&&L.f){ L.f.unS=L.f.unS||{}; SIX.forEach(k=>L.f.unS[k]=1); } }catch(e){} return r; })(devStart);
+/* ---------- 3) 상호작용의 무게 ---------- */
+// 한 번에 오르는 몫을 키운다 (말 걸기·만져 보기·문제·미니 게임·사기 모두 tinyGain을 지난다)
+const SIX_BOOST={r:3,e:3.2,k:4,t:2.2,h:1.8};
+Object.assign(TK_CAP,{B:6,T:7,K:8,Y:8,A:6,O:6});
+tinyGain=(old=>function(L,g,why){ const g2={}, Y=tkYear(L); Y.c=Y.c||{};
+  for(const k in g){ const v=g[k]; g2[k]=v>0?v*(L.sixOpen&&SIX.includes(k)&&!L.sixOpen(k)?.7:(SIX_BOOST[k]||1)):v;   /* 아직 안 열린 능력치는 조금만 */ if(v>0) Y.c[k]=(Y.c[k]||0)+1; }
+  const up=old(L,g2,why)||[]; return up.filter(u=>{ const k=SIX.find(k=>u.startsWith(SIX_N[k]+' ')); return !k||L.sixOpen(k); }).map(u=>u.replace(' 조금 ↑',' ↑')); })(tinyGain);
+// 아직 잠긴 능력치는 사건 칩에서도 감춘다
+chips=(old=>function(fx,tr){ const L=G.life; if(fx&&L&&L.sixOpen){ const f2={}; for(const k in fx) if(!(SIX.includes(k)&&!L.sixOpen(k))) f2[k]=fx[k]; fx=f2; } return old(fx,tr); })(chips);
+// 아직 얻을 것이 남은 사람·동물·물건 위에 반짝이
+function sixSparkTargets(){ const L=G.life, out=[]; if(!L||L.age<1) return out; const st=stg(L.age), Y=tkYear(L), cap=TK_CAP[st];
+  if(Y.n<cap) for(const n of (NPCMAP[W.map]||[])){ if(n.kind==='v') continue; const id=W.map+':'+(n.key||n.a||''); if(!Y.who[id]) out.push([n.x+.45,n.y-1.55]); }
+  if(Y.o<cap) for(const o of touchables()){ const pool=playPool(o.k,st).filter(x=>playOK(L,x[2])), seen=Y.obj[o.k]||[]; if(!pool.some(x=>!seen.includes(x[0]))) continue; const p=o.p?[o.p[0]+.5,o.p[1]-.9]:[o.r[0]+o.r[2]*.82,o.r[1]+.15]; out.push(p); }
+  return out; }
+(()=>{ const _d=draw; draw=function(t){ _d(t); try{ if(!G.life||!draw.cam||paused&&!dlgOpen()) return; const cx=draw.cam.x, cy=draw.cam.y, s=SC*(.5+.1*Math.sin(t*4));
+  for(const [x,y] of sixSparkTargets()){ const sx=(x*PX-cx)*SC, sy=(y*PX-cy)*SC; if(sy<HUDH-6||sy>VH||sx<0||sx>VW) continue;
+    g.save(); g.translate(sx,sy); g.scale(s,s); g.beginPath(); g.moveTo(0,-5); g.quadraticCurveTo(.7,-.7,5,0); g.quadraticCurveTo(.7,.7,0,5); g.quadraticCurveTo(-.7,.7,-5,0); g.quadraticCurveTo(-.7,-.7,0,-5); g.closePath();
+    g.fillStyle='#FFE27A'; g.strokeStyle='rgba(120,80,0,.65)'; g.lineWidth=.9; g.fill(); g.stroke(); g.restore(); } }catch(e){} }; })();
 
 /* ---------- 어른·노인도 집과 동네의 물건과 함께 (11-14 플레이 점검: 19살부터 집 물건이 하나도 없었다) ---------- */
 const PLAY_AO={
@@ -12135,6 +12065,72 @@ talkFill=(old=>function(L,s,pet){ let t=old(L,s,pet); if(L&&L.f&&!L.f.school&&!L
 
 // 아이에게 돈 드는 일은 '집 살림'으로 보인다 (엔진 64-young과 짝)
 chips=(old=>function(fx,tr){ const L=G.life; if(fx&&L&&L.age<16&&fx['@']<0&&!L.f.job){ const f2=Object.assign({},fx); delete f2['@']; return old(f2,tr)+'<span class="chip dn">집 살림 −</span>'; } return old(fx,tr); })(chips);
+/* [4 내용(엔진)] 69-six.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
+// 한 해 내내 손을 놓은 것은 해가 바뀔 때 조금 준다 (지금 플레이하는 삶만)
+(function(){ const P=Life.prototype, _e=P.endPeriod; P.endPeriod=function(){ const L=this, a=L.age, live=typeof G!=='undefined'&&G.life===L&&!L._auto, Y=live&&L.cur?(L.cur.tk||{}):null, c=(Y&&Y.c)||{};
+  const res=_e.apply(this,arguments); if(!live||L.dead||a<2||!res||!Array.isArray(res.entries)) return res;
+  const op=k=>L.f.un&&L.f.un[k]!=null&&L.f.un[k]<=a, s=L.s, lost=[];
+  if(op('r')&&!c.r&&s.r>22){ for(const k in (L.rel||{})) L.rel[k]=Math.max(0,L.rel[k]-2.5); s.r=L.relAgg(); lost.push(['올해는 가까운 사람들과 이야기를 거의 나누지 못했다.',{r:-2}]); }
+  if(op('h')&&a>=5&&!c.h&&s.h>30){ s.h=Math.max(30,s.h-1.5); lost.push(['올해는 몸을 별로 움직이지 않았다.',{h:-2}]); }
+  if(op('k')&&!c.k&&s.k>sixExp('k',a)*.65){ s.k=Math.max(sixExp('k',a)*.65,s.k-1.5); lost.push(['올해는 책도 문제도 거의 펼치지 않았다.',{k:-2}]); }
+  if(op('t')&&!c.t&&s.t>sixExp('t',a)*.65){ s.t=Math.max(sixExp('t',a)*.65,s.t-1.2); lost.push(['올해는 손으로 무언가를 만들거나 연습하지 않았다.',{t:-1}]); }
+  if(op('e')&&!c.e&&s.e>sixExp('e',a)*.75){ s.e=Math.max(sixExp('e',a)*.75,s.e-.8); lost.push(['올해는 새로 해 본 일이 별로 없었다.',{e:-1}]); }
+  lost.forEach(([t,fx])=>res.entries.push({t,fx,big:0}));
+  try{ const H=L.hist[L.hist.length-1]; if(H&&H.a===a) SIX.forEach(k=>{ if(k!=='m'&&s[k]!=null) H[k]=Math.round(s[k]); }); }catch(e){}
+  return res; }; })();
+
+/* ---------- 4) 고등학생 용돈 ---------- */
+pocket=(old=>function(L){ if(L.age>=16&&L.age<19){ const y=L.age, P=L.f.pk; if(!P||P.y!==y) L.f.pk={y,left:allowYear(L)}; return L.f.pk; } return old(L); })(pocket);
+/* [2-3 시간·사건 진행] 69-six.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
+
+/* ---------- 5) 삶을 시작하기 전에: 소중한 것 ---------- */
+const VOW_Q=[
+  ['먼 훗날 삶을 돌아볼 때, 무엇이 있으면 "잘 살았다"고 느낄까요?',{h:'아프지 않고 튼튼하게 오래 산 것',r:'곁에 마음을 나눌 사람들이 있었던 것',e:'가 보지 못한 곳, 해 보지 못한 일이 별로 없는 것',k:'세상을 많이 알고 깊이 생각해 본 것',t:'누구보다 잘하는 나만의 솜씨가 있었던 것',m:'돈 걱정 없이 넉넉하게 산 것'}],
+  ['몹시 힘든 날, 가장 큰 힘이 되어 줄 것은 무엇일까요?',{h:'푹 자고 일어난 가뿐한 몸',r:'내 이야기를 끝까지 들어 주는 사람',e:'훌쩍 떠나 처음 보는 풍경',k:'책과 배움 속에서 찾은 답',t:'손에 익은 일에 몰두하는 시간',m:'넉넉하게 모아 둔 돈'}],
+  ['어른이 된 나에게 선물할 수 있다면 무엇을 주고 싶나요?',{h:'건강한 몸',r:'언제든 기댈 수 있는 사람들',e:'세상 곳곳을 겪어 본 기억',k:'넓고 깊은 앎',t:'무엇이든 해내는 솜씨',m:'넉넉한 돈'}],
+  ['가장 신나는 하루는 어떤 하루일까요?',{h:'몸을 마음껏 움직이며 뛰어논 하루',r:'좋아하는 사람들과 웃으며 보낸 하루',e:'처음 해 보는 일로 가득한 하루',k:'새로운 걸 알게 되어 눈이 반짝인 하루',t:'애쓴 일이 마침내 잘 풀린 하루',m:'갖고 싶던 것을 마음 편히 살 수 있었던 하루'}],
+  ['먼 훗날 누군가 나를 이렇게 기억해 주면 좋겠어요.',{h:'늘 건강하고 씩씩했던 사람',r:'곁에 있으면 마음이 편해지던 사람',e:'용감하게 이것저것 해 보던 사람',k:'궁금한 건 끝까지 알아내던 사람',t:'뭐든 손으로 척척 해내던 사람',m:'살림을 든든하게 꾸리던 사람'}]];
+const VOW_LIFE={h:'튼튼한 몸으로 오래 걷는 삶',r:'곁의 사람들과 마음을 나누는 삶',e:'새로운 곳과 새로운 일을 겪어 보는 삶',k:'세상을 알고 깊이 생각하는 삶',t:'나만의 솜씨로 무언가를 해내는 삶',m:'걱정 없이 넉넉한 삶'};
+const VOW={st:0,a:[],ord:[],done:null};
+function vowEl(){ let s=$('s-vow'); if(s) return s; s=document.createElement('section'); s.id='s-vow'; s.hidden=true; s.innerHTML='<canvas aria-hidden="true"></canvas><div class="in"></div>'; document.body.appendChild(s);
+  addEventListener('resize',()=>{ if(!s.hidden) vowStars(); }); return s; }
+function vowStars(){ const cv=$('s-vow').querySelector('canvas'), w=innerWidth, h=innerHeight; cv.width=w; cv.height=h; const c=cv.getContext('2d'); const n=Math.round(Math.min(130,Math.max(60,w*h/9000)));
+  for(let i=0;i<n;i++){ c.beginPath(); c.arc(Math.random()*w,Math.random()*h,Math.random()*1.5+.4,0,6.2832); c.fillStyle=`rgba(255,228,205,${(Math.random()*.7+.15).toFixed(2)})`; c.fill(); } }
+function vowOpen(done){ const s=vowEl(); VOW.st=0; VOW.a=[]; VOW.done=done; VOW.ord=VOW_Q.map(()=>SIX.slice().sort(()=>Math.random()-.5)); s.hidden=false; vowStars(); vowDraw(); }
+function vowPicks(){ const p={}; VOW.a.forEach(l=>{ (Array.isArray(l)?l:[l]).forEach(k=>{ if(k) p[k]=(p[k]||0)+1; }); }); return p; }
+function vowDraw(){ const s=$('s-vow'), box=s.querySelector('.in'), st=VOW.st, N=VOW_Q.length, tot=N+2;
+  const head=lab=>`<div class="pg"><i style="width:${Math.round((st+1)/tot*100)}%"></i></div><div class="hd"><span>${lab}</span><span>${st+1} / ${tot}</span></div>`;
+  if(st===0){ box.innerHTML=`${head('삶을 시작하기 전에')}<div class="bd"><p class="big">곧 지구 어딘가에서 한 아이가 태어납니다. 그 아이가 바로 당신입니다.</p>
+      <p class="soft">어느 나라, 어떤 집에서 태어날지는 아무도 고를 수 없습니다. 하지만 무엇을 소중히 여기며 살지는 지금 정할 수 있습니다.</p>
+      <p class="soft">다섯 가지 질문에 마음 가는 대로 답해 주세요. 마음에 드는 것은 여러 개 골라도 됩니다. 정답은 없습니다.</p></div><div class="ft"><span></span><button class="btn primary" id="vNext">시작하기 →</button></div>`; }
+  else if(st<=N){ const q=VOW_Q[st-1], cur=VOW.a[st-1]||[];
+    box.innerHTML=`${head('소중한 것 · 질문 '+st)}<div class="bd"><p class="big">${esc(q[0])}</p><p class="soft" style="margin:-.2rem 0 .5rem">마음에 드는 것을 모두 골라 보세요 (여러 개 가능)</p><div class="cards" role="group">${VOW.ord[st-1].map(k=>`<button type="button" role="checkbox" aria-checked="${cur.includes(k)}" data-k="${k}" class="${cur.includes(k)?'on':''}">${esc(q[1][k])}</button>`).join('')}</div></div>
+      <div class="ft"><button class="btn" id="vPrev">← 이전</button><button class="btn primary" id="vNext" ${cur.length?'':'disabled'}>${st===N?'결과 보기 →':'다음 →'}</button></div>`;
+    box.querySelector('.cards').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const l=(VOW.a[st-1]=Array.isArray(VOW.a[st-1])?VOW.a[st-1]:[]), k=b.dataset.k, at=l.indexOf(k); if(at>=0) l.splice(at,1); else l.push(k);
+      b.classList.toggle('on',at<0); b.setAttribute('aria-checked',at<0); $('vNext').disabled=!l.length; }; }
+  else { const p=vowPicks(), ks=SIX.filter(k=>p[k]).sort((x,y)=>p[y]-p[x]), top=ks[0], even=ks.length>=3&&p[ks[0]]===p[ks[2]];
+    box.innerHTML=`${head('당신이 소중히 여기는 것')}<div class="bd"><p class="soft">당신은</p><p class="big">${even?'여러 가지를 고루 아끼는 삶':esc(VOW_LIFE[top])}을 바라고 있습니다.</p>
+      <div class="vals">${ks.map(k=>`<span style="--c:${SIX_COL[k]}"><span class="ic">${sixIc(k)}</span>${SIX_N[k]} <b>${'★'.repeat(Math.min(5,p[k]))}</b></span>`).join('')}</div>
+      <p class="soft">이 마음을 안고 태어납니다. 살다 보면 생각이 달라질 수도 있어요. 삶의 마지막에, 무엇이 정말 소중했는지 다시 돌아보게 될 거예요.</p></div>
+      <div class="ft"><button class="btn" id="vPrev">← 다시 고르기</button><button class="btn primary" id="vNext">태어나기 →</button></div>`; }
+  const pv=$('vPrev'); if(pv) pv.onclick=()=>{ clearTimeout(VOW.tm); VOW.st=st>N?1:Math.max(0,st-1); if(st>N) VOW.a=[]; vowDraw(); };
+  $('vNext').onclick=()=>{ clearTimeout(VOW.tm); if(st>N){ s.hidden=true; const f=VOW.done; VOW.done=null; if(f) f({p:vowPicks(),a:VOW.a.slice(),t:Date.now()}); return; } VOW.st++; vowDraw(); };
+  const fb=box.querySelector('.cards button.on')||box.querySelector('.cards button')||$('vNext'); if(fb) fb.focus({preventScroll:true}); }
+// 삶을 시작할 때마다 먼저 묻는다
+birth=(old=>function(o){ vowOpen(v=>{ old(o); if(G.life) G.life.val=v; }); })(birth);
+/* [1 운영] 69-six.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
+// 진로 이야기 대화창의 작은 그림 카드도 육각형으로
+
+/* ---------- 개발자 모드: 시안 고르기 ---------- */
+openDev=(old=>function(){ old(); try{ const d=$('devP'), box=d&&d.querySelector('.dbox'); if(!G.tok||!box||box.querySelector('#sixDev')) return;
+  const sg=(k,arr,cur)=>`<div class="seg" data-six="${k}">${arr.map(([v,t])=>`<button data-v="${v}" class="${cur===v?'on':''}">${t}</button>`).join('')}</div>`;
+  const row=document.createElement('div'); row.id='sixDev'; row.style.cssText='display:flex;flex-direction:column;gap:8px';
+  row.innerHTML=`<div class="drow"><label>능력치 표시</label>${sg('life8b_sixhud',[['A','A 막대'],['B','B 동그라미'],['C','C 육각형'],['D','D 점']],sixHudV())}</div>
+    <div class="drow"><label>내 정보</label>${sg('life8b_sixinfo',[['M1','육각형+카드'],['M2','막대 목록']],sixInfoV())}<button class="btn" id="vowTry">'소중한 것' 설문 미리 보기</button></div>`;
+  const err=$('devErr'); box.insertBefore(row,err); row.querySelectorAll('.seg').forEach(s=>s.onclick=e=>{ const b=e.target.closest('button'); if(!b) return; ls(s.dataset.six,b.dataset.v); [...s.children].forEach(x=>x.classList.toggle('on',x===b)); if(G.life) renderHud(); });
+  $('vowTry').onclick=()=>{ d.hidden=true; vowOpen(v=>{ if(G.life){ G.life.val=v; renderHud(); } }); }; }catch(e){ console.warn(e); } })(openDev);
+// 개발자 모드로 시작한 삶은 '새로 알게 된 것' 카드를 띄우지 않는다 (시험·확인용)
+devStart=(old=>function(){ const r=old.apply(this,arguments); try{ const L=G.life; if(L&&L.f){ L.f.unS=L.f.unS||{}; SIX.forEach(k=>L.f.unS[k]=1); } }catch(e){} return r; })(devStart);
 /* ========== [2-2 상호작용] 문제 풀기 2판 (2026-11-14) ==========
    - 과목을 넓힘: 수학(학년별, 단원 더함) · 국어 · 영어 · 과학 · 사회 · 역사 · 도덕 · 음악·미술 · 체육·건강 · 기술·가정 · 정보, 도서관은 세계 상식도.
      문제는 모두 직접 쓴 짧은 문제(교과서·기출을 옮기지 않음). 나이에 따라 초(e)·중(m)·고(h) 묶음에서 낸다.
@@ -12258,7 +12254,7 @@ function qz2Pick(L,nr){ const all=qz2Subjects(L,nr.mode), Q=L.f.quiz||{}; const 
   let rest=all.filter(s=>s!==main&&s!==Q.u).sort(()=>R()-.5).slice(0,3); const opts=[main,...rest,'그만할래'];
   return {who:nr.n||(nr.mode==='g'?'도서관':'내 자리'),t:nr.mode==='g'?'어떤 책을 펼쳐 볼까?':'어떤 과목을 풀어 볼까?',opts,
     then:i=>{ if(opts[i]==='그만할래') return [{who:nr.n||'내 자리',t:'다음에 또 풀어 보자.'}]; return [qz2Step(L,nr,opts[i])]; }}; }
-openQuiz=function(nr){ if(dlgOpen()) return; const L=G.life; if(!L) return; const gen=nr.mode==='g', adv=nr.mode==='u'||nr.mode==='j'; if(!gen&&!adv&&!qzCan(L)) return;
+function openQuiz(nr){ if(dlgOpen()) return; const L=G.life; if(!L) return; const gen=nr.mode==='g', adv=nr.mode==='u'||nr.mode==='j'; if(!gen&&!adv&&!qzCan(L)) return;
   L.f.quiz=L.f.quiz||{n:0,ok:0,u:''}; if(!gen&&!adv) L.f.quiz.band=qzBand(L.age);
   dlgRun([adv?qz2Step(L,nr,nr.mode==='u'?'대학 공부':'직장 상식'):qz2Pick(L,nr)]); };
 /* ========== [1 운영] 아이디 하나에 여러 삶 (2026-11-14) ==========
@@ -12305,7 +12301,7 @@ function sureWord(){ return '잘될 확률 100%'; }   // (11-14 개발자 피드
 /* 73-start-simple: 학생이 삶을 시작할 때 보는 설정은 '시간의 빠르기' 하나만 (11-14 선생님 요청)
    빠르게 = 한 해 1분 · 보통 = 3분 · 느리게 = 5분. 나머지(돌아보는 카드·무거운 장면 담담하게·확률 숫자)는 기본값으로 고정. */
 const YL3=[[60,'빠르게 · 한 해 1분'],[180,'보통 · 한 해 3분 ★추천'],[300,'느리게 · 한 해 5분']];
-renderBSet=function(){ const o=G.opts; if(!YL3.some(x=>x[0]===+o.yl)) o.yl=180; o.card=1; o.soft=1; o.prob=2;
+function renderBSet(){ const o=G.opts; if(!YL3.some(x=>x[0]===+o.yl)) o.yl=180; o.card=1; o.soft=1; o.prob=2;
   $('bSet').innerHTML=`<h3>플레이 시간</h3>
     <div class="stack-s"><p class="small sub" style="margin:0 0 4px">처음이라면 <b>'보통'</b>을 추천해요. 선택하고 둘러볼 시간이 넉넉해요.</p><div class="seg" data-o="yl">${YL3.map(([v,t])=>`<button data-v="${v}" class="${+o.yl===v?'on':''}">${t}</button>`).join('')}</div>
     <p class="small sub">100살까지 산다면 <b>${lifeTimeText(o.yl)}</b> 안팎이 걸려요 (어른이 되면 한 번에 두 해씩 흘러요). 삶은 저절로 저장돼요. 오른쪽 위 메뉴의 '나가기'로 나갔다가 이어서 할 수 있어요.</p></div>
@@ -12405,13 +12401,6 @@ function resCheck(L){ const f=L.f; if(!f||L.dead) return; const r=resOf(L), a=L.
   if(own&&a>=19) msg=RES_TXT.own; else if(want.k==='alone') msg=r.k==='couple'?'혼자 지낼 작은 집으로 옮겼다.':RES_TXT['alone'+want.z]||RES_TXT.alone0; else msg=RES_TXT.couple;
   if(own&&a>=19) f.ownMoved=1;
   moveTo(L,want.z,want.k,msg); }
-{ const P=Life.prototype, _sp=P.startPeriod; P.startPeriod=function(){ const r=_sp.apply(this,arguments); try{ resCheck(this); }catch(e){} return r; };
-  // 가족이 이사하는 사건 글
-  const MOVE=/(우리 집이 이사를 했다|다른 주로 이사를 했다|이사했다\. 아침|가까이로 이사했다|사는 동네로 이사|함께 도시로 옮겼다|높은 곳으로 이사했다|더 (작은|큰) 집으로 이사했다)/;
-  const _rem=P.remember; P.remember=function(o){ const r=_rem.apply(this,arguments); try{ const t=o&&o.t; if(t&&MOVE.test(t)&&this.f&&!o.mv){ const x=resOf(this), city=/도시로 옮겼다/.test(t);
-      const z=city?3:x.z, k=x.k, i=pickLot(this,z); this.f.res={z,i,k,t:this.age,n:(x.n||0)+1}; if(k==='family') this.f.fh={z,i}; this.f.resMsg='집을 옮겼어요. 지도에서 우리 집 자리가 달라졌어요.'; if(G.life===this) applyRes(this); } }catch(e){} return r; };
-  // 혼자·부부가 사는 집에는 부모님·형제가 없다
-  const _so=P.spotOK; P.spotOK=function(key){ if(this.f&&this.f.res&&this.f.res.k!=='family'&&(key==='mom'||key==='dad'||key==='gran'||key==='sib')) return false; return _so.apply(this,arguments); }; }
 // 지도 바꾸기·그리기에 맞춘다
 { const _wk=worldKey; worldKey=function(){ resSync(); const L=G.life, r=L&&L.f&&L.f.res; return _wk()+'|h'+(r?r.z+'.'+r.i:''); };
   const _zs=zoneSync; zoneSync=function(){ resSync(); if(W.map==='home'){ const hz=homeZone(); if(W.zone!==hz) setZone(hz); return; } return _zs(); };
@@ -12427,6 +12416,14 @@ function resCheck(L){ const f=L.f; if(!f||L.dead) return; const r=resOf(L), a=L.
     (NPCMAP.home||[]).forEach(n=>{ if(n.kind!=='p'||!n.key) return; const k=/^kid/.test(n.key)?'kid':n.key; if(!CH[k]) return; const px=ox+Math.round(n.x*s), py=oy+Math.round(n.y*s);
       x.fillStyle='#283038'; x.beginPath(); x.arc(px,py,rr+1,0,6.3); x.fill(); x.fillStyle=COL[k]; x.beginPath(); x.arc(px,py,rr,0,6.3); x.fill(); x.fillStyle='#fff'; x.fillText(CH[k],px,py+.5); });
   }catch(e){} }; }
+/* [4 내용(엔진)] 77-move.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
+{ const P=Life.prototype, _sp=P.startPeriod; P.startPeriod=function(){ const r=_sp.apply(this,arguments); try{ resCheck(this); }catch(e){} return r; };
+  // 가족이 이사하는 사건 글
+  const MOVE=/(우리 집이 이사를 했다|다른 주로 이사를 했다|이사했다\. 아침|가까이로 이사했다|사는 동네로 이사|함께 도시로 옮겼다|높은 곳으로 이사했다|더 (작은|큰) 집으로 이사했다)/;
+  const _rem=P.remember; P.remember=function(o){ const r=_rem.apply(this,arguments); try{ const t=o&&o.t; if(t&&MOVE.test(t)&&this.f&&!o.mv){ const x=resOf(this), city=/도시로 옮겼다/.test(t);
+      const z=city?3:x.z, k=x.k, i=pickLot(this,z); this.f.res={z,i,k,t:this.age,n:(x.n||0)+1}; if(k==='family') this.f.fh={z,i}; this.f.resMsg='집을 옮겼어요. 지도에서 우리 집 자리가 달라졌어요.'; if(G.life===this) applyRes(this); } }catch(e){} return r; };
+  // 혼자·부부가 사는 집에는 부모님·형제가 없다
+  const _so=P.spotOK; P.spotOK=function(key){ if(this.f&&this.f.res&&this.f.res.k!=='family'&&(key==='mom'||key==='dad'||key==='gran'||key==='sib')) return false; return _so.apply(this,arguments); }; }
 /* ========== 개발자 피드백(11-14 녹음) 반영 모음 ==========
    · 상태란은 더 투명하게, 한 해 막대는 미니맵 폭만큼만 짧게 미니맵 아래에 */
 document.head.insertAdjacentHTML('beforeend',`<style>
@@ -12446,19 +12443,6 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 #sheetBox .jsp .jt,#sheetBox .icard svg text{font-size:10px}
 </style>`);
 { const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ const t=document.querySelector('#hud .timer'), w=$('miniWrap'); if(t&&w) t.style.width=w.offsetWidth+'px'; }catch(e){} return r; }; }
-
-/* ---------- 1) 미션(파란색)이 일반 말 걸기보다 먼저 ----------
-   미션 주는 사람·가야 할 곳 가까이에 있으면(2.6칸 안) 그 사람에게 말 걸기·물건 만져 보기보다 미션이 먼저 뜬다. */
-{ const _ne=nearExtra; nearExtra=function(){ const r=_ne.apply(this,arguments);
-    try{ const L=G.life; if(L&&L.q&&r&&(r.type==='t'||r.type==='o')){ let best=null, bd=2.6;
-        for(const tg of targets()){ if(tg.type!=='q'||tg.m!==W.map) continue; const d=Math.hypot(tg.p[0]-W.x,tg.p[1]-W.y); if(d<bd){ bd=d; best=tg; } }
-        if(best) return best; } }catch(e){}
-    return r; }; }
-
-/* ---------- 2) 0살 처음: 위쪽 '내 정보'·'기억' 단추 안내 (한 번만) ---------- */
-{ const _bp=beginPeriod; beginPeriod=function(){ const r=_bp.apply(this,arguments);
-    try{ const L=G.life; if(L&&L.f&&L.age===0&&!L.f.gInfo){ L.f.gInfo=1; setTimeout(()=>{ try{ toast("위쪽의 '내 정보'에서 나와 가족을 볼 수 있고, '기억'에서 지나온 일을 다시 볼 수 있어요."); }catch(e){} },1400); } }catch(e){}
-    return r; }; }
 
 /* ---------- 3) 위쪽 능력치 동그라미를 누르면 설명 ---------- */
 const STAT_INFO={
@@ -12486,13 +12470,6 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
 { const hud=$('hud'); if(hud){ document.head.insertAdjacentHTML('beforeend','<style>#hRes{cursor:pointer}</style>'); hud.addEventListener('click',e=>{ try{ const el=e.target.closest('#hRes'); if(!el) return; if(e.target.closest('.jw')){ openStatInfo('joy'); return; }
       const si=e.target.closest('.si'); if(!si) return; const k=SIX[[...el.querySelectorAll('.si')].indexOf(si)]; if(k) openStatInfo(k); }catch(er){ console.warn(er); } }); } }
 
-/* ---------- 4) 몸이 아플 때: 얼마나 쉬어야 하는지 보여 주고, 아파서 쉰 해는 '몸을 안 움직였다'로 치지 않는다 ---------- */
-{ setInterval(()=>{ try{ const L=G.life, sk=$('hSick'); if(L&&G.running&&G.sickT>0&&!L.f.dying&&sk&&!sk.hidden) sk.textContent=`몸이 아파요 · 쉬는 중 · 약 ${Math.ceil(G.sickT)}초 남음`; }catch(e){} },400);
-  const _ss=startSick; startSick=function(){ const r=_ss.apply(this,arguments); try{ const L=G.life; if(L&&L.f) L.f.sy=L.age; }catch(e){} return r; };
-  const P=Life.prototype, _ep=P.endPeriod; P.endPeriod=function(){ try{ const L=this, Y=L.cur&&L.cur.tk; if(Y&&typeof G!=='undefined'&&G.life===L){ Y.c=Y.c||{};
-        if(!Y.c.h){ const walked=(W.walk||0)-(G._walk0||0); if(L.f.sy===L.age||G.sickT>0||walked>=150) Y.c.h=1; } G._walk0=W.walk||0; } }catch(e){}
-    return _ep.apply(this,arguments); }; }
-
 /* ---------- 5) 실내 미니맵: 점이 무엇인지 이름표 (집·건물 안) ----------
    주황 점(작은 선택)·파란 점(미션)·회색 점(사람) 옆에 짧은 이름을 붙인다. */
 { const short=n=>{ n=String(n||'').replace(/\s*[·(].*$/,'').trim(); return n.length>4?n.slice(0,4):n; };
@@ -12505,6 +12482,28 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
       targets().forEach(k=>{ if(k.m!==W.map) return; const px=ox+k.p[0]*s, py=oy+k.p[1]*s-fs*.9; if(free(px,py)) put(short(k.n),px,py,k.type==='q'?'#1F4FBF':'#B4551F'); });
       if(W.map!=='home') (NPCMAP[W.map]||[]).forEach(n=>{ if(n.kind!=='p') return; let nm=''; try{ nm=whoOf(n).n; }catch(e){} const px=ox+n.x*s, py=oy+n.y*s-fs*.9; if(nm&&free(px,py)) put(short(nm),px,py,'#3C4A58'); });
       x.restore(); }catch(e){} }; }
+/* [2-2 상호작용] 78-feedback.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
+
+/* ---------- 1) 미션(파란색)이 일반 말 걸기보다 먼저 ----------
+   미션 주는 사람·가야 할 곳 가까이에 있으면(2.6칸 안) 그 사람에게 말 걸기·물건 만져 보기보다 미션이 먼저 뜬다. */
+{ const _ne=nearExtra; nearExtra=function(){ const r=_ne.apply(this,arguments);
+    try{ const L=G.life; if(L&&L.q&&r&&(r.type==='t'||r.type==='o')){ let best=null, bd=2.6;
+        for(const tg of targets()){ if(tg.type!=='q'||tg.m!==W.map) continue; const d=Math.hypot(tg.p[0]-W.x,tg.p[1]-W.y); if(d<bd){ bd=d; best=tg; } }
+        if(best) return best; } }catch(e){}
+    return r; }; }
+/* [2-3 시간·사건 진행] 78-feedback.js 에서 나눈 부분 (2026-11-15 단위별 정리). 실행 순서는 template.html 그대로 */
+
+/* ---------- 2) 0살 처음: 위쪽 '내 정보'·'기억' 단추 안내 (한 번만) ---------- */
+{ const _bp=beginPeriod; beginPeriod=function(){ const r=_bp.apply(this,arguments);
+    try{ const L=G.life; if(L&&L.f&&L.age===0&&!L.f.gInfo){ L.f.gInfo=1; setTimeout(()=>{ try{ toast("위쪽의 '내 정보'에서 나와 가족을 볼 수 있고, '기억'에서 지나온 일을 다시 볼 수 있어요."); }catch(e){} },1400); } }catch(e){}
+    return r; }; }
+
+/* ---------- 4) 몸이 아플 때: 얼마나 쉬어야 하는지 보여 주고, 아파서 쉰 해는 '몸을 안 움직였다'로 치지 않는다 ---------- */
+{ setInterval(()=>{ try{ const L=G.life, sk=$('hSick'); if(L&&G.running&&G.sickT>0&&!L.f.dying&&sk&&!sk.hidden) sk.textContent=`몸이 아파요 · 쉬는 중 · 약 ${Math.ceil(G.sickT)}초 남음`; }catch(e){} },400);
+  const _ss=startSick; startSick=function(){ const r=_ss.apply(this,arguments); try{ const L=G.life; if(L&&L.f) L.f.sy=L.age; }catch(e){} return r; };
+  const P=Life.prototype, _ep=P.endPeriod; P.endPeriod=function(){ try{ const L=this, Y=L.cur&&L.cur.tk; if(Y&&typeof G!=='undefined'&&G.life===L){ Y.c=Y.c||{};
+        if(!Y.c.h){ const walked=(W.walk||0)-(G._walk0||0); if(L.f.sy===L.age||G.sickT>0||walked>=150) Y.c.h=1; } G._walk0=W.walk||0; } }catch(e){}
+    return _ep.apply(this,arguments); }; }
 /* ========== 79-tutorial: 0~5살 처음 안내 (11-14 선생님 요청) ==========
    시작 화면에서 '처음 안내 보기'(기본) 또는 '건너뛰고 6살부터'를 고른다 (G.opts.tut 1|0).
    · 안내 보기: 0살에 조작·대화·위쪽 메뉴·시간·능력치·건강을 차례로 짚어 준다 → '5살로 가기'로 1~4살은 저절로 지나간다

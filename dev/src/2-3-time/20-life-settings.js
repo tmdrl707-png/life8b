@@ -5,7 +5,6 @@ const secOf=L=>L&&L.yl?L.yl:L&&L.pace==='short'?35:CFG.PERIOD_SEC;   // 한 해(
 // 100살까지 산다면 걸리는 시간 (어린 시절 19번 + 어른은 두 해씩 41번 = 60번)
 function lifeTimeText(yl){ const m=Math.round(60*yl/60), h=Math.floor(m/60), mm=m%60; return h?`${h}시간${mm?' '+mm+'분':''}`:`${m}분`; }
 // 기대수명까지 사는 데 드는 대략의 시간(분): 한 해의 길이 + 창을 읽고 고르는 시간 (자동 진행으로 잰 평균 선택 수 × 약 4초)
-function renderBSet(){} /* 실제 정의: ui/73-start-simple.js */
 $('bSet').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const sg=b.closest('.seg'); if(!sg) return; const k=sg.dataset.o; G.opts[k]=k==='pace'?b.dataset.v:+b.dataset.v; if(G.life&&G.life.opt&&k==='soft') G.life.opt.soft=G.opts.soft; ls('life8b_opts',G.opts); renderBSet(); };
 // 지금 태어나는 아기 평균 (나라별 출생아 수로 가중)
 let WORLD=null;

@@ -129,7 +129,7 @@ const SCENE_RX=[[/홍수|물에 잠|강물이 넘|큰비|몬순|우기에 길/,'
   [/축제|행사|명절|잔치|설날|추석|크리스마스|성탄|이드|디왈리|새해/,'fest'],
   [/대회|선수|결승|달리기|운동회|체육대회|축구|야구|농구|배구|시합|올림픽|월드컵/,'sport'],
   [/이사|도시로|떠난다|다른 나라|여행|기차|비행기/,'travel'],[/친구|고백|좋아하는|짝꿍|단짝/,'friend']];
-sceneKindOf=function(t){ t=String(t||''); for(const [re,k] of SCENE_RX) if(re.test(t)) return k; return 'life'; };
+function sceneKindOf(t){ t=String(t||''); for(const [re,k] of SCENE_RX) if(re.test(t)) return k; return 'life'; };
 
 /* ---------- 나라·사는 곳에 맞지 않던 낱말 ---------- */
 (function(){ const P=Life.prototype;

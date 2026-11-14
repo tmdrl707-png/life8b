@@ -35,9 +35,9 @@ function mineHTML(l){ const T=l.top3||[]; if(!T.length&&!l.sum) return ''; const
     nav.insertAdjacentHTML('afterbegin','<button type="button" role="tab" data-r="mine" class="on" aria-selected="true">나의 기록</button>'); first.classList.remove('on'); first.setAttribute('aria-selected','false');
     w.querySelectorAll(':scope>.rpane').forEach(p=>p.hidden=true); nav.insertAdjacentHTML('afterend',`<div class="rpane" data-r="mine">${mine}<button type="button" class="btn rnext" data-go="${first.dataset.r}">다음: ${first.textContent} ▶</button></div>`);
     return wrap.innerHTML; }; }
-lifeDetailHTML=function(l){ return lifeTabs(l); };
+function lifeDetailHTML(l){ return lifeTabs(l); };
 // 지나온 삶 목록: 대표 장면 + 한 마디 (눌러서 펼치면 자세히)
-lifeSummaryHTML=function(l){ const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, T=l.top3||[], f=T[l.fav!=null?l.fav:0];
+function lifeSummaryHTML(l){ const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, T=l.top3||[], f=T[l.fav!=null?l.fav:0];
   const kind=f?f[2]:'life'; return `<span class="lsrow">${scThumb(kind,recWho(l),'lsimg')}<span class="lstx"><b>${esc(l.title||'제목 없는 삶')}</b><span>${esc(l.name)} · ${l.age}세 · ${esc(C.n)} ${SETN[l.set]||''}${l.cause?' · '+esc(l.cause):''}</span>${l.sum?`<q>${esc(l.sum)}</q>`:''}<em>눌러서 자세히 보기</em></span></span>`; };
 document.head.insertAdjacentHTML('beforeend',`<style>
 .pkbox{display:flex;flex-direction:column;gap:10px}.pkh{margin:4px 0 0;font-size:1.05rem}.pkh small{font-weight:400;opacity:.8;margin-left:6px}

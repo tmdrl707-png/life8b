@@ -29,14 +29,6 @@ document.head.insertAdjacentHTML('beforeend',`<style id="playFixCss">
 .happy{grid-template-columns:7.5rem minmax(0,1fr) 3rem!important;font-size:.85rem!important}
 .happy .hbar svg{width:100%}
 </style>`);
-// 1) 개발자 창 자리: 미니맵(과 그 아래 할 일 표시) 바로 아래
-function devBarPlace(){ const b=$('devBar'); if(!b||b.hidden) return; const inGame=!$('s-game').hidden&&$('s-end').hidden; b.classList.toggle('side',inGame); if(!inGame) return;
-  const mw=$('miniWrap'); if(!mw||!mw.offsetParent) return; const r=mw.getBoundingClientRect(); let top=r.bottom+6;
-  document.querySelectorAll('#hQuest li').forEach(c=>{ if(!c.offsetParent) return; const q=c.getBoundingClientRect(); if(q.left<r.right) top=Math.max(top,q.bottom+6); });
-  b.style.setProperty('--devTop',Math.round(top)+'px'); b.style.setProperty('--devLeft',Math.round(r.left)+'px'); b.style.setProperty('--devW',Math.round(Math.max(150,r.width))+'px'); }
-(()=>{ const _db=devBar; devBar=function(){ const r=_db.apply(this,arguments); try{ devBarPlace(); }catch(e){} return r; };
-  const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ requestAnimationFrame(devBarPlace); }catch(e){} return r; };
-  addEventListener('resize',()=>setTimeout(devBarPlace,120)); })();
 // 2) 미니맵이 나를 따라 움직이는 창 (갈 수 있는 곳 안에서)
 const MINI_SPAN=30;   // 미니맵에 보이는 가로 칸 수
 function miniRect(){ const r=reachOf(G.life.age), c=$('mini'), asp=c?c.height/c.width:.74;
@@ -51,17 +43,3 @@ function miniRect(){ const r=reachOf(G.life.age), c=$('mini'), asp=c?c.height/c.
 (()=>{ const _pos=posOfSpot; posOfSpot=function(key,idx){ const r=_pos(key,idx);
   try{ if(r.m==='out'&&typeof PLACE_IN!=='undefined'&&PLACE_IN[key]&&(key in ENTER)&&OUT.b[key]){ const PI=PLACE_IN[key], n=npcFind(key,'p0'); return {m:key,p:n?[n.x,n.y]:PI.p0.slice(),n:G.life.spotName(key)+' · '+PI.n[0]}; } }catch(e){}
   return r; }; })();
-// 5) 고르지 않고 시간이 다 되면: 가장 소극적인 선택('확실')이 골라진다. 확실한 것이 없으면 잘될 확률이 가장 높은 것(11-13 선생님 결정)
-(()=>{ const _da=decAuto; decAuto=function(){ try{ if(DEC.mode==='auto'){ const bs=[...$('sheetBox').querySelectorAll('.opts button:not([disabled])')];
-    if(bs.length){ let pick=bs.find(b=>b.querySelector('.sure'))||null;
-      if(!pick){ let best=-1; bs.forEach(b=>{ const m=String(b.textContent).match(/(\d+)%/); const v=m?+m[1]:-1; if(v>best){ best=v; pick=b; } }); }
-      if(pick){ DEC.on=0; G.autoPicked=1; pick.click(); G.autoPicked=0; toast('한 해가 지나가 저절로 정해졌어요.','news'); return; } } } }catch(e){}
-  return _da.apply(this,arguments); }; })();
-
-/* ---------- 일곱 살 아래: '지식 조금 ↑' 같은 칸 대신 부모님 말로 (11-14) ---------- */
-const PV_LINE={h:'쑥쑥 크네. 튼튼해졌구나!',j:'웃는 걸 보니 나도 기분이 좋다.',k:'오, 이런 것도 알게 됐네!',t:'손으로 하는 게 점점 좋아지는구나.',e:'새로운 걸 해 봤구나. 잘했어.',r:'다들 너를 참 좋아하는구나.'};
-(()=>{ const _ds=dlgShow; dlgShow=function(){ const L=G.life, it=DLG.q[0];
-  if(L&&L.age<7&&it&&it.up&&it.up.length){ const key=Object.keys(PV_LINE).find(k=>it.up.some(u=>String(u).startsWith(AX_N[k]||STAT[k]||'?')))||'j';
-    const who=R()<.5?'아빠':'엄마';
-    DLG.q[0]=Object.assign({},it,{up:null}); if(!it.opts) DLG.q.splice(1,0,{who,t:PV_LINE[key]}); }
-  return _ds.apply(this,arguments); }; })();

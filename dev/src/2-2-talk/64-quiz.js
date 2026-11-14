@@ -120,4 +120,3 @@ function qzIntro(L){ if(!qzCan(L)) return null; const a=L.age, sch=a<=12?'elem':
   return {type:'q',qz:1,mode:'s',m:sch,p:[d[1]+d[3]/2,d[2]+d[4]+.75],n:'내 자리 · 문제 풀기',lab:'내 자리 · 문제 풀기',key:null}; }
 (()=>{ const _tg=targets; targets=function(){ const out=_tg(); try{ const L=G.life, t=L&&L.cur&&qzIntro(L); if(t){ out.push(t);
   if(L.f.qzTold!==qzBand(L.age)){ L.f.qzTold=qzBand(L.age); setTimeout(()=>toast(`${L.age<=12?'학교':L.age<=15?'중학교':'고등학교'} 내 자리에서 문제를 풀 수 있어요. 파란 표시를 찾아가 보세요. 맞히면 지식이 자라요.`,'news'),400); } } }catch(e){} return out; }; })();
-function openQuiz(){} /* 실제 정의: ui/70-quiz2.js */

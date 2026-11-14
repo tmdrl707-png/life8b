@@ -129,7 +129,7 @@ setJob=function(L,id){ const prev=L.f.job, j=_setJob0(L,id); if(prev!==id){ L.f.
   if(id==='abroad'){ L.f.migTo=pickOne(I.mig); L.f.migA=L.age; } return j; };
 
 /* ---------- 연금: 공식 일자리에서 오래 일한 사람 · 노인 수당 · 가족의 도움 ---------- */
-pension=function(L){ const C=L.C, f=L.f, I=instOf(L), t=C.tier, y=f.frmY||0;
+function pension(L){ const C=L.C, f=L.f, I=instOf(L), t=C.tier, y=f.frmY||0;
   let p=y>=10?C.med*[.18,.26,.36,.5][t-1]*Math.min(1.2,.6+y/50)*(1+(f.rkMax||0)*.06):0;
   if(I.sp&&L.age>=I.sp[0]) p=Math.max(p,C.med*(t>=4?.22:.14)); else if(I.sp) p=Math.max(p,C.med*.08);
   const kids=(L.kids||[]).length; if(p<C.med*.15) p+=C.med*Math.min(kids,3)*.06;     // 연금이 적으면 자녀들이 보태 준다

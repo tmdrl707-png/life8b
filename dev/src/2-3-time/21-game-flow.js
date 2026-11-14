@@ -78,7 +78,6 @@ function chips(fx,tr){ let h=''; if(fx) for(const k in fx){ const v=fx[k]; if(!v
     else if(STAT[k]) h+=`<span class="chip ${v>0?'up':'dn'}">${STAT[k]} ${v>0?'+':'−'}${Math.abs(v)}</span>`; }
   return h?`<div class="chips">${h}</div>`:''; }
 // 장면 그림: 창이 열려 있는 동안 조금씩 움직인다
-function sceneHTML(){} /* 실제 정의: ui/53-art-loader.js */
 function animScenes(){ const cs=[...$('sheetBox').querySelectorAll('canvas.scene')]; if(!cs.length) return; const t0=performance.now();
   const step=()=>{ if($('sheet').hidden) return; let alive=false; cs.forEach(c=>{ if(!c.isConnected) return; alive=true; const x=c.getContext('2d'); x.setTransform(c.width/160,0,0,c.width/160,0,0); x.imageSmoothingEnabled=false; x.clearRect(0,0,160,80); drawScene(x,c.dataset.sc,(performance.now()-t0)/1000,G.life); }); if(alive) requestAnimationFrame(step); }; step(); }
 function popup(tag,txt,fx,after,cls,sc,nt){ if(softOn()&&/^(farewell|sick|hosp|unrest)$/.test(sc||'')) sc=null; if(G.life&&G.life.pv) txt=G.life.pv(txt); sheet(`${sceneHTML(sc)}<div class="place">${esc(tag)}</div><p class="evt">${esc(txt)}</p>${nt?`<p class="nt">${esc(nt)}</p>`:''}${chips(fx)}<button class="btn primary" id="btnOk">확인 ▶</button>`,'event '+(cls||'')); renderHud(); $('btnOk').onclick=()=>{ closeSheet(); if(after) after(); }; }
@@ -92,7 +91,6 @@ function softOn(){ const v=roomCfg('soft'); if(v!=null) return +v===1; return !!
 const RD=()=>Math.max(1,+(G.opts.read||1));   // 글이 떠 있는 시간 배율 (천천히 읽기)
 const pct=(p,big)=>{ if(p==null||p>=.999) return `<span class="pl sure">${sureWord()}</span>`;
   return `<span class="pl ${p>=.65?'hi':p>=.4?'mid':'lo'}">잘될 확률 ${Math.round(p*100)}%</span>`; };
-function onOpts(){} /* 실제 정의: ui/50-stats-ui.js */
 // 작은 선택
 function openScene(k){
   const L=G.life, c=L.cur.scenes[k], sc=SCENES[c.i], txt=L.tx(Array.isArray(sc.txt)?sc.txt[L.set==='U'?0:1]:sc.txt), place=scenePos(c.i).n;
@@ -112,7 +110,6 @@ function openMajor(){
   gateUI('m',m.opts); onOpts(i=>{ const r=L.chooseMajor(i); popup(`${L.age}살 · ${L.tx(r.label)} · ${r.ok?'잘됨':'뜻대로 되지 않음'} (확률 ${Math.round(r.p*100)}%)`,r.t,r.fx,()=>{ renderHud(); persist(); if(r.sick) startSick(); },r.ok?'':'bad',r.sc); });
 }
 // 미션: 부탁을 받고 → 다른 곳에 다녀와서 → 돌아와 알린다
-function openQuest(){} /* 실제 정의: ui/54-talk.js */
 function endPeriod(){
   const L=G.life; if(!L||L.dead) return;
   if(G.teacher){ if($('sheet').hidden) teacherYearEnd(); return; }
@@ -187,7 +184,6 @@ $('btnInfo').onclick=()=>{
   $('btnOk').onclick=closeSheet;
 };
 // 능력치: 지금 값 막대 + 지난해와 비교 + 나이에 따른 변화 꺾은선
-function statPanel(){} /* 실제 정의: ui/50-stats-ui.js */
 function traitPanel(L){ const ks=Object.keys(TRAIT), mx=Math.max(1,...ks.map(k=>L.tr[k]||0)); if(!ks.some(k=>L.tr[k])) return '';
   return `<div class="chart"><h3>성향 <span class="sub small">(그 성향으로 고른 횟수)</span></h3>${ks.map(k=>`<div class="sbar"><span>${TRAIT[k]}</span><div class="tr"><i style="width:${(L.tr[k]||0)/mx*100}%;background:#7C95AE"></i></div><span class="v">${L.tr[k]||0}번</span></div>`).join('')}</div>`; }
 function jobsTable(L){ const J=L.jobs||[]; if(!J.length) return '';
@@ -198,7 +194,6 @@ function moneySvg(L){ const h=(L.money||[]).map(m=>m.cash+m.house); if(h.length<
   return `<svg class="msvg" viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="#C0C8D0" stroke-width="1"/><polyline points="${pts}" fill="none" stroke="#3870D0" stroke-width="2"/></svg><span class="sub small">${L.money[0].a}살부터 지금까지 가진 돈(집 포함)의 흐름</span>`; }
 function barSvg(v){ const w=Math.min(50,Math.abs(v)*3.2), pos=v>=0; return `<svg viewBox="0 0 100 8" width="100%" height="8" preserveAspectRatio="none"><rect x="0" y="3.5" width="100" height="1" fill="#C0C8D0"/><rect x="${pos?50:50-w}" y="0" width="${w}" height="8" fill="${pos?'#48B888':'#E07070'}"/><rect x="49.5" y="0" width="1" height="8" fill="#283038"/></svg>`; }
 $('btnMem').onclick=()=>openMem('all');
-function openMem(){} /* 실제 정의: ui/52-polish.js */
 $('btnExit').onclick=()=>{ sheet(`<h2>메인 화면으로 나갈까요?</h2><p class="sub">${G.teacher?'삶은 저절로 저장돼요. 교사용 모드의 \'내 체험 기록\'에서 언제든 이어서 살 수 있어요.':'삶은 저절로 저장돼요. 나가도 같은 아이디로 들어오면 이어서 살 수 있어요.'}</p><div class="row"><button class="btn primary" id="btnQuit">메인 화면으로 나가기</button><button class="btn" id="btnOk">계속 살기</button></div>`);
   $('btnOk').onclick=closeSheet; $('btnQuit').onclick=()=>{ G.running=false; closeSheet(); if(G.teacher){ persist(true); G.teacher=false; G.life=null; G.tid=null; openTeacherBody(); } else { persist(true); openHub(); } }; };
 $('miniWrap').onclick=()=>{ if(!$('sheet').hidden) return; openMaps('town'); };

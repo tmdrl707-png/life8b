@@ -25,7 +25,7 @@ async def main():
         await ev("(()=>{ W.map='out'; W.x=2.5; W.y=25; W.car=false; NPCMAP={}; })()"); await pg.wait_for_timeout(300)
         await shot('0west'); await walk(-.12,0,30); print('옆 동네로:',await st()); await shot('1')
         # 건물 안에 들어갔다 나오기 (작은 도서관)
-        await ev("(()=>{ const d=doorOf('z1lib'); W.x=d[0]; W.y=d[1]+.3; })()"); await walk(0,-.1,3); print('도서관 안:',await st()); await shot('1lib')
+        await ev("(()=>{ if(W.zone!==1) setZone(1,92,23); })()"); await ev("(()=>{ const d=doorOf('z1lib'); W.x=d[0]; W.y=d[1]+.3; })()"); await walk(0,-.1,3); print('도서관 안:',await st()); await shot('1lib')
         await walk(0,.15,20); print('나옴:',await st())
         await ev("(()=>{ W.x=93.5; W.y=23; })()"); await walk(.12,0,30); print('돌아옴:',await st())
         # 2) 남쪽 길 끝 → 강가 마을

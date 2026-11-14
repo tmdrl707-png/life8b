@@ -47,7 +47,7 @@ function relBars(L,only){ const rel=Object.entries(L.rel||{}).filter(([k])=>!onl
   return `<div class="rels">${rel.map(([k,x])=>`<div class="rbar"><span class="rl">${REL_N[k]||k}</span><div class="rt"><i class="rel" style="width:${Math.round(x)}%"></i></div><span class="rv">${Math.round(x)}</span></div>`).join('')}</div>`; }
 $('btnInfo').onclick=()=>openInfo('me');
 // ---- 기억: 표 대신 카드
-openMem=function(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()=>true,big:m=>m.big,fam:m=>m.fam||/엄마|아빠|아내|남편|아들|딸|손주|동생|형|누나|언니|오빠|할머니|할아버지|가족/.test(m.t+(m.q||'')),pick:m=>!!m.q}[flt], list=all.filter(test).slice(0,80);
+function openMem(flt){ const L=G.life, all=L.mem.slice().reverse(), test={all:()=>true,big:m=>m.big,fam:m=>m.fam||/엄마|아빠|아내|남편|아들|딸|손주|동생|형|누나|언니|오빠|할머니|할아버지|가족/.test(m.t+(m.q||'')),pick:m=>!!m.q}[flt], list=all.filter(test).slice(0,80);
   const tab=(k,n)=>`<button data-f="${k}" class="${flt===k?'on':''}">${n}</button>`;
   sheet(`<div class="ihead"><div class="place">기억</div><h2>${esc(L.name)}의 기억</h2><nav class="itabs">${tab('all','전체')}${tab('big','큰 사건')}${tab('pick','내가 고른 순간')}${tab('fam','가족')}</nav></div>
     <p class="isub">선택 ${L.n}번 · 놓친 순간 ${L.miss}번 · 최근 기억부터 ${list.length}개 · <span class="scmark">장면</span> 표시가 있는 기억을 누르면 그 장면을 다시 봅니다</p>
