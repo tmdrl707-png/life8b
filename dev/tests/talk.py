@@ -13,7 +13,7 @@ async def main():
             if await pg.locator(sel).count() and await pg.is_visible(sel): await pg.click(sel); break
         await pg.wait_for_timeout(800)
         async def tryAt(tag,x,y):
-            await ev(f"(()=>{{ if(dlgOpen()) dlgClose(); if(!$('sheet').hidden) closeSheet(); $('flash').hidden=true; const c=G.life.cur; c.mDone=c.plan; (c.cal||[]).forEach(x=>x.done=1); c.sk=null; W.x={x}; W.y={y}; G.life.cur.scenes.forEach(c=>c.done=1); if(G.life.q) G.life.q=null; }})()"); await pg.wait_for_timeout(400)
+            await ev(f"(()=>{{ if($('sixU')&&!$('sixU').hidden) $('sixUOk').click(); if(dlgOpen()) dlgClose(); if(!$('sheet').hidden) closeSheet(); $('flash').hidden=true; const c=G.life.cur; c.mDone=c.plan; (c.cal||[]).forEach(x=>x.done=1); c.sk=null; W.x={x}; W.y={y}; G.life.cur.scenes.forEach(c=>c.done=1); if(G.life.q) G.life.q=null; }})()"); await pg.wait_for_timeout(400)
             lab=await ev("$('btnAct').hidden?null:$('btnAct').textContent")
             print(tag,'버튼:',lab)
             if lab:
@@ -38,7 +38,7 @@ async def main():
         mx,my=await ev("(()=>{ const n=(NPCMAP.home||[]).find(n=>n.key==='mom'); return n?[n.x+.6,n.y]:[3.2,2.7]; })()")
         await tryAt('아기_엄마',mx,my)
         # 어린이: 밖에서 나무·사람
-        await ev("(()=>{ const L=G.life; L.age=9; L.f.elem=1; W.map='out'; NPCMAP={}; })()"); await pg.wait_for_timeout(500)
+        await ev("(()=>{ if($('sixU')&&!$('sixU').hidden) $('sixUOk').click(); const L=G.life; L.age=9; L.f.elem=1; W.map='out'; NPCMAP={}; })()"); await pg.wait_for_timeout(500)
         await tryAt('어린이_나무',8.5,9.9)
         nx,ny=await ev("(()=>{ const n=(NPCMAP.out||[]).find(n=>n.kind==='p'); n.static=1; return [n.x+.5,n.y]; })()")
         await tryAt('어린이_이웃',nx,ny)

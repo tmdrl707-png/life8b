@@ -10,6 +10,7 @@ async def play(b,code,seed):
     await pg.click('#btnTeacher'); await pg.fill('#tCode','2026'); await pg.click('#btnTCode'); await pg.select_option('#tCountry',code); await pg.click('#tForm [data-k=sec] [data-v="8"]'); await pg.click('#btnTStart')
     await ev("G.sec=4; if(G.life.cur) G.life.cur.t=4")
     async def handle_sheet():
+        await ev("(()=>{ if($('sixU')&&!$('sixU').hidden) $('sixUOk').click(); })()")
         for _ in range(12):
             for _ in range(12):   # 아래 대화창(사람이 나오는 선택·진로 이야기): 글을 넘기고 아무 선택지나 고른다
                 if not await ev("dlgOpen()"): break

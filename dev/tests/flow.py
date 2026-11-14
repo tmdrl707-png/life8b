@@ -8,7 +8,7 @@ async def main():
         pg=await ctx.new_page(); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)[:200])); ev=pg.evaluate
         await pg.goto('http://localhost:8765/index.html'); await pg.wait_for_timeout(800); await ev("Store.fb=false; Store.mode='local'")
         await pg.fill('#uid','flow1'); await pg.fill('#upw','123456'); await pg.click('#btnLogin'); await pg.wait_for_timeout(1000)
-        await pg.click('#btnNew'); await pg.wait_for_timeout(8500)
+        await pg.click('#btnNew'); await pg.wait_for_timeout(500); await pg.evaluate("(()=>{ if($('s-vow')&&!$('s-vow').hidden){ VOW.a=['r','h','k']; VOW.st=VOW_Q.length+1; vowDraw(); $('vNext').click(); } })()"); await pg.wait_for_timeout(8000)
         await pg.click('#bSet .seg[data-o="yl"] button[data-v="35"]'); await pg.wait_for_timeout(200)
         txt=await pg.inner_text('#bSet'); i=txt.find('시간의 빠르기'); print('설정:',txt[i:i+120].replace('\n',' '))
         await pg.screenshot(path=S+'flow_birth.png',full_page=True)

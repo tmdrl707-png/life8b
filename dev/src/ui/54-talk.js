@@ -158,7 +158,7 @@ function openTalk(nr){ if(dlgOpen()) return; const L=G.life, n=nr.npc, w=whoOf(n
   let pool=(TALK[w.role]||TALK.nb).filter(d=>d[0]==='*'||d[0]===st); if(!pool.length) pool=(TALK[w.role]||TALK.nb).filter(d=>'BTKYAO'.indexOf(d[0])<='BTKYAO'.indexOf(st)); if(!pool.length) pool=TALK.nb;
   const d=pool[Math.floor(R()*pool.length)], q=unq(talkFill(L,d[1],w.n));
   dlgRun([{who:w.role==='pet'?'':w.n,t:q,opts:d[2].map(o=>talkFill(L,o[0],w.n)),then:i=>{ Y.who[id]=1; const o=d[2][i], ans=talkFill(L,o[1],w.n); let up=[];
-    if(Y.n<TK_CAP[st]){ Y.n++; const g={j:.3}; if(w.role==='pet') g.j=.6; else if(w.role==='teacher'||w.role==='libn') g.k=.5; else if(w.role==='boss'||w.role==='coach'||w.role==='cook') g.t=.5; else if(w.role==='doc') g.h=.6; else g.r=.8; up=tinyGain(L,g,famWhy); }
+    if(Y.n<TK_CAP[st]){ Y.n++; const g={j:.3}; if(w.role==='pet'){ g.j=.6; g.r=.3; g.e=.3; } else if(w.role==='teacher'||w.role==='libn') g.k=.5; else if(w.role==='boss'||w.role==='coach'||w.role==='cook') g.t=.5; else if(w.role==='doc') g.h=.6; else g.r=.8; up=tinyGain(L,g,famWhy); }
     renderHud(); persist(); return [{who:w.role==='pet'?'':w.n,t:ans,up}]; }}]); }
 
 /* ---------- 2) 만져 보기 · 가지고 놀기 · 해 보기 ---------- */

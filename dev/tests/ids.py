@@ -10,7 +10,7 @@ with sync_playwright() as p:
         return pg.evaluate("[!$('s-hub').hidden,$('loginErr').textContent]")
     print('login1',login('민지','abc123'))
     # 삶 하나 살고 끝내기 -> 허브
-    pg.click('#btnNew'); pg.wait_for_timeout(500); pg.click('#btnLive'); pg.wait_for_timeout(500)
+    pg.click('#btnNew'); pg.wait_for_timeout(500); pg.evaluate("(()=>{ if($('s-vow')&&!$('s-vow').hidden){ VOW.a=['r','h','k']; VOW.st=VOW_Q.length+1; vowDraw(); $('vNext').click(); } })()"); pg.wait_for_timeout(300); pg.click('#btnLive'); pg.wait_for_timeout(500)
     pg.evaluate(FIN); pg.evaluate("finishLife()"); pg.wait_for_timeout(600)
     for _ in range(40):
         if not pg.locator('#btnStep').count(): break

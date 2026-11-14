@@ -11,7 +11,7 @@ function radarSVG(v,ov,o){ o=o||{}; const W=340, H=300, cx=170, cy=158, R=104, n
   g+=`<polygon points="${poly(v)}" class="rnow"/>`;
   AXES.forEach((k,i)=>{ const p=pt(i,clamp(v[k]||0,0,100)); g+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.6" fill="${AX_COL[k]}"/>`;
     const q=pt(i,126), anc=Math.abs(q[0]-cx)<8?'middle':q[0]<cx?'end':'start';
-    g+=`<text x="${q[0].toFixed(1)}" y="${(q[1]-2).toFixed(1)}" text-anchor="${anc}" class="rlab">${AX_N[k]}</text><text x="${q[0].toFixed(1)}" y="${(q[1]+15).toFixed(1)}" text-anchor="${anc}" class="rnum" fill="${AX_COL[k]}">${Math.round(v[k]||0)}</text>`; });
+    g+=`<text x="${q[0].toFixed(1)}" y="${(q[1]-2).toFixed(1)}" text-anchor="${anc}" class="rlab">${o.lock&&o.lock.includes(k)?'?':AX_N[k]}</text><text x="${q[0].toFixed(1)}" y="${(q[1]+15).toFixed(1)}" text-anchor="${anc}" class="rnum" fill="${AX_COL[k]}">${o.lock&&o.lock.includes(k)?'':Math.round(v[k]||0)}</text>`; });
   return `<svg class="radar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${AXES.map(k=>AX_N[k]+' '+Math.round(v[k]||0)).join(', ')}">${g}</svg>`; }
 function histAt(L,a){ const H=L.hist||[]; let best=null; H.forEach(h=>{ if(h.t==null) return; if(Math.abs(h.a-a)<=1&&(!best||Math.abs(h.a-a)<Math.abs(best.a-a))) best=h; }); return best; }
 function radarOverlays(L,upto){ return [20,40,60].filter(a=>a<upto-1).map(a=>({a,v:histAt(L,a)})).filter(x=>x.v); }
@@ -27,7 +27,7 @@ function resBars(L,compact){ const h=Math.round(L.s.h), hs=healthState(h), a=L.a
 // 내 정보: 막대·꺾은선 대신 오각형
 statPanel=function(L){ const v=L.s, ov=radarOverlays(L,L.age), H=(L.hist||[]).filter(x=>x.a<L.age&&x.t!=null), prev=H.length?H[H.length-1]:null;
   const rel=Object.entries(L.rel||{}).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  return `<div class="chart"><h3>삶의 모양 <span class="sub small">(0~100 · 꽉 찬 정오각형이 만점)</span></h3>${radarSVG(v,ov)}${radarLegend(ov)}
+  return `<div class="chart"><h3>삶의 모양 <span class="sub small">(0~100 · 꽉 찬 정육각형이 만점)</span></h3>${radarSVG(v,ov)}${radarLegend(ov)}
     <div class="axrow">${AXES.map(k=>{ const d=prev?Math.round(v[k])-prev[k]:0; return `<span><b style="color:${AX_COL[k]}">${AX_N[k]}</b> ${Math.round(v[k])}${d?` <small class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d)}</small>`:''}</span>`; }).join('')}</div>
     <p class="small sub">행복은 건강·관계·돈 걱정·일과 꿈·경험에서 해마다 조금씩 만들어집니다. 다섯 가지를 한꺼번에 키우기는 어려워요. 시간과 힘은 한정되어 있으니까요.</p>
     ${lineChartSVG(L)}
@@ -49,9 +49,9 @@ onOpts=function(fn){ $('sheetBox').querySelector('.opts').onclick=e=>{ const b=e
 // 엔딩: 삶의 모양 (좋고 나쁨 없이 모양만 설명)
 function shapeLine(L,v){ const ks=AXES.slice().sort((a,b)=>v[b]-v[a]), top=ks[0], low=ks[ks.length-1], sp=v[top]-v[low];
   const say={j:'스스로 느끼는 만족',k:'배움',t:'손에 익힌 기술',e:'여러 가지를 겪어 본 경험',r:'곁의 사람들과의 관계'};
-  return sp<12?`${josa(L.name,'은','는')} 다섯 가지를 고르게 키운, 둥근 모양의 삶을 살았습니다.`:`${josa(L.name,'이','가')} 가장 많이 키운 것은 ${say[top]}이었습니다. 오각형은 ${AX_N[top]} 쪽으로 가장 길게 뻗어 있습니다.`; }
+  return sp<12?`${josa(L.name,'은','는')} 여섯 가지를 고르게 키운, 둥근 모양의 삶을 살았습니다.`:`${josa(L.name,'이','가')} 가장 많이 키운 것은 ${say[top]}이었습니다. 오각형은 ${AX_N[top]} 쪽으로 가장 길게 뻗어 있습니다.`; }
 // 오각형의 넓이(다섯 축 값이 만드는 정오각형 모양의 면적)가 가장 컸던 해
-function pentArea(h){ const v=AXES.map(k=>h[k]||0); let s=0; for(let i=0;i<5;i++) s+=v[i]*v[(i+1)%5]; return s*.5*Math.sin(2*Math.PI/5); }
+function pentArea(h){ const v=AXES.map(k=>h[k]||0), n=v.length; let s=0; for(let i=0;i<n;i++) s+=v[i]*v[(i+1)%n]; return s*.5*Math.sin(2*Math.PI/n); }
 function peakOf(L){ const H=(L.hist||[]).filter(h=>h.t!=null); let pk=null; H.forEach(h=>{ if(!pk||pentArea(h)>pentArea(pk)) pk=h; }); return pk; }
 // 나이에 따른 다섯 축과 건강의 꺾은선
 function lineChartSVG(L,mark){ const H=(L.hist||[]).filter(h=>h.t!=null); if(H.length<2) return ''; const W=640, Hh=250, pl=34, pr=12, pt=12, pb=28, A0=H[0].a, A1=Math.max(H[H.length-1].a,A0+1);
@@ -59,15 +59,15 @@ function lineChartSVG(L,mark){ const H=(L.hist||[]).filter(h=>h.t!=null); if(H.l
   let g=''; [0,25,50,75,100].forEach(v=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" class="lgrid"/><text x="${pl-6}" y="${Y(v)+4}" text-anchor="end" class="ltick">${v}</text>`; });
   const step=A1-A0>60?20:10; for(let a=Math.ceil(A0/step)*step;a<=A1;a+=step) g+=`<text x="${X(a)}" y="${Hh-8}" text-anchor="middle" class="ltick">${a}살</text>`;
   if(mark!=null) g+=`<line x1="${X(mark)}" x2="${X(mark)}" y1="${pt}" y2="${Hh-pb}" class="lmark"/><text x="${X(mark)+4}" y="${pt+11}" class="ltick lmk">가장 넓던 때</text>`;
-  const ser=[...AXES.map(k=>[k,AX_COL[k],'']),['h','#5A8F4A','5 4']];
-  ser.forEach(([k,c,d])=>{ g+=`<polyline fill="none" stroke="${c}" stroke-width="${k==='h'?2:2.4}" ${d?`stroke-dasharray="${d}"`:''} stroke-linejoin="round" points="${H.map(h=>`${X(h.a).toFixed(1)},${Y(h[k]).toFixed(1)}`).join(' ')}"/>`; });
-  return `<svg class="lchart2" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="나이에 따른 행복·지식·기술·경험·관계·건강의 변화">${g}</svg><div class="lgd">${ser.map(([k,c,d])=>`<span><i style="background:${c}${d?';opacity:.7':''}"></i>${k==='h'?'건강':AX_N[k]}</span>`).join('')}</div>`; }
+  const ser=[...AXES.map(k=>[k,AX_COL[k],'']),['j','#E2703A','5 4']];
+  ser.forEach(([k,c,d])=>{ g+=`<polyline fill="none" stroke="${c}" stroke-width="${k==='j'?2:2.4}" ${d?`stroke-dasharray="${d}"`:''} stroke-linejoin="round" points="${H.map(h=>`${X(h.a).toFixed(1)},${Y(h[k]).toFixed(1)}`).join(' ')}"/>`; });
+  return `<svg class="lchart2" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="나이에 따른 건강·관계·경험·지식·기술·재산·행복의 변화">${g}</svg><div class="lgd">${ser.map(([k,c,d])=>`<span><i style="background:${c}${d?';opacity:.7':''}"></i>${k==='j'?'행복':AX_N[k]}</span>`).join('')}</div>`; }
 function shapeHTML(L){ const pk=peakOf(L)||L.s, v={}; AXES.forEach(k=>v[k]=pk[k]); const H=(L.hist||[]).filter(h=>h.t!=null), last=H.filter(h=>h.a<(L.lifespan||L.age)).slice(-1)[0];
   const ov=last&&pk&&last.a!==pk.a?[{a:'last',v:last}]:[];
   const sudden=last&&last.h>=60, cause=typeof causeOf==='function'?causeOf(L).n:'';
   return `<p class="big">${esc(shapeLine(L,v))}</p>
-    <div class="rbox"><p class="rcap">오각형이 가장 넓었던 때 · ${pk.a!=null?pk.a+'살 무렵':''}</p>${radarSVG(v,ov.map(x=>({a:'last',v:x.v})))}<div class="lgd rlgd"><span><i style="background:#E2703A"></i>가장 넓었던 때${pk.a!=null?` (${pk.a}살)`:''}</span>${ov.length?`<span><i class="dash" style="border-color:#7C8A96"></i>마지막 해 (${last.a}살)</span>`:''}</div></div>
+    <div class="rbox"><p class="rcap">삶의 모양이 가장 넓었던 때 · ${pk.a!=null?pk.a+'살 무렵':''}</p>${radarSVG(v,ov.map(x=>({a:'last',v:x.v})))}<div class="lgd rlgd"><span><i style="background:#E2703A"></i>가장 넓었던 때${pk.a!=null?` (${pk.a}살)`:''}</span>${ov.length?`<span><i class="dash" style="border-color:#7C8A96"></i>마지막 해 (${last.a}살)</span>`:''}</div></div>
     <div class="rbox"><p class="rcap">나이에 따라 달라진 것들</p>${lineChartSVG(L,pk.a)}</div>
-    <p class="soft">${sudden?`건강이 ${last.h}로 나쁘지 않았지만, 삶은 ${cause?esc(cause)+'(으)로 ':''}갑자기 끝났습니다. 건강이 좋아도 사고나 병은 예고 없이 찾아옵니다.`:'건강은 삶을 이어 가는 힘, 재산은 삶을 버티는 자원이라 오각형 밖에 따로 둡니다. 마지막 해 건강 0은 삶이 끝난 뒤의 표시입니다.'}</p>${resBars(Object.assign(Object.create(Object.getPrototypeOf(L)),L,{s:Object.assign({},L.s,{h:0})}))}
-    <p class="note">오각형이 크다고 더 좋은 삶은 아닙니다. 모양이 저마다 다를 뿐입니다. 직접 고르며 산 해에는 오각형이 커지고, 그냥 지나간 해에는 조금만 자랍니다.${L.limN?` 살면서 돈이나 건강 때문에 고를 수 없던 선택이 ${L.limN}번 있었습니다.`:''}</p>`; }
+    <p class="soft">${sudden?`건강이 ${last.h}로 나쁘지 않았지만, 삶은 ${cause?esc(cause)+'(으)로 ':''}갑자기 끝났습니다. 건강이 좋아도 사고나 병은 예고 없이 찾아옵니다.`:'마지막 해 건강 0은 삶이 끝난 뒤의 표시입니다.'}</p>${resBars(Object.assign(Object.create(Object.getPrototypeOf(L)),L,{s:Object.assign({},L.s,{h:0})}))}
+    <p class="note">육각형이 크다고 더 좋은 삶은 아닙니다. 모양이 저마다 다를 뿐입니다. 직접 고르며 산 해에는 육각형이 커지고, 그냥 지나간 해에는 조금만 자랍니다.${L.limN?` 살면서 돈이나 건강 때문에 고를 수 없던 선택이 ${L.limN}번 있었습니다.`:''}</p>`; }
 

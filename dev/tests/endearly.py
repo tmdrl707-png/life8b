@@ -8,7 +8,7 @@ async def main():
         await pg.goto('http://localhost:8765/index.html'); await pg.wait_for_timeout(800); await ev("Store.fb=false; Store.mode='local'")
         await pg.fill('#uid','early1'); await pg.fill('#upw','123456'); await pg.click('#btnLogin'); await pg.wait_for_timeout(1000)
         for kind,age in [('young',6),('old',None)]:
-            await pg.click('#btnNew'); await pg.wait_for_timeout(8500); await pg.click('#btnLive'); await pg.wait_for_timeout(1000)
+            await pg.click('#btnNew'); await pg.wait_for_timeout(500); await pg.evaluate("(()=>{ if($('s-vow')&&!$('s-vow').hidden){ VOW.a=['r','h','k']; VOW.st=VOW_Q.length+1; vowDraw(); $('vNext').click(); } })()"); await pg.wait_for_timeout(8000); await pg.click('#btnLive'); await pg.wait_for_timeout(1000)
             await ev(f"()=>{{ G.running=false; if(!$('sheet').hidden) closeSheet(); const L=G.life; L.cur=null; L.runAuto({age or 'undefined'}); if(!L.dead){{ L.dead=true; L.lifespan=L.age; L.cause='sudden'; }} finishLife(); }}"); await pg.wait_for_timeout(800)
             heads=[]
             for _ in range(20):
