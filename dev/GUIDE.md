@@ -18,7 +18,7 @@
 - `01-common-store`: `$`·`esc`·`ls`·`G`(게임 상태)·`Store`(Firebase REST 또는 localStorage; 모드 `db`·`auth`·`local`; 경로 `acc/`·`users/`·`reg/`·`idcfg/closed`·`rooms/<코드>/…`·`tdata/…`). 모든 단위가 쓰는 바탕.
 - `03-login-home`: 가입 없는 로그인(`Store.login(id,pw,null)`: 처음 쓴 아이디면 그 비밀번호로 정해짐), 계정 홈, 태어나는 연출 `birthReveal`(밤하늘 `body.bnight`), 엔딩 가로 배치 `endWide`.
 - `02-teacher-records`·`04-teacher-mode`: 교사용 모드는 '학급 방 운영'과 '체험하기'(나라·시작 나이·시간)만. 학급 방은 반 전체가 같은 나이로 움직이고, 끝난 삶은 `members/<아이디>/past/<시각>`.
-- `56-dev-mode`(+`66-play-fixes-dev`·`69-six-dev`): 개발자 모드(코드 필요, `G.tok`). `devStart('play')`, `devSkip`, `devToEnd`. `82-devrec`: '기록·아이디' 탭(학생 아이디 목록·초기화·삭제·미리 등록·등록 전용, 저장된 삶 자세히 보기, 지우기 `Store.adminPatch`).
+- `56-dev-mode`(+`66-play-fixes-dev`·`69-six-dev`): 개발자 모드(코드 필요, `G.tok`). `devStart('play')`, `devSkip`, `devToEnd`. `82-devrec`: 개발자 창의 탭 둘. '기록·아이디'(학생 아이디 목록·초기화·삭제·미리 등록·등록 전용, 저장된 삶 자세히 보기, 지우기 `Store.adminPatch`)와 '지금 플레이 중'(11-15: `online/` 70초 안의 학생 목록, 그 학생의 마지막 저장 삶 보기, 1대1 대화. 대화는 `80-friends`의 `FRIENDS.dev`가 `dm/`·`inbox/`를 읽고 쓰며 선생님 uid는 `teacher-local`. 탭이 열려 있는 동안만 8초마다 새로 읽고 학생 친구 목록에 '선생님'이 나타난다).
 - `57-error-box` 오류 알림. `71-lives` 아이디 하나에 삶 여러 개(`data.save` 지금 삶, `data.slots` 쉬는 삶, 최대 5). `83-autoresume` 새로고침해도 하던 삶으로(sessionStorage `life8b_play`). `80-friends` 같이 하는 친구 목록·1대1 메시지(`online/`·`dm/`·`inbox/`, 연결 상태 줄 `net`).
 - Firebase는 빈 `{}`·`[]`를 저장하지 않는다 → `Life.load`가 `done`·`used`·`hist`·`cur.scenes`·`cur.ml` 등을 되살린다. 감염병 칸은 `epiCur`가 되살린다.
 
@@ -64,5 +64,5 @@
 - 공통 도우미 `lib.py`: `page(b,phone)`, `dev(pg,'KR',age)`, `teacher(pg,'KR',age)`, `student(pg,id)`, `settle(pg)`, `to_end(pg)`. 화면이 바뀌면 lib.py만 고친다.
 - 엔진: `golden.py`(기준값), `sim.py <js>`(sim_money·sim_prob·sim_univ·sim_dir·sim_debt·sim_audit), 페이지 2개로 나눠 돌리기 `simp.py <js> 나라들 수`: `sim_mort`(5살 전·5~19살 사망, 기대수명), `sim_calib`(나라별 평균 수명), `sim_dis`(재해 횟수), `sim_wage`(30·40·50살 월수입), `sim_stats`(한꺼번에, 느림).
 - 학생처럼 0~20살: `young.py [삶 수] [한 해 초] [tut]`(미션이 한 해의 몇 %에 왔는지·해냈는지, 능력치, 이상한 글자, 엔딩까지).
-- 화면: `aplay.py KR`(한 삶 직접 고르며), `aendshow.py`·`endearly.py`·`endL.py`·`picks.py`(엔딩), `career.py`, `quest.py`, `talk.py`, `map.py`, `zones.py`, `tutorial.py`, `hub.py`, `flow.py`·`flow2.py`(시간 흐름), `ids.py`(로그인·아이디), `devmode.py`, `mobile.py`·`rot.py`·`m1.py`, `roll.py`(태어나는 연출).
+- 화면: `aplay.py KR`(한 삶 직접 고르며), `aendshow.py`·`endearly.py`·`endL.py`·`picks.py`(엔딩), `career.py`, `quest.py`, `talk.py`, `map.py`, `zones.py`, `tutorial.py`, `hub.py`, `flow.py`·`flow2.py`(시간 흐름), `ids.py`(로그인·아이디), `devmode.py`, `devlive.py`(개발자 '지금 플레이 중' 탭: 두 창으로 학생·선생님 대화), `mobile.py`·`rot.py`·`m1.py`, `roll.py`(태어나는 연출).
 - 결과 그림은 `dev/tests/out/`(커밋 안 함). 출력은 짧게: 오류와 핵심 값만 찍는다.

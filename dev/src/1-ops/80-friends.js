@@ -5,7 +5,8 @@
        online/<uid>            {id,nm,a,cn,st,t}   20초마다 갱신, 70초 안에 갱신된 사람만 '지금 플레이 중'
        dm/<내uid>_<상대uid>(정렬)/<푸시키>  {f,n,x,t}  메시지(80자까지)
        inbox/<받는이uid>/<보낸이uid>        {n,x,t}  마지막 메시지(안 읽음 표시용)
-   - 교사용·개발자 모드와 로그인하지 않은 상태에서는 나타나지 않는다. */
+   - 교사용·개발자 모드와 로그인하지 않은 상태에서는 나타나지 않는다.
+   - 개발자 모드의 '지금 플레이 중' 탭(ui/82-devrec)이 FRIENDS.dev로 같은 online/·dm/·inbox/를 읽고 쓴다(선생님 uid = teacher-local). 안 읽은 메시지를 보낸 사람은 접속 중이 아니어도 목록에 남는다(11-15). */
 (function(){
   const TTL=70000, BEAT=20000, MAXLEN=80;
   const FR_TABS=[{k:'chat',n:'대화'}];   // 나중에 {k:'ui',n:'화면'},{k:'me',n:'개인 설정'},{k:'speed',n:'게임 속도'} 같은 탭을 여기에 더한다
@@ -28,7 +29,8 @@
   async function beat(){ if(!can()){ if(beatOn&&Store.sess){ beatOn=false; try{ await DB.put('online/'+Store.uid(),null); }catch(e){} } return; }
     beatOn=true; try{ await DB.put('online/'+Store.uid(),myInfo()); net.put=true; net.t=Date.now(); }catch(e){ net.put=false; } }
   async function friends(){ let o=null; try{ o=await DB.get('online'); net.get=true; }catch(e){ net.get=false; } const me=Store.uid(), now=Date.now(), a=[];
-    for(const k in (o||{})){ const v=o[k]; if(k===me||!v||now-(v.t||0)>TTL) continue; a.push(Object.assign({uid:k},v)); } a.sort((x,y)=>String(x.nm).localeCompare(String(y.nm),'ko')); return a; }
+    for(const k in (o||{})){ const v=o[k]; if(k===me||!v||now-(v.t||0)>TTL) continue; a.push(Object.assign({uid:k},v)); } for(const k in inbox){ if(k===me||a.some(x=>x.uid===k)) continue; const v=inbox[k]; if(v&&unreadOf(k)) a.push({uid:k,nm:v.n||'친구',a:'',cn:'',st:'',off:1}); }   // 안 읽은 메시지가 있으면 접속 중이 아니어도 답할 수 있게
+    a.sort((x,y)=>(y.tch?1:0)-(x.tch?1:0)||String(x.nm).localeCompare(String(y.nm),'ko')); return a; }
   const pair=(a,b)=>[a,b].sort().join('_');
   // ---- 안 읽음 ----
   const rd=()=>{ try{ return JSON.parse(localStorage.getItem('life8b_fr_read_'+(Store.sess&&Store.sess.id))||'{}'); }catch(e){ return {}; } };
@@ -74,7 +76,7 @@
   let view='list', cur=null, tab='chat', msgT=null, lastSend=0;
   function badge(){ const n=unreadN(), b=btn.querySelector('.bd'); b.hidden=!n; b.textContent=n>9?'9+':n; }
   const initial=s=>esc(String(s||'?').trim().slice(0,1));
-  const sub=f=>`${f.a}살 · ${esc(f.cn||'')}${f.st?' · '+esc(f.st):''}`;
+  const sub=f=>f.tch?'선생님(개발자)':f.off?'지금은 접속 중이 아니에요':`${f.a}살 · ${esc(f.cn||'')}${f.st?' · '+esc(f.st):''}`;
   function shell(body){ panel.innerHTML=`<div class="fh"><b>함께 플레이하는 친구</b><button id="frX" aria-label="닫기">닫기 ✕</button></div>
     <div class="ft">${FR_TABS.map(t=>`<button data-t="${t.k}" class="${t.k===tab?'on':''}">${t.n}</button>`).join('')}</div>${body}`;
     $('frX').onclick=closeP; }
@@ -110,5 +112,21 @@
   setInterval(()=>{ try{ beat(); }catch(e){} },BEAT);
   setInterval(()=>{ try{ pollInbox(); if(!panel.hidden&&view==='list') refreshList(); }catch(e){} },8000);
   addEventListener('pagehide',()=>{ try{ if(beatOn&&Store.sess) DB.put('online/'+Store.uid(),null); }catch(e){} });
-  window.FRIENDS={open:openP,close:closeP,beat};   // 시험·개발용
+  // ---- 개발자 모드(선생님)용: 지금 플레이 중인 학생 목록·1대1 대화 (ui/82-devrec의 '지금 플레이 중' 탭이 쓴다) ----
+  //   선생님의 uid는 늘 'teacher-local'. 이 탭이 열려 있는 동안 online/teacher-local을 20초마다 갱신해 학생 친구 목록에 '선생님'이 나타난다.
+  const TUID='teacher-local', TRD='life8b_dev_read';
+  const trd=()=>{ try{ return JSON.parse(localStorage.getItem(TRD)||'{}'); }catch(e){ return {}; } };
+  const DEVAPI={ uid:TUID,
+    async players(){ let o=null; try{ o=await DB.get('online'); }catch(e){ return null; } const now=Date.now(), a=[];
+      for(const k in (o||{})){ const v=o[k]; if(k===TUID||!v||v.tch||now-(v.t||0)>TTL) continue; a.push(Object.assign({uid:k},v)); }
+      a.sort((x,y)=>String(x.id).localeCompare(String(y.id),'ko')); return a; },
+    async inbox(){ try{ return (await DB.get('inbox/'+TUID))||{}; }catch(e){ return {}; } },
+    unread(ib,uid){ const m=ib&&ib[uid]; return !!(m&&(m.t||0)>(trd()[uid]||0)); },
+    markRead(uid){ try{ const r=trd(); r[uid]=Date.now(); localStorage.setItem(TRD,JSON.stringify(r)); }catch(e){} },
+    async thread(uid){ const o=await DB.get('dm/'+pair(TUID,uid),40); return Object.keys(o||{}).sort().map(k=>o[k]); },
+    async send(uid,x){ x=String(x).trim().slice(0,MAXLEN); if(!x) return false; const t=Date.now();
+      await DB.push('dm/'+pair(TUID,uid),{f:TUID,n:'선생님',x,t}); try{ await DB.put('inbox/'+uid+'/'+TUID,{n:'선생님',x,t}); }catch(e){} return true; },
+    async beat(on){ try{ await DB.put('online/'+TUID,on?{id:'선생님',nm:'선생님',a:'',cn:'',st:'',tch:1,t:Date.now()}:null); }catch(e){} },
+    MAXLEN };
+  window.FRIENDS={open:openP,close:closeP,beat,dev:DEVAPI};   // 시험·개발용
 })();
