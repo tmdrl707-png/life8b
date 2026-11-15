@@ -12671,7 +12671,8 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
        online/<uid>            {id,nm,a,cn,st,t}   20초마다 갱신, 70초 안에 갱신된 사람만 '지금 플레이 중'
        dm/<내uid>_<상대uid>(정렬)/<푸시키>  {f,n,x,t}  메시지(80자까지)
        inbox/<받는이uid>/<보낸이uid>        {n,x,t}  마지막 메시지(안 읽음 표시용)
-   - 교사용·개발자 모드와 로그인하지 않은 상태에서는 나타나지 않는다. */
+   - 교사용·개발자 모드와 로그인하지 않은 상태에서는 나타나지 않는다.
+   - 개발자 모드의 '지금 플레이 중' 탭(ui/82-devrec)이 FRIENDS.dev로 같은 online/·dm/·inbox/를 읽고 쓴다(선생님 uid = teacher-local). 안 읽은 메시지를 보낸 사람은 접속 중이 아니어도 목록에 남는다(11-15). */
 (function(){
   const TTL=70000, BEAT=20000, MAXLEN=80;
   const FR_TABS=[{k:'chat',n:'대화'}];   // 나중에 {k:'ui',n:'화면'},{k:'me',n:'개인 설정'},{k:'speed',n:'게임 속도'} 같은 탭을 여기에 더한다
@@ -12694,7 +12695,8 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
   async function beat(){ if(!can()){ if(beatOn&&Store.sess){ beatOn=false; try{ await DB.put('online/'+Store.uid(),null); }catch(e){} } return; }
     beatOn=true; try{ await DB.put('online/'+Store.uid(),myInfo()); net.put=true; net.t=Date.now(); }catch(e){ net.put=false; } }
   async function friends(){ let o=null; try{ o=await DB.get('online'); net.get=true; }catch(e){ net.get=false; } const me=Store.uid(), now=Date.now(), a=[];
-    for(const k in (o||{})){ const v=o[k]; if(k===me||!v||now-(v.t||0)>TTL) continue; a.push(Object.assign({uid:k},v)); } a.sort((x,y)=>String(x.nm).localeCompare(String(y.nm),'ko')); return a; }
+    for(const k in (o||{})){ const v=o[k]; if(k===me||!v||now-(v.t||0)>TTL) continue; a.push(Object.assign({uid:k},v)); } for(const k in inbox){ if(k===me||a.some(x=>x.uid===k)) continue; const v=inbox[k]; if(v&&unreadOf(k)) a.push({uid:k,nm:v.n||'친구',a:'',cn:'',st:'',off:1}); }   // 안 읽은 메시지가 있으면 접속 중이 아니어도 답할 수 있게
+    a.sort((x,y)=>(y.tch?1:0)-(x.tch?1:0)||String(x.nm).localeCompare(String(y.nm),'ko')); return a; }
   const pair=(a,b)=>[a,b].sort().join('_');
   // ---- 안 읽음 ----
   const rd=()=>{ try{ return JSON.parse(localStorage.getItem('life8b_fr_read_'+(Store.sess&&Store.sess.id))||'{}'); }catch(e){ return {}; } };
@@ -12740,7 +12742,7 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
   let view='list', cur=null, tab='chat', msgT=null, lastSend=0;
   function badge(){ const n=unreadN(), b=btn.querySelector('.bd'); b.hidden=!n; b.textContent=n>9?'9+':n; }
   const initial=s=>esc(String(s||'?').trim().slice(0,1));
-  const sub=f=>`${f.a}살 · ${esc(f.cn||'')}${f.st?' · '+esc(f.st):''}`;
+  const sub=f=>f.tch?'선생님(개발자)':f.off?'지금은 접속 중이 아니에요':`${f.a}살 · ${esc(f.cn||'')}${f.st?' · '+esc(f.st):''}`;
   function shell(body){ panel.innerHTML=`<div class="fh"><b>함께 플레이하는 친구</b><button id="frX" aria-label="닫기">닫기 ✕</button></div>
     <div class="ft">${FR_TABS.map(t=>`<button data-t="${t.k}" class="${t.k===tab?'on':''}">${t.n}</button>`).join('')}</div>${body}`;
     $('frX').onclick=closeP; }
@@ -12776,7 +12778,23 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
   setInterval(()=>{ try{ beat(); }catch(e){} },BEAT);
   setInterval(()=>{ try{ pollInbox(); if(!panel.hidden&&view==='list') refreshList(); }catch(e){} },8000);
   addEventListener('pagehide',()=>{ try{ if(beatOn&&Store.sess) DB.put('online/'+Store.uid(),null); }catch(e){} });
-  window.FRIENDS={open:openP,close:closeP,beat};   // 시험·개발용
+  // ---- 개발자 모드(선생님)용: 지금 플레이 중인 학생 목록·1대1 대화 (ui/82-devrec의 '지금 플레이 중' 탭이 쓴다) ----
+  //   선생님의 uid는 늘 'teacher-local'. 이 탭이 열려 있는 동안 online/teacher-local을 20초마다 갱신해 학생 친구 목록에 '선생님'이 나타난다.
+  const TUID='teacher-local', TRD='life8b_dev_read';
+  const trd=()=>{ try{ return JSON.parse(localStorage.getItem(TRD)||'{}'); }catch(e){ return {}; } };
+  const DEVAPI={ uid:TUID,
+    async players(){ let o=null; try{ o=await DB.get('online'); }catch(e){ return null; } const now=Date.now(), a=[];
+      for(const k in (o||{})){ const v=o[k]; if(k===TUID||!v||v.tch||now-(v.t||0)>TTL) continue; a.push(Object.assign({uid:k},v)); }
+      a.sort((x,y)=>String(x.id).localeCompare(String(y.id),'ko')); return a; },
+    async inbox(){ try{ return (await DB.get('inbox/'+TUID))||{}; }catch(e){ return {}; } },
+    unread(ib,uid){ const m=ib&&ib[uid]; return !!(m&&(m.t||0)>(trd()[uid]||0)); },
+    markRead(uid){ try{ const r=trd(); r[uid]=Date.now(); localStorage.setItem(TRD,JSON.stringify(r)); }catch(e){} },
+    async thread(uid){ const o=await DB.get('dm/'+pair(TUID,uid),40); return Object.keys(o||{}).sort().map(k=>o[k]); },
+    async send(uid,x){ x=String(x).trim().slice(0,MAXLEN); if(!x) return false; const t=Date.now();
+      await DB.push('dm/'+pair(TUID,uid),{f:TUID,n:'선생님',x,t}); try{ await DB.put('inbox/'+uid+'/'+TUID,{n:'선생님',x,t}); }catch(e){} return true; },
+    async beat(on){ try{ await DB.put('online/'+TUID,on?{id:'선생님',nm:'선생님',a:'',cn:'',st:'',tch:1,t:Date.now()}:null); }catch(e){} },
+    MAXLEN };
+  window.FRIENDS={open:openP,close:closeP,beat,dev:DEVAPI};   // 시험·개발용
 })();
 /* 81-hub: 오른쪽 위 '모음' 단추 + 설정(톱니바퀴) + 화면 투명도·알림 자리 (11-14 선생님 요청)
    - 모음 단추(#btnHub, 네 칸 그림)를 누르면 아래로 내 정보·기록·메시지(#btnFr, ui/80)·설정(#btnSet)·나가기가 펼쳐진다(11-14 밤: 상태란 아래의 단추 줄을 옮겨 옴. 예전 #btnInfo·#btnMem·#btnExit은 숨겨 두고 이 단추들이 눌러 준다). 새 메뉴는 HUB_ITEMS 순서대로 #hubTray에 더한다.
@@ -12952,7 +12970,11 @@ html.ui-sr-0 #hRes{display:none!important}
 #devP .six{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:4px 10px;margin:4px 0}
 #devP .six div{font-size:.84rem}#devP .six i{display:block;height:7px;border-radius:4px;background:#DDE3EC;margin-top:2px;overflow:hidden}#devP .six i b{display:block;height:100%;background:#4C9BFF}
 #devP .six .lk{opacity:.5}
-#devP ol.mm{margin:4px 0 0 18px;padding:0;font-size:.82rem;color:#3A4250}`;
+#devP ol.mm{margin:4px 0 0 18px;padding:0;font-size:.82rem;color:#3A4250}
+#devP .lvms{max-height:300px;min-height:120px;overflow:auto;display:flex;flex-direction:column;gap:6px;border:1px solid #E3DCCB;border-radius:10px;padding:8px;background:#FBFAF6}
+#devP .lvb{max-width:82%;padding:6px 10px;border-radius:12px;background:#fff;border:1px solid #E3DCCB;font-size:.9rem;word-break:break-all;align-self:flex-start}
+#devP .lvb.me{align-self:flex-end;background:#DCEBFF;border-color:#BBD3F7}#devP .lvb i{display:block;font-style:normal;font-size:.72rem;color:#8A8068;margin-top:2px}
+#devP .recbox{margin-top:6px}#devP .dot{color:#E5484D}`;
   document.head.appendChild(css);
   const when=t=>{ if(!t) return ''; const x=new Date(t); return `${x.getMonth()+1}/${x.getDate()} ${String(x.getHours()).padStart(2,'0')}:${String(x.getMinutes()).padStart(2,'0')}`; };
   // ---- 저장된 삶 하나를 자세히 ----
@@ -12987,15 +13009,53 @@ html.ui-sr-0 #hRes{display:none!important}
   { const _r=renderTIds; renderTIds=async function(){ const r=await _r.apply(this,arguments); try{ const box=$('tIdList'); box.querySelectorAll('[data-iv]').forEach(b=>b.onclick=()=>{ const o=TI.list.find(x=>x.id===b.dataset.iv), bx=box.querySelector(`[data-ibox="${CSS.escape(o.id)}"]`); if(!bx) return; if(!bx.hidden){ bx.hidden=true; return; } showUser(o,bx); }); }catch(e){} return r; }; }
   // 내 체험 기록에도 자세히 보기
   { const _t=renderTRec; renderTRec=async function(){ const r=await _t.apply(this,arguments); try{ const d=TStore.data; $('tSaves').querySelectorAll('li').forEach(li=>{ const g=li.querySelector('[data-go]'); if(!g||!d.saves[g.dataset.go]||li.querySelector('.nowL')) return; li.insertAdjacentHTML('beforeend',`<details><summary class="small">자세히 보기</summary>${lifeNowHTML(d.saves[g.dataset.go].dump)}</details>`); }); }catch(e){} return r; }; }
+  // ---- 지금 플레이 중인 학생: 목록 · 기록 보기 · 대화 (11-15 선생님 요청) ----
+  //   목록은 학생이 20초마다 알리는 online/(70초 안)에서, 대화는 학생의 친구 패널과 같은 dm/·inbox/(ui/80-friends의 FRIENDS.dev)에서 읽고 쓴다.
+  //   기록은 그 학생 계정에 마지막으로 저장된 삶(lifeNowHTML). 이 탭이 열려 있는 동안만 8초마다 새로 읽고, 학생 친구 목록에 '선생님'이 나타난다.
+  let liveT=null, chatT=null, tab='play';
+  const FD=()=>window.FRIENDS&&FRIENDS.dev;
+  const stopLive=()=>{ clearInterval(liveT); clearInterval(chatT); liveT=chatT=null; try{ FD()&&FD().beat(false); }catch(e){} };
+  function liveView(wrap,d){
+    const body=document.createElement('div'); body.className='panel'; wrap.appendChild(body);
+    let view='list', cur=null, list=null, ib={}; const recOpen={};
+    const alive=()=>body.isConnected&&!d.hidden&&tab==='live';
+    const nameOf=f=>esc(f.nm||f.id||'학생'), infoOf=f=>`아이디 ${esc(f.id||'')}${f.a!==''&&f.a!=null?' · '+f.a+'살':''}${f.cn?' · '+esc(f.cn):''}${f.st?' · '+esc(f.st):''}`;
+    async function refresh(){ if(!alive()){ stopLive(); return; } const a=await FD().players(); const i=await FD().inbox(); if(a) list=a; else if(list==null) list=null; ib=i||{}; FD().beat(true); if(view==='list') drawList(); }
+    function drawList(){ view='list'; cur=null; clearInterval(chatT); chatT=null;
+      const st=!Store.fb?'이 기기 안에서만 이어져요(같은 컴퓨터의 다른 창과만 만날 수 있어요)':list===null?'연결을 확인하지 못했어요':'연결됨';
+      const away=Object.keys(ib).filter(u=>FD().unread(ib,u)&&!(list||[]).some(f=>f.uid===u));
+      body.innerHTML=`<h3>지금 플레이 중인 학생 <span class="small sub">${list?list.length+'명':''}</span></h3>
+        <p class="small sub">${st} · 8초마다 새로 읽어요 · 이 탭이 열려 있는 동안 학생의 친구 목록에 '선생님'이 나타나요 · 기록은 마지막으로 저장된 삶이에요</p>
+        ${list&&list.length?`<ul class="lives">${list.map(f=>`<li data-u="${esc(f.uid)}"><div class="idrow"><div><b>${nameOf(f)}</b> <span class="small sub">${infoOf(f)}</span></div><div class="btns"><button class="btn" data-rec>기록 보기</button><button class="btn primary" data-chat>대화${FD().unread(ib,f.uid)?' <span class="dot">●</span>':''}</button></div></div><div class="recbox" ${recOpen[f.uid]?'':'hidden'}>${recOpen[f.uid]||''}</div></li>`).join('')}</ul>`:`<p class="small sub">${list===null?'':'지금 플레이 중인 학생이 없어요. 학생이 삶을 시작하면 여기에 나타나요.'}</p>`}
+        ${away.length?`<b class="small">답장이 온 학생 (지금은 접속 중이 아님)</b><ul class="lives">${away.map(u=>`<li data-u="${esc(u)}" data-away><div class="idrow"><div><b>${esc(ib[u].n||'학생')}</b> <span class="small sub">${esc(String(ib[u].x||'').slice(0,30))}</span></div><div class="btns"><button class="btn primary" data-chat>대화 <span class="dot">●</span></button></div></div></li>`).join('')}</ul>`:''}`;
+      body.querySelectorAll('li[data-u]').forEach(li=>{ const uid=li.dataset.u, f=(list||[]).find(x=>x.uid===uid)||{uid,id:'',nm:(ib[uid]||{}).n||'학생',a:'',cn:'',st:''};
+        const c=li.querySelector('[data-chat]'); if(c) c.onclick=()=>openChat(f);
+        const r=li.querySelector('[data-rec]'); if(r) r.onclick=async()=>{ const bx=li.querySelector('.recbox'); if(!bx.hidden){ bx.hidden=true; delete recOpen[uid]; return; } bx.hidden=false; bx.innerHTML='<p class="small sub">불러오는 중…</p>';
+          let dd; try{ dd=await Store.adminUser({key:uid,id:f.id}); }catch(e){ bx.innerHTML=`<p class="err">${esc(Store.msg(e))}</p>`; return; } dd=dd||{};
+          const h=`<p class="small sub">마지막 저장 ${when(dd.t)||'—'} · 지금은 ${f.a}살${dd.room?' · 학급 방 '+esc(dd.room):''}</p>${dd.save?lifeNowHTML(dd.save):'<p class="small sub">저장된 삶이 아직 없어요.</p>'}`; recOpen[uid]=h; bx.innerHTML=h; }; }); }
+    const bub=arr=>arr.map(m=>{ const x=new Date(m.t||0); return `<div class="lvb ${m.f===FD().uid?'me':''}">${esc(m.x)}<i>${m.f===FD().uid?'':esc(m.n)+' · '}${String(x.getHours()).padStart(2,'0')}:${String(x.getMinutes()).padStart(2,'0')}</i></div>`; }).join('');
+    async function load(){ if(!alive()){ stopLive(); return; } if(!cur) return; let arr; try{ arr=await FD().thread(cur.uid); }catch(e){ return; } const box=body.querySelector('#lvMs'); if(!box||view!=='chat') return;
+      const atEnd=box.scrollTop+box.clientHeight>=box.scrollHeight-30; box.innerHTML=arr.length?bub(arr):'<p class="small sub">첫 인사를 건네 보세요.</p>'; if(atEnd||!box.dataset.f){ box.scrollTop=box.scrollHeight; box.dataset.f=1; } FD().markRead(cur.uid); }
+    function openChat(f){ cur=f; view='chat'; FD().markRead(f.uid);
+      body.innerHTML=`<div class="idrow"><b>${nameOf(f)} <span class="small sub">${infoOf(f)}</span></b><button class="btn ghost" data-back>◀ 목록</button></div>
+        <div class="lvms" id="lvMs"><p class="small sub">불러오는 중…</p></div>
+        <form class="row" id="lvF" style="flex-wrap:nowrap"><input type="text" id="lvIn" maxlength="${FD().MAXLEN}" placeholder="메시지 (${FD().MAXLEN}자까지)" autocomplete="off"><button class="btn primary" type="submit" style="white-space:nowrap">보내기</button></form>`;
+      body.querySelector('[data-back]').onclick=()=>{ refresh(); drawList(); };
+      let last=0; body.querySelector('#lvF').onsubmit=async e=>{ e.preventDefault(); const inp=body.querySelector('#lvIn'), x=inp.value.trim(); if(!x||Date.now()-last<1000) return; last=Date.now(); inp.value='';
+        try{ await FD().send(f.uid,x); }catch(er){ inp.value=x; inp.placeholder='보내지 못했어요. 다시 눌러 보세요'; } load(); };
+      clearInterval(chatT); load(); chatT=setInterval(load,3500); setTimeout(()=>{ const i=body.querySelector('#lvIn'); i&&i.focus(); },60); }
+    body.innerHTML='<p class="small sub">불러오는 중…</p>'; refresh().then(()=>{ if(view==='list') drawList(); }); clearInterval(liveT); liveT=setInterval(refresh,8000); }
+  addEventListener('pagehide',()=>{ try{ FD()&&FD().beat(false); }catch(e){} });
   // ---- 개발자 창에 탭 ----
-  let tab='play';
   const home=()=>$('devRecHome');
   const stash=()=>{ const h=home(); ['tRec','tIds'].forEach(id=>{ const e=$(id); if(e&&h&&e.parentElement!==h) h.appendChild(e); }); };
   const _od=openDev;
-  openDev=function(){ stash(); _od.apply(this,arguments); if(!G.tok) return; const d=$('devP'), box=d.querySelector('.dbox'); if(!box) return;
+  openDev=function(){ stopLive(); stash(); _od.apply(this,arguments); if(!G.tok) return; const d=$('devP'), box=d.querySelector('.dbox'); if(!box) return;
     const h2=box.querySelector('h2'), tabs=document.createElement('div'); tabs.className='dtabs';
-    tabs.innerHTML=`<button data-t="play" class="${tab==='play'?'on':''}">체험</button><button data-t="rec" class="${tab==='rec'?'on':''}">기록·아이디</button>`; h2.insertAdjacentElement('afterend',tabs);
+    tabs.innerHTML=`<button data-t="play" class="${tab==='play'?'on':''}">체험</button><button data-t="live" class="${tab==='live'?'on':''}">지금 플레이 중</button><button data-t="rec" class="${tab==='rec'?'on':''}">기록·아이디</button>`; h2.insertAdjacentElement('afterend',tabs);
     tabs.onclick=e=>{ const b=e.target.closest('button'); if(!b) return; tab=b.dataset.t; openDev(); };
+    if(tab==='live'){ [...box.children].forEach(c=>{ if(c===h2||c===tabs||c.querySelector('#devX')) return; c.style.display='none'; }); h2.innerHTML='개발자 모드 <small class="note">지금 플레이 중인 학생 · 기록 보기와 대화</small>';
+      const wrap=document.createElement('div'); wrap.style.cssText='display:flex;flex-direction:column;gap:12px'; tabs.insertAdjacentElement('afterend',wrap); liveView(wrap,d); }
     if(tab==='rec'){ [...box.children].forEach(c=>{ if(c===h2||c===tabs||c.querySelector('#devX')) return; c.style.display='none'; }); h2.innerHTML='개발자 모드 <small class="note">저장된 기록과 아이디 · 자세히 보기와 지우기</small>';
       const wrap=document.createElement('div'); wrap.style.cssText='display:flex;flex-direction:column;gap:12px'; wrap.appendChild($('tRec')); wrap.appendChild($('tIds')); tabs.insertAdjacentElement('afterend',wrap);
       const r=$('tRec'); r.querySelector('h3').textContent='선생님 체험 기록 (교사용 모드에서 한 체험)'; renderTRec(); renderTIds(true);
