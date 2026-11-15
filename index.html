@@ -12996,7 +12996,7 @@ html.ui-sr-0 #hRes{display:none!important}
   // ---- 학생 계정 기록 보기 (자세히 + 하나씩 지우기) ----
   async function showUser(o,bx){ bx.hidden=false; bx.innerHTML='<p class="small sub">불러오는 중…</p>';
     let d; try{ d=await Store.adminUser(o); }catch(e){ bx.innerHTML=`<p class="err">${esc(Store.msg(e))}</p>`; return; } d=d||{};
-    const lv=(d.lives||[]).map((l,i)=>({l,i})).reverse(), slots=Object.entries(d.slots||{});
+    const lv=(d.lives||[]).map((l,i)=>({l,i})).sort((x,y)=>((y.l&&y.l.t)||0)-((x.l&&x.l.t)||0)||y.i-x.i), slots=Object.entries(d.slots||{}).sort((x,y)=>((y[1]&&y[1].t)||0)-((x[1]&&x[1].t)||0)); // 최신 순(11-15)
     bx.innerHTML=`<p class="small sub">마지막 저장 ${when(d.t)||'—'}${d.room?' · 학급 방 '+esc(d.room):''}</p>
       <b class="small">지금 살고 있는 삶</b>${d.save?lifeNowHTML(d.save)+'<div class="row"><button class="btn danger" data-dsave>이 삶 지우기</button></div>':'<p class="small sub">없습니다.</p>'}
       ${slots.length?`<b class="small">쉬고 있는 삶 ${slots.length}개</b>${slots.map(([id,s])=>`${lifeNowHTML(s.d||s)}<div class="row"><button class="btn danger" data-dslot="${esc(id)}">이 삶 지우기</button></div>`).join('')}`:''}
