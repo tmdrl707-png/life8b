@@ -5,7 +5,7 @@
 - 배포: GitHub Pages `https://tmdrl707-png.github.io/life8b/` (저장소 `tmdrl707-png/life8b`, main 루트의 `index.html`). 데이터: Firebase Realtime Database(`life8b/`, 인증 꺼짐).
 - **`index.html`은 직접 고치지 않는다.** `dev/src/`의 조각을 고치고 `python3 dev/rebuild.py`로 만든다.
 - 코드 위치·구조: **`dev/GUIDE.md`(코드 구조 안내서)** — 통째로 읽지 말고 필요한 단위의 절만. 목표·결정·일하는 방법: `dev/PLAN.md`(개발 안내서).
-- 같은 내용의 아티팩트(사용자가 보는 페이지): 코드 구조 안내서 `ba04f801-9396-4f76-b9cd-28b83fb1b9fc`, 개발 안내서 `89c0a939-b445-47d4-812e-9c7771c418b3`. GUIDE.md·PLAN.md를 고쳤으면 `node dev/guides.js` 뒤 `dev/tests/out/guide_code.html`·`guide_plan.html`을 같은 아티팩트에 다시 올린다(get_artifact로 version 확인 → publish_files에 slug·base_version).
+- 사용자가 보는 안내서 아티팩트(tmdrl707 소유, 이것만 기준): 코드 구조 안내서 `ba04f801-9396-4f76-b9cd-28b83fb1b9fc`, 개발 안내서 `89c0a939-b445-47d4-812e-9c7771c418b3`. 모양은 처음 안내서(번호 절·주황 머리 표·단위 색·단위 카드)를 따른다. 내용은 `dev/guides.js` 안에 있다(조각 목록 크기·감싸기는 dev/src에서 자동, 조각 설명은 `DESC`). 조각을 더하거나 계획이 바뀌면 guides.js를 고치고 `node dev/guides.js`(설명 없는 조각 경고 확인) 뒤 `dev/tests/out/guide_code.html`·`guide_plan.html`을 같은 아티팩트에 다시 올린다(get_artifact로 version 확인 → publish_files에 slug·base_version).
 - `README.md`는 기능 설명과 작업 기록. 큰 변경을 하면 한 줄 덧붙인다.
 
 ## 폴더 = 개발 단위 (채팅 하나에 한 단위씩)
