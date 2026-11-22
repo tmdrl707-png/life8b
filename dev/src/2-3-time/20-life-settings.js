@@ -50,7 +50,7 @@ function yearCard(L,done){ const h=L.hist||[], last=h[h.length-1]; if(!last){ do
   const a0=last.a, a1=L.age, m=yearPick(L,a0,a1), prev=h[h.length-2], d=prev?{h:Math.round(last.h-prev.h),j:Math.round(last.j-prev.j),k:Math.round(last.k-prev.k),t:Math.round((last.t||0)-(prev.t||0)),e:Math.round((last.e||0)-(prev.e||0)),r:Math.round(last.r-prev.r)}:null;
   const nt=(L.mem.filter(x=>x.a>=a0&&x.a<a1&&x.nt&&!(L.ntSeen||[]).includes(strHash(x.nt))).slice(-1)[0]||{}).nt, fact=(nt&&ntFirst(L,nt)?nt:null)||factLine(L,a0,m), cp=L.comps&&L.comps.length?L.comps[L.pi%L.comps.length]:null;
   sheet(`<div class="place">${L.by+a0}년 · ${a1-a0>1?`${a0}~${a1-1}살`:`${a0}살`}을 돌아보며</div>
-    ${m?`<div class="ycard">${memHTML(m)}</div>`:'<p class="evt">조용히 지나간 한 해였다.</p>'}${d?chips(d):''}
+    ${m?`<div class="ycard">${memHTML(m)}</div>`:'<p class="evt">조용히 지나간 한 해였다.</p>'}${d?`<div class="ytot" style="margin-top:10px;padding-top:8px;border-top:1px dashed #C8CFD6"><small class="sub" style="display:block;font-weight:700;margin-bottom:2px">올해 전체 변화</small>${chips(d)}</div>`:''}
     ${fact?`<p class="nt fact">${esc(fact)}</p>`:''}
     ${cp?`<p class="small sub">같은 1초에 태어난 ${esc(cp.n)}(${esc(cp.cn)}) · ${esc(L.compNow(cp,a0))}</p>`:''}
     <button class="btn primary" id="btnOk">${a1}살의 한 해로 ▶</button>`,'event year');

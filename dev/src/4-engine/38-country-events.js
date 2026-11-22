@@ -220,3 +220,14 @@
 /* 친구에게 빌려준 돈: 결과는 확률로 */
 CALRUN.lendBack2={post:(L,ok,oi)=>{ if(oi!==0) return null; return R()<.55?{t:'친구의 가게가 자리를 잡았다. 빌려 간 돈에 고마움을 얹어 돌려주었다.',fx:{'@':3,r:2}}:{t:'가게는 문을 닫았다고 한다. 친구는 고개를 들지 못했다. 돈은 돌려받지 못했다.',fx:{j:-3}}; }};
 
+/* 사는 도시에 맞추기(11-22 점검 CONT-01): 둘째 도시({c2})에 사는 삶이 '처음 보는 {c2}'·'{c2}에 다니러' 같은 말을 들으면 수도로 바꾸고,
+   수도에 살지 않는 삶에서 '{강} 쪽으로 물놀이'는 '가까운 물가'로 */
+(function(){ const P=Life.prototype, _tx=P.tx;
+  P.tx=function(s){ s=_tx.call(this,s); if(typeof s!=='string'||!this.town) return s; const F=FACTS[this.c], C=this.C; if(!F) return s;
+    const c2=F.city2, here=String(this.town);
+    if(c2&&C.city&&c2!==C.city&&(here===c2||here.startsWith(c2+' '))&&s.indexOf(c2)>=0&&!/태어났|에서 자랐|우리 동네/.test(s)) s=s.split(c2).join(C.city);
+    if(F.water&&here!==C.city&&!here.startsWith(C.city)&&s.indexOf(F.water+' 쪽으로 물놀이')>=0) s=s.split(F.water+' 쪽으로 물놀이').join('가까운 물가로 물놀이');
+    if(this.c!=='KR'){   // 다른 나라 학교에 한국식 '국어'·'2학기'가 나오지 않게(11-22 점검 CONT-02)
+      if(s.indexOf('국어')>=0){ const ln=String(F.lang||'').split(/와|과 |·|,/)[0].trim()||'모국어'; s=s.replace(/국어(?!국문|교육)(?=[ ·,.)]|$)/g,ln); }
+      if(s.indexOf('2학기')>=0) s=s.replace(/^2학기 /,'').replace(/(\d+월 · )2학기 /,'$1').replace(/2학기 (중간고사|기말고사|시험)/,'$1'); }
+    return s; }; })();

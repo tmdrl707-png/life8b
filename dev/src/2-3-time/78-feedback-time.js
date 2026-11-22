@@ -9,5 +9,6 @@
 { setInterval(()=>{ try{ const L=G.life, sk=$('hSick'); if(L&&G.running&&G.sickT>0&&!L.f.dying&&sk&&!sk.hidden) sk.textContent=`몸이 아파요 · 쉬는 중 · 약 ${Math.ceil(G.sickT)}초 남음`; }catch(e){} },400);
   const _ss=startSick; startSick=function(){ const r=_ss.apply(this,arguments); try{ const L=G.life; if(L&&L.f) L.f.sy=L.age; }catch(e){} return r; };
   const P=Life.prototype, _ep=P.endPeriod; P.endPeriod=function(){ try{ const L=this, Y=L.cur&&L.cur.tk; if(Y&&typeof G!=='undefined'&&G.life===L){ Y.c=Y.c||{};
-        if(!Y.c.h){ const walked=(W.walk||0)-(G._walk0||0); if(L.f.sy===L.age||G.sickT>0||walked>=150) Y.c.h=1; } G._walk0=W.walk||0; } }catch(e){}
+        if(!Y.c.h){ const walked=(W.walk||0)-(G._walk0||0); if(L.f.sy===L.age||G.sickT>0||walked>=(L.age<7?40:80)) Y.c.h=1; }
+        if(!Y.c.r&&((Y.n||0)>=2||Object.keys(Y.who||{}).length>=1||(L.q&&L.q.st===2))) Y.c.r=1;   /* 말을 건 사람·마친 미션도 '이야기를 나눔'으로(11-22 점검 CONT-06) */ G._walk0=W.walk||0; } }catch(e){}
     return _ep.apply(this,arguments); }; }

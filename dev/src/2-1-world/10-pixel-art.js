@@ -39,7 +39,7 @@ function animalSprite(kind,fr,face){
 /* ---------- 땅 칸 ---------- */
 const GRASS=[['#D0F0A0','#A8D878','#78B850','#4A7830'],['#C0E890','#88C860','#58A040','#305820'],['#F0E0A8','#D8C078','#B89850','#786030'],['#FFFFFF','#E8EEF4','#C0CCD8','#8090A8'],['#F8E8C0','#EAD3A2','#D0B078','#A08050']];
 // 땅 색 번호: 0 봄빛 · 1 짙은 초록 · 2 마른 빛 · 3 눈 · 4 사막
-const spOf=L=>L.C.arid?4:L.C.sp[L.pi%4];
+const spOf=L=>L.C.arid?4:L.C.sp[typeof seasonIdx==='function'?seasonIdx(L):L.pi%4];
 function groundTile(type,sp,v,fr){
   return cached(['G',type,sp,v,fr].join('|'),16,16,(x)=>{ const P=(X,Y,W,H,c)=>pr(x,X,Y,W,H,c), g=GRASS[sp];
     const tufts=(n,c1,c2)=>{ for(let i=0;i<n;i++){ const a=Math.floor(hash(v,i)*12)+1, b=Math.floor(hash(i,v+7)*12)+2; P(a,b,1,1,c1); P(a+1,b+1,1,1,c1); P(a+2,b,1,1,c1); if(c2) P(a+1,b-1,1,1,c2); } };

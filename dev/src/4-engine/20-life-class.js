@@ -88,7 +88,7 @@ class Life{
   // 올해 할 수 있는 작은 선택 2~3개를 고른다 (최근에 한 것은 뒤로). 마지막 시간에는 집 안의 장면만
   pickScenes(n0,skip){
     const a=this.age, n=n0||(a<3?2:3), el=[], dy=!!this.f.dying;
-    SCENES.forEach((sc,i)=>{ if((sc.req==='dying')!==dy) return; if(this.inC(sc)&&a>=sc.a[0]&&a<=sc.a[1]&&(sc.set==='*'||sc.set===this.set)&&this.spotOK(sc.spot)&&this.reqOK(sc.req)&&(!this.sick||SPOTS[sc.spot].z==='H')) el.push(i); });
+    SCENES.forEach((sc,i)=>{ if((sc.req==='dying')!==dy) return; if(this.inC(sc)&&a>=sc.a[0]&&a<=sc.a[1]&&(sc.set==='*'||sc.set===this.set)&&this.spotOK(sc.spot)&&this.reqOK(sc.req)&&(!this.sick||SPOTS[sc.spot].z==='H')&&(!this.mFit||this.mFit(sc))) el.push(i); });   // mFit: 화면에서 지금 달에 맞는 장면만(계절·명절, 11-22)
     for(let i=el.length-1;i>0;i--){ const j=Math.floor(R()*(i+1)); [el[i],el[j]]=[el[j],el[i]]; }
     const rc=this.recent||(this.recent=[]); el.sort((x,y)=>rc.indexOf(x)-rc.indexOf(y));   // 안 해 본 것(-1)이 먼저
     // 여섯 살부터는 집 안의 일을 한 해에 하나까지만 골라, 밖으로 나가 보게 한다

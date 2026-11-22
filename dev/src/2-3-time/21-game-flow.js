@@ -9,7 +9,9 @@ function startGame(){
   lastT=performance.now(); requestAnimationFrame(loop);
 }
 const caughtUp=()=>G.room&&G.roomPi!=null&&G.life.pi>=G.roomPi;
-const seasonOf=L=>L.C.seasons[L.pi%4];
+// 계절은 지금 달에서 정한다(11-22: 한 해 전체가 한 계절로 돌던 것을 달력과 맞춤). 3~5월 0, 6~8월 1, 9~11월 2, 12~2월 3. 남반구 사계절 나라는 자료 배열이 한 칸 밀려 있다
+function seasonIdx(L){ let m=1; try{ if(L&&L.cur) m=ymOf(monthNow()).m; else if(L&&L.dm) m=L.dm; }catch(e){} const q=m>=3&&m<=5?0:m>=6&&m<=8?1:m>=9&&m<=11?2:3; return L&&SOUTH4.includes(L.c)?(q+1)%4:q; }
+const seasonOf=L=>L.C.seasons[seasonIdx(L)];
 function beginPeriod(first){
   const L=G.life; if(!L.comps){ try{ L.makeComps(); }catch(e){} }
   const cur=L.startPeriod(); if(cur.t==null) cur.t=G.sec; if(cur.mt==null) cur.mt=Math.min(12,G.sec*.2); if(cur.qt==null) cur.qt=L.q?9:3;   // 새 해가 시작되면 미션을 일찍 찾아온다
@@ -107,7 +109,7 @@ function openCross(){
 // 그해의 큰 사건 (선택은 모두 확률)
 function openMajor(){
   const L=G.life, m=MAJORS[L.cur.m], sc=m.sc||m.hz||sceneKindOf(m.txt);
-  sheet(`${sceneHTML(sc)}<div class="place">${L.age}살 · 큰 사건</div><h2>${esc(L.tx(m.txt))}</h2><div class="opts">${m.opts.map((o,i)=>`<button data-i="${i}">${esc(L.tx(o.l))}${pct(L.majorP(o),1)}</button>`).join('')}</div><p class="small sub">어떤 선택도 결과를 보장하지 않습니다. 쌓아 온 것들이 확률을 바꿀 뿐입니다.</p>`,'cross big');
+  sheet(`${sceneHTML(sc)}<div class="place">${L.age}살 · 큰 사건</div><h2>${esc(L.tx(m.txt))}</h2><div class="opts">${m.opts.map((o,i)=>`<button data-i="${i}">${esc(L.tx(o.l))}${pct(L.majorP(o),1)}</button>`).join('')}</div>${m.opts.some(o=>{ const p=L.majorP(o); return p!=null&&p<.995; })?'<p class="small sub">어떤 선택도 결과를 보장하지 않습니다. 쌓아 온 것들이 확률을 바꿀 뿐입니다.</p>':''}`,'cross big');
   gateUI('m',m.opts); onOpts(i=>{ const r=L.chooseMajor(i); popup(`${L.age}살 · ${L.tx(r.label)} · ${r.ok?'잘됨':'뜻대로 되지 않음'} (확률 ${Math.round(r.p*100)}%)`,r.t,r.fx,()=>{ renderHud(); persist(); if(r.sick) startSick(); },r.ok?'':'bad',r.sc); });
 }
 // 미션: 부탁을 받고 → 다른 곳에 다녀와서 → 돌아와 알린다
@@ -129,6 +131,13 @@ $('btnImp').onclick=()=>{ const L=G.life; if(!L||!L.cur||!$('sheet').hidden) ret
 function yearLen(){ if(caughtUp()){ const r=G.roomInfo; return r&&r.auto>0&&!r.paused?r.auto*60:150; } return G.sec; }
 function calSpan(){ return G.life&&G.life.step>1?24:12; }
 function monthNow(){ const L=G.life; if(!L||!L.cur) return 1; return Math.min(calSpan(),Math.floor((L.cur.el||0)/yearLen()*calSpan())+1); }
+// 장면이 지금 달에 맞는지: 계절 말이 든 장면은 그 계절에만, {fest} 장면은 명절 달과 그 앞달에만 (11-22 점검 CONT-01)
+Life.prototype.mFit=function(sc){ if(!this.cur||this.lite) return true; let m; try{ m=ymOf(monthNow()).m; }catch(e){ return true; }
+  const t=[].concat(sc.txt).join(' ')+' '+(sc.opts||[]).map(o=>o.l+' '+[].concat(o.res||'').join(' ')).join(' ');
+  const fnm=/\{fest\}/.test(t)?null:festNameIn(this,t); if(/\{fest\}/.test(t)||fnm){ let fm=null; try{ fm=festMonth(this,this.by+this.age,fnm||undefined); }catch(e){} if(fm){ const d=(m-fm+12)%12; if(!(d===0||d===11)) return false; } }
+  const ms=seasonMonthsFor(this,t); return !ms||ms.includes(m); };
+// 시간이 흘러 철이 지난 장면은 조용히 거둔다(열려 있는 창이 없을 때만)
+function sceneSeasonSweep(L){ if(!L||!L.cur||!L.cur.scenes||!$('sheet').hidden||($('dlg')&&!$('dlg').hidden)) return; L.cur.scenes.forEach(c=>{ if(!c.done&&!L.mFit(SCENES[c.i])){ c.done=1; c.off=1; } }); }
 function ymOf(m){ const L=G.life; return {y:L.by+L.age+(m>12?1:0),m:m>12?m-12:m}; }
 function calTag(){ const L=G.life, st=L.stageOf(), sch=L.sch||{}; return st==='e'?sch.elem:st==='m'?sch.mid:st==='h'?(L.f.hs==='voc'?sch.voc:sch.high):st==='u'?sch.univ:st==='rt'?'다시 도전하는 한 해':L.f.job?(L.f.co||'일터'):L.age<7?'우리 집':'우리 동네'; }
 function renderMon(){ const L=G.life, el=$('hMon'); if(!L||!el) return; const cal=L.cur&&L.cur.cal, ym=ymOf(monthNow()); el.textContent=`${ym.m}월${cal&&cal.length?` · 올해의 일 ${cal.filter(x=>x.done).length}/${cal.length}`:''}`; }
@@ -282,13 +291,13 @@ function loopBody(t){
     if(caughtUp()){ const r=G.roomInfo; $('hTimer').style.width=(r&&r.auto>0&&!r.paused?100-((Date.now()-r.t0)%(r.auto*60000))/(r.auto*600):100)+'%'; }
     else { L.cur.t-=dt; $('hTimer').style.width=Math.max(0,L.cur.t/G.sec*100)+'%'; }
     // 한 해 안에서도 일은 계속 생긴다: 작은 선택은 채워지고, 큰 사건과 미션이 찾아온다
-    G.spawnT-=dt; if(G.spawnT<=0){ G.spawnT=5; if(L.cur.scenes.filter(c=>!c.done).length<3&&L.spawn()>=0) renderHud(); }
+    G.spawnT-=dt; if(G.spawnT<=0){ G.spawnT=5; sceneSeasonSweep(L); if(L.cur.scenes.filter(c=>!c.done).length<3&&L.spawn()>=0) renderHud(); }
     const catching=G.room&&G.roomPi!=null&&L.pi<G.roomPi-1;   // 반을 따라잡는 동안에는 큰 사건과 미션을 쉰다
     if(!catching){ L.cur.qt-=dt; if(L.cur.qt<=0){ L.cur.qt=(L.age===5?10:L.age>=3&&L.age<5?22:Math.min(35,G.sec*.16)); if(!caughtUp()&&L.cur.t<G.sec*.4&&!L.q){ L.cur.qt=2; } else if(!L.q&&L.questOffer()) toast(`${giverName(QUESTS[L.q.i].giver)}에게 부탁받을 일이 생겼어요. 파란 물음표를 찾아가 보세요.`); }
     L.cur.el=(L.cur.el||0)+dt;
     if(L.cur.mDone>=L.cur.plan&&caughtUp()&&!L.f.dying&&L.cur.el>=majorAt(L.cur.mDone)) L.addMajor();   // 반이 같은 해에 머무는 동안에도 큰 일은 이어진다
     if(L.cur.mDone<L.cur.plan&&L.cur.el>=majorAt(L.cur.mDone)){ if(L.major()!=null) openMajor(); else L.cur.mDone++; }
-    if($('sheet').hidden&&!L.pending){ const cal=L.ensureCal(); if(cal){ const k=cal.findIndex(x=>!x.done); if(k>=0&&L.cur.el>=(cal[k].m-.55)/calSpan()*yearLen()) fireCal(k); } } }
+    if($('sheet').hidden&&!L.pending){ const cal=L.ensureCal(); if(cal){ let k=-1; cal.forEach((x,i)=>{ if(!x.done&&(k<0||x.m<cal[k].m)) k=i; });   /* 달이 이른 일부터(11-22: 10월에 2·3·4월 일이 줄줄이 나오던 것) */ if(k>=0&&L.cur.el>=(cal[k].m-.55)/calSpan()*yearLen()) fireCal(k); } } }
     { const mn=monthNow(); if(mn!==G.mon){ G.mon=mn; renderMon(); } }
     if(L.cur.sk&&!isSick()&&!paused&&L.cur.el>=(caughtUp()?20+L.cur.sk.at*80:L.cur.sk.at*G.sec)) startSick();
     if(G.sickT>0&&!L.f.dying){ G.sickT-=dt; if(G.sickT<=0){ G.sickT=0; L.getWell(); toast('몸이 다 나았어요! 다시 밖에 나갈 수 있어요.','news'); renderHud(); } }

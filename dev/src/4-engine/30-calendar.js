@@ -58,7 +58,13 @@ function sysOf(L){ if(L._sys&&L._sys.c===L.c) return L._sys; const o=Object.assi
 const FEST_M=[[/춘절|설 명절|설날|뗏|새해 첫 참배|새해 명절|새해 축제|호주의 날|팀카트/,1],[/카니발|와이탕이/,2],[/노루즈|성 패트릭|봄맞이/,3],[/송끄란|띤잔|삐마이|벵골 새해|부활절|유월절|왕의 날|물 축제|물 뿌리기|성주간/,4],
   [/하지|쿠팔라|성 요한|여름맞이/,6],[/나담|혁명 기념일|캐나다의 날|노래 축제/,7],[/8월 축제|홈오워/,8],[/추석|9월 축제|수확 축제/,9],[/디왈리|다사인|체추/,10],[/추수감사절|죽은 자의 날|모닥불의 밤/,11],[/크리스마스|정카누/,12]];
 function eidMonth(yr){ return new Date(Date.UTC(2026,2,20)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1; }
-function festMonth(L,yr){ const f=L.C.fest||''; if(/이드|르바란|하리 라야|라마단 명절/.test(f)) return new Date(Date.UTC(2026,2,20)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1;
+// 계절 말(눈·여름·물놀이·단풍·벚꽃 …)이 든 일은 그 계절의 달에만 (11-22 점검: 1월에 '여름 날 물놀이', 8월에 독감 눈 그림)
+function seasonOfText(t){ t=String(t||''); if(/눈사람|눈싸움|썰매|눈이 (내|쌓|와|오)|함박눈|첫눈|겨울/.test(t)) return 3; if(/여름|물놀이|무더위|폭염|해수욕/.test(t)) return 1; if(/단풍|가을/.test(t)) return 2; if(/벚꽃|봄바람|봄날|봄이 (오|왔)/.test(t)) return 0; return -1; }
+function realSeasonOfMonth(L,m){ const q=m>=3&&m<=5?0:m>=6&&m<=8?1:m>=9&&m<=11?2:3; return L&&typeof SOUTH4!=='undefined'&&SOUTH4.includes(L.c)?(q+2)%4:q; }
+function seasonMonthsFor(L,t){ const s=seasonOfText(t); if(s<0||!L||!L.C||!(L.C.seasons||[]).includes('겨울')) return null; const ms=[]; for(let m=1;m<=12;m++) if(realSeasonOfMonth(L,m)===s) ms.push(m); return ms.length?ms:null; }
+// 글 속에 이 나라 명절 이름(첫째·둘째)이 그대로 든 일은 그 명절 달에 (11-22: 8월·1월의 '크리스마스가 다가온다')
+function festNameIn(L,t){ t=String(t||''); const F=(typeof FACTS!=='undefined'&&FACTS[L.c])||{}; for(const n of [L.C.fest,F.fest2]) if(n&&t.indexOf(n)>=0) return n; return null; }
+function festMonth(L,yr,nm){ const f=nm||L.C.fest||''; if(/이드|르바란|하리 라야|라마단 명절/.test(f)) return new Date(Date.UTC(2026,2,20)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1;
   if(/타바스키/.test(f)) return new Date(Date.UTC(2026,4,27)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1; for(const [re,m] of FEST_M) if(re.test(f)) return m; return null; }
 const mOf=(sy,k)=>((sy.st-1+k)%12+12)%12+1;        // 새 학년 시작에서 k달 뒤
 
@@ -266,8 +272,8 @@ Object.assign(Life.prototype,{
     sel.forEach(x=>{ const th=x.ev.th; if(th) thA[th[0]]=a; });
     const cnt={}, span=two?24:12, out=[];
     const fm=festMonth(this,this.by+a);
-    sel.forEach(x=>{ if(x.ctx.yo!=null){ x.m=(this.calMonth(x.ev.mon,sy)||1+Math.floor(R()*12))+12*x.ctx.yo; if(x.m!=null) cnt[x.m]=(cnt[x.m]||0)+1; return; } let m=/\{fest\}/.test(x.ev.txt+(x.ev.opts?x.ev.opts.map(o=>o.res).join(''):''))&&fm&&(x.ev.mon==='*'||x.ev.mon==='wv')?fm:this.calMonth(x.ev.mon,sy); if(m!=null&&two&&(x.ev.y2||(x.ev.k&&x.ev.k.startsWith('army')&&f.univ))) m+=12; else if(m!=null&&two&&!x.ev.fix&&!(x.ev.k&&x.ev.k.startsWith('army'))&&R()<.5) m+=12; x.m=m; if(m!=null) cnt[m]=(cnt[m]||0)+1; });
-    sel.filter(x=>x.m==null).forEach(x=>{ let best=null, bc=99; for(let t=0;t<8;t++){ const m=1+Math.floor(R()*span); const c=cnt[m]||0; if(c<bc){ bc=c; best=m; } } x.m=best; cnt[best]=(cnt[best]||0)+1; });
+    sel.forEach(x=>{ if(x.ctx.yo!=null){ x.m=(this.calMonth(x.ev.mon,sy)||1+Math.floor(R()*12))+12*x.ctx.yo; if(x.m!=null) cnt[x.m]=(cnt[x.m]||0)+1; return; } let m=/\{fest\}/.test(x.ev.txt+(x.ev.opts?x.ev.opts.map(o=>o.res).join(''):''))&&fm&&(x.ev.mon==='*'||x.ev.mon==='wv')?fm:this.calMonth(x.ev.mon,sy); if(m==null&&x.ev.mon==='*'){ const fn=festNameIn(this,x.ev.txt); if(fn){ const m2=festMonth(this,this.by+a,fn); if(m2) m=m2; } } if(m!=null&&two&&(x.ev.y2||(x.ev.k&&x.ev.k.startsWith('army')&&f.univ))) m+=12; else if(m!=null&&two&&!x.ev.fix&&!(x.ev.k&&x.ev.k.startsWith('army'))&&R()<.5) m+=12; x.m=m; if(m!=null) cnt[m]=(cnt[m]||0)+1; });
+    sel.filter(x=>x.m==null).forEach(x=>{ const okM=seasonMonthsFor(this,x.ev.txt+' '+(x.ev.opts?x.ev.opts.map(o=>o.l).join(' '):'')); let best=null, bc=99; for(let t=0;t<8;t++){ let m=1+Math.floor(R()*span); if(okM){ m=okM[Math.floor(R()*okM.length)]+(span>12&&R()<.5?12:0); } const c=cnt[m]||0; if(c<bc){ bc=c; best=m; } } x.m=best; cnt[best]=(cnt[best]||0)+1; });
     sel.forEach(x=>out.push({id:x.ev.id,m:x.m,ctx:x.ctx,done:0,k:x.ev.k?0:1}));
     // 가족 이야기도 같은 달력에 (해마다 한두 가지에서 여러 가지까지)
     this.famPlan().concat(this.compPlan()).forEach(x=>{ let m=x.m; if(m==null){ let best=1, bc=99; for(let t=0;t<6;t++){ const mm=1+Math.floor(R()*12); if((cnt[mm]||0)<bc){ bc=cnt[mm]||0; best=mm; } } m=best; }

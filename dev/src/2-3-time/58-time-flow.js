@@ -34,3 +34,11 @@ function openSave(){ if(!G.life||!G.running||!$('sheet').hidden||dlgOpen()) retu
 $('btnPause').onclick=openSave;
 { const ex=$('btnExit').onclick; $('btnExit').onclick=function(){ G.hardPause=1; return ex.apply(this,arguments); }; }
 
+/* 읽는 창(기억·내 정보·지도)을 보는 동안은 시간을 멈춘다: 해가 바뀌며 읽던 창이 갑자기 닫히지 않게(11-22 점검 UX-06) */
+(function(){
+  ['openMem','openInfo','openMaps'].forEach(n=>{ try{ const f=eval(n); if(typeof f==='function') eval(n+'=function(){ G.reading=1; return f.apply(this,arguments); }'); }catch(e){} });
+  const _cs=closeSheet; closeSheet=function(){ G.reading=0; return _cs.apply(this,arguments); };
+  const _ft=flowTick; flowTick=function(dt){ if(G.reading&&!$('sheet').hidden) return; if(G.reading&&$('sheet').hidden) G.reading=0; return _ft.apply(this,arguments); };
+  // '새로 알게 된 것' 카드가 떠 있을 때 나가기를 누르면 카드를 먼저 닫는다(두 창이 겹치지 않게)
+  const be=$('btnExit'), _ex=be&&be.onclick; if(be&&_ex) be.onclick=function(e){ const d=$('sixU'); if(d&&!d.hidden){ const ok=$('sixUOk'); if(ok) ok.click(); } return _ex.call(this,e); };
+})();

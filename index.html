@@ -2178,7 +2178,7 @@ S(5,12,'*','nature',['공원에서 자전거를 배운다.','숲길로 온 가�
 S(10,18,'*','market','광장에 축제 시장이 열렸다.',[['친구들과 돌아다닌다','r3 j1','친구들과 광장을 돌아다녔다.'],['거리 악사의 연주를 듣는다','j2 C','연주가 끝날 때까지 서 있었다.'],['봉사 부스 일을 돕는다','r2 K','봉사 부스에서 일을 도왔다.']]);
 S(19,59,'*','work','여름휴가 날짜를 정해야 한다.',[['한 달 푹 쉬기로 한다','j3 h2','한 달을 쉬며 기운을 되찾았다.'],['동료와 날짜를 나눠 조정한다','r2 K','동료와 날짜를 맞췄다.'],['일을 더 하기로 한다','k2 D','남들이 쉴 때 일을 더 했다.']]);
 S(60,100,'*','cafe','카페 창가 자리가 비어 있다.',[['신문을 읽으며 오전을 보낸다','j2 k1','커피 한 잔으로 오전을 보냈다.'],['옆자리 이웃과 이야기한다','r3','이웃과 한참 이야기했다.'],['손주에게 엽서를 쓴다','r2 K','손주에게 엽서를 썼다.']]);
-M(10,16,'*','school','공부를 계속할지, 직업 교육을 받을지 정해야 한다.',[['공부를 계속하는 길로 간다','k D','공부하는 길이 잘 맞았다.','k5 j3','버거워서 방향을 바꿔야 했다.','j-3'],['손으로 배우는 직업 교육으로 간다','h C','일터에서 배우는 것이 즐거웠다.','k4 j5','생각과 달라 다시 고민했다.','j-3']]);
+M(14,16,'*','school','공부를 계속할지, 직업 교육을 받을지 정해야 한다.',[['공부를 계속하는 길로 간다','k D','공부하는 길이 잘 맞았다.','k5 j3','버거워서 방향을 바꿔야 했다.','j-3'],['손으로 배우는 직업 교육으로 간다','h C','일터에서 배우는 것이 즐거웠다.','k4 j5','생각과 달라 다시 고민했다.','j-3']]);
 M(18,30,'*',null,'한 해 동안 다른 나라에서 살아 볼 기회가 생겼다.',[['떠난다','k B','다른 말을 배우고 평생 친구를 얻었다.','k5 j5 r2','낯선 곳에서 외로운 날이 많았다.','j-3 k2'],['고향에서 일을 시작한다','r D','일찍 자리를 잡았다.','j3 k2','가끔 떠나지 않은 것이 아쉬웠다.','j-2']]);
 E(5,70,'*',.07,'겨울 광장 시장에서 따뜻한 음료를 마시며 등불을 구경했다.',{j:4,r:2});
 E(19,70,'*',.07,'긴 여름휴가를 가족과 바닷가에서 보냈다.',{j:5,r:3,h:1});
@@ -2410,7 +2410,7 @@ S(10,18,'*','dad','이웃 어른이 {lwork} 일을 구경시켜 주겠다고 한
 S(19,74,'*','mount','{landmark}에 왔다.',[['끝까지 올라가 본다','h2 j2 B','{landmark}의 가장 높은 곳에 섰다.'],['가족과 사진을 남긴다','r2 j2','{landmark} 앞에서 가족과 사진을 찍었다.'],['한참 바라본다','j3 G','{landmark}을(를) 오래 바라보았다.']],'lmM');
 S(19,74,'*','sea','{landmark}에 왔다.',[['물가를 따라 걷는다','h2 j2','{landmark}을(를) 따라 걸었다.'],['가족과 사진을 남긴다','r2 j2','{landmark} 앞에서 가족과 사진을 찍었다.'],['한참 바라본다','j3 G','{landmark}을(를) 오래 바라보았다.']],'lmS');
 S(19,74,'*','far','{city}의 큰 거리에 왔다.',[['구석구석 구경한다','j2 k1 C','{city}의 거리를 구경했다.'],['고향 사람을 만난다','r3','{city}에서 고향 사람을 만나 반가웠다.'],['볼일만 보고 돌아간다','D','볼일만 보고 서둘러 돌아왔다.']]);
-E(7,15,'*',.08,'학교에서 {landmark}(으)로 소풍을 갔다.',{j:5,r:3},{req:'school',once:1});
+E(7,6,'*',.08,'학교에서 {landmark}(으)로 소풍을 갔다.',{j:5,r:3},{req:'school',once:1}); /* 끔(11-22): 나라 사건의 '명소 소풍' 선택과 겹쳐, 실패한 해에도 저절로 '갔다'가 함께 나왔다. 번호가 저장 번호라 지우지 않고 나이 범위를 비움 */
 E(6,70,'*',.05,'가족과 함께 {animal}을(를) 보러 나들이를 갔다.',{j:3,r:2});
 E(10,70,'*',.05,'{fest} 날, 광장에 {music} 무대가 열려 온 가족이 구경했다.',{j:4,r:3});
 E(19,60,'*',.06,'{lwork} 일을 하는 이웃들과 함께 일손을 나눴다.',{r:4,j:2});
@@ -2888,7 +2888,7 @@ class Life{
   // 올해 할 수 있는 작은 선택 2~3개를 고른다 (최근에 한 것은 뒤로). 마지막 시간에는 집 안의 장면만
   pickScenes(n0,skip){
     const a=this.age, n=n0||(a<3?2:3), el=[], dy=!!this.f.dying;
-    SCENES.forEach((sc,i)=>{ if((sc.req==='dying')!==dy) return; if(this.inC(sc)&&a>=sc.a[0]&&a<=sc.a[1]&&(sc.set==='*'||sc.set===this.set)&&this.spotOK(sc.spot)&&this.reqOK(sc.req)&&(!this.sick||SPOTS[sc.spot].z==='H')) el.push(i); });
+    SCENES.forEach((sc,i)=>{ if((sc.req==='dying')!==dy) return; if(this.inC(sc)&&a>=sc.a[0]&&a<=sc.a[1]&&(sc.set==='*'||sc.set===this.set)&&this.spotOK(sc.spot)&&this.reqOK(sc.req)&&(!this.sick||SPOTS[sc.spot].z==='H')&&(!this.mFit||this.mFit(sc))) el.push(i); });   // mFit: 화면에서 지금 달에 맞는 장면만(계절·명절, 11-22)
     for(let i=el.length-1;i>0;i--){ const j=Math.floor(R()*(i+1)); [el[i],el[j]]=[el[j],el[i]]; }
     const rc=this.recent||(this.recent=[]); el.sort((x,y)=>rc.indexOf(x)-rc.indexOf(y));   // 안 해 본 것(-1)이 먼저
     // 여섯 살부터는 집 안의 일을 한 해에 하나까지만 골라, 밖으로 나가 보게 한다
@@ -3269,7 +3269,13 @@ function sysOf(L){ if(L._sys&&L._sys.c===L.c) return L._sys; const o=Object.assi
 const FEST_M=[[/춘절|설 명절|설날|뗏|새해 첫 참배|새해 명절|새해 축제|호주의 날|팀카트/,1],[/카니발|와이탕이/,2],[/노루즈|성 패트릭|봄맞이/,3],[/송끄란|띤잔|삐마이|벵골 새해|부활절|유월절|왕의 날|물 축제|물 뿌리기|성주간/,4],
   [/하지|쿠팔라|성 요한|여름맞이/,6],[/나담|혁명 기념일|캐나다의 날|노래 축제/,7],[/8월 축제|홈오워/,8],[/추석|9월 축제|수확 축제/,9],[/디왈리|다사인|체추/,10],[/추수감사절|죽은 자의 날|모닥불의 밤/,11],[/크리스마스|정카누/,12]];
 function eidMonth(yr){ return new Date(Date.UTC(2026,2,20)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1; }
-function festMonth(L,yr){ const f=L.C.fest||''; if(/이드|르바란|하리 라야|라마단 명절/.test(f)) return new Date(Date.UTC(2026,2,20)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1;
+// 계절 말(눈·여름·물놀이·단풍·벚꽃 …)이 든 일은 그 계절의 달에만 (11-22 점검: 1월에 '여름 날 물놀이', 8월에 독감 눈 그림)
+function seasonOfText(t){ t=String(t||''); if(/눈사람|눈싸움|썰매|눈이 (내|쌓|와|오)|함박눈|첫눈|겨울/.test(t)) return 3; if(/여름|물놀이|무더위|폭염|해수욕/.test(t)) return 1; if(/단풍|가을/.test(t)) return 2; if(/벚꽃|봄바람|봄날|봄이 (오|왔)/.test(t)) return 0; return -1; }
+function realSeasonOfMonth(L,m){ const q=m>=3&&m<=5?0:m>=6&&m<=8?1:m>=9&&m<=11?2:3; return L&&typeof SOUTH4!=='undefined'&&SOUTH4.includes(L.c)?(q+2)%4:q; }
+function seasonMonthsFor(L,t){ const s=seasonOfText(t); if(s<0||!L||!L.C||!(L.C.seasons||[]).includes('겨울')) return null; const ms=[]; for(let m=1;m<=12;m++) if(realSeasonOfMonth(L,m)===s) ms.push(m); return ms.length?ms:null; }
+// 글 속에 이 나라 명절 이름(첫째·둘째)이 그대로 든 일은 그 명절 달에 (11-22: 8월·1월의 '크리스마스가 다가온다')
+function festNameIn(L,t){ t=String(t||''); const F=(typeof FACTS!=='undefined'&&FACTS[L.c])||{}; for(const n of [L.C.fest,F.fest2]) if(n&&t.indexOf(n)>=0) return n; return null; }
+function festMonth(L,yr,nm){ const f=nm||L.C.fest||''; if(/이드|르바란|하리 라야|라마단 명절/.test(f)) return new Date(Date.UTC(2026,2,20)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1;
   if(/타바스키/.test(f)) return new Date(Date.UTC(2026,4,27)-Math.round((yr-2026)*10.875)*864e5).getUTCMonth()+1; for(const [re,m] of FEST_M) if(re.test(f)) return m; return null; }
 const mOf=(sy,k)=>((sy.st-1+k)%12+12)%12+1;        // 새 학년 시작에서 k달 뒤
 
@@ -3477,8 +3483,8 @@ Object.assign(Life.prototype,{
     sel.forEach(x=>{ const th=x.ev.th; if(th) thA[th[0]]=a; });
     const cnt={}, span=two?24:12, out=[];
     const fm=festMonth(this,this.by+a);
-    sel.forEach(x=>{ if(x.ctx.yo!=null){ x.m=(this.calMonth(x.ev.mon,sy)||1+Math.floor(R()*12))+12*x.ctx.yo; if(x.m!=null) cnt[x.m]=(cnt[x.m]||0)+1; return; } let m=/\{fest\}/.test(x.ev.txt+(x.ev.opts?x.ev.opts.map(o=>o.res).join(''):''))&&fm&&(x.ev.mon==='*'||x.ev.mon==='wv')?fm:this.calMonth(x.ev.mon,sy); if(m!=null&&two&&(x.ev.y2||(x.ev.k&&x.ev.k.startsWith('army')&&f.univ))) m+=12; else if(m!=null&&two&&!x.ev.fix&&!(x.ev.k&&x.ev.k.startsWith('army'))&&R()<.5) m+=12; x.m=m; if(m!=null) cnt[m]=(cnt[m]||0)+1; });
-    sel.filter(x=>x.m==null).forEach(x=>{ let best=null, bc=99; for(let t=0;t<8;t++){ const m=1+Math.floor(R()*span); const c=cnt[m]||0; if(c<bc){ bc=c; best=m; } } x.m=best; cnt[best]=(cnt[best]||0)+1; });
+    sel.forEach(x=>{ if(x.ctx.yo!=null){ x.m=(this.calMonth(x.ev.mon,sy)||1+Math.floor(R()*12))+12*x.ctx.yo; if(x.m!=null) cnt[x.m]=(cnt[x.m]||0)+1; return; } let m=/\{fest\}/.test(x.ev.txt+(x.ev.opts?x.ev.opts.map(o=>o.res).join(''):''))&&fm&&(x.ev.mon==='*'||x.ev.mon==='wv')?fm:this.calMonth(x.ev.mon,sy); if(m==null&&x.ev.mon==='*'){ const fn=festNameIn(this,x.ev.txt); if(fn){ const m2=festMonth(this,this.by+a,fn); if(m2) m=m2; } } if(m!=null&&two&&(x.ev.y2||(x.ev.k&&x.ev.k.startsWith('army')&&f.univ))) m+=12; else if(m!=null&&two&&!x.ev.fix&&!(x.ev.k&&x.ev.k.startsWith('army'))&&R()<.5) m+=12; x.m=m; if(m!=null) cnt[m]=(cnt[m]||0)+1; });
+    sel.filter(x=>x.m==null).forEach(x=>{ const okM=seasonMonthsFor(this,x.ev.txt+' '+(x.ev.opts?x.ev.opts.map(o=>o.l).join(' '):'')); let best=null, bc=99; for(let t=0;t<8;t++){ let m=1+Math.floor(R()*span); if(okM){ m=okM[Math.floor(R()*okM.length)]+(span>12&&R()<.5?12:0); } const c=cnt[m]||0; if(c<bc){ bc=c; best=m; } } x.m=best; cnt[best]=(cnt[best]||0)+1; });
     sel.forEach(x=>out.push({id:x.ev.id,m:x.m,ctx:x.ctx,done:0,k:x.ev.k?0:1}));
     // 가족 이야기도 같은 달력에 (해마다 한두 가지에서 여러 가지까지)
     this.famPlan().concat(this.compPlan()).forEach(x=>{ let m=x.m; if(m==null){ let best=1, bc=99; for(let t=0;t<6;t++){ const mm=1+Math.floor(R()*12); if((cnt[mm]||0)<bc){ bc=cnt[mm]||0; best=mm; } } m=best; }
@@ -6141,6 +6147,17 @@ FACT_ROWS.trim().split('\n').forEach(r=>{ const [code,food2,drink,snack,crop,wat
 /* 친구에게 빌려준 돈: 결과는 확률로 */
 CALRUN.lendBack2={post:(L,ok,oi)=>{ if(oi!==0) return null; return R()<.55?{t:'친구의 가게가 자리를 잡았다. 빌려 간 돈에 고마움을 얹어 돌려주었다.',fx:{'@':3,r:2}}:{t:'가게는 문을 닫았다고 한다. 친구는 고개를 들지 못했다. 돈은 돌려받지 못했다.',fx:{j:-3}}; }};
 
+/* 사는 도시에 맞추기(11-22 점검 CONT-01): 둘째 도시({c2})에 사는 삶이 '처음 보는 {c2}'·'{c2}에 다니러' 같은 말을 들으면 수도로 바꾸고,
+   수도에 살지 않는 삶에서 '{강} 쪽으로 물놀이'는 '가까운 물가'로 */
+(function(){ const P=Life.prototype, _tx=P.tx;
+  P.tx=function(s){ s=_tx.call(this,s); if(typeof s!=='string'||!this.town) return s; const F=FACTS[this.c], C=this.C; if(!F) return s;
+    const c2=F.city2, here=String(this.town);
+    if(c2&&C.city&&c2!==C.city&&(here===c2||here.startsWith(c2+' '))&&s.indexOf(c2)>=0&&!/태어났|에서 자랐|우리 동네/.test(s)) s=s.split(c2).join(C.city);
+    if(F.water&&here!==C.city&&!here.startsWith(C.city)&&s.indexOf(F.water+' 쪽으로 물놀이')>=0) s=s.split(F.water+' 쪽으로 물놀이').join('가까운 물가로 물놀이');
+    if(this.c!=='KR'){   // 다른 나라 학교에 한국식 '국어'·'2학기'가 나오지 않게(11-22 점검 CONT-02)
+      if(s.indexOf('국어')>=0){ const ln=String(F.lang||'').split(/와|과 |·|,/)[0].trim()||'모국어'; s=s.replace(/국어(?!국문|교육)(?=[ ·,.)]|$)/g,ln); }
+      if(s.indexOf('2학기')>=0) s=s.replace(/^2학기 /,'').replace(/(\d+월 · )2학기 /,'$1').replace(/2학기 (중간고사|기말고사|시험)/,'$1'); }
+    return s; }; })();
 /* ========== 하는 일마다, 사는 곳마다 다른 사건 + 확실히 갈라지는 큰 갈림길 ==========
    jk:일의 종류 · rg:지역 · t2 살림이 빠듯한 나라 · t3 넉넉한 나라. 선택지는 언제나 반대쪽 길을 함께 둔다. */
 (function(){ const Z=(a0,a1,c,txt,opts,x)=>Y(a0,a1,c,'*',txt,opts,Object.assign({w:4,cd:6},x||{}));
@@ -8329,7 +8346,7 @@ function animalSprite(kind,fr,face){
 /* ---------- 땅 칸 ---------- */
 const GRASS=[['#D0F0A0','#A8D878','#78B850','#4A7830'],['#C0E890','#88C860','#58A040','#305820'],['#F0E0A8','#D8C078','#B89850','#786030'],['#FFFFFF','#E8EEF4','#C0CCD8','#8090A8'],['#F8E8C0','#EAD3A2','#D0B078','#A08050']];
 // 땅 색 번호: 0 봄빛 · 1 짙은 초록 · 2 마른 빛 · 3 눈 · 4 사막
-const spOf=L=>L.C.arid?4:L.C.sp[L.pi%4];
+const spOf=L=>L.C.arid?4:L.C.sp[typeof seasonIdx==='function'?seasonIdx(L):L.pi%4];
 function groundTile(type,sp,v,fr){
   return cached(['G',type,sp,v,fr].join('|'),16,16,(x)=>{ const P=(X,Y,W,H,c)=>pr(x,X,Y,W,H,c), g=GRASS[sp];
     const tufts=(n,c1,c2)=>{ for(let i=0;i<n;i++){ const a=Math.floor(hash(v,i)*12)+1, b=Math.floor(hash(i,v+7)*12)+2; P(a,b,1,1,c1); P(a+1,b+1,1,1,c1); P(a+2,b,1,1,c1); if(c2) P(a+1,b-1,1,1,c2); } };
@@ -8879,7 +8896,7 @@ function yearCard(L,done){ const h=L.hist||[], last=h[h.length-1]; if(!last){ do
   const a0=last.a, a1=L.age, m=yearPick(L,a0,a1), prev=h[h.length-2], d=prev?{h:Math.round(last.h-prev.h),j:Math.round(last.j-prev.j),k:Math.round(last.k-prev.k),t:Math.round((last.t||0)-(prev.t||0)),e:Math.round((last.e||0)-(prev.e||0)),r:Math.round(last.r-prev.r)}:null;
   const nt=(L.mem.filter(x=>x.a>=a0&&x.a<a1&&x.nt&&!(L.ntSeen||[]).includes(strHash(x.nt))).slice(-1)[0]||{}).nt, fact=(nt&&ntFirst(L,nt)?nt:null)||factLine(L,a0,m), cp=L.comps&&L.comps.length?L.comps[L.pi%L.comps.length]:null;
   sheet(`<div class="place">${L.by+a0}년 · ${a1-a0>1?`${a0}~${a1-1}살`:`${a0}살`}을 돌아보며</div>
-    ${m?`<div class="ycard">${memHTML(m)}</div>`:'<p class="evt">조용히 지나간 한 해였다.</p>'}${d?chips(d):''}
+    ${m?`<div class="ycard">${memHTML(m)}</div>`:'<p class="evt">조용히 지나간 한 해였다.</p>'}${d?`<div class="ytot" style="margin-top:10px;padding-top:8px;border-top:1px dashed #C8CFD6"><small class="sub" style="display:block;font-weight:700;margin-bottom:2px">올해 전체 변화</small>${chips(d)}</div>`:''}
     ${fact?`<p class="nt fact">${esc(fact)}</p>`:''}
     ${cp?`<p class="small sub">같은 1초에 태어난 ${esc(cp.n)}(${esc(cp.cn)}) · ${esc(L.compNow(cp,a0))}</p>`:''}
     <button class="btn primary" id="btnOk">${a1}살의 한 해로 ▶</button>`,'event year');
@@ -8909,7 +8926,9 @@ function startGame(){
   lastT=performance.now(); requestAnimationFrame(loop);
 }
 const caughtUp=()=>G.room&&G.roomPi!=null&&G.life.pi>=G.roomPi;
-const seasonOf=L=>L.C.seasons[L.pi%4];
+// 계절은 지금 달에서 정한다(11-22: 한 해 전체가 한 계절로 돌던 것을 달력과 맞춤). 3~5월 0, 6~8월 1, 9~11월 2, 12~2월 3. 남반구 사계절 나라는 자료 배열이 한 칸 밀려 있다
+function seasonIdx(L){ let m=1; try{ if(L&&L.cur) m=ymOf(monthNow()).m; else if(L&&L.dm) m=L.dm; }catch(e){} const q=m>=3&&m<=5?0:m>=6&&m<=8?1:m>=9&&m<=11?2:3; return L&&SOUTH4.includes(L.c)?(q+1)%4:q; }
+const seasonOf=L=>L.C.seasons[seasonIdx(L)];
 function beginPeriod(first){
   const L=G.life; if(!L.comps){ try{ L.makeComps(); }catch(e){} }
   const cur=L.startPeriod(); if(cur.t==null) cur.t=G.sec; if(cur.mt==null) cur.mt=Math.min(12,G.sec*.2); if(cur.qt==null) cur.qt=L.q?9:3;   // 새 해가 시작되면 미션을 일찍 찾아온다
@@ -9007,7 +9026,7 @@ function openCross(){
 // 그해의 큰 사건 (선택은 모두 확률)
 function openMajor(){
   const L=G.life, m=MAJORS[L.cur.m], sc=m.sc||m.hz||sceneKindOf(m.txt);
-  sheet(`${sceneHTML(sc)}<div class="place">${L.age}살 · 큰 사건</div><h2>${esc(L.tx(m.txt))}</h2><div class="opts">${m.opts.map((o,i)=>`<button data-i="${i}">${esc(L.tx(o.l))}${pct(L.majorP(o),1)}</button>`).join('')}</div><p class="small sub">어떤 선택도 결과를 보장하지 않습니다. 쌓아 온 것들이 확률을 바꿀 뿐입니다.</p>`,'cross big');
+  sheet(`${sceneHTML(sc)}<div class="place">${L.age}살 · 큰 사건</div><h2>${esc(L.tx(m.txt))}</h2><div class="opts">${m.opts.map((o,i)=>`<button data-i="${i}">${esc(L.tx(o.l))}${pct(L.majorP(o),1)}</button>`).join('')}</div>${m.opts.some(o=>{ const p=L.majorP(o); return p!=null&&p<.995; })?'<p class="small sub">어떤 선택도 결과를 보장하지 않습니다. 쌓아 온 것들이 확률을 바꿀 뿐입니다.</p>':''}`,'cross big');
   gateUI('m',m.opts); onOpts(i=>{ const r=L.chooseMajor(i); popup(`${L.age}살 · ${L.tx(r.label)} · ${r.ok?'잘됨':'뜻대로 되지 않음'} (확률 ${Math.round(r.p*100)}%)`,r.t,r.fx,()=>{ renderHud(); persist(); if(r.sick) startSick(); },r.ok?'':'bad',r.sc); });
 }
 // 미션: 부탁을 받고 → 다른 곳에 다녀와서 → 돌아와 알린다
@@ -9029,6 +9048,13 @@ $('btnImp').onclick=()=>{ const L=G.life; if(!L||!L.cur||!$('sheet').hidden) ret
 function yearLen(){ if(caughtUp()){ const r=G.roomInfo; return r&&r.auto>0&&!r.paused?r.auto*60:150; } return G.sec; }
 function calSpan(){ return G.life&&G.life.step>1?24:12; }
 function monthNow(){ const L=G.life; if(!L||!L.cur) return 1; return Math.min(calSpan(),Math.floor((L.cur.el||0)/yearLen()*calSpan())+1); }
+// 장면이 지금 달에 맞는지: 계절 말이 든 장면은 그 계절에만, {fest} 장면은 명절 달과 그 앞달에만 (11-22 점검 CONT-01)
+Life.prototype.mFit=function(sc){ if(!this.cur||this.lite) return true; let m; try{ m=ymOf(monthNow()).m; }catch(e){ return true; }
+  const t=[].concat(sc.txt).join(' ')+' '+(sc.opts||[]).map(o=>o.l+' '+[].concat(o.res||'').join(' ')).join(' ');
+  const fnm=/\{fest\}/.test(t)?null:festNameIn(this,t); if(/\{fest\}/.test(t)||fnm){ let fm=null; try{ fm=festMonth(this,this.by+this.age,fnm||undefined); }catch(e){} if(fm){ const d=(m-fm+12)%12; if(!(d===0||d===11)) return false; } }
+  const ms=seasonMonthsFor(this,t); return !ms||ms.includes(m); };
+// 시간이 흘러 철이 지난 장면은 조용히 거둔다(열려 있는 창이 없을 때만)
+function sceneSeasonSweep(L){ if(!L||!L.cur||!L.cur.scenes||!$('sheet').hidden||($('dlg')&&!$('dlg').hidden)) return; L.cur.scenes.forEach(c=>{ if(!c.done&&!L.mFit(SCENES[c.i])){ c.done=1; c.off=1; } }); }
 function ymOf(m){ const L=G.life; return {y:L.by+L.age+(m>12?1:0),m:m>12?m-12:m}; }
 function calTag(){ const L=G.life, st=L.stageOf(), sch=L.sch||{}; return st==='e'?sch.elem:st==='m'?sch.mid:st==='h'?(L.f.hs==='voc'?sch.voc:sch.high):st==='u'?sch.univ:st==='rt'?'다시 도전하는 한 해':L.f.job?(L.f.co||'일터'):L.age<7?'우리 집':'우리 동네'; }
 function renderMon(){ const L=G.life, el=$('hMon'); if(!L||!el) return; const cal=L.cur&&L.cur.cal, ym=ymOf(monthNow()); el.textContent=`${ym.m}월${cal&&cal.length?` · 올해의 일 ${cal.filter(x=>x.done).length}/${cal.length}`:''}`; }
@@ -9182,13 +9208,13 @@ function loopBody(t){
     if(caughtUp()){ const r=G.roomInfo; $('hTimer').style.width=(r&&r.auto>0&&!r.paused?100-((Date.now()-r.t0)%(r.auto*60000))/(r.auto*600):100)+'%'; }
     else { L.cur.t-=dt; $('hTimer').style.width=Math.max(0,L.cur.t/G.sec*100)+'%'; }
     // 한 해 안에서도 일은 계속 생긴다: 작은 선택은 채워지고, 큰 사건과 미션이 찾아온다
-    G.spawnT-=dt; if(G.spawnT<=0){ G.spawnT=5; if(L.cur.scenes.filter(c=>!c.done).length<3&&L.spawn()>=0) renderHud(); }
+    G.spawnT-=dt; if(G.spawnT<=0){ G.spawnT=5; sceneSeasonSweep(L); if(L.cur.scenes.filter(c=>!c.done).length<3&&L.spawn()>=0) renderHud(); }
     const catching=G.room&&G.roomPi!=null&&L.pi<G.roomPi-1;   // 반을 따라잡는 동안에는 큰 사건과 미션을 쉰다
     if(!catching){ L.cur.qt-=dt; if(L.cur.qt<=0){ L.cur.qt=(L.age===5?10:L.age>=3&&L.age<5?22:Math.min(35,G.sec*.16)); if(!caughtUp()&&L.cur.t<G.sec*.4&&!L.q){ L.cur.qt=2; } else if(!L.q&&L.questOffer()) toast(`${giverName(QUESTS[L.q.i].giver)}에게 부탁받을 일이 생겼어요. 파란 물음표를 찾아가 보세요.`); }
     L.cur.el=(L.cur.el||0)+dt;
     if(L.cur.mDone>=L.cur.plan&&caughtUp()&&!L.f.dying&&L.cur.el>=majorAt(L.cur.mDone)) L.addMajor();   // 반이 같은 해에 머무는 동안에도 큰 일은 이어진다
     if(L.cur.mDone<L.cur.plan&&L.cur.el>=majorAt(L.cur.mDone)){ if(L.major()!=null) openMajor(); else L.cur.mDone++; }
-    if($('sheet').hidden&&!L.pending){ const cal=L.ensureCal(); if(cal){ const k=cal.findIndex(x=>!x.done); if(k>=0&&L.cur.el>=(cal[k].m-.55)/calSpan()*yearLen()) fireCal(k); } } }
+    if($('sheet').hidden&&!L.pending){ const cal=L.ensureCal(); if(cal){ let k=-1; cal.forEach((x,i)=>{ if(!x.done&&(k<0||x.m<cal[k].m)) k=i; });   /* 달이 이른 일부터(11-22: 10월에 2·3·4월 일이 줄줄이 나오던 것) */ if(k>=0&&L.cur.el>=(cal[k].m-.55)/calSpan()*yearLen()) fireCal(k); } } }
     { const mn=monthNow(); if(mn!==G.mon){ G.mon=mn; renderMon(); } }
     if(L.cur.sk&&!isSick()&&!paused&&L.cur.el>=(caughtUp()?20+L.cur.sk.at*80:L.cur.sk.at*G.sec)) startSick();
     if(G.sickT>0&&!L.f.dying){ G.sickT-=dt; if(G.sickT<=0){ G.sickT=0; L.getWell(); toast('몸이 다 나았어요! 다시 밖에 나갈 수 있어요.','news'); renderHud(); } }
@@ -11109,6 +11135,14 @@ function openSave(){ if(!G.life||!G.running||!$('sheet').hidden||dlgOpen()) retu
 $('btnPause').onclick=openSave;
 { const ex=$('btnExit').onclick; $('btnExit').onclick=function(){ G.hardPause=1; return ex.apply(this,arguments); }; }
 
+/* 읽는 창(기억·내 정보·지도)을 보는 동안은 시간을 멈춘다: 해가 바뀌며 읽던 창이 갑자기 닫히지 않게(11-22 점검 UX-06) */
+(function(){
+  ['openMem','openInfo','openMaps'].forEach(n=>{ try{ const f=eval(n); if(typeof f==='function') eval(n+'=function(){ G.reading=1; return f.apply(this,arguments); }'); }catch(e){} });
+  const _cs=closeSheet; closeSheet=function(){ G.reading=0; return _cs.apply(this,arguments); };
+  const _ft=flowTick; flowTick=function(dt){ if(G.reading&&!$('sheet').hidden) return; if(G.reading&&$('sheet').hidden) G.reading=0; return _ft.apply(this,arguments); };
+  // '새로 알게 된 것' 카드가 떠 있을 때 나가기를 누르면 카드를 먼저 닫는다(두 창이 겹치지 않게)
+  const be=$('btnExit'), _ex=be&&be.onclick; if(be&&_ex) be.onclick=function(e){ const d=$('sixU'); if(d&&!d.hidden){ const ok=$('sixUOk'); if(ok) ok.click(); } return _ex.call(this,e); };
+})();
 /* ---------- [2-1 세계·화면] 화면 다듬기: 미니맵·상태란 폭을 줄이고 반투명하게, 작은 사건은 오른쪽 위에서 충분히 오래 ---------- */
 document.head.insertAdjacentHTML('beforeend',`<style>
 #mini{width:168px!important;height:124px!important}
@@ -12539,7 +12573,8 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
 { setInterval(()=>{ try{ const L=G.life, sk=$('hSick'); if(L&&G.running&&G.sickT>0&&!L.f.dying&&sk&&!sk.hidden) sk.textContent=`몸이 아파요 · 쉬는 중 · 약 ${Math.ceil(G.sickT)}초 남음`; }catch(e){} },400);
   const _ss=startSick; startSick=function(){ const r=_ss.apply(this,arguments); try{ const L=G.life; if(L&&L.f) L.f.sy=L.age; }catch(e){} return r; };
   const P=Life.prototype, _ep=P.endPeriod; P.endPeriod=function(){ try{ const L=this, Y=L.cur&&L.cur.tk; if(Y&&typeof G!=='undefined'&&G.life===L){ Y.c=Y.c||{};
-        if(!Y.c.h){ const walked=(W.walk||0)-(G._walk0||0); if(L.f.sy===L.age||G.sickT>0||walked>=150) Y.c.h=1; } G._walk0=W.walk||0; } }catch(e){}
+        if(!Y.c.h){ const walked=(W.walk||0)-(G._walk0||0); if(L.f.sy===L.age||G.sickT>0||walked>=(L.age<7?40:80)) Y.c.h=1; }
+        if(!Y.c.r&&((Y.n||0)>=2||Object.keys(Y.who||{}).length>=1||(L.q&&L.q.st===2))) Y.c.r=1;   /* 말을 건 사람·마친 미션도 '이야기를 나눔'으로(11-22 점검 CONT-06) */ G._walk0=W.walk||0; } }catch(e){}
     return _ep.apply(this,arguments); }; }
 /* ========== 79-tutorial: 0~5살 처음 안내 (11-14 선생님 요청) ==========
    시작 화면에서 '처음 안내 보기'(기본) 또는 '건너뛰고 6살부터'를 고른다 (G.opts.tut 1|0).
