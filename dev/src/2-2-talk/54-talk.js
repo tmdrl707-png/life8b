@@ -336,7 +336,7 @@ function qChips(s0,s1){ const up=[]; for(const k of ['j','k','t','e','r','h']){ 
 function qPctText(p){ return ` (잘될 확률 ${Math.round(p*100)}%)`; }
 function openQuest(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return; const d=QUESTS[q.i], who=giverName(d.giver), there=L.spotName(d.target);
   if(q.st===0){
-    dlgRun([{who,t:qSay(L.tx(d.ask)),opts:[`할게요 (${there}에 다녀오기)`,'지금은 어려워요'],then:i=>{ const yes=i===0; L.questAccept(yes); renderHud(); persist();
+    dlgRun([{who,t:qSay(L.tx(d.ask)),opts:[`할게요 (${there}${/(엄마|아빠|할머니|할아버지|동생|언니|누나|형|오빠|선생님|친구|아기|이모|삼촌|고모|사촌|이웃|손님|아저씨|아주머니)$/.test(there)?'에게':'에'} 다녀오기)`,'지금은 어려워요'],then:i=>{ const yes=i===0; L.questAccept(yes); renderHud(); persist();
       return yes?[{who,t:pickOne(['고마워! 부탁할게.','역시 믿음직하구나.','조심해서 다녀오렴.'])},{who:'',t:`${there}에 다녀오자. 지도의 파란 점을 보자.`}]
                 :[{who,t:pickOne(['그래, 다음에 부탁할게.','괜찮아, 바쁘구나.'])}]; }}]);
   } else if(q.st===1){

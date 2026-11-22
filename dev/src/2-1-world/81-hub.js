@@ -122,7 +122,7 @@ html.ui-sr-0 #hRes{display:none!important}
       <div class="sg"><h4>화면 꾸미기 · 능력치 동그라미</h4>${sq('sr',[['1','보이기'],['0','숨기기']],UI.sr,UI.sp==='off')}<p>숨겨도 능력치는 그대로 쌓이고, '내 정보'에서 볼 수 있어요.</p></div>
       <div class="sg rs"><button type="button" id="uiReset">화면 꾸미기를 처음대로</button></div>
     </div>`;
-    $('setX').onclick=closeP; $('uiReset').onclick=()=>{ Object.assign(UI,{ms:'m',mp:'tl',sp:'tl',sr:'1'}); saveUI(); applyUI(); draw(); };
+    $('setX').onclick=closeP; $('uiReset').onclick=()=>{ Object.assign(UI,{ms:'m',mp:'tl',sp:'tl',sr:'1'}); saveUI(); try{ localStorage.removeItem('life8b_sixhud'); }catch(e){} applyUI(); try{ renderHud(); }catch(e){} draw(); }; /* 능력치 표시 모양도 처음(동그라미)으로(11-22) */
     panel.querySelectorAll('.sq').forEach(s=>s.onclick=e=>{ const b=e.target.closest('button'); if(!b) return; set(s.dataset.k,b.dataset.v); draw(); }); }
   function set(k,v){ const L=G.life;
     if(k==='yl'){ v=+v; if(!L||G.teacher||(G.room&&!G.teacher)) return; const old=L.yl||G.sec||v; L.yl=v; G.opts.yl=v; G.sec=secOf(L); if(L.cur&&L.cur.t>0) L.cur.t=L.cur.t*v/old; if(L.cur&&L.cur.el) L.cur.el=L.cur.el*v/old; ls('life8b_opts',G.opts); try{ persist(); }catch(e){} toast(`게임 속도: 한 해 ${v/60}분`); }

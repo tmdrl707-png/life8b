@@ -1,4 +1,13 @@
 /* ---------- [3 엔딩·기록] 인생 기록: 위쪽 메뉴로 넘겨 본다 ---------- */
+/* 흰 카드 안 글자 색: 엔딩 밤하늘의 밝은 글자색이 흰 카드로 이어져 읽을 수 없던 것(11-22 점검 BUG-01). 카드 안은 늘 어두운 글자 */
+(function(){ const st=document.createElement('style'); st.textContent=`
+.rpane .icard,#s-end .rpane .icard{color:#1E2B37}
+#s-end .rpane .icard :is(p,li,b,strong,span,dd,dt,q,em,i,h3,h4,h5,td,th,div,label,summary,small,text,a):not(.btn):not(button){color:#1E2B37}
+#s-end .rpane .icard :is(small,dt,q,.sub,.rempty,.ltick),.rpane .icard :is(.sub,.rempty){color:#55606B}
+#s-end .rpane .icard svg text{fill:#55606B;color:inherit}
+#s-end .rpane .icard .btn,#s-end .rpane .icard button{color:#1E2B37;border-color:#8A94A0;background:#fff}
+#s-end .rtabs-wrap>.rpane>.rnext{color:#fff}
+.rtabs-wrap>.rtabs{flex-wrap:wrap}`; document.head.appendChild(st); })();
 const REC_TABS=[['sum','한눈에'],['shape','삶의 모양'],['life','돈과 행복'],['story','이야기'],['mem','기억에 남은 일'],['words','남긴 말']];
 function lifeTabs(l,o){ o=o||{}; const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, mk=x=>x&&{a:x[0],j:x[1],k:x[2],t:x[3],e:x[4],r:x[5],h:x[6]}, H=(l.hist||[]).map(mk), pk=mk(l.peak), nw=l.nw||0;
   const kp=[[`${l.age}세`,`향년 · ${C.n} 기대수명 약 ${l.le||C.le}세`],[l.cause||'—','삶을 마친 이유'],[`${l.n||0}번`,'직접·자동으로 한 선택'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산']];

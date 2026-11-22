@@ -2,6 +2,7 @@
 let near=null, lastT=0, paused=false;
 function startGame(){
   const L=G.life; if(!L.look) L.look=randLook(L.C.rg); L.sick=0; G.sickT=0; if(!L.opt) L.opt={card:1,ask:1,soft:0};
+  try{ if(typeof DLG!=='undefined'){ clearInterval(DLG.tm); DLG.q=[]; DLG.opts=null; DLG.done=null; DLG.typing=0; } const dg=document.getElementById('dlg'); if(dg){ dg.hidden=true; dg.innerHTML=''; } }catch(e){} /* 이어서 살기: 나가기 전 열려 있던 대화창을 정리(11-22) */
   W.map='home'; W.x=7; W.y=5; W.car=false; W.dir=0; NPCMAP={}; show('game'); $('toasts').innerHTML=''; $('flash').hidden=true; $('sheet').hidden=true; $('hint').hidden=false; paused=false;
   G.room=G.teacher?(G.troom||null):((G.data&&G.data.room)||null); if(G.room&&!L.wsR&&L.age<=1){ let h=5381; for(const ch of String(G.room)) h=((h<<5)+h+ch.charCodeAt(0))>>>0; L.ws=h%1000000000; L.wsR=1; } G.roomPi=null; G.roomInfo=null; G.syncT=0; G.memT=0; G.told=false; G.spawnT=3;
   G.running=true; try{ resize(); beginPeriod(true); }catch(e){ if(typeof reportErr==='function') reportErr(e,'시작'); try{ renderHud(); }catch(e2){} }   // 시작 중 오류가 나도 게임은 이어진다
@@ -189,7 +190,7 @@ function traitPanel(L){ const ks=Object.keys(TRAIT), mx=Math.max(1,...ks.map(k=>
 function jobsTable(L){ const J=L.jobs||[]; if(!J.length) return '';
   return `<div class="stack-s"><b style="font-weight:400">거쳐 온 일</b><div class="tscroll"><table class="dtbl"><thead><tr><th>나이</th><th>일</th><th>일터</th><th>계기</th></tr></thead><tbody>${J.map(x=>`<tr><td class="a">${x.a}살</td><td>${esc(x.n)}</td><td>${esc(x.co||'')}</td><td class="q">${esc(x.why||'')}</td></tr>`).join('')}</tbody></table></div></div>`; }
 // 해마다 가진 돈(집 포함)의 흐름
-function moneySvg(L){ const h=(L.money||[]).map(m=>m.cash+m.house); if(h.length<2) return ''; const mx=Math.max(...h.map(Math.abs),1), n=h.length, W=200, H=44, y=v=>H/2-v/mx*(H/2-3);
+function moneySvg(L){ const h=(L.money||[]).map(m=>(+m.cash||0)+(+m.house||0)); if(h.length<2) return ''; const mx=Math.max(...h.map(Math.abs),1), n=h.length, W=200, H=44, y=v=>H/2-v/mx*(H/2-3);
   const pts=h.map((v,i)=>`${(i/(n-1)*W).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
   return `<svg class="msvg" viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="#C0C8D0" stroke-width="1"/><polyline points="${pts}" fill="none" stroke="#3870D0" stroke-width="2"/></svg><span class="sub small">${L.money[0].a}살부터 지금까지 가진 돈(집 포함)의 흐름</span>`; }
 function barSvg(v){ const w=Math.min(50,Math.abs(v)*3.2), pos=v>=0; return `<svg viewBox="0 0 100 8" width="100%" height="8" preserveAspectRatio="none"><rect x="0" y="3.5" width="100" height="1" fill="#C0C8D0"/><rect x="${pos?50:50-w}" y="0" width="${w}" height="8" fill="${pos?'#48B888':'#E07070'}"/><rect x="49.5" y="0" width="1" height="8" fill="#283038"/></svg>`; }

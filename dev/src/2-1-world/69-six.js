@@ -34,6 +34,8 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .sA .bt{height:6px;border-radius:9px;background:var(--g);overflow:hidden}.sA .bt i{display:block;height:100%;background:var(--c);border-radius:9px;transition:width .6s}
 .sA .mt{font-size:.66rem;font-weight:700;color:#5A6A78;white-space:nowrap}.sA .mt.neg{color:#C0392B}
 .sA .lk{font-size:.66rem;font-weight:600;color:#9AA5B0}
+.sA>.jw{grid-column:1/-1;display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;color:#33404C}
+.six .lk{white-space:nowrap}
 .sB{display:flex;align-items:center;gap:8px}.sB .jw,.sC .jw,.sD .jw{display:flex;flex-direction:column;align-items:center;font-size:.6rem;font-weight:700;color:#5A6A78;gap:1px}
 .sB .rings{display:flex;flex:1;justify-content:space-between;gap:2px}
 .sB .si{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:.62rem;font-weight:700;color:#33404C;padding:1px 2px}
@@ -112,9 +114,9 @@ const sixStar=x=>x.star?`<span class="st">${'★'.repeat(Math.min(3,x.star))}</s
 const sixFxCls=k=>{ const z=SIX_FX[k]; return z&&performance.now()<z.u?' '+z.c:''; };
 function sixTitle(x){ return x.open?`${SIX_N[x.k]} ${Math.round(x.v)}`:`${SIX_AGE[x.k]}살에 열려요`; }
 function sixHud(L){ const S=sixState(L), V=sixHudV(), j=L.s.j||50;
-  if(V==='A') return `<div class="six sA">${S.map(x=>x.open?`<div class="si${sixFxCls(x.k)}" style="--c:${SIX_COL[x.k]}" title="${sixTitle(x)}">${icS(x)}<span>${SIX_N[x.k]}</span><div class="bt"><i style="width:${Math.max(2,x.v).toFixed(1)}%"></i></div>${x.k==='m'?sixMoneyTxt(L):''}</div>`
-    :`<div class="si lock" title="${sixTitle(x)}"><span class="ic">${sixIc('lock')}</span><span>?</span><span class="lk">${x.at}살에</span></div>`).join('')}</div>`;
   const jw=`<div class="jw">${joyFace(j,V==='B'?30:26)}<span>행복</span></div>`;
+  if(V==='A') return `<div class="six sA">${jw}${S.map(x=>x.open?`<div class="si${sixFxCls(x.k)}" style="--c:${SIX_COL[x.k]}" title="${sixTitle(x)}">${icS(x)}<span>${SIX_N[x.k]}</span><div class="bt"><i style="width:${Math.max(2,x.v).toFixed(1)}%"></i></div>${x.k==='m'?sixMoneyTxt(L):''}</div>`
+    :`<div class="si lock" title="${sixTitle(x)}"><span class="ic">${sixIc('lock')}</span><span>?</span><span class="lk">${x.at}살에</span></div>`).join('')}</div>`;
   if(V==='B'){ const C=2*Math.PI*12.5; return `<div class="six sB">${jw}<div class="rings">${S.map(x=>`<div class="si${x.open?'':' lock'}${sixFxCls(x.k)}" style="--c:${SIX_COL[x.k]}" title="${sixTitle(x)}"><div class="rg"><svg class="r" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12.5" fill="none" stroke="var(--g)" stroke-width="3.4"/>${x.open?`<circle cx="15" cy="15" r="12.5" fill="none" stroke="var(--c)" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="${(C*x.v/100).toFixed(1)} ${C.toFixed(1)}"/>`:''}</svg><span class="ic">${sixIc(x.open?x.k:'lock')}</span></div><span>${x.open?sixStar(x)+SIX_N[x.k]:x.at+'살'}</span></div>`).join('')}</div></div>`; }
   if(V==='C'){ const n=6, cx=40, cy=37, R=31, pt=(i,v)=>{ const an=-Math.PI/2+i*2*Math.PI/n; return [cx+Math.cos(an)*R*v/100,cy+Math.sin(an)*R*v/100]; }, poly=f=>S.map((x,i)=>pt(i,f(x)).map(z=>z.toFixed(1)).join(',')).join(' ');
     let g=`<polygon points="${poly(()=>100)}" fill="rgba(124,149,174,.08)" stroke="#AAB6C2" stroke-width="1"/><polygon points="${poly(()=>50)}" fill="none" stroke="#D8E0E8" stroke-width="1"/>`;

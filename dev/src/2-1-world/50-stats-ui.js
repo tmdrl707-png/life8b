@@ -55,7 +55,7 @@ function lineChartSVG(L,mark){ const H=(L.hist||[]).filter(h=>h.t!=null); if(H.l
   let g=''; [0,25,50,75,100].forEach(v=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" class="lgrid"/><text x="${pl-6}" y="${Y(v)+4}" text-anchor="end" class="ltick">${v}</text>`; });
   const step=A1-A0>60?20:10; for(let a=Math.ceil(A0/step)*step;a<=A1;a+=step) g+=`<text x="${X(a)}" y="${Hh-8}" text-anchor="middle" class="ltick">${a}살</text>`;
   if(mark!=null) g+=`<line x1="${X(mark)}" x2="${X(mark)}" y1="${pt}" y2="${Hh-pb}" class="lmark"/><text x="${X(mark)+4}" y="${pt+11}" class="ltick lmk">가장 넓던 때</text>`;
-  const ser=[...AXES.map(k=>[k,AX_COL[k],'']),['j','#E2703A','5 4']];
-  ser.forEach(([k,c,d])=>{ g+=`<polyline fill="none" stroke="${c}" stroke-width="${k==='j'?2:2.4}" ${d?`stroke-dasharray="${d}"`:''} stroke-linejoin="round" points="${H.map(h=>`${X(h.a).toFixed(1)},${Y(h[k]).toFixed(1)}`).join(' ')}"/>`; });
+  const ser=[...AXES.map(k=>[k,AX_COL[k],'']),['j','#E2703A','5 4']].filter(([k])=>H.filter(h=>h[k]!=null&&Number.isFinite(+h[k])).length>=2);
+  ser.forEach(([k,c,d])=>{ g+=`<polyline fill="none" stroke="${c}" stroke-width="${k==='j'?2:2.4}" ${d?`stroke-dasharray="${d}"`:''} stroke-linejoin="round" points="${H.filter(h=>Number.isFinite(+h[k])&&h[k]!=null).map(h=>`${X(h.a).toFixed(1)},${Y(+h[k]).toFixed(1)}`).join(' ')}"/>`; }); /* 아직 안 열린 능력치(값 없음)는 빼고 그린다(NaN 방지, 11-22) */
   return `<svg class="lchart2" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="나이에 따른 건강·관계·경험·지식·기술·재산·행복의 변화">${g}</svg><div class="lgd">${ser.map(([k,c,d])=>`<span><i style="background:${c}${d?';opacity:.7':''}"></i>${k==='j'?'행복':AX_N[k]}</span>`).join('')}</div>`; }
 

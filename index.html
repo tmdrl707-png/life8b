@@ -8131,7 +8131,7 @@ async function doLogin(create){
   $('btnLogin').disabled=false;
 }
 $('loginForm').onsubmit=e=>{ e.preventDefault(); doLogin(null); };
-$('btnLogout').onclick=()=>{ Store.logout(); G.data=null; G.life=null; $('who').textContent=''; show('login'); };
+$('btnLogout').onclick=()=>{ Store.logout(); ['uid','upw'].forEach(i=>{ const e=$(i); if(e) e.value=''; }); /* 공용 기기: 로그아웃하면 입력칸 비움(11-22) */ G.data=null; G.life=null; $('who').textContent=''; show('login'); };
 function openHub(){
   $('who').textContent=Store.sess?Store.sess.id+' 님':''; const sv=G.data.save;
   $('hubNow').innerHTML = sv
@@ -8902,6 +8902,7 @@ function ntFirst(L,nt){ if(!nt) return false; const k=strHash(nt), s=L.ntSeen||(
 let near=null, lastT=0, paused=false;
 function startGame(){
   const L=G.life; if(!L.look) L.look=randLook(L.C.rg); L.sick=0; G.sickT=0; if(!L.opt) L.opt={card:1,ask:1,soft:0};
+  try{ if(typeof DLG!=='undefined'){ clearInterval(DLG.tm); DLG.q=[]; DLG.opts=null; DLG.done=null; DLG.typing=0; } const dg=document.getElementById('dlg'); if(dg){ dg.hidden=true; dg.innerHTML=''; } }catch(e){} /* 이어서 살기: 나가기 전 열려 있던 대화창을 정리(11-22) */
   W.map='home'; W.x=7; W.y=5; W.car=false; W.dir=0; NPCMAP={}; show('game'); $('toasts').innerHTML=''; $('flash').hidden=true; $('sheet').hidden=true; $('hint').hidden=false; paused=false;
   G.room=G.teacher?(G.troom||null):((G.data&&G.data.room)||null); if(G.room&&!L.wsR&&L.age<=1){ let h=5381; for(const ch of String(G.room)) h=((h<<5)+h+ch.charCodeAt(0))>>>0; L.ws=h%1000000000; L.wsR=1; } G.roomPi=null; G.roomInfo=null; G.syncT=0; G.memT=0; G.told=false; G.spawnT=3;
   G.running=true; try{ resize(); beginPeriod(true); }catch(e){ if(typeof reportErr==='function') reportErr(e,'시작'); try{ renderHud(); }catch(e2){} }   // 시작 중 오류가 나도 게임은 이어진다
@@ -9089,7 +9090,7 @@ function traitPanel(L){ const ks=Object.keys(TRAIT), mx=Math.max(1,...ks.map(k=>
 function jobsTable(L){ const J=L.jobs||[]; if(!J.length) return '';
   return `<div class="stack-s"><b style="font-weight:400">거쳐 온 일</b><div class="tscroll"><table class="dtbl"><thead><tr><th>나이</th><th>일</th><th>일터</th><th>계기</th></tr></thead><tbody>${J.map(x=>`<tr><td class="a">${x.a}살</td><td>${esc(x.n)}</td><td>${esc(x.co||'')}</td><td class="q">${esc(x.why||'')}</td></tr>`).join('')}</tbody></table></div></div>`; }
 // 해마다 가진 돈(집 포함)의 흐름
-function moneySvg(L){ const h=(L.money||[]).map(m=>m.cash+m.house); if(h.length<2) return ''; const mx=Math.max(...h.map(Math.abs),1), n=h.length, W=200, H=44, y=v=>H/2-v/mx*(H/2-3);
+function moneySvg(L){ const h=(L.money||[]).map(m=>(+m.cash||0)+(+m.house||0)); if(h.length<2) return ''; const mx=Math.max(...h.map(Math.abs),1), n=h.length, W=200, H=44, y=v=>H/2-v/mx*(H/2-3);
   const pts=h.map((v,i)=>`${(i/(n-1)*W).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
   return `<svg class="msvg" viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="#C0C8D0" stroke-width="1"/><polyline points="${pts}" fill="none" stroke="#3870D0" stroke-width="2"/></svg><span class="sub small">${L.money[0].a}살부터 지금까지 가진 돈(집 포함)의 흐름</span>`; }
 function barSvg(v){ const w=Math.min(50,Math.abs(v)*3.2), pos=v>=0; return `<svg viewBox="0 0 100 8" width="100%" height="8" preserveAspectRatio="none"><rect x="0" y="3.5" width="100" height="1" fill="#C0C8D0"/><rect x="${pos?50:50-w}" y="0" width="${w}" height="8" fill="${pos?'#48B888':'#E07070'}"/><rect x="49.5" y="0" width="1" height="8" fill="#283038"/></svg>`; }
@@ -10069,7 +10070,7 @@ async function drawCard(mems,o){
   x.fillStyle='#fff'; x.fillRect(0,0,Wd,H); x.fillStyle='#1E2B37'; x.fillRect(0,0,Wd,210);
   T(o&&o.title?`「${o.title}」`:'인생 기록',48,60,24,'#FFC9A8',700); T('80억 분의 1',Wd-48,60,22,'#C5D2DC',500,'right');
   x.font=`800 52px ${F}`; const nmW=x.measureText(L.name).width; T(L.name,48,126,Math.min(52,52*560/Math.max(nmW,1)),'#fff',800); T(`${by}~${by+L.lifespan} · ${L.C.n} ${L.town||''} · ${FAM[L.famI].n}`,48,172,22,'#C5D2DC',500);
-  T(L.lifespan+'년',48,276,64,'#B4501E',800); T(`의 삶 · 선택 ${L.n}번`,48+x.measureText(L.lifespan+'년').width+70,276,24,'#5A6A78',500);
+  T(L.lifespan+'년',48,276,64,'#B4501E',800); T(`의 삶 · 선택 ${L.n}번`,48+x.measureText(L.lifespan+'년').width+14,276,24,'#5A6A78',500);
   const lastJ=(L.jobs||[]).slice(-1)[0]; let ly=312; if(lastJ){ T(`${lastJ.co?lastJ.co+' · ':''}${lastJ.n} · 남긴 재산 ${fmtWon(L.nw)}`,48,ly,20,'#5A6A78',500); ly+=30; }
   if(L.ppl&&L.ppl.spouse) T(`함께한 사람 ${L.ppl.spouse.n}${L.kids.length?' · 아이 '+L.kids.map(k=>k.given).join(', '):''}`,48,ly,20,'#5A6A78',500);
   // 사진 세 장
@@ -10167,8 +10168,8 @@ function lineChartSVG(L,mark){ const H=(L.hist||[]).filter(h=>h.t!=null); if(H.l
   let g=''; [0,25,50,75,100].forEach(v=>{ g+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" class="lgrid"/><text x="${pl-6}" y="${Y(v)+4}" text-anchor="end" class="ltick">${v}</text>`; });
   const step=A1-A0>60?20:10; for(let a=Math.ceil(A0/step)*step;a<=A1;a+=step) g+=`<text x="${X(a)}" y="${Hh-8}" text-anchor="middle" class="ltick">${a}살</text>`;
   if(mark!=null) g+=`<line x1="${X(mark)}" x2="${X(mark)}" y1="${pt}" y2="${Hh-pb}" class="lmark"/><text x="${X(mark)+4}" y="${pt+11}" class="ltick lmk">가장 넓던 때</text>`;
-  const ser=[...AXES.map(k=>[k,AX_COL[k],'']),['j','#E2703A','5 4']];
-  ser.forEach(([k,c,d])=>{ g+=`<polyline fill="none" stroke="${c}" stroke-width="${k==='j'?2:2.4}" ${d?`stroke-dasharray="${d}"`:''} stroke-linejoin="round" points="${H.map(h=>`${X(h.a).toFixed(1)},${Y(h[k]).toFixed(1)}`).join(' ')}"/>`; });
+  const ser=[...AXES.map(k=>[k,AX_COL[k],'']),['j','#E2703A','5 4']].filter(([k])=>H.filter(h=>h[k]!=null&&Number.isFinite(+h[k])).length>=2);
+  ser.forEach(([k,c,d])=>{ g+=`<polyline fill="none" stroke="${c}" stroke-width="${k==='j'?2:2.4}" ${d?`stroke-dasharray="${d}"`:''} stroke-linejoin="round" points="${H.filter(h=>Number.isFinite(+h[k])&&h[k]!=null).map(h=>`${X(h.a).toFixed(1)},${Y(+h[k]).toFixed(1)}`).join(' ')}"/>`; }); /* 아직 안 열린 능력치(값 없음)는 빼고 그린다(NaN 방지, 11-22) */
   return `<svg class="lchart2" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="나이에 따른 건강·관계·경험·지식·기술·재산·행복의 변화">${g}</svg><div class="lgd">${ser.map(([k,c,d])=>`<span><i style="background:${c}${d?';opacity:.7':''}"></i>${k==='j'?'행복':AX_N[k]}</span>`).join('')}</div>`; }
 
 /* ========== 고해상도 캐릭터 ==========
@@ -10937,7 +10938,7 @@ function qChips(s0,s1){ const up=[]; for(const k of ['j','k','t','e','r','h']){ 
 function qPctText(p){ return ` (잘될 확률 ${Math.round(p*100)}%)`; }
 function openQuest(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return; const d=QUESTS[q.i], who=giverName(d.giver), there=L.spotName(d.target);
   if(q.st===0){
-    dlgRun([{who,t:qSay(L.tx(d.ask)),opts:[`할게요 (${there}에 다녀오기)`,'지금은 어려워요'],then:i=>{ const yes=i===0; L.questAccept(yes); renderHud(); persist();
+    dlgRun([{who,t:qSay(L.tx(d.ask)),opts:[`할게요 (${there}${/(엄마|아빠|할머니|할아버지|동생|언니|누나|형|오빠|선생님|친구|아기|이모|삼촌|고모|사촌|이웃|손님|아저씨|아주머니)$/.test(there)?'에게':'에'} 다녀오기)`,'지금은 어려워요'],then:i=>{ const yes=i===0; L.questAccept(yes); renderHud(); persist();
       return yes?[{who,t:pickOne(['고마워! 부탁할게.','역시 믿음직하구나.','조심해서 다녀오렴.'])},{who:'',t:`${there}에 다녀오자. 지도의 파란 점을 보자.`}]
                 :[{who,t:pickOne(['그래, 다음에 부탁할게.','괜찮아, 바쁘구나.'])}]; }}]);
   } else if(q.st===1){
@@ -10949,6 +10950,15 @@ function openQuest(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return
     dlgRun([{who,t:r.ok?pickOne(['다녀왔구나! 정말 고마워.','벌써 해냈어? 고마워!','덕분에 살았다.']):pickOne(['괜찮아, 애썼다.','그럴 수도 있지. 수고했어.'])},{who:'',t:r.t,up}]);
   } };
 /* ---------- [3 엔딩·기록] 인생 기록: 위쪽 메뉴로 넘겨 본다 ---------- */
+/* 흰 카드 안 글자 색: 엔딩 밤하늘의 밝은 글자색이 흰 카드로 이어져 읽을 수 없던 것(11-22 점검 BUG-01). 카드 안은 늘 어두운 글자 */
+(function(){ const st=document.createElement('style'); st.textContent=`
+.rpane .icard,#s-end .rpane .icard{color:#1E2B37}
+#s-end .rpane .icard :is(p,li,b,strong,span,dd,dt,q,em,i,h3,h4,h5,td,th,div,label,summary,small,text,a):not(.btn):not(button){color:#1E2B37}
+#s-end .rpane .icard :is(small,dt,q,.sub,.rempty,.ltick),.rpane .icard :is(.sub,.rempty){color:#55606B}
+#s-end .rpane .icard svg text{fill:#55606B;color:inherit}
+#s-end .rpane .icard .btn,#s-end .rpane .icard button{color:#1E2B37;border-color:#8A94A0;background:#fff}
+#s-end .rtabs-wrap>.rpane>.rnext{color:#fff}
+.rtabs-wrap>.rtabs{flex-wrap:wrap}`; document.head.appendChild(st); })();
 const REC_TABS=[['sum','한눈에'],['shape','삶의 모양'],['life','돈과 행복'],['story','이야기'],['mem','기억에 남은 일'],['words','남긴 말']];
 function lifeTabs(l,o){ o=o||{}; const C=COUNTRIES[l.c||'KR']||COUNTRIES.KR, mk=x=>x&&{a:x[0],j:x[1],k:x[2],t:x[3],e:x[4],r:x[5],h:x[6]}, H=(l.hist||[]).map(mk), pk=mk(l.peak), nw=l.nw||0;
   const kp=[[`${l.age}세`,`향년 · ${C.n} 기대수명 약 ${l.le||C.le}세`],[l.cause||'—','삶을 마친 이유'],[`${l.n||0}번`,'직접·자동으로 한 선택'],[fmtWon(nw),nw<0?'남긴 빚':'남긴 재산']];
@@ -11886,6 +11896,8 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .sA .bt{height:6px;border-radius:9px;background:var(--g);overflow:hidden}.sA .bt i{display:block;height:100%;background:var(--c);border-radius:9px;transition:width .6s}
 .sA .mt{font-size:.66rem;font-weight:700;color:#5A6A78;white-space:nowrap}.sA .mt.neg{color:#C0392B}
 .sA .lk{font-size:.66rem;font-weight:600;color:#9AA5B0}
+.sA>.jw{grid-column:1/-1;display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;color:#33404C}
+.six .lk{white-space:nowrap}
 .sB{display:flex;align-items:center;gap:8px}.sB .jw,.sC .jw,.sD .jw{display:flex;flex-direction:column;align-items:center;font-size:.6rem;font-weight:700;color:#5A6A78;gap:1px}
 .sB .rings{display:flex;flex:1;justify-content:space-between;gap:2px}
 .sB .si{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:.62rem;font-weight:700;color:#33404C;padding:1px 2px}
@@ -11964,9 +11976,9 @@ const sixStar=x=>x.star?`<span class="st">${'★'.repeat(Math.min(3,x.star))}</s
 const sixFxCls=k=>{ const z=SIX_FX[k]; return z&&performance.now()<z.u?' '+z.c:''; };
 function sixTitle(x){ return x.open?`${SIX_N[x.k]} ${Math.round(x.v)}`:`${SIX_AGE[x.k]}살에 열려요`; }
 function sixHud(L){ const S=sixState(L), V=sixHudV(), j=L.s.j||50;
-  if(V==='A') return `<div class="six sA">${S.map(x=>x.open?`<div class="si${sixFxCls(x.k)}" style="--c:${SIX_COL[x.k]}" title="${sixTitle(x)}">${icS(x)}<span>${SIX_N[x.k]}</span><div class="bt"><i style="width:${Math.max(2,x.v).toFixed(1)}%"></i></div>${x.k==='m'?sixMoneyTxt(L):''}</div>`
-    :`<div class="si lock" title="${sixTitle(x)}"><span class="ic">${sixIc('lock')}</span><span>?</span><span class="lk">${x.at}살에</span></div>`).join('')}</div>`;
   const jw=`<div class="jw">${joyFace(j,V==='B'?30:26)}<span>행복</span></div>`;
+  if(V==='A') return `<div class="six sA">${jw}${S.map(x=>x.open?`<div class="si${sixFxCls(x.k)}" style="--c:${SIX_COL[x.k]}" title="${sixTitle(x)}">${icS(x)}<span>${SIX_N[x.k]}</span><div class="bt"><i style="width:${Math.max(2,x.v).toFixed(1)}%"></i></div>${x.k==='m'?sixMoneyTxt(L):''}</div>`
+    :`<div class="si lock" title="${sixTitle(x)}"><span class="ic">${sixIc('lock')}</span><span>?</span><span class="lk">${x.at}살에</span></div>`).join('')}</div>`;
   if(V==='B'){ const C=2*Math.PI*12.5; return `<div class="six sB">${jw}<div class="rings">${S.map(x=>`<div class="si${x.open?'':' lock'}${sixFxCls(x.k)}" style="--c:${SIX_COL[x.k]}" title="${sixTitle(x)}"><div class="rg"><svg class="r" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12.5" fill="none" stroke="var(--g)" stroke-width="3.4"/>${x.open?`<circle cx="15" cy="15" r="12.5" fill="none" stroke="var(--c)" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="${(C*x.v/100).toFixed(1)} ${C.toFixed(1)}"/>`:''}</svg><span class="ic">${sixIc(x.open?x.k:'lock')}</span></div><span>${x.open?sixStar(x)+SIX_N[x.k]:x.at+'살'}</span></div>`).join('')}</div></div>`; }
   if(V==='C'){ const n=6, cx=40, cy=37, R=31, pt=(i,v)=>{ const an=-Math.PI/2+i*2*Math.PI/n; return [cx+Math.cos(an)*R*v/100,cy+Math.sin(an)*R*v/100]; }, poly=f=>S.map((x,i)=>pt(i,f(x)).map(z=>z.toFixed(1)).join(',')).join(' ');
     let g=`<polygon points="${poly(()=>100)}" fill="rgba(124,149,174,.08)" stroke="#AAB6C2" stroke-width="1"/><polygon points="${poly(()=>50)}" fill="none" stroke="#D8E0E8" stroke-width="1"/>`;
@@ -12920,7 +12932,7 @@ html.ui-sr-0 #hRes{display:none!important}
       <div class="sg"><h4>화면 꾸미기 · 능력치 동그라미</h4>${sq('sr',[['1','보이기'],['0','숨기기']],UI.sr,UI.sp==='off')}<p>숨겨도 능력치는 그대로 쌓이고, '내 정보'에서 볼 수 있어요.</p></div>
       <div class="sg rs"><button type="button" id="uiReset">화면 꾸미기를 처음대로</button></div>
     </div>`;
-    $('setX').onclick=closeP; $('uiReset').onclick=()=>{ Object.assign(UI,{ms:'m',mp:'tl',sp:'tl',sr:'1'}); saveUI(); applyUI(); draw(); };
+    $('setX').onclick=closeP; $('uiReset').onclick=()=>{ Object.assign(UI,{ms:'m',mp:'tl',sp:'tl',sr:'1'}); saveUI(); try{ localStorage.removeItem('life8b_sixhud'); }catch(e){} applyUI(); try{ renderHud(); }catch(e){} draw(); }; /* 능력치 표시 모양도 처음(동그라미)으로(11-22) */
     panel.querySelectorAll('.sq').forEach(s=>s.onclick=e=>{ const b=e.target.closest('button'); if(!b) return; set(s.dataset.k,b.dataset.v); draw(); }); }
   function set(k,v){ const L=G.life;
     if(k==='yl'){ v=+v; if(!L||G.teacher||(G.room&&!G.teacher)) return; const old=L.yl||G.sec||v; L.yl=v; G.opts.yl=v; G.sec=secOf(L); if(L.cur&&L.cur.t>0) L.cur.t=L.cur.t*v/old; if(L.cur&&L.cur.el) L.cur.el=L.cur.el*v/old; ls('life8b_opts',G.opts); try{ persist(); }catch(e){} toast(`게임 속도: 한 해 ${v/60}분`); }

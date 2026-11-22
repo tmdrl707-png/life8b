@@ -10,7 +10,7 @@ async function doLogin(create){
   $('btnLogin').disabled=false;
 }
 $('loginForm').onsubmit=e=>{ e.preventDefault(); doLogin(null); };
-$('btnLogout').onclick=()=>{ Store.logout(); G.data=null; G.life=null; $('who').textContent=''; show('login'); };
+$('btnLogout').onclick=()=>{ Store.logout(); ['uid','upw'].forEach(i=>{ const e=$(i); if(e) e.value=''; }); /* 공용 기기: 로그아웃하면 입력칸 비움(11-22) */ G.data=null; G.life=null; $('who').textContent=''; show('login'); };
 function openHub(){
   $('who').textContent=Store.sess?Store.sess.id+' 님':''; const sv=G.data.save;
   $('hubNow').innerHTML = sv
