@@ -213,7 +213,8 @@ function drawMini(t){ const c=$('mini'), x=c.getContext('2d'), L=G.life; x.image
 const patchLabels=()=>{ const p=OUT.patch; return [['play',p.play[0]+p.play[2]/2,p.play[1]+.2],['nature',p.nature[0]+p.nature[2]/2,p.nature[1]+.2],['mount',p.mount[0]+p.mount[2]/2,p.mount[1]-.6],['sea',p.sea[0]+p.sea[2]/2,p.sea[1]+p.sea[3]-1]]; };
 function drawBigMap(c){ const x=c.getContext('2d'), L=G.life, s=c.width/OUT.w; x.imageSmoothingEnabled=false; x.drawImage(miniBase(),0,0,OUT.w*s,OUT.h*s);
   x.font=`17px ${LABEL_FONT}`; x.textAlign='center'; x.textBaseline='middle';
-  const tag=(t,px,py,bg)=>{ const w=x.measureText(t).width+10; x.fillStyle='#283038'; x.fillRect(px-w/2-2,py-13,w+4,26); x.fillStyle=bg||'#F8F8F0'; x.fillRect(px-w/2,py-11,w,22); x.fillStyle='#283038'; x.fillText(t,px,py+1); };
+  const placed=[]; /* 큰 지도 이름표가 겹치지 않게: 같은 이름은 한 번, 겹치면 아래로 밀기(11-22 점검 UX-04) */
+  const tag=(t,px,py,bg)=>{ const w=x.measureText(t).width+10; if(placed.some(r=>r.t===t&&Math.abs(r.x-px)<w&&Math.abs(r.y-py)<60)) return; for(let n=0;n<4&&placed.some(r=>Math.abs(r.x-px)<(r.w+w)/2+2&&Math.abs(r.y-py)<26);n++) py+=26; placed.push({t,x:px,y:py,w}); x.fillStyle='#283038'; x.fillRect(px-w/2-2,py-13,w+4,26); x.fillStyle=bg||'#F8F8F0'; x.fillRect(px-w/2,py-11,w,22); x.fillStyle='#283038'; x.fillText(t,px,py+1); };
   for(const k in OUT.b){ const b=OUT.b[k]; if(k==='bus'||!inReach(b[0]+b[2]/2,b[1]+b[3])) continue; tag(k==='home'?'우리 집':L.spotName(k),(b[0]+b[2]/2)*s,(b[1]+b[3]/2)*s); }
   patchLabels().forEach(([k,xx,yy])=>{ if(inReach(xx,yy+1)) tag(L.spotName(k),xx*s,(yy+1.5)*s,'#FFF6DC'); });
   targets().forEach(k=>{ const p=k.m==='out'?k.p:doorOf(k.m==='home'?'home':k.m); x.fillStyle='#283038'; x.fillRect(p[0]*s-13,p[1]*s-13,26,26); x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(p[0]*s-10,p[1]*s-10,20,20); });

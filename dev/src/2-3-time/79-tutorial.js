@@ -85,7 +85,7 @@
       {h:'흐르는 시간',el:'#hud .timer',p:`<p>이 막대가 줄어들면 <b>한 해</b>가 지나고 한 살 더 먹어요.</p><p>창이 떠 있어도 시간은 흘러요. 그해에 고르지 않은 일은 한 해가 끝날 때 저절로 정해져요.</p>`},
       {h:'능력치와 행복',el:'#hRes',p:`<p>위쪽 동그라미는 <b>건강·관계·경험·지식·기술·재산</b>, 맨 앞 얼굴은 <b>행복</b>이에요.</p><p>자물쇠는 나이가 들면 하나씩 열려요. 동그라미를 <b>누르면 설명</b>이 나와요.</p>`},
       {h:'처음 열린 능력치 · 건강',el:ringOf('h'),p:`<p>${esc(h[0])} ${esc(h[1])}</p><p>${h[2]}</p>`},
-      {h:'이제 시작해요',p:`<p>집 안을 걸어 다니며 가족에게 다가가 보세요. 한 해씩 저절로 자라요.</p>${room?'':`<p>위쪽의 <b>5살로</b> 단추를 누르면 <b>언제든</b> 다섯 살로 건너뛸 수 있어요. 꼭 누르지 않아도 되고, 안 눌러도 다섯 살이 되면 <b>관계</b>와 <b>미션</b>을 알려 줄게요.</p>`}`}
+      {h:'이제 시작해요',p:`<p>집 안을 걸어 다니며 가족에게 다가가 보세요. 한 해씩 저절로 자라요.</p>${room?'':`<p>아래쪽 가운데의 <b>5살로</b> 단추를 누르면 <b>언제든</b> 다섯 살로 건너뛸 수 있어요. 꼭 누르지 않아도 되고, 안 눌러도 다섯 살이 되면 <b>관계</b>와 <b>미션</b>을 알려 줄게요.</p>`}`}
     ]; }
   // ---- 5살 안내 ----
   function steps5(){ const L=G.life, r=ME('r'), e=ME('e');
@@ -119,7 +119,8 @@
 
   // ---- '5살로' 단추: 0~4살 어느 때나 (의무 아님) ----
   { const b=document.createElement('button'); b.id='btnSkip5'; b.type='button'; b.hidden=true; b.innerHTML='<b>5살로 건너뛰기</b><span>언제든 누를 수 있어요</span>'; b.title='집 안에서 지내는 시기를 건너뛰어 5살로 가요'; ($('s-game')||document.body).appendChild(b);
-    { const st=document.createElement('style'); st.textContent=`#btnSkip5{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 118px);transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 22px 8px;border:2px solid #fff;border-radius:999px;background:linear-gradient(180deg,#FFB547 0%,#F0791F 100%);color:#fff;font:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(240,121,31,.55),0 0 0 4px rgba(255,181,71,.35);animation:sk5p 1.8s ease-in-out infinite}#btnSkip5 b{font-size:17px;line-height:1.2;text-shadow:0 1px 2px rgba(0,0,0,.35)}#btnSkip5 span{font-size:11px;opacity:.92}#btnSkip5[hidden]{display:none}@keyframes sk5p{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}@media (max-height:480px){#btnSkip5{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);left:50%;padding:6px 16px 5px}#btnSkip5 b{font-size:14px}#btnSkip5 span{display:none}}`; document.head.appendChild(st); }
+    { const st=document.createElement('style'); st.textContent=`body:has(#dlg:not([hidden])) #btnSkip5,body:has(#sheet:not([hidden])) #btnSkip5,body:has(#sixU:not([hidden])) #btnSkip5{display:none!important}
+#btnSkip5{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 118px);transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 22px 8px;border:2px solid #fff;border-radius:999px;background:linear-gradient(180deg,#FFB547 0%,#F0791F 100%);color:#fff;font:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(240,121,31,.55),0 0 0 4px rgba(255,181,71,.35);animation:sk5p 1.8s ease-in-out infinite}#btnSkip5 b{font-size:17px;line-height:1.2;text-shadow:0 1px 2px rgba(0,0,0,.35)}#btnSkip5 span{font-size:11px;opacity:.92}#btnSkip5[hidden]{display:none}@keyframes sk5p{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}@media (max-height:480px){#btnSkip5{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);left:50%;padding:6px 16px 5px}#btnSkip5 b{font-size:14px}#btnSkip5 span{display:none}}`; document.head.appendChild(st); }
     const can=()=>{ const L=G.life; return !!(L&&L.f&&L.f.tut&&L.f.tut<3&&!G.teacher&&!G.room&&G.running&&!L.dead&&L.age<5&&!tutOpen()); };
     const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ b.hidden=!can(); }catch(e){} return r; }; setInterval(()=>{ try{ b.hidden=!can(); }catch(e){} },1000);
     b.onclick=()=>{ if(!can()||!$('sheet').hidden) return; G.hardPause=1; const L=G.life, n=5-L.age;

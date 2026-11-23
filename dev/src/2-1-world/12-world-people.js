@@ -181,6 +181,6 @@ cv.addEventListener('pointerdown',e=>{ if(IN.id!==null) return; IN.id=e.pointerI
 cv.addEventListener('pointermove',e=>{ if(e.pointerId!==IN.id) return; const dx=e.clientX-IN.ox, dy=e.clientY-IN.oy, d=Math.hypot(dx,dy), m=46; if(d<8){ IN.jx=IN.jy=0; return; } const k=Math.min(d,m)/m/d; IN.jx=dx*k; IN.jy=dy*k; });
 const up=e=>{ if(e.pointerId===IN.id){ IN.id=null; IN.jx=IN.jy=0; } };
 cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
-addEventListener('keydown',e=>{ if($('s-game').hidden||/^(INPUT|TEXTAREA|SELECT)$/.test((e.target&&e.target.tagName)||'')) return; IN.keys[e.key.toLowerCase()]=1; if((e.key===' '||e.key==='Enter')&&$('sheet').hidden&&!$('btnAct').hidden){ e.preventDefault(); $('btnAct').click(); } if(e.key.startsWith('Arrow')) e.preventDefault(); });
-addEventListener('keyup',e=>{ IN.keys[e.key.toLowerCase()]=0; });
+addEventListener('keydown',e=>{ if($('s-game').hidden||/^(INPUT|TEXTAREA|SELECT)$/.test((e.target&&e.target.tagName)||'')) return; { const kk=e.key.toLowerCase(); if(!IN.keys[kk]) (IN.kt||(IN.kt={}))[kk]=performance.now(); IN.keys[kk]=1; } if((e.key===' '||e.key==='Enter')&&$('sheet').hidden&&!$('btnAct').hidden){ e.preventDefault(); $('btnAct').click(); } if(e.key.startsWith('Arrow')) e.preventDefault(); });
+addEventListener('keyup',e=>{ const kk=e.key.toLowerCase(), t0=(IN.kt||{})[kk]||0, held=performance.now()-t0; if(held<170&&/^arrow|^[wasd]$/.test(kk)){ setTimeout(()=>{ if(((IN.kt||{})[kk]||0)===t0) IN.keys[kk]=0; },170-held); } else IN.keys[kk]=0; });   /* 짧게 톡 눌러도 조금은 움직이게(11-22 점검 BUG-09) */
 

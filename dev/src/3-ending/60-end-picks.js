@@ -15,10 +15,10 @@ function pickCands(L){ const M=(L.mem||[]).filter(m=>m.a>0&&m.t&&!/^(몸이 많�
   return out.slice(0,12).sort((x,y)=>x.a-y.a); }
 function pickSlideHTML(L,C,scKind){ const cut=(t,n)=>t.length>n?t.slice(0,n-1)+'…':t;
   return `<div id="pkBox" class="pkbox"><p class="soft">가장 기억에 남는 순간 3가지를 골라 주세요. 고른 장면이 다음 장에서 스쳐 지나가고, 기록 카드와 '지나온 삶'에 남아요.</p>
-    <h3 class="pkh">가장 기억에 남는 순간 <small id="pkN">0 / 3</small></h3>
+    <h3 class="pkh">가장 기억에 남는 순간 <small id="pkN">0 / 3 · 고르지 않으면 마음에 남은 장면 세 가지를 대신 보여 줘요</small></h3>
     <div class="pkgrid">${C.map((m,i)=>`<button type="button" class="pk" data-i="${i}">${scThumb(scKind(m),L,'pkimg')}<span class="pka">${m.a}살</span><span class="pkt">${esc(cut(memT(m),70))}</span><span class="pkno"></span><span class="pkstar" data-s="${i}" title="가장 기억에 남는 한 장면">★ 대표 장면</span></button>`).join('')||'<p class="small">고를 만한 기억이 없어요.</p>'}</div>
     <p class="small sub">고른 순간에서 <b>★ 대표 장면</b>을 누르면 그 장면이 이 삶을 대표하는 그림이 돼요. 고르지 않으면 첫 번째로 고른 순간이 대표가 돼요.</p></div>`; }
-function pickWire(box,PK){ const paint=()=>{ box.querySelectorAll('.pk').forEach(b=>{ const i=+b.dataset.i, k=PK.sel.indexOf(i); b.classList.toggle('on',k>=0); b.classList.toggle('fav',PK.fav===i&&k>=0); b.querySelector('.pkno').textContent=k>=0?k+1:''; }); const n=$('pkN'); if(n) n.textContent=`${PK.sel.length} / 3`; };
+function pickWire(box,PK){ const paint=()=>{ box.querySelectorAll('.pk').forEach(b=>{ const i=+b.dataset.i, k=PK.sel.indexOf(i); b.classList.toggle('on',k>=0); b.classList.toggle('fav',PK.fav===i&&k>=0); b.querySelector('.pkno').textContent=k>=0?k+1:''; }); const n=$('pkN'); if(n) n.textContent=PK.sel.length?`${PK.sel.length} / 3`:'0 / 3 · 고르지 않으면 마음에 남은 장면 세 가지를 대신 보여 줘요'; };
   box.querySelectorAll('.pk').forEach(b=>b.onclick=e=>{ const i=+b.dataset.i;
     if(e.target.closest('.pkstar')){ if(!PK.sel.includes(i)){ if(PK.sel.length>=3) return; PK.sel.push(i); } PK.fav=i; paint(); return; }
     const k=PK.sel.indexOf(i); if(k>=0){ PK.sel.splice(k,1); if(PK.fav===i) PK.fav=null; } else { if(PK.sel.length>=3){ toast('세 가지까지 고를 수 있어요. 고른 것을 한 번 더 누르면 빠져요.'); return; } PK.sel.push(i); } paint(); });

@@ -858,6 +858,10 @@ body.bnight .topbar .btn.ghost,body.bnight .topbar .who,body.bnight .topbar span
 /* 태어난 곳 제목은 한 줄에 들어오게 (글자 크기는 birthFit이 줄인다) */
 body.bnight #s-birth h1#bTitle{white-space:nowrap;overflow:hidden}
 .bhead{min-width:0}
+
+/* 11-22 점검 UX-01·UX-07: 터치 기기에는 터치 안내만, 키보드 기기에는 키 안내만 */
+#hint .hK{display:none}
+@media (hover:hover) and (pointer:fine){ #hint .hT{display:none} #hint .hK{display:inline} }
 </style>
 </head>
 <body>
@@ -7952,7 +7956,7 @@ function hzYear(L,i){ const x=hzX(L.C); if(x>=1) return true; let d=HZ_DEC.get(L
   </div>
   <div id="toasts"></div>
   <div id="flash" class="gbox" hidden></div>
-  <div id="hint" class="gbox">화면을 누른 채 끌어서 움직이기 · 키보드는 방향키</div>
+  <div id="hint" class="gbox"><span class="hT">화면을 누른 채 끌어서 움직이기 · 둥근 단추로 말 걸기</span><span class="hK">방향키로 움직이기 · 스페이스로 말 걸기</span></div>
   <button id="btnAct" class="abtn" hidden></button>
   <button id="btnCar" class="abtn" hidden>타기</button>
   <button id="btnNext" class="abtn">다음 해로 ▶</button>
@@ -8841,8 +8845,8 @@ cv.addEventListener('pointerdown',e=>{ if(IN.id!==null) return; IN.id=e.pointerI
 cv.addEventListener('pointermove',e=>{ if(e.pointerId!==IN.id) return; const dx=e.clientX-IN.ox, dy=e.clientY-IN.oy, d=Math.hypot(dx,dy), m=46; if(d<8){ IN.jx=IN.jy=0; return; } const k=Math.min(d,m)/m/d; IN.jx=dx*k; IN.jy=dy*k; });
 const up=e=>{ if(e.pointerId===IN.id){ IN.id=null; IN.jx=IN.jy=0; } };
 cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
-addEventListener('keydown',e=>{ if($('s-game').hidden||/^(INPUT|TEXTAREA|SELECT)$/.test((e.target&&e.target.tagName)||'')) return; IN.keys[e.key.toLowerCase()]=1; if((e.key===' '||e.key==='Enter')&&$('sheet').hidden&&!$('btnAct').hidden){ e.preventDefault(); $('btnAct').click(); } if(e.key.startsWith('Arrow')) e.preventDefault(); });
-addEventListener('keyup',e=>{ IN.keys[e.key.toLowerCase()]=0; });
+addEventListener('keydown',e=>{ if($('s-game').hidden||/^(INPUT|TEXTAREA|SELECT)$/.test((e.target&&e.target.tagName)||'')) return; { const kk=e.key.toLowerCase(); if(!IN.keys[kk]) (IN.kt||(IN.kt={}))[kk]=performance.now(); IN.keys[kk]=1; } if((e.key===' '||e.key==='Enter')&&$('sheet').hidden&&!$('btnAct').hidden){ e.preventDefault(); $('btnAct').click(); } if(e.key.startsWith('Arrow')) e.preventDefault(); });
+addEventListener('keyup',e=>{ const kk=e.key.toLowerCase(), t0=(IN.kt||{})[kk]||0, held=performance.now()-t0; if(held<170&&/^arrow|^[wasd]$/.test(kk)){ setTimeout(()=>{ if(((IN.kt||{})[kk]||0)===t0) IN.keys[kk]=0; },170-held); } else IN.keys[kk]=0; });   /* 짧게 톡 눌러도 조금은 움직이게(11-22 점검 BUG-09) */
 
 /* ========== 이번 삶의 설정 (빠르기 · 한 해 돌아보기 · 멈춤 질문 · 이별 장면) ========== */
    // 한 해(어른은 두 해)에 고르는 일의 평균 수 (자동 진행 200번으로 잰 값)
@@ -9447,7 +9451,8 @@ function drawMini(t){ const c=$('mini'), x=c.getContext('2d'), L=G.life; x.image
 const patchLabels=()=>{ const p=OUT.patch; return [['play',p.play[0]+p.play[2]/2,p.play[1]+.2],['nature',p.nature[0]+p.nature[2]/2,p.nature[1]+.2],['mount',p.mount[0]+p.mount[2]/2,p.mount[1]-.6],['sea',p.sea[0]+p.sea[2]/2,p.sea[1]+p.sea[3]-1]]; };
 function drawBigMap(c){ const x=c.getContext('2d'), L=G.life, s=c.width/OUT.w; x.imageSmoothingEnabled=false; x.drawImage(miniBase(),0,0,OUT.w*s,OUT.h*s);
   x.font=`17px ${LABEL_FONT}`; x.textAlign='center'; x.textBaseline='middle';
-  const tag=(t,px,py,bg)=>{ const w=x.measureText(t).width+10; x.fillStyle='#283038'; x.fillRect(px-w/2-2,py-13,w+4,26); x.fillStyle=bg||'#F8F8F0'; x.fillRect(px-w/2,py-11,w,22); x.fillStyle='#283038'; x.fillText(t,px,py+1); };
+  const placed=[]; /* 큰 지도 이름표가 겹치지 않게: 같은 이름은 한 번, 겹치면 아래로 밀기(11-22 점검 UX-04) */
+  const tag=(t,px,py,bg)=>{ const w=x.measureText(t).width+10; if(placed.some(r=>r.t===t&&Math.abs(r.x-px)<w&&Math.abs(r.y-py)<60)) return; for(let n=0;n<4&&placed.some(r=>Math.abs(r.x-px)<(r.w+w)/2+2&&Math.abs(r.y-py)<26);n++) py+=26; placed.push({t,x:px,y:py,w}); x.fillStyle='#283038'; x.fillRect(px-w/2-2,py-13,w+4,26); x.fillStyle=bg||'#F8F8F0'; x.fillRect(px-w/2,py-11,w,22); x.fillStyle='#283038'; x.fillText(t,px,py+1); };
   for(const k in OUT.b){ const b=OUT.b[k]; if(k==='bus'||!inReach(b[0]+b[2]/2,b[1]+b[3])) continue; tag(k==='home'?'우리 집':L.spotName(k),(b[0]+b[2]/2)*s,(b[1]+b[3]/2)*s); }
   patchLabels().forEach(([k,xx,yy])=>{ if(inReach(xx,yy+1)) tag(L.spotName(k),xx*s,(yy+1.5)*s,'#FFF6DC'); });
   targets().forEach(k=>{ const p=k.m==='out'?k.p:doorOf(k.m==='home'?'home':k.m); x.fillStyle='#283038'; x.fillRect(p[0]*s-13,p[1]*s-13,26,26); x.fillStyle=k.type==='q'?'#5890F0':'#F08A50'; x.fillRect(p[0]*s-10,p[1]*s-10,20,20); });
@@ -10683,7 +10688,10 @@ function dlgOpts(it){ const d=dlgEl(); DLG.opts=it; DLG.sel=0; d.insertAdjacentH
 function dlgNext(){ if(DLG.typing){ DLG.fin(); return; } if(DLG.opts) return; DLG.q.shift(); dlgShow(); }
 function dlgPick(i){ const it=DLG.opts; if(!it) return; DLG.opts=null; DLG.q.shift(); const more=it.then?it.then(i)||[]:[]; DLG.q=more.concat(DLG.q); dlgShow(); }
 function dlgClose(){ clearInterval(DLG.tm); const d=dlgEl(); d.hidden=true; d.innerHTML=''; paused=false; lastT=performance.now(); const f=DLG.done; DLG.done=null; if(f) f(); }
-addEventListener('keydown',e=>{ if(!dlgOpen()) return; const k=e.key; e.preventDefault(); e.stopImmediatePropagation();
+addEventListener('keyup',e=>{ if(DLG.eat&&(e.key===' '||e.key==='Enter')){ e.preventDefault(); e.stopImmediatePropagation(); } DLG.eat=0; },true);   /* 11-22 점검 BUG-09: 대화를 넘긴 스페이스가 포커스된 단추를 누르던 것 */
+// 게임 화면의 단추는 누른 뒤 포커스를 놓아, 나중의 스페이스·엔터가 그 단추를 다시 누르지 않게
+addEventListener('click',e=>{ const b=e.target&&e.target.closest&&e.target.closest('button'); if(b&&!$('s-game').hidden&&!b.closest('#sheet,#dlg')) setTimeout(()=>{ try{ b.blur(); }catch(_){} },0); },true);
+addEventListener('keydown',e=>{ if(!dlgOpen()) return; const k=e.key; e.preventDefault(); e.stopImmediatePropagation(); DLG.eat=1;
   if(DLG.opts){ const bs=[...$('dlg').querySelectorAll('.dopts button')]; if(k==='ArrowUp'||k==='w'||k==='ArrowDown'||k==='s'){ DLG.sel=(DLG.sel+(k==='ArrowUp'||k==='w'?-1:1)+bs.length)%bs.length; bs.forEach((b,j)=>b.classList.toggle('on',j===DLG.sel)); }
     else if(k===' '||k==='Enter') dlgPick(DLG.sel); else if(/^[1-9]$/.test(k)&&+k<=bs.length) dlgPick(+k-1); return; }
   if(k===' '||k==='Enter'||k==='Escape') dlgNext(); },true);
@@ -10975,6 +10983,9 @@ function openQuest(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return
     const s0=Object.assign({},L.s), r=L.questEnd(), up=qChips(s0,L.s); renderHud(); persist();
     dlgRun([{who,t:r.ok?pickOne(['다녀왔구나! 정말 고마워.','벌써 해냈어? 고마워!','덕분에 살았다.']):pickOne(['괜찮아, 애썼다.','그럴 수도 있지. 수고했어.'])},{who:'',t:r.t,up}]);
   } };
+/* Esc로 닫기(11-22 점검 BUG-08): 대화창은 넘기기, 고를 것이 없는 가운데 창(기억·내 정보·알림)은 닫기. 꼭 골라야 하는 창은 그대로 */
+addEventListener('keydown',e=>{ if(e.key!=='Escape'||$('s-game').hidden) return; const sh=$('sheet');
+  if(sh&&!sh.hidden){ const box=$('sheetBox'); if(box&&box.querySelector('.opts button')) return; const ok=$('btnOk'); e.preventDefault(); if(ok&&/계속|닫기|알겠|돌아|확인/.test(ok.textContent)) ok.click(); else if(!ok) closeSheet(); } });
 /* ---------- [3 엔딩·기록] 인생 기록: 위쪽 메뉴로 넘겨 본다 ---------- */
 /* 흰 카드 안 글자 색: 엔딩 밤하늘의 밝은 글자색이 흰 카드로 이어져 읽을 수 없던 것(11-22 점검 BUG-01). 카드 안은 늘 어두운 글자 */
 (function(){ const st=document.createElement('style'); st.textContent=`
@@ -11177,10 +11188,10 @@ function pickCands(L){ const M=(L.mem||[]).filter(m=>m.a>0&&m.t&&!/^(몸이 많�
   return out.slice(0,12).sort((x,y)=>x.a-y.a); }
 function pickSlideHTML(L,C,scKind){ const cut=(t,n)=>t.length>n?t.slice(0,n-1)+'…':t;
   return `<div id="pkBox" class="pkbox"><p class="soft">가장 기억에 남는 순간 3가지를 골라 주세요. 고른 장면이 다음 장에서 스쳐 지나가고, 기록 카드와 '지나온 삶'에 남아요.</p>
-    <h3 class="pkh">가장 기억에 남는 순간 <small id="pkN">0 / 3</small></h3>
+    <h3 class="pkh">가장 기억에 남는 순간 <small id="pkN">0 / 3 · 고르지 않으면 마음에 남은 장면 세 가지를 대신 보여 줘요</small></h3>
     <div class="pkgrid">${C.map((m,i)=>`<button type="button" class="pk" data-i="${i}">${scThumb(scKind(m),L,'pkimg')}<span class="pka">${m.a}살</span><span class="pkt">${esc(cut(memT(m),70))}</span><span class="pkno"></span><span class="pkstar" data-s="${i}" title="가장 기억에 남는 한 장면">★ 대표 장면</span></button>`).join('')||'<p class="small">고를 만한 기억이 없어요.</p>'}</div>
     <p class="small sub">고른 순간에서 <b>★ 대표 장면</b>을 누르면 그 장면이 이 삶을 대표하는 그림이 돼요. 고르지 않으면 첫 번째로 고른 순간이 대표가 돼요.</p></div>`; }
-function pickWire(box,PK){ const paint=()=>{ box.querySelectorAll('.pk').forEach(b=>{ const i=+b.dataset.i, k=PK.sel.indexOf(i); b.classList.toggle('on',k>=0); b.classList.toggle('fav',PK.fav===i&&k>=0); b.querySelector('.pkno').textContent=k>=0?k+1:''; }); const n=$('pkN'); if(n) n.textContent=`${PK.sel.length} / 3`; };
+function pickWire(box,PK){ const paint=()=>{ box.querySelectorAll('.pk').forEach(b=>{ const i=+b.dataset.i, k=PK.sel.indexOf(i); b.classList.toggle('on',k>=0); b.classList.toggle('fav',PK.fav===i&&k>=0); b.querySelector('.pkno').textContent=k>=0?k+1:''; }); const n=$('pkN'); if(n) n.textContent=PK.sel.length?`${PK.sel.length} / 3`:'0 / 3 · 고르지 않으면 마음에 남은 장면 세 가지를 대신 보여 줘요'; };
   box.querySelectorAll('.pk').forEach(b=>b.onclick=e=>{ const i=+b.dataset.i;
     if(e.target.closest('.pkstar')){ if(!PK.sel.includes(i)){ if(PK.sel.length>=3) return; PK.sel.push(i); } PK.fav=i; paint(); return; }
     const k=PK.sel.indexOf(i); if(k>=0){ PK.sel.splice(k,1); if(PK.fav===i) PK.fav=null; } else { if(PK.sel.length>=3){ toast('세 가지까지 고를 수 있어요. 고른 것을 한 번 더 누르면 빠져요.'); return; } PK.sel.push(i); } paint(); });
@@ -12663,7 +12674,7 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
       {h:'흐르는 시간',el:'#hud .timer',p:`<p>이 막대가 줄어들면 <b>한 해</b>가 지나고 한 살 더 먹어요.</p><p>창이 떠 있어도 시간은 흘러요. 그해에 고르지 않은 일은 한 해가 끝날 때 저절로 정해져요.</p>`},
       {h:'능력치와 행복',el:'#hRes',p:`<p>위쪽 동그라미는 <b>건강·관계·경험·지식·기술·재산</b>, 맨 앞 얼굴은 <b>행복</b>이에요.</p><p>자물쇠는 나이가 들면 하나씩 열려요. 동그라미를 <b>누르면 설명</b>이 나와요.</p>`},
       {h:'처음 열린 능력치 · 건강',el:ringOf('h'),p:`<p>${esc(h[0])} ${esc(h[1])}</p><p>${h[2]}</p>`},
-      {h:'이제 시작해요',p:`<p>집 안을 걸어 다니며 가족에게 다가가 보세요. 한 해씩 저절로 자라요.</p>${room?'':`<p>위쪽의 <b>5살로</b> 단추를 누르면 <b>언제든</b> 다섯 살로 건너뛸 수 있어요. 꼭 누르지 않아도 되고, 안 눌러도 다섯 살이 되면 <b>관계</b>와 <b>미션</b>을 알려 줄게요.</p>`}`}
+      {h:'이제 시작해요',p:`<p>집 안을 걸어 다니며 가족에게 다가가 보세요. 한 해씩 저절로 자라요.</p>${room?'':`<p>아래쪽 가운데의 <b>5살로</b> 단추를 누르면 <b>언제든</b> 다섯 살로 건너뛸 수 있어요. 꼭 누르지 않아도 되고, 안 눌러도 다섯 살이 되면 <b>관계</b>와 <b>미션</b>을 알려 줄게요.</p>`}`}
     ]; }
   // ---- 5살 안내 ----
   function steps5(){ const L=G.life, r=ME('r'), e=ME('e');
@@ -12697,7 +12708,8 @@ function openStatInfo(k){ const L=G.life; if(!L||!$('sheet').hidden||dlgOpen()) 
 
   // ---- '5살로' 단추: 0~4살 어느 때나 (의무 아님) ----
   { const b=document.createElement('button'); b.id='btnSkip5'; b.type='button'; b.hidden=true; b.innerHTML='<b>5살로 건너뛰기</b><span>언제든 누를 수 있어요</span>'; b.title='집 안에서 지내는 시기를 건너뛰어 5살로 가요'; ($('s-game')||document.body).appendChild(b);
-    { const st=document.createElement('style'); st.textContent=`#btnSkip5{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 118px);transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 22px 8px;border:2px solid #fff;border-radius:999px;background:linear-gradient(180deg,#FFB547 0%,#F0791F 100%);color:#fff;font:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(240,121,31,.55),0 0 0 4px rgba(255,181,71,.35);animation:sk5p 1.8s ease-in-out infinite}#btnSkip5 b{font-size:17px;line-height:1.2;text-shadow:0 1px 2px rgba(0,0,0,.35)}#btnSkip5 span{font-size:11px;opacity:.92}#btnSkip5[hidden]{display:none}@keyframes sk5p{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}@media (max-height:480px){#btnSkip5{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);left:50%;padding:6px 16px 5px}#btnSkip5 b{font-size:14px}#btnSkip5 span{display:none}}`; document.head.appendChild(st); }
+    { const st=document.createElement('style'); st.textContent=`body:has(#dlg:not([hidden])) #btnSkip5,body:has(#sheet:not([hidden])) #btnSkip5,body:has(#sixU:not([hidden])) #btnSkip5{display:none!important}
+#btnSkip5{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 118px);transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 22px 8px;border:2px solid #fff;border-radius:999px;background:linear-gradient(180deg,#FFB547 0%,#F0791F 100%);color:#fff;font:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(240,121,31,.55),0 0 0 4px rgba(255,181,71,.35);animation:sk5p 1.8s ease-in-out infinite}#btnSkip5 b{font-size:17px;line-height:1.2;text-shadow:0 1px 2px rgba(0,0,0,.35)}#btnSkip5 span{font-size:11px;opacity:.92}#btnSkip5[hidden]{display:none}@keyframes sk5p{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}@media (max-height:480px){#btnSkip5{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);left:50%;padding:6px 16px 5px}#btnSkip5 b{font-size:14px}#btnSkip5 span{display:none}}`; document.head.appendChild(st); }
     const can=()=>{ const L=G.life; return !!(L&&L.f&&L.f.tut&&L.f.tut<3&&!G.teacher&&!G.room&&G.running&&!L.dead&&L.age<5&&!tutOpen()); };
     const _rh=renderHud; renderHud=function(){ const r=_rh.apply(this,arguments); try{ b.hidden=!can(); }catch(e){} return r; }; setInterval(()=>{ try{ b.hidden=!can(); }catch(e){} },1000);
     b.onclick=()=>{ if(!can()||!$('sheet').hidden) return; G.hardPause=1; const L=G.life, n=5-L.age;

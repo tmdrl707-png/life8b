@@ -55,7 +55,10 @@ function dlgOpts(it){ const d=dlgEl(); DLG.opts=it; DLG.sel=0; d.insertAdjacentH
 function dlgNext(){ if(DLG.typing){ DLG.fin(); return; } if(DLG.opts) return; DLG.q.shift(); dlgShow(); }
 function dlgPick(i){ const it=DLG.opts; if(!it) return; DLG.opts=null; DLG.q.shift(); const more=it.then?it.then(i)||[]:[]; DLG.q=more.concat(DLG.q); dlgShow(); }
 function dlgClose(){ clearInterval(DLG.tm); const d=dlgEl(); d.hidden=true; d.innerHTML=''; paused=false; lastT=performance.now(); const f=DLG.done; DLG.done=null; if(f) f(); }
-addEventListener('keydown',e=>{ if(!dlgOpen()) return; const k=e.key; e.preventDefault(); e.stopImmediatePropagation();
+addEventListener('keyup',e=>{ if(DLG.eat&&(e.key===' '||e.key==='Enter')){ e.preventDefault(); e.stopImmediatePropagation(); } DLG.eat=0; },true);   /* 11-22 점검 BUG-09: 대화를 넘긴 스페이스가 포커스된 단추를 누르던 것 */
+// 게임 화면의 단추는 누른 뒤 포커스를 놓아, 나중의 스페이스·엔터가 그 단추를 다시 누르지 않게
+addEventListener('click',e=>{ const b=e.target&&e.target.closest&&e.target.closest('button'); if(b&&!$('s-game').hidden&&!b.closest('#sheet,#dlg')) setTimeout(()=>{ try{ b.blur(); }catch(_){} },0); },true);
+addEventListener('keydown',e=>{ if(!dlgOpen()) return; const k=e.key; e.preventDefault(); e.stopImmediatePropagation(); DLG.eat=1;
   if(DLG.opts){ const bs=[...$('dlg').querySelectorAll('.dopts button')]; if(k==='ArrowUp'||k==='w'||k==='ArrowDown'||k==='s'){ DLG.sel=(DLG.sel+(k==='ArrowUp'||k==='w'?-1:1)+bs.length)%bs.length; bs.forEach((b,j)=>b.classList.toggle('on',j===DLG.sel)); }
     else if(k===' '||k==='Enter') dlgPick(DLG.sel); else if(/^[1-9]$/.test(k)&&+k<=bs.length) dlgPick(+k-1); return; }
   if(k===' '||k==='Enter'||k==='Escape') dlgNext(); },true);
@@ -347,3 +350,6 @@ function openQuest(){ if(dlgOpen()) return; const L=G.life, q=L.q; if(!q) return
     const s0=Object.assign({},L.s), r=L.questEnd(), up=qChips(s0,L.s); renderHud(); persist();
     dlgRun([{who,t:r.ok?pickOne(['다녀왔구나! 정말 고마워.','벌써 해냈어? 고마워!','덕분에 살았다.']):pickOne(['괜찮아, 애썼다.','그럴 수도 있지. 수고했어.'])},{who:'',t:r.t,up}]);
   } };
+/* Esc로 닫기(11-22 점검 BUG-08): 대화창은 넘기기, 고를 것이 없는 가운데 창(기억·내 정보·알림)은 닫기. 꼭 골라야 하는 창은 그대로 */
+addEventListener('keydown',e=>{ if(e.key!=='Escape'||$('s-game').hidden) return; const sh=$('sheet');
+  if(sh&&!sh.hidden){ const box=$('sheetBox'); if(box&&box.querySelector('.opts button')) return; const ok=$('btnOk'); e.preventDefault(); if(ok&&/계속|닫기|알겠|돌아|확인/.test(ok.textContent)) ok.click(); else if(!ok) closeSheet(); } });

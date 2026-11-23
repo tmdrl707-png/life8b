@@ -201,3 +201,7 @@ body.bnight .topbar .btn.ghost,body.bnight .topbar .who,body.bnight .topbar span
 /* 태어난 곳 제목은 한 줄에 들어오게 (글자 크기는 birthFit이 줄인다) */
 body.bnight #s-birth h1#bTitle{white-space:nowrap;overflow:hidden}
 .bhead{min-width:0}
+
+/* 11-22 점검 UX-01·UX-07: 터치 기기에는 터치 안내만, 키보드 기기에는 키 안내만 */
+#hint .hK{display:none}
+@media (hover:hover) and (pointer:fine){ #hint .hT{display:none} #hint .hK{display:inline} }
