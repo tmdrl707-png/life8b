@@ -98,7 +98,7 @@ function kindOf(key){ const L=G.life, U=visU(L), C=L.C, rg=C.rg, code=C.code, T=
   return 'house'; }
 // 살림이 어려운 집 안: 소파·텔레비전 대신 돗자리·라디오, 부엌은 숯불 화덕
 function poorHome(L){ return L.C.tier<=1||(L.C.tier===2&&L.famI===2&&L.set==='R'); }
-const FURN_POOR={sofa:'mat',tv:'radio',counter:'hearth'};
+const FURN_POOR={sofa:'mat',tv:'radio',counter:'hearth',desk:'table'};   // 책상도 스탠드 없는 낮은 탁자로(11-22 점검 CONT-03)
 function landmarkSprite(lt,sp){ return cached(['LM',lt,sp].join('|'),88,96,(x,c)=>{ const P=(X,Y,Wd,H,cc)=>pr(x,X,Y,Wd,H,cc);
   if(lt==='mt'){ for(let i=0;i<70;i++){ const w=Math.round(i*1.15)+2; P(44-w/2,10+i,w/2,1,'#8A9A88'); P(44,10+i,w/2,1,'#6A7A68'); if(i<16){ P(44-w/2,10+i,w,1,sp===1&&i>10?'#8A9A88':'#F4F8FC'); } } P(20,60,12,6,'#58A040'); P(60,62,14,6,'#58A040'); }
   else if(lt==='tp'){ for(let k=0;k<4;k++){ const w=76-k*16, y=70-k*14; P(44-w/2,y,w,14,k%2?'#D8C090':'#C8A870'); P(44-w/2,y,w,2,'#E8D8A8'); } P(38,22,12,8,'#C04040'); P(36,18,16,5,'#8A3030'); P(40,62,8,22,'#4A3828'); }
@@ -151,7 +151,7 @@ function draw(t){
   const list=(NPCMAP[W.map]||[]).slice(), spr=[];
   for(const n of list){ if(n.kind==='v') spr.push({y:n.y,d:()=>{ dropShadow(lx,X(n.x),Y(n.y)+2,n.v==='car'?24:16); const s=vehicleSprite(n.v,n.vx>0?1:-1,n.col,n.v==='car'?null:n.look); drawSpr(lx,s,X(n.x)-sprW(s)/2,Y(n.y)-sprH(s)+4); }});
     else if(n.kind==='a') spr.push({y:n.y,d:()=>{ dropShadow(lx,X(n.x),Y(n.y)-1,9); drawAnimal(lx,animalSprite(n.a,n.moving?Math.floor(n.fr)%2:0,n.face||1),X(n.x)-6,Y(n.y)-10-(n.moving&&Math.floor(n.fr)%2?1:0)); }});
-    else spr.push({y:n.y,d:()=>{ const f=n.moving?[1,0,2,0][Math.floor(n.fr)%4]:0, bob=n.moving&&f===0?1:0; dropShadow(lx,X(n.x),Y(n.y)-1,n.st==='baby'?10:12); drawSpr(lx,personSprite({dir:n.dir,fr:f,st:n.st,skin:n.look.skin,hair:n.st==='elder'?'#D8DCE0':n.look.hair,body:n.look.body,pants:n.look.pants,long:n.long,sty:Math.floor(hash(Math.round(n.look.body.charCodeAt(2)*7+n.look.hair.charCodeAt(3)),9)*4),blink:Math.floor(t*10+n.x*7)%41===0}),X(n.x)-8,Y(n.y)-22-bob); }}); }
+    else spr.push({y:n.y,d:()=>{ const f=n.moving?[1,0,2,0][Math.floor(n.fr)%4]:0, bob=n.moving&&f===0?1:0; dropShadow(lx,X(n.x),Y(n.y)-1,n.st==='baby'?10:12); drawSpr(lx,personSprite({dir:n.dir,fr:f,st:n.st,skin:n.look.skin,hair:n.st==='elder'?'#D8DCE0':n.look.hair,body:n.look.body,pants:n.look.pants,long:n.long,sty:((v)=>!n.long&&v===2?1:v)(Math.floor(hash(Math.round(n.look.body.charCodeAt(2)*7+n.look.hair.charCodeAt(3)),9)*4)),   /* 양갈래 만두머리는 긴 머리(여자) 모양에만(11-22 점검: 아빠가 만두머리) */blink:Math.floor(t*10+n.x*7)%41===0}),X(n.x)-8,Y(n.y)-22-bob); }}); }
   const a=L.age, st=stageAt(a), f=W.moving?[1,0,2,0][Math.floor(W.walk)%4]:0, lk=L.look;
   spr.push({y:W.y,me:1,d:()=>{ if(W.car){ dropShadow(lx,X(W.x),Y(W.y)+2,C_VEH()==='car'?24:16); const s=vehicleSprite(C_VEH(),W.dir===1?-1:1,'#C2577A',C_VEH()==='car'?null:{skin:lk.skin,hair:a>=62?'#D8DCE0':lk.hair,body:'#E2703A',pants:lk.pants,st:stageAt(a),long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:0}); drawSpr(lx,s,X(W.x)-sprW(s)/2,Y(W.y)-sprH(s)+4); }
     else { dropShadow(lx,X(W.x),Y(W.y)-1,st==='baby'?10:12); const bob=W.moving&&f===0&&st!=='baby'?1:0; drawSpr(lx,personSprite({dir:W.dir,fr:f,st,skin:lk.skin,hair:a>=62?'#D8DCE0':a>=50?shade(lk.hair,1.6):lk.hair,body:'#E2703A',pants:lk.pants,long:L.sex===1&&a>=6,sty:lk.sty!=null?lk.sty:Math.floor(hash(lk.si*5+lk.hair.charCodeAt(3),9)*4),blink:Math.floor(t*10)%38===0}),X(W.x)-8,Y(W.y)-22-bob); } }});

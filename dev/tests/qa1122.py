@@ -8,7 +8,7 @@ async def main():
         await pg.goto('http://localhost:8765/index.html'); await pg.wait_for_timeout(800); await ev("Store.fb=false; Store.mode='local'")
         await pg.fill('#uid','qa1'); await pg.fill('#upw','123456'); await pg.click('#btnLogin'); await pg.wait_for_timeout(1000)
         await pg.click('#btnNew'); await pg.wait_for_timeout(500); await pg.evaluate("(()=>{ if($('s-vow')&&!$('s-vow').hidden){ VOW.a=['r','h','k']; VOW.st=VOW_Q.length+1; vowDraw(); $('vNext').click(); } })()"); await pg.wait_for_timeout(2500)
-        await ev("()=>{ G.running=false; if(!$('sheet').hidden) closeSheet(); const L=G.life; L.cur=null; L.runAuto(3); if(!L.dead){ L.dead=true; L.lifespan=L.age; L.cause='sick'; } finishLife(); }"); await pg.wait_for_timeout(1500)
+        await ev("()=>{ G.running=false; if(!$('sheet').hidden) closeSheet(); const L=G.life; L.cur=null; L.runAuto(3); if(!L.dead){ L.dead=true; L.lifespan=L.age; L.cause='sick'; if(!L.C||L.c!=='TZ'){}  } finishLife(); }"); await pg.wait_for_timeout(2500); await pg.screenshot(path='dev/tests/out/qa_end1.png'); print('slide1 sc:', await ev("[...document.querySelectorAll('#endIn canvas, #endIn img')].map(e=>e.dataset.sc||e.src||e.className).slice(0,4)"))
         for _ in range(20):
             if await pg.locator('#endIn .rtabs').count(): break
             for b2 in await pg.locator('#endIn [data-ans]').all(): await b2.click(); break

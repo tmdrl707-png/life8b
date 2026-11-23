@@ -80,7 +80,7 @@ worldLayer=function(){ if(!ART.ok) return _worldLayer(); const L=G.life, key=wor
 // ----- 방 안 (고해상도)
 const FLOOR_SC={wood:.16,tile:.2,lino:.2,tatami:.4,earth:.25,concrete:.25,rock:.22};
 const FLOOR_ART={home:'wood',tatami:'tatami',carpet:'wood',earth:'earth',school:'lino',office:'tile',factory:'concrete',farm:'earth',herd:'earth',shop:'tile',hosp:'lino',mine:'rock',fish:'concrete',tour:'tile',dream:'wood',part:'tile'};
-const FURN_ART={ desk:{office:'w_desk',factory:'w_machine',farm:'w_hay',herd:'w_hay',shop:'w_goods',tour:'w_goods',hosp:'w_bed',mine:'w_cart',fish:'w_fish',dream:'w_easel',part:'w_goods'},
+const FURN_ART={ desk:{school:'table',office:'w_desk',factory:'w_machine',farm:'w_hay',herd:'w_hay',shop:'w_goods',tour:'w_goods',hosp:'w_bed',mine:'w_cart',fish:'w_fish',dream:'w_easel',part:'w_goods'},
   board:{office:'w_white',factory:'w_belt',farm:'w_fence',herd:'w_fence',shop:'w_goods',tour:'w_rack',hosp:'w_white',mine:'w_cart',fish:'w_fish',dream:'w_easel',part:'w_rack'} };
 const FURN_UP={board:30,shelf:22,piano:16,counter:12,tv:16,bed:10,sofa:10,desk:16,table:14,radio:12,hearth:12,mat:0};
 const _roomLayer=roomLayer;
@@ -107,6 +107,7 @@ roomLayer=function(map){ if(!ART.ok) return _roomLayer(map); const L=G.life, kin
     if(artHas(an)) artDraw(x,an,X0+w/2,Y0+h+1,an==='mat'?w+2:w+4,an==='mat'?h+4:h+(FURN_UP[t]||14));
     else { x.imageSmoothingEnabled=false; x.drawImage(furnSprite(t,Math.round(w),Math.round(h),kind),Math.round(X0)-1,Math.round(Y0)-1); x.imageSmoothingEnabled=true; } });
   if(map==='home'){ x.fillStyle=U2(L)?artPat(x,'k','',.19):artPat(x,'g',TEX_TINT[spOf(L)]?TEX_TINT[spOf(L)].join(','):''); x.fillRect(10.8*PX,5.6*PX+oy,2.8*PX,3.4*PX); x.strokeStyle='rgba(60,50,40,.35)'; x.lineWidth=.8; x.strokeRect(10.8*PX,5.6*PX+oy,2.8*PX,3.4*PX);
+    /* 마당으로 열린 문틀: 거실 바닥에 풀밭이 깔린 것처럼 보이지 않게 문지방·문설주를 그린다(11-22 점검 CONT-03) */ x.fillStyle='#8A6A48'; x.fillRect(10.8*PX-3,5.6*PX+oy-3,3,3.4*PX+3); x.fillRect(10.8*PX-3,5.6*PX+oy-3,2.8*PX+3,3); x.fillStyle='#C8A070'; x.fillRect(10.8*PX-2,5.6*PX+oy+3.4*PX-2,3,2);
     artDraw(x,U2(L)?'bush':treeArt(treeTypeFor(L.C.rg,3),spOf(L)),12.2*PX,5.9*PX+oy+20,22,26); }
   roomLayer.k=key; roomLayer.c=c; return c; };
 function U2(L){ return visU(L); }
@@ -145,7 +146,8 @@ function scVar(kind,txt,age,L){ try{ const g=L&&L.C&&RG_ART[L.C.rg]; if(!g||age=
     if(kind==='town') return 'town@town'+townStage(age)+'_'+g;
     if(SC_AGEV[kind]||/^(grad|noschool|pet)$/.test(kind)){ const p=scPick(kind,age,L); return p?kind+'@'+p:kind; }
     if(kind!=='life') return kind; const t=String(txt||''), meal='end_meal_'+g;
-    if(age<3&&!/생일|돌잔치/.test(t)) return 'baby';   // 아기 때의 일상은 아기와 부모 그림으로
+    if(age<6&&!/생일|돌잔치/.test(t)){   // 어린 아이(0~5살)의 일상: 아기·부모, 놀이터, 집 밥상만(11-22 점검 CONT-04: 3살 기억에 대학생·무대 그림)
+      if(age>=2&&/먹|밥|식사|음식|반찬/.test(t)) return 'life@'+meal; if(age>=2&&/놀|친구|술래|그네|미끄럼|뛰어/.test(t)) return 'life@end_playground'; return 'baby'; }
     if(/집값|계약서|전세|월세|보증금|청약|집주인/.test(t)) return 'house';
     const R=[[/혜성|유성|일식|월식/,'end_stargaze'],[/모임|봉사|쓰레기를 줍|청소를 했|마을 회의|선거/,'end_neighbors'],[/손주|손자|손녀/,'end_grandkids'],[/정전|전기가 (들어오지|끊)/,'end_window_night'],[/생일|케이크/,'end_birthday'],[/사진|앨범/,'end_album'],[/낚시/,'end_fishing'],[/별을|별이|밤하늘|달을|달이/,'end_stargaze'],[/텃밭|정원|화분|꽃을 심|씨앗/,'end_garden'],
       [/영상통화|전화|편지|소식을 전/,'end_videocall'],[/이웃/,'end_neighbors'],[/산책|바닷가|바다를/,'end_dawn_walk'],[/운동|체조|달리기/,'end_exercise'],[/빗소리|비가 내|비 오는/,'end_rain_window'],[/이사/,'end_moving'],
