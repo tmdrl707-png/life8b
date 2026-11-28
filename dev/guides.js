@@ -178,6 +178,7 @@ const DESC={
 '4-engine/65-young2.js':'0~20살 점검 뒤 개선',
 '4-engine/66-young3.js':'5살 집 안 미션 8개',
 '4-engine/67-calib.js':'실제 통계 맞추기: 나라별 기대수명 <code>REF_ADJ</code>, 재해 잦기 <code>HZ_X</code>',
+'4-engine/68-country-more.js':'나라별 다양성: 139개 나라의 가족 종교 비율 <code>RELG</code>, 출생이 많은 나라부터 그 나라만의 0~20살 달력 일 109가지(무게 6, 한 번). 달력 일을 더하는 마지막 조각',
 '4-engine/u69-six-life.js':'손을 놓은 능력치가 해마다 조금 줄기',
 '4-engine/u77-move-life.js':'이사 사건과 집 위치 맞추기',
 };
@@ -267,6 +268,7 @@ ${tb(['단위','고치고 싶은 것','여는 조각'],[
  [ub('4'),'재산·행복 수치','4-engine/62-six.js (moneyIdx·joyComps)'],
  [ub('4'),'사망·수명·감염병·재해 확률','4-engine/20-life-class.js (endPeriod), 67-calib.js, 37-epidemic.js, 30-calendar.js (planMajors)'],
  [ub('4'),'나라 자료(출생 수·소득 수준)','4-engine/02-countries.js, 01-base.js'],
+ [ub('4'),'나라별 고유 사건·가족 종교','4-engine/68-country-more.js, 36-country-life2.js, 38-country-events.js(자동), 31-family.js(RELG)'],
  [ub('4'),'한국 학교·입시','4-engine/10-kr-only.js, 30-calendar.js'],
  [ub('4'),'저장된 삶 호환','4-engine/20-life-class.js (Life.load)'],
 ])}
