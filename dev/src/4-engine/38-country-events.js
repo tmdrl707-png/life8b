@@ -222,12 +222,16 @@ CALRUN.lendBack2={post:(L,ok,oi)=>{ if(oi!==0) return null; return R()<.55?{t:'�
 
 /* 사는 도시에 맞추기(11-22 점검 CONT-01): 둘째 도시({c2})에 사는 삶이 '처음 보는 {c2}'·'{c2}에 다니러' 같은 말을 들으면 수도로 바꾸고,
    수도에 살지 않는 삶에서 '{강} 쪽으로 물놀이'는 '가까운 물가'로 */
+// 다른 나라 삶에 남아 있던 한국식 낱말(11-28 점검)
+const NONKR_W=[['선생님이 생활기록부에 적어 주셨다','선생님이 성적표 의견란에 적어 주셨다'],['학교 앞 분식집','학교 앞 간식 가게'],['작은 초코파이와 주스','과자와 주스'],['분식집 앞에 줄이 길다','동네 맛집 앞에 줄이 길다'],['앞 분식집에서 만나자','앞 가게에서 만나자'],['친구들과 떡볶이를 나눈다','친구들과 간식을 나눠 먹는다'],['학원을 하나 더 다닐지 정해야 한다.','방과 후 보충 수업을 들을지 정해야 한다.'],['일주일에 네 번 학원에 갔다. 집에 오면 밤 열 시였다.','일주일에 네 번 보충 수업을 들었다. 집에 오면 날이 어두웠다.'],['학원 대신 운동을 시작했다.','보충 수업 대신 운동을 시작했다.']];
 (function(){ const P=Life.prototype, _tx=P.tx;
   P.tx=function(s){ s=_tx.call(this,s); if(typeof s!=='string'||!this.town) return s; const F=FACTS[this.c], C=this.C; if(!F) return s;
     const c2=F.city2, here=String(this.town);
     if(c2&&C.city&&c2!==C.city&&(here===c2||here.startsWith(c2+' '))&&s.indexOf(c2)>=0&&!/태어났|에서 자랐|우리 동네/.test(s)) s=s.split(c2).join(C.city);
     if(F.water&&here!==C.city&&!here.startsWith(C.city)&&s.indexOf(F.water+' 쪽으로 물놀이')>=0) s=s.split(F.water+' 쪽으로 물놀이').join('가까운 물가로 물놀이');
     if(this.c!=='KR'){   // 다른 나라 학교에 한국식 '국어'·'2학기'가 나오지 않게(11-22 점검 CONT-02)
-      if(s.indexOf('국어')>=0){ const ln=String(F.lang||'').split(/와|과 |·|,/)[0].trim()||'모국어'; s=s.replace(/국어(?!국문|교육)(?=[ ·,.)]|$)/g,ln); }
-      if(s.indexOf('2학기')>=0) s=s.replace(/^2학기 /,'').replace(/(\d+월 · )2학기 /,'$1').replace(/2학기 (중간고사|기말고사|시험)/,'$1'); }
+      if(s.indexOf('국어')>=0){ const ln=String(F.lang||'').split(/와|과 |·|,/)[0].trim()||'모국어'; s=s.replace(/(?<![가-힣])국어(?!국문|교육)(?=[ ·,.)]|$)/g,ln); }
+      if(s.indexOf('2학기')>=0) s=s.replace(/^2학기 /,'').replace(/(\d+월 · )2학기 /,'$1').replace(/2학기 (중간고사|기말고사|시험)/,'$1');
+      if(s.indexOf('1학기 ')>=0) s=s.replace(/1학기 (중간고사|기말고사|시험)/g,'$1');
+      for(const [a,b] of NONKR_W) if(s.indexOf(a)>=0) s=s.split(a).join(b); }
     return s; }; })();

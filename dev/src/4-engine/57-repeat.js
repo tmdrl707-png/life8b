@@ -137,7 +137,7 @@ function sceneKindOf(t){ t=String(t||''); for(const [re,k] of SCENE_RX) if(re.te
     [/집 보일러\(지붕\)가 고장 났다\./,L=>L.C.hz&&L.C.hz.includes('cold')||['KR','JP','CN','RU','DE','GB','FR','PL','UA','CA','US','KZ','MN','TR','IR','AF','KP'].includes(L.c)?'겨울 들머리에 집 보일러가 고장 났다.':'비가 새서 집 지붕을 고쳤다.'],
     [/버스와 지하철로 다니며 돈을 모았다\./,L=>L.set==='R'?'버스를 타고 다니며 돈을 모았다.':null],
     [/([가-힣]+ 일) 일을/,L=>'$1을'],
-    [/친구들과 PC방에서 밤을 보냈다\./,L=>L.c==='JP'?'친구들과 만화 카페에서 밤을 보냈다.':L.c==='CN'?'친구들과 인터넷 카페(왕바)에서 밤을 보냈다.':null]];
+    [/친구들과 PC방에서 밤을 보냈다\./,L=>L.c==='JP'?'친구들과 만화 카페에서 밤을 보냈다.':L.c==='CN'?'친구들과 인터넷 카페(왕바)에서 밤을 보냈다.':L.c==='KP'?'친구들과 몰래 빠져나와 밤늦게까지 거리를 쏘다녔다.':null]];
   const _tx=P.tx; P.tx=function(s){ if(typeof s==='string'&&s.length<200){ for(const [re,f] of FIX) if(re.test(s)){ const v=f(this); if(v) s=s.replace(re,v); } } return _tx.call(this,s); };
 })();
 

@@ -22,7 +22,7 @@ function worName(L){ const r=(L.fam&&L.fam.rel)||''; if(/이슬람/.test(r)) ret
   if(/힌두/.test(r)) return '힌두 사원'; if(/시크/.test(r)) return '구루드와라'; if(/유대/.test(r)) return '회당';
   return {EA:'절',SE:'절',SA:'사원',ME:'모스크',CA:'모스크',LA:'성당',EU:'성당'}[L.C.rg]||'교회'; }
 (function(){ const P=Life.prototype, _sn=P.spotName, _ok=P.spotOK;
-  P.spotName=function(key){ if(key==='z1wor') return worName(this); return _sn.call(this,key); };
+  P.spotName=function(key){ if(key==='z1wor') return worName(this); if(key==='z1rest'&&this.c!=='KR') return this.set==='U'?'동네 맛집':'마을 밥집'; return _sn.call(this,key); };   // 분식집·국숫집은 한국 동네의 이름(11-28 점검)
   P.spotOK=function(key){ const s=SPOTS[key]; if(s&&s.z==='E'&&this.age>=75) return false; return _ok.call(this,key); };
 })();
 

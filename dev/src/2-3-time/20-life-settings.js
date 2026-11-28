@@ -26,10 +26,12 @@ function cmpHTML(L){ const C=L.C, K=COUNTRIES.KR, W=worldAvg(), ui=L.set==='U'?0
 // 한 해를 돌아볼 때 보여 줄 이 나라의 숫자 한 가지 (나이에 맞게, 대한민국 또는 세계와 견주어)
 function factLine(L,a,m){ if(m){ const mt=memT(m); if(/^(farewell|sick|hosp|jobloss|unrest)$/.test(m.sc||sceneKindOf(mt))||/헤어|이혼|이별|세상을 떠|돌아가셨|숨을 거|장례|잃었|잃고|다쳤|사고|떠나보/.test(mt)) return null; }
   const C=L.C, K=COUNTRIES.KR, W=worldAvg(), kr=L.c==='KR', ui=L.set==='U'?0:1, I=instOf(L), KI=instOf({c:'KR',C:K}), at=(v,i)=>Array.isArray(v)?v[i]:v, vs=(x,y)=>kr?(y!=null?` 세계 평균은 약 ${y}입니다.`:''):` 대한민국은 약 ${x}입니다.`;
+  // '100명 가운데 약 100명'처럼 들리지 않게: 99.5% 넘으면 '거의 모든 아이'(11-28 점검 CONT-07)
+  const hund=(v,verb)=>pct100(v)>=100?`거의 모든 아이가 ${verb}`:`아이 100명 가운데 약 ${pct100(v)}명이 ${verb}`, vsH=(k,w,v)=>kr?` 세계 평균은 100명 가운데 약 ${pct100(w)}명입니다.`:pct100(k)>=100?(pct100(v)>=100?' 대한민국도 마찬가지입니다.':' 대한민국은 거의 모든 아이가 다닙니다.'):` 대한민국은 100명 가운데 약 ${pct100(k)}명입니다.`;
   const F={
     u5:()=>`${C.n}에서는 아이 1000명 가운데 약 ${C.u5}명이 다섯 살이 되기 전에 삶을 마칩니다.${vs(K.u5+'명',Math.round(W.u5)+'명')}`,
-    edu:()=>`${C.n}${C.pU<.98?`의 ${SETN[L.set]}`:''}에서는 아이 100명 가운데 약 ${pct100(at(C.edu,ui))}명이 초등학교에 다닙니다.${vs(pct100(at(K.edu,0))+'명',pct100(W.edu)+'명')}`,
-    sec:()=>`${C.n}${C.pU<.98?`의 ${SETN[L.set]}`:''}에서는 아이 100명 가운데 약 ${pct100(at(C.sec,ui))}명이 중학교에 다닙니다.${vs(pct100(at(K.sec,0))+'명',pct100(W.sec)+'명')}`,
+    edu:()=>`${C.n}${C.pU<.98?`의 ${SETN[L.set]}`:''}에서는 ${hund(at(C.edu,ui),'초등학교에 다닙니다')}.${vsH(at(K.edu,0),W.edu,at(C.edu,ui))}`,
+    sec:()=>`${C.n}${C.pU<.98?`의 ${SETN[L.set]}`:''}에서는 ${hund(at(C.sec,ui),'중학교에 다닙니다')}.${vsH(at(K.sec,0),W.sec,at(C.sec,ui))}`,
     tfr:()=>`${C.n}에서 여성 한 명이 평생 낳는 아이는 평균 약 ${+(+C.tfr).toFixed(2)}명입니다.${vs(K.tfr+'명',W.tfr.toFixed(1)+'명')}`,
     mar:()=>C.mar?`${C.n}에서 처음 결혼하는 나이는 보통 남자 ${C.mar[0]}세, 여자 ${C.mar[1]}세 무렵입니다.${kr?'':` 대한민국은 남자 ${K.mar[0]}세, 여자 ${K.mar[1]}세 무렵입니다.`}`:null,
     med:()=>`${C.n}의 보통 한 달 벌이는 한국 돈으로 약 ${fmtPay(C.med)}입니다.${kr?'':` 대한민국은 약 ${fmtPay(K.med)}입니다.`} 물가가 달라 같은 돈으로 살 수 있는 것도 다릅니다.`,

@@ -39,7 +39,12 @@ function stageOf(a){ let s=STAGES[0][1]; for(const [x,n] of STAGES) if(a>=x) s=n
 // 변화 글자: h건강 j행복 k지식 r관계 + 숫자 · $월급 변화(%) · x1 일자리를 잃음 · 대문자 하나는 성향(D B K C G)
 function parseFx(str){ const fx={}; let tr=null; for(const t of (str||'').split(' ')){ if(!t) continue; if(/^[DBKCG]$/.test(t)) tr=t; else fx[t[0]]=+t.slice(1); } return {fx,tr}; }
 // 받침에 맞는 조사: josa('사과','을','를') → '사과를'. '으로/로'는 ㄹ 받침도 '로'
-function josa(w,a,b){ w=String(w); const c=w.charCodeAt(w.length-1), jong=c>=0xAC00&&c<=0xD7A3?(c-0xAC00)%28:0; if(a==='으로') return w+(jong>0&&jong!==8?'으로':'로'); return w+(jong>0?a:b); }
+// 받침은 낱말의 끝 글자로 본다: '반쯩(찹쌀떡)'처럼 끝에 풀이 괄호가 있으면 괄호 앞 낱말로, 따옴표는 건너뛰고, 숫자는 읽는 소리로(11-28 점검)
+const JOSA_NUM=[21,8,0,16,0,0,1,8,8,0];   // 영 일 이 삼 사 오 육 칠 팔 구 의 받침
+function josa(w,a,b){ w=String(w); let s=w.replace(/\s*\([^()]*\)\s*$/,'')||w; s=s.replace(/[\s'"“”‘’」』\]]+$/,'')||s;
+  const c=s.charCodeAt(s.length-1); let jong=c>=0xAC00&&c<=0xD7A3?(c-0xAC00)%28:0;
+  const dm=/\d[\d,]*$/.exec(s); if(dm){ const n=dm[0].replace(/,/g,''), z=n.length-n.replace(/0+$/,'').length; jong=z===0?JOSA_NUM[+n[n.length-1]]:z===n.length?21:z===1?17:z===2?1:4; }   // 십 백 천·만
+  if(a==='으로') return w+(jong>0&&jong!==8?'으로':'로'); return w+(jong>0?a:b); }
 // 월급 보이기: 한국 돈 만 원 단위 값을 읽기 쉽게
 function fmtPay(m){ if(m>=10000) return (m/10000).toFixed(m>=100000?0:1).replace(/\.0$/,'')+'억 원'; if(m>=100) return Math.round(m/10)*10+'만 원'; if(m>=1) return Math.round(m)+'만 원'; return Math.max(1,Math.round(m*10))+'천 원'; }
 

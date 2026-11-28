@@ -75,7 +75,7 @@ Object.assign(Life.prototype,{
     const add=(d)=>out.push({dyn:Object.assign({sc:'life'},d),m:d.m||null,done:0});
     const dadT=()=>this.f.step2&&f.step?'새아빠':'아빠';
     // 동생이 태어난다
-    f.sibs.forEach((s,i)=>{ if(!s.born&&s.d>=a&&s.d<a+step) add({txt:`${s.sx?'여동생':'남동생'} ${josa(s.g,'이','가')} 태어났다. ${a<4?'작은 손가락을 만져 보았다.':a<13?'처음 안아 본 동생은 생각보다 무거웠다.':'나와는 '+s.d+'살 차이다. 이제 동생을 업어 줄 수 있다.'}`,fx:{j:4,r:3},big:i===f.sibs.findIndex(x=>x.d>0),sc:'baby',act:'born:'+i,y:s.d-a}); });
+    f.sibs.forEach((s,i)=>{ if(!s.born&&s.d>=a&&s.d<a+step) add({txt:`${s.sx?'여동생':'남동생'} ${josa(s.g,'이','가')} 태어났다. ${a<4?'작은 손가락을 만져 보았다.':a<13?'처음 안아 본 아기는 생각보다 무거웠다.':'나와는 '+s.d+'살 차이다. 이제 아기를 업어 줄 수 있다.'}`,fx:{j:4,r:3},big:i===f.sibs.findIndex(x=>x.d>0),sc:'baby',act:'born:'+i,y:s.d-a}); });
     // 조부모님
     f.gp.forEach((g,i)=>{ if(!g.al) return; for(let y=0;y<step;y++){ const ga=g.a0+a+y; if(R()<qAge(C,ga,1)){ add({txt:`${g.k}께서 ${ga}세로 세상을 떠나셨다.${g.home?' 늘 곁에 계시던 분이라 집이 텅 빈 것 같았다.':a<13?' 장례식에서 어른들이 우는 모습을 처음 보았다.':' 마지막으로 찾아뵌 날이 자꾸 떠올랐다.'}`,fx:{j:g.home?-10:-5,r:1},big:!!g.home||a<20,sc:'farewell',act:'gp:'+i,y}); break; } } });
     // 부모님: 나이에 따라 세상을 떠나시기도 한다 (어릴 때 잃는 일은 드물지만, 형편이 어려운 나라일수록 잦다)
@@ -97,7 +97,7 @@ Object.assign(Life.prototype,{
       if(!s.mar&&sa>=Math.max(18,(C.mar?C.mar[s.sx]:26)-3)&&sa<=45&&R()<(C.marP||.7)*.17*step){ const sp=joinName(this.c,pickSur(this,this.sur),pickGiven(this,1-s.sx,'now'),s.sx===0);
         add({txt:`${T} ${josa(s.g,'이','가')} ${josa(sp,'과','와')} 결혼했다.`,opts:[{l:'결혼식에서 축사를 한다',fx:{r:3,j:2},tr:'B',res:`떨리는 목소리로 축사를 했다. ${T}${josa(T,'이','가').slice(T.length)} 울면서 웃었다.`,fail:'축사 도중 목이 메어 말을 잇지 못했다. 그래도 하객들이 큰 박수를 쳐 주었다.'},{l:'뒤에서 조용히 일손을 돕는다',fx:{r:2},tr:'K',res:'하객 안내와 뒷정리를 도맡았다. 가족들이 고마워했다.'}],sc:'wedding',act:'sibmar:'+i+':'+sp}); }
       if(!s.away&&sa>=17&&sa<=30&&R()<(C.tier<=2?.07:.05)*step){ const ab=R()<(C.tier<=2?.35:.15), dest=ab?pickOne(ABROAD[this.c]||ABROAD['@'+C.rg]||['외국']):C.city;
-        add({txt:`${T} ${josa(s.g,'이','가')} 일자리를 찾아 ${dest}(으)로 떠났다.${ab?' 공항(버스 정류장)에서 손을 오래 흔들었다.':' 명절에만 집에 온다.'}`.replace('(으)로',josa(dest,'으로','로').slice(dest.length)),fx:{j:-2,r:-1},sc:'travel',act:'away:'+i+':'+(ab?1:0)}); }
+        add({txt:`${T} ${josa(s.g,'이','가')} 일자리를 찾아 ${dest}(으)로 떠났다.${ab?' 떠나는 날 손을 오래 흔들었다.':' 명절에만 집에 온다.'}`.replace('(으)로',josa(dest,'으로','로').slice(dest.length)),fx:{j:-2,r:-1},sc:'travel',act:'away:'+i+':'+(ab?1:0)}); }
       if(s.away===2&&R()<.25*step) add({txt:`외국에서 일하는 ${T}${josa(T,'이','가').slice(T.length)} 번 돈을 집에 보내왔다. 그 돈으로 ${pickOne(['지붕을 고쳤다','동생 학비를 냈다','부모님 약값을 마련했다'])}.`,fx:{'@':a>=19?1:0,j:2},sc:'money',nt:'2023년 저소득·중간소득 나라로 보내진 해외 송금은 약 6,560억 달러로, 많은 가정의 큰 버팀목입니다 (세계은행)'});
       if(s.mar&&!s.kid&&R()<.3*step){ const sx=R()<.5?0:1; add({txt:`${T}에게 ${sx?'딸':'아들'}이 태어났다. 내게 ${sx?'조카딸이':'조카가'} 생겼다.`,fx:{j:3,r:2},sc:'baby',act:'sibkid:'+i}); }
       if(s.d>0&&sa<5&&R()<C.u5/1000*.35*step) add({txt:`${T} ${josa(s.g,'이','가')} 열병을 앓다 세상을 떠났다. 작은 신발이 오래 문 앞에 놓여 있었다.`,fx:{j:-12,r:-2},big:true,sc:'farewell',act:'sibdie:'+i,nt:'2023년 전 세계에서 약 480만 명의 아이가 다섯 살 생일을 맞지 못했습니다 (UN IGME 2024)'});
